@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T007 验收：通过</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T007 验收：通过（附一项转 T012 的问题）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T007_delivery.json</code>（commit 7a367d7）　·　结论：<strong>通过</strong></p>
+
+<div class="box ok">
+<p><strong>独立复核全部通过。</strong>我从 <code>plans/*.npz</code> 重算守恒：七套方案区级残差最大 3.97e-10、全城 3.23e-9、日末 7.39e-9，<code>u−dep</code> 最大 0。我另起进程重解 α=0.6、K=80：moved 42,884.478 / truck-km 10,390.738 / unmet 59,517.665 / dev 17,274.561 / obj 540,716.338，与交付逐位一致；α=1、K=60 与 T006 smoke 逐位一致（u=0 时守恒不改变到达）。</p>
+</div>
+
+<h2>主结果（Q1 需求，全尺度，fixed 600）</h2>
+<div class="tw"><table>
+<thead><tr><th>情景</th><th>moved</th><th>truck-km</th><th>unmet</th><th>dev</th><th>obj</th></tr></thead>
+<tbody>
+<tr><td>α=1 K=20</td><td>9,600.00</td><td>1,752.07</td><td>0</td><td>27,468.79</td><td>109,718.76</td></tr>
+<tr><td>α=1 K=40</td><td>19,200.00</td><td>4,087.69</td><td>0</td><td>8,268.79</td><td>82,932.50</td></tr>
+<tr><td>α=1 K=60</td><td>24,679.28</td><td>5,529.85</td><td>0</td><td>225.36</td><td>82,194.80</td></tr>
+<tr><td>α=1 K=80</td><td>24,752.70</td><td>5,420.39</td><td>0</td><td>176.41</td><td>93,427.95</td></tr>
+<tr><td>α=0.8 K=80</td><td>42,183.82</td><td>9,652.54</td><td>447.52</td><td>269.14</td><td>130,499.69</td></tr>
+<tr><td>α=0.6 K=80</td><td>42,884.48</td><td>10,390.74</td><td>59,517.66</td><td>17,274.56</td><td>540,716.34</td></tr>
+<tr><td>obs α=1 K=60</td><td>23,959.15</td><td>5,440.94</td><td>0</td><td>900.00</td><td>83,325.24</td></tr>
+</tbody></table></div>
+<p>Q1−obs（α=1、K=60）：moved +720.13（+3.01%）、truck-km +88.90（+1.63%）、dev −674.64（−74.96%）、obj −1,130.44（−1.36%）。K=20/40 为运力绑定（moved 恰为 K×40×12）；K≥60 后边际收益转平，正文按此写“推荐 K=60”而不是“越大越好”。</p>
+
+<h2>H14 与 H15</h2>
+<ul>
+<li><strong>贪心</strong>：高峰 623.17 辆/h（上限 2,400）；来源比最大 40 辆/卡车（上限 40）；小时违规 0、来源违规 0；卡车起始总量每小时 60（浮点漂移 1.4e-14），车辆随批次转移。三策略同规则。</li>
+<li><strong>夜间</strong>：21:00–06:00 占搬运 39.34%、卡车公里 37.12%（占时钟 37.5%），我从 <code>q2_plan_q1.npz</code> 的 <code>XM/MK</code> 复算一致；“白天几乎不动”不成立，T012 改写法，不加夜间成本。</li>
+</ul>
+
+<div class="box warn">
+<p><strong>新问题 M10（转 T012）：</strong>随机仿真对三策略、三个 α 全部 0.00% 失单（含无卡车）。I0≈343,638 在 5 分钟粒度下从未耗尽，所以仿真对“LP 比贪心/无卡车服务更好”<strong>没有区分度</strong>。论文只能按成本、卡车公里与日末偏差比较，或加一个低库存/高峰压力情景；不得写“LP 降低失单”。</p>
+</div>
+
+<h2>口径与限制</h2>
+<ul>
+<li>α=0.4–1.0 × K 全网格未跑，<code>q2_results_q1.json</code> 已标注；T012 不得引用未跑值。</li>
+<li>α&lt;1 的 unmet 是“少服务以压低日末偏差”的权衡（LP 目标的一部分），不是物理缺车；仿真 0 失单正好说明这一点，两处口径要在 §5 写清。</li>
+<li>同小时到达约定已写入 <code>q2_conservation.json</code>：到达在出发的同一小时记账，无跨小时滞后。</li>
+<li>只读区未动；21/22 的输入均为全尺度；计划 <code>XM</code> 形状 (24,50,50)，和等于 moved。</li>
+</ul>
+
+<h2>给 T012 的注意事项</h2>
+<ol>
+<li>摘要与 §5 的主结果用 α=1、K=60 的 Q1 行；观测行作基线；差异按上表写。</li>
+<li>“夜间调度”按 39.34%/37.12% 改写，不再说“白天几乎不动”。</li>
+<li>不要写“LP 减少失单”；写“LP 以更低的日末偏差与总成本达到同等服务水平（仿真 0 失单）”或加压力情景后再谈。</li>
+<li>K=20/40 的 moved 恰为 K×40×12，是运力绑定的结果，正文说明“满负荷卡车小时”，不要当独立发现。</li>
+</ol>
+
+</main>
+</body>
+</html>
