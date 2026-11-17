@@ -1,0 +1,366 @@
+{
+ "task": "T002",
+ "title": "抽样率与放大口径",
+ "generated_at": "2026-11-17T22:36:41",
+ "ratios": {
+  "definition": {
+   "window": "2017-05-10..2017-05-19 (10 calendar days, 9 with records)",
+   "bbox": "39.4<start_lat<40.4, 115.8<start_lon<117.0",
+   "pairing": "same bikeid, consecutive observed trips inside the window, next start after current start; cross-day pairs kept; userid not required",
+   "distance": "haversine between decoded geohash cell centroids of trip k end and trip k+1 start (m)",
+   "bands": "exact = same geohash string; le160 = <=160 m; le250 = <=250 m; inclusive"
+  },
+  "recomputed": {
+   "exact": 0.12828018317611084,
+   "le160": 0.17721949286134303,
+   "le250": 0.19967673629448746,
+   "n_pairs": 2003318
+  },
+  "matches_lead": {
+   "exact": true,
+   "le160": true,
+   "le250": true
+  },
+  "variants": {
+   "A_paper_core_allpairs": {
+    "n_pairs": 2003318,
+    "exact": 0.12828018317611084,
+    "le160": 0.17721949286134303,
+    "le250": 0.19967673629448746,
+    "same_user_share": 0.06466072785249272,
+    "same_day_share": 0.4066573554473129,
+    "gap_p50": 1695.9973969165883,
+    "gap_p90": 7123.937568121867
+   },
+   "B_core_sameday_only": {
+    "n_pairs": 814664,
+    "exact": 0.2646060216236387,
+    "le160": 0.3577646735341196,
+    "le250": 0.39508680879479147,
+    "same_user_share": 0.13144069211355847,
+    "same_day_share": 1.0,
+    "gap_p50": 577.1410966309437,
+    "gap_p90": 3389.9207948010894
+   },
+   "C_core_sameuser_only": {
+    "n_pairs": 129536,
+    "exact": 0.5813055830039525,
+    "le160": 0.7507411067193676,
+    "le250": 0.8088485054347826,
+    "same_user_share": 1.0,
+    "same_day_share": 0.8266427865612648,
+    "gap_p50": 0.0,
+    "gap_p90": 514.5286053786101
+   },
+   "D_core_sameuser_sameday": {
+    "n_pairs": 107080,
+    "exact": 0.5957134852446769,
+    "le160": 0.769060515502428,
+    "le250": 0.8263167725065371,
+    "same_user_share": 1.0,
+    "same_day_share": 1.0,
+    "gap_p50": 0.0,
+    "gap_p90": 472.8052788489637
+   },
+   "E_all14_allpairs": {
+    "n_pairs": 2728556,
+    "exact": 0.11892334260319377,
+    "le160": 0.16395522027035545,
+    "le250": 0.18520712054288055,
+    "same_user_share": 0.06117228306840688,
+    "same_day_share": 0.3601549684155282,
+    "gap_p50": 1832.4359249291876,
+    "gap_p90": 7375.4381942010305
+   },
+   "F_all14_sameday": {
+    "n_pairs": 982703,
+    "exact": 0.27187563282090316,
+    "le160": 0.3651377883246515,
+    "le250": 0.40238403668249717,
+    "same_user_share": 0.13774762059340412,
+    "same_day_share": 1.0,
+    "gap_p50": 558.3539231337745,
+    "gap_p90": 3292.2973725626584
+   },
+   "G_core_crossday_only": {
+    "n_pairs": 1188654,
+    "exact": 0.03484697817867941,
+    "le160": 0.05347981834915796,
+    "le250": 0.06574915829164753,
+    "same_user_share": 0.018891956784732985,
+    "same_day_share": 0.0,
+    "gap_p50": 2897.8893377949657,
+    "gap_p90": 8737.600801058716
+   }
+  },
+  "conclusion": "A (10-19 May, bbox, consecutive observed trips inside the window, cross-day kept, userid not required, decoded cell-centroid haversine) reproduces 12.83/17.72/19.97%. Requiring same userid gives 58.1/75.1/80.9%; same-day only gives 26.5/35.8/39.5%; all 14 days give 11.9/16.4/18.5%."
+ },
+ "p_estimate": {
+  "model": "a_250 is set to 1; a_d below 1 measures geohash/GPS jitter. a values must lie in [0,1].  Placebo pairs (k,k+2) and (k,k+3) are definitely moved, so b_d from them approximates the false-match rate; the two legs make them slightly conservative (too large) as a null for exactly one missed order.",
+  "consecutive_bands": {
+   "n": 2003318,
+   "exact": 0.12828018317611084,
+   "le160": 0.17721949286134303,
+   "le192": 0.1928974830755776,
+   "le250": 0.19967673629448746,
+   "le330": 0.22106575191756875
+  },
+  "placebo": {
+   "skip1": {
+    "n": 1584977,
+    "exact": 0.005309225307370391,
+    "le160": 0.01358379332949311,
+    "le192": 0.01966526959066283,
+    "le250": 0.022956800004037912,
+    "le330": 0.03588947978424924
+   },
+   "skip2": {
+    "n": 1218445,
+    "exact": 0.0036653275281198576,
+    "le160": 0.008345062764425148,
+    "le192": 0.011271743903089593,
+    "le250": 0.013046136674203596,
+    "le330": 0.019337762475942696
+   }
+  },
+  "point": {
+   "skip1": 0.18087218281768902,
+   "skip2": 0.1890975926588744,
+   "central": 0.185
+  },
+  "interval": {
+   "lower_exact_raw": 0.12828018317611084,
+   "lower_after_false_match": 0.12362732318165898,
+   "upper_250m_raw": 0.19967673629448746,
+   "data_bracket": [
+    0.12828018317611084,
+    0.19967673629448746
+   ],
+   "model_point_skip1": 0.18087218281768902,
+   "model_point_skip2": 0.1890975926588744
+  },
+  "implied_jitter": {
+   "exact": 0.6851868933548093,
+   "le160": 0.9182873081689602,
+   "le192": 0.9774256658342634,
+   "le250": 1.0
+  },
+  "why_not_unique": "only m_d is observed; p, a_d and b_d are not separately identified without the a_250=1 and placebo-null assumptions. Different (p, jitter) pairs can reproduce the same three bands."
+ },
+ "resample": {
+  "reference": {
+   "date": "2017-05-16",
+   "T": 288679,
+   "D": 195289,
+   "ratio": 1.4782143387492384,
+   "mu": 0.8401482586665006,
+   "F": 343604.8304833683,
+   "filter": "lib.load_trips: 39.4<start_lat<40.4, 115.8<start_lon<117.0"
+  },
+  "table": [
+   {
+    "q": 0.05,
+    "n_seed": 200,
+    "mean": 327924.48849863483,
+    "sd": 18821.743433594533,
+    "p05": 296180.6939286569,
+    "p50": 326717.1862342515,
+    "p95": 359787.0154703607,
+    "min": 281980.3271669886,
+    "max": 399799.2121530915,
+    "dev_mean": -0.045634812417145176,
+    "dev_max_abs": 0.17934702265299662,
+    "share_gt4pct": 0.645,
+    "example_T": 14434
+   },
+   {
+    "q": 0.1,
+    "n_seed": 200,
+    "mean": 326955.2785747417,
+    "sd": 8513.720995296255,
+    "p05": 314816.92670512124,
+    "p50": 326795.99432335515,
+    "p95": 341382.41216257325,
+    "min": 307093.73290313676,
+    "max": 346243.7155061883,
+    "dev_mean": -0.048455523413931,
+    "dev_max_abs": 0.10625897642029458,
+    "share_gt4pct": 0.615,
+    "example_T": 28868
+   },
+   {
+    "q": 0.2,
+    "n_seed": 200,
+    "mean": 328612.2104370132,
+    "sd": 4871.268519124646,
+    "p05": 321029.39020339947,
+    "p50": 328565.0956003322,
+    "p95": 336655.93949887314,
+    "min": 317570.0703788051,
+    "max": 343169.86077866465,
+    "dev_mean": -0.043633321525963886,
+    "dev_max_abs": 0.07576948225069668,
+    "share_gt4pct": 0.615,
+    "example_T": 57736
+   },
+   {
+    "q": 0.33,
+    "n_seed": 200,
+    "mean": 331666.48500880273,
+    "sd": 2732.0451516842004,
+    "p05": 327598.8949186191,
+    "p50": 331487.77480091155,
+    "p95": 335940.521507916,
+    "min": 324814.1027367738,
+    "max": 341726.83696949686,
+    "dev_mean": -0.03474440524532563,
+    "dev_max_abs": 0.05468703021479804,
+    "share_gt4pct": 0.235,
+    "example_T": 95264
+   },
+   {
+    "q": 0.5,
+    "n_seed": 200,
+    "mean": 334468.37735910545,
+    "sd": 1421.3834472769438,
+    "p05": 332069.7320564427,
+    "p50": 334467.6658098416,
+    "p95": 336908.4710786382,
+    "min": 331005.0367159432,
+    "max": 338114.9984988218,
+    "dev_mean": -0.026590001983994527,
+    "dev_max_abs": 0.03666943142126455,
+    "share_gt4pct": 0.0,
+    "example_T": 144340
+   }
+  ],
+  "paper_grid_seed0": [
+   {
+    "q": 0.05,
+    "F": 338400.8513827415,
+    "dev": -0.015145244300861838
+   },
+   {
+    "q": 0.128,
+    "F": 330586.23457928677,
+    "dev": -0.03788827964312247
+   },
+   {
+    "q": 0.25,
+    "F": 334435.8668891278,
+    "dev": -0.026684617854009773
+   },
+   {
+    "q": 0.5,
+    "F": 335642.2097731196,
+    "dev": -0.02317377406786525
+   }
+  ],
+  "pooled_typical_days": {
+   "reference_F": 320811.54099242605,
+   "rows": [
+    {
+     "q": 0.05,
+     "mean": 306824.96154837776,
+     "sd": 29795.14475239188,
+     "dev": -0.04359749465614915
+    },
+    {
+     "q": 0.1,
+     "mean": 304057.29305545654,
+     "sd": 25293.286981311212,
+     "dev": -0.052224579842547025
+    },
+    {
+     "q": 0.2,
+     "mean": 303252.8817371841,
+     "sd": 20074.976302180457,
+     "dev": -0.0547320062143789
+    },
+    {
+     "q": 0.33,
+     "mean": 303967.1929695787,
+     "sd": 20519.506183127425,
+     "dev": -0.052505430355589966
+    },
+    {
+     "q": 0.5,
+     "mean": 309905.89358133264,
+     "sd": 19611.97329886549,
+     "dev": -0.03399393730461486
+    }
+   ]
+  },
+  "paper_claim": "within 4% for 5%-50%",
+  "verdict": "not reproducible as a general statement. Seed 0 reproduces the paper's 338,401/330,586/334,436/335,642 (all within 4%), but across 200 thinnings the q=5% distribution has 5th-95th percentile 296.2k-359.8k (-13.8% to +4.7%) and 64.5% of draws exceed 4%; q=10% and q=20% exceed 4% in 61.5% of draws; only q=50% stays inside 4% in every draw. The algebraic invariance is exact in expectation, but the inversion is ill-conditioned when p*mu is small (mu ~ sqrt(2(r-1)))."
+ },
+ "classification": {
+  "absolute_count": 17,
+  "invariant_count": 12,
+  "p_dependent_conclusions": 4,
+  "scaling_factor_if_p_018": 0.7111111111111111,
+  "csv": "data/runs/T002/classification.csv"
+ },
+ "replacement_text": {
+  "section": "3.3 The sampling rate",
+  "english": "Each order is retained independently with probability p. Between two consecutive observed orders of a bicycle, missed orders are geometric, so the pair is adjacent in the true history with probability exactly p. Adjacency is observable through parking: with no missed order, the next trip starts where the previous ended. Exact cell matching recovers only same-cell returns; about a third of true adjacent returns cross a boundary. The 12.8% exact-match rate is therefore a lower bound. Widening to 160 m gives 17.7% and to 250 m 20.0%; net of the 2.3% false-match rate measured on definitely-moved pairs, the implied retention is 18% (range 13-20%). Pending the main-value decision, p=0.128 is retained for scaling, so every absolute count is an upper estimate by roughly 40%; ratios are unaffected, and the fleet estimate is algebraically invariant, but the occupancy estimator is biased down by a few percent (2.8% at half the sample).",
+  "word_count": 150,
+  "paper_untouched": true
+ },
+ "checks": {
+  "1_ratios_recomputed": true,
+  "2_p_point_and_interval": true,
+  "3_resample_table_complete": true,
+  "4_classification_counts": true,
+  "5_p_dependent_conclusions": true,
+  "6_replacement_text_150w": true,
+  "7_old_results_untouched": true,
+  "8_boundary_conditions": "n/a",
+  "9_untested_branches_declared": true,
+  "10_caliber_unchanged": true,
+  "reasons": {
+   "8": "no optimisation or ODE is solved in T002; the only boundaries are p in (0,1), distance thresholds inclusive, and the observed union as a lower bound, all checked in 2-4.",
+   "7": "data/ excluding data/runs has 0 changed, 0 added, 0 removed against the T001 start fingerprint."
+  }
+ },
+ "paper_integrity": {
+  "paper": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 57,
+   "unchanged": true
+  },
+  "data_excluding_runs": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 29,
+   "unchanged": true
+  },
+  "lib_py_sha_now": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_sha_t001": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_unchanged": true
+ },
+ "code_changes": [
+  "new code/audit/t002_ratios.py",
+  "new code/audit/t002_mechanism.py",
+  "new code/audit/t002_resample.py",
+  "new code/audit/t002_delivery.py"
+ ],
+ "outputs": {
+  "delivery_json": "交付/T002_delivery.json",
+  "ratios": "data/runs/T002/ratios.json",
+  "p_estimate": "data/runs/T002/p_estimate.json",
+  "resample": "data/runs/T002/resample.json",
+  "resample_csv": "data/runs/T002/resample.csv",
+  "classification_csv": "data/runs/T002/classification.csv"
+ },
+ "notes": [
+  "The three lead ratios are reproduced exactly only under definition A; the same-user and same-day variants give much higher rates, so the definition must be stated with the number.",
+  "The exact-match rate is biased DOWN, not up: a_0=0.685 means 31.5% of true adjacent returns cross a geohash boundary; false matches on moved pairs are only 0.53% at d=0.",
+  "The paper's 'within 4%' resampling claim holds for its seed but not in distribution; see resample.verdict. This affects the sentence at sec9:35-37 and sec3:93-94, not the algebra.",
+  "Absolute quantities at p=0.18 shrink by 28.9% (factor 0.711); the classification CSV gives each value.",
+  "Untested branches: (i) p varying by hour/zone; (ii) order retention correlated with trip length; (iii) geohash jitter calibrated from start_lat_err rather than the placebo null."
+ ]
+}

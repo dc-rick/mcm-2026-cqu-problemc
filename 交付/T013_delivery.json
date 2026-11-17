@@ -1,0 +1,711 @@
+{
+ "task": "T013",
+ "title": "引用、AI 报告与合规",
+ "generated_at": "2026-11-17T23:38:54",
+ "checks": {
+  "1_ai_report_five_elements": true,
+  "2_false_claims_corrected": true,
+  "3_a7_rewritten_two_sources": true,
+  "4_six_new_refs_verified": true,
+  "5_citation_map_complete": true,
+  "6_compile_two_passes_clean": true,
+  "7_page_counts_reported": true,
+  "8_paper_scope_allowed": true,
+  "9_no_result_numbers_changed": true,
+  "10_readonly_trees_untouched": true
+ },
+ "checks_reasons": {
+  "1": "title, tool+version+date, inline \\cite{aiapp}, \\bibitem{aiapp}, two Query/Output examples",
+  "2": "the two pre-T013 claims are absent and both replacement statements are present; evidence lines are recorded",
+  "3": "the pre-T013 phrase is absent; the order-file statement and two news citations are present; both URLs returned 200",
+  "4": "8 new literature/news entries: 6 Crossref-verified DOIs and 2 accessible URLs; all are cited",
+  "5": "32 \\cite keys and 32 \\bibitem entries; undefined and orphan lists are both empty",
+  "6": "cold xelatex pass 1 has 115 expected undefined warnings, pass 2 has 0; main.log has 0",
+  "7": "total 27 pages; AI report starts p.26 and is 2 pages; body excluding AI report is 25 pages",
+  "8": "source changes are ai_report.tex, references.tex, sec2_assumptions.tex and the citation-only edit in sec1_intro.tex",
+  "9": "every result-bearing .tex file outside the four changed source files is byte-identical to the T001 start fingerprint",
+  "10": "data/ excluding runs/ and review/ are byte-identical to the T001 start fingerprint; T013 adds exactly three t013_*.py scripts and no unexpected code additions; no T013 script writes to 审查与规划/ or review/"
+ },
+ "ai_report": {
+  "file": "paper/ai_report.tex",
+  "title": "Report on Use of AI Tools",
+  "tool": "Claude Code (Anthropic)",
+  "product_version": "2.1.322",
+  "runtime_model_identifier": "deepseek-flash[1m]",
+  "date_range": "2026-11-11 to 2026-11-17",
+  "inline_cite": {
+   "key": "aiapp",
+   "location": "paper/sec2_assumptions.tex:6"
+  },
+  "reference_entry": {
+   "key": "aiapp",
+   "line": 162
+  },
+  "examples": [
+   {
+    "query": "Compare the gravity destination model with distance-only, attraction-only and uniform benchmarks on held-out days; fit each model's own decay; report nlp and top-5; no AIC.",
+    "output": "555,675 held-out trips; nlp 3.4185 / 3.4881 / 8.1124 / 8.5685; top-5 0.4255 / 0.3924 / 0.0108 / 0.00095; full-minus-distance 0.0696 nats (0.0685-0.0705) and 3.31 pp (3.23-3.38).",
+    "source": "data/runs/T005/dest_validation.json"
+   },
+   {
+    "query": "Test whether the published k=5 segmentation is stable: k=3-6, at least 20 initialisations per k, pairwise ARI, silhouette, cross-k ARI and agreement with published labels.",
+    "output": "k=5 ARI 0.665 mean / 0.305 min; silhouette 0.256 (40k) vs 0.263 at k=6; 10k mean 0.251 vs 0.246; published labels recovered at ARI 0.994; stability claim unsupported.",
+    "source": "data/runs/T005/k_stability.json"
+   }
+  ],
+  "five_elements": {
+   "tool_version_dates": true,
+   "inline_citation": true,
+   "reference_entry": true,
+   "query_output_examples": true,
+   "policy_title": true
+  }
+ },
+ "false_claims": [
+  {
+   "id": "C1_no_hand_typed_numbers",
+   "old_claim": "No number in the text is typed by hand. A dedicated script (95_numbers.py) re-reads every result file and prints the values quoted in the manuscript; the manuscript was checked against its output.",
+   "old_location": "paper/ai_report.tex:30-32 (pre-T013)",
+   "new_claim": "Result numbers are script-generated, with listed exceptions. Most values quoted in the text are printed by 95_numbers.py from the result files. The constant 343,638 is still hard-coded in four computation scripts and two figure lines: 20_q2_diag.py:11, used at line 26 for the initial inventory written to q2_state.npz; 24_cell_curve.py:9, used at line 36 for the cell-level initial inventory; 21_q2_opt.py:19, where it cancels algebraically; 30_q3_incentive.py:16, where it is declared but unused; and 90_figs.py:256 and 258, the cost curve. It is an input to the Q2/Q5 runs, not a display value. The Q5 interpretation text in 50_q5_platform.py:37-38 is also written by hand. The next revision will replace the constant with the revised fleet estimate and move that text into the script.",
+   "new_location": "paper/ai_report.tex:72-84",
+   "evidence": [
+    {
+     "file": "code/20_q2_diag.py",
+     "line": 11,
+     "text": "FLEET = 343638.0            # Poisson-occupancy fleet estimate for the observed system"
+    },
+    {
+     "file": "code/20_q2_diag.py",
+     "line": 26,
+     "text": "I0 = init_share * FLEET"
+    },
+    {
+     "file": "code/24_cell_curve.py",
+     "line": 9,
+     "text": "FLEET = 343638.0"
+    },
+    {
+     "file": "code/24_cell_curve.py",
+     "line": 36,
+     "text": "I0c = np.bincount(lastd, minlength=C) / len(lastd) * FLEET"
+    },
+    {
+     "file": "code/21_q2_opt.py",
+     "line": 19,
+     "text": "FLEET = 343638.0"
+    },
+    {
+     "file": "code/30_q3_incentive.py",
+     "line": 16,
+     "text": "FLEET = 343638.0"
+    },
+    {
+     "file": "code/90_figs.py",
+     "line": 256,
+     "text": "tot = c_bike * 343638 * al + s.obj"
+    },
+    {
+     "file": "code/90_figs.py",
+     "line": 258,
+     "text": "best.append((al, c_bike * 343638 * al + tr[(tr.alpha == al) & (tr.K == k)].obj.iloc[0]))"
+    },
+    {
+     "file": "code/50_q5_platform.py",
+     "line": 37,
+     "text": "print(\"\\n  interpretation: single-homing splits the effective density; the loss is\")"
+    },
+    {
+     "file": "code/50_q5_platform.py",
+     "line": 38,
+     "text": "print(\"  first order in the density, so service falls roughly linearly in the share.\")"
+    }
+   ]
+  },
+  {
+   "id": "C2_single_command_reproducibility",
+   "old_claim": "All computations are reproducible. Each numbered result is written to disk by the script that computes it ... and the scripts run from the raw order file without manual intervention.",
+   "old_location": "paper/ai_report.tex:33-36 (pre-T013)",
+   "new_claim": "The computation is reproducible in a fixed order, not by a single command. After scripts 00-04, the numbered stages run 10 -> 11 -> 20 -> 21 -> ... -> 95; later stages read earlier outputs; lib.py resolves data/ and figs/ relative to __file__; the pipeline is not unattended.",
+   "new_location": "paper/ai_report.tex:85-91",
+   "evidence": [
+    {
+     "file": "code/lib.py",
+     "line": 9,
+     "text": "# Project root = parent of this file's directory, so the scripts run from any cwd."
+    },
+    {
+     "file": "code/lib.py",
+     "line": 10,
+     "text": "ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))"
+    },
+    {
+     "file": "code/lib.py",
+     "line": 11,
+     "text": "DATA = os.path.join(ROOT, \"data\")"
+    },
+    {
+     "file": "code/lib.py",
+     "line": 12,
+     "text": "FIG = os.path.join(ROOT, \"figs\")"
+    },
+    {
+     "file": "code/20_q2_diag.py",
+     "line": 11,
+     "text": "FLEET = 343638.0            # Poisson-occupancy fleet estimate for the observed system"
+    },
+    {
+     "file": "code/22_q2_sim.py",
+     "line": 15,
+     "text": "st = np.load(DATA + r\"\\q2_state.npz\", allow_pickle=True)"
+    },
+    {
+     "file": "code/22_q2_sim.py",
+     "line": 16,
+     "text": "I0_base = st[\"I0\"]"
+    },
+    {
+     "file": "code/95_numbers.py",
+     "line": 1,
+     "text": "\"\"\"Print every number the paper cites, read from the result files actually written"
+    },
+    {
+     "file": "code/95_numbers.py",
+     "line": 2,
+     "text": "by the modelling scripts.  Nothing here is typed by hand.\"\"\""
+    }
+   ],
+   "run_order": [
+    "00_prepare.py",
+    "01_recon.py",
+    "02_recon_spatial.py",
+    "03_diag.py",
+    "04_behaviour.py",
+    "10_q1_model.py",
+    "11_q1_extra.py",
+    "20_q2_diag.py",
+    "21_q2_opt.py",
+    "22_q2_sim.py",
+    "23_q2_saveplan.py",
+    "24_cell_curve.py",
+    "30_q3_incentive.py",
+    "40_q4_efence.py",
+    "50_q5_platform.py",
+    "60_sensitivity.py",
+    "90_figs.py",
+    "95_numbers.py"
+   ]
+  }
+ ],
+ "a7": {
+  "old": "nobody was offered a reward in May 2017",
+  "old_location": "paper/sec2_assumptions.tex:51 (pre-T013)",
+  "new": "the order file contains no reward records, although Mobike had been operating red-envelope (hongbao) bikes since March 2017 [30,31]",
+  "new_location": "paper/sec2_assumptions.tex:51-53",
+  "dataset_schema_evidence": {
+   "file": "code/00_prepare.py",
+   "lines": "44-47",
+   "what": "the order CSV is read with orderid, userid, bikeid, biketype, geohashed_start_loc, geohashed_end_loc and starttime; there is no reward field."
+  },
+  "sources": [
+   {
+    "key": "technode2017",
+    "url": "https://technode.com/2017/03/24/mobike-jumps-on-hongbao-bandwagon-with-mobike-mo-money/",
+    "date": "2017-03-24",
+    "status": 200,
+    "content": "Mobike announced red-envelope bikes on 23 March 2017; a ride of at least 10 minutes earned a 1-100 CNY hongbao; Mobike described the scheme as guiding riders to bikes that need moving."
+   },
+   {
+    "key": "sixthtone2017",
+    "url": "https://www.sixthtone.com/news/1000130",
+    "date": "2017-05-02",
+    "status": 200,
+    "content": "States that Mobike launched virtual red envelopes in late March 2017 and Ofo in mid-April."
+   }
+  ]
+ },
+ "references": {
+  "n_bibitems_before": 23,
+  "n_bibitems_after": 32,
+  "n_new": 9,
+  "n_new_literature_or_news": 8,
+  "new_keys": [
+   "pal2017",
+   "shen2018",
+   "du2018",
+   "faghih2014",
+   "bachand2012",
+   "simini2012",
+   "technode2017",
+   "sixthtone2017",
+   "aiapp"
+  ],
+  "new_entries": [
+   {
+    "key": "pal2017",
+    "doi": "10.1016/j.trc.2017.03.016",
+    "crossref_title": "Free-floating bike sharing: Solving real-life large-scale static rebalancing problems",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "shen2018",
+    "doi": "10.1080/15568318.2018.1429696",
+    "crossref_title": "Understanding the usage of dockless bike sharing in Singapore",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "du2018",
+    "doi": "10.3390/su10041244",
+    "crossref_title": "Better Understanding the Characteristics and Influential Factors of Different Travel Patterns in Free-Floating Bike Sharing: Evidence from Nanjing, China",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "faghih2014",
+    "doi": "10.1016/j.jtrangeo.2014.01.013",
+    "crossref_title": "How land-use and urban form impact bicycle flows: evidence from the bicycle-sharing system (BIXI) in Montreal",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "bachand2012",
+    "doi": "10.3141/2314-09",
+    "crossref_title": "Better Understanding of Factors Influencing Likelihood of Using Shared Bicycle Systems and Frequency of Use",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "simini2012",
+    "doi": "10.1038/nature10856",
+    "crossref_title": "A universal model for mobility and migration patterns",
+    "verified": true,
+    "url": null
+   },
+   {
+    "key": "technode2017",
+    "doi": null,
+    "crossref_title": null,
+    "verified": true,
+    "url": "https://technode.com/2017/03/24/mobike-jumps-on-hongbao-bandwagon-with-mobike-mo-money/"
+   },
+   {
+    "key": "sixthtone2017",
+    "doi": null,
+    "crossref_title": null,
+    "verified": true,
+    "url": "https://www.sixthtone.com/news/1000130"
+   }
+  ],
+  "verification_file": "交付/T013_ref_verification.json",
+  "verification_summary": {
+   "new_dois_verified": 6,
+   "new_dois_total": 6,
+   "new_urls_accessible": 2,
+   "new_urls_total": 2,
+   "all_dois_verified": 20,
+   "all_dois_total": 20
+  },
+  "note": "aiapp is an internal disclosure entry, not a literature entry; it intentionally has no DOI/URL."
+ },
+ "citation_table": [
+  {
+   "key": "shaheen2010",
+   "bibitem_line": 9,
+   "cited_in": [
+    "paper/sec1_intro.tex:70"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "fishman2013",
+   "bibitem_line": 14,
+   "cited_in": [
+    "paper/sec1_intro.tex:70"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "raviv2013",
+   "bibitem_line": 19,
+   "cited_in": [
+    "paper/sec1_intro.tex:74"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "chemia2013",
+   "bibitem_line": 24,
+   "cited_in": [
+    "paper/sec1_intro.tex:75"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "schuijbroek2017",
+   "bibitem_line": 29,
+   "cited_in": [
+    "paper/sec1_intro.tex:76"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "pfrommer2014",
+   "bibitem_line": 34,
+   "cited_in": [
+    "paper/sec1_intro.tex:78"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "singla2015",
+   "bibitem_line": 40,
+   "cited_in": [
+    "paper/sec1_intro.tex:79"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "omahony2015",
+   "bibitem_line": 46,
+   "cited_in": [
+    "paper/sec1_intro.tex:80"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "pal2017",
+   "bibitem_line": 51,
+   "cited_in": [
+    "paper/sec1_intro.tex:77"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "shen2018",
+   "bibitem_line": 57,
+   "cited_in": [
+    "paper/sec1_intro.tex:73"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "du2018",
+   "bibitem_line": 62,
+   "cited_in": [
+    "paper/sec1_intro.tex:73"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "faghih2014",
+   "bibitem_line": 68,
+   "cited_in": [
+    "paper/sec1_intro.tex:71"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "bachand2012",
+   "bibitem_line": 74,
+   "cited_in": [
+    "paper/sec1_intro.tex:72"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "wilson1970",
+   "bibitem_line": 80,
+   "cited_in": [
+    "paper/sec1_intro.tex:86",
+    "paper/sec4_q1.tex:41"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "erlander1990",
+   "bibitem_line": 83,
+   "cited_in": [
+    "paper/sec1_intro.tex:86"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "fotheringham1989",
+   "bibitem_line": 87,
+   "cited_in": [
+    "paper/sec1_intro.tex:86"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "simini2012",
+   "bibitem_line": 91,
+   "cited_in": [
+    "paper/sec1_intro.tex:88"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "mcfadden1974",
+   "bibitem_line": 96,
+   "cited_in": [
+    "paper/sec1_intro.tex:87"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "lloyd1982",
+   "bibitem_line": 101,
+   "cited_in": [
+    "paper/sec1_intro.tex:89",
+    "paper/sec4_q1.tex:160"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "rousseeuw1987",
+   "bibitem_line": 105,
+   "cited_in": [
+    "paper/sec1_intro.tex:90",
+    "paper/sec4_q1.tex:161"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "hotelling1929",
+   "bibitem_line": 110,
+   "cited_in": [
+    "paper/sec1_intro.tex:91"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "katz1985",
+   "bibitem_line": 114,
+   "cited_in": [
+    "paper/sec1_intro.tex:91",
+    "paper/sec8_q5.tex:85"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "rochet2003",
+   "bibitem_line": 118,
+   "cited_in": [
+    "paper/sec1_intro.tex:91",
+    "paper/sec8_q5.tex:85"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "nemhauser1978",
+   "bibitem_line": 123,
+   "cited_in": [
+    "paper/sec7_q4.tex:32"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "niemeyer2008",
+   "bibitem_line": 128,
+   "cited_in": [
+    "paper/sec3_data.tex:12"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "osm",
+   "bibitem_line": 132,
+   "cited_in": [
+    "paper/sec7_q4.tex:115"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "gurobi",
+   "bibitem_line": 139,
+   "cited_in": [
+    "paper/sec5_q2.tex:82"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "virtanen2020",
+   "bibitem_line": 143,
+   "cited_in": [
+    "paper/sec4_q1.tex:70"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "mobike",
+   "bibitem_line": 148,
+   "cited_in": [
+    "paper/sec3_data.tex:7"
+   ],
+   "new_in_T013": false
+  },
+  {
+   "key": "technode2017",
+   "bibitem_line": 153,
+   "cited_in": [
+    "paper/sec2_assumptions.tex:53"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "sixthtone2017",
+   "bibitem_line": 158,
+   "cited_in": [
+    "paper/sec2_assumptions.tex:53"
+   ],
+   "new_in_T013": true
+  },
+  {
+   "key": "aiapp",
+   "bibitem_line": 162,
+   "cited_in": [
+    "paper/sec2_assumptions.tex:6"
+   ],
+   "new_in_T013": true
+  }
+ ],
+ "citation_summary": {
+  "n_cite_keys": 32,
+  "n_bibitems": 32,
+  "undefined": [],
+  "orphans": [],
+  "map_file": "交付/T013_citation_map.md"
+ },
+ "compilation": {
+  "engine": "XeTeX 3.141592653-2.6-0.999998 (TeX Live 2026)",
+  "passes": 2,
+  "pass1_undefined_count": 115,
+  "pass2_undefined_count": 0,
+  "main_log_undefined_count": 0,
+  "pass1_log": "交付/T013_xelatex_pass1.log",
+  "pass2_log": "交付/T013_xelatex_pass2.log",
+  "total_pages": 27,
+  "baseline_total_pages": 25,
+  "baseline_source": "paper/b2.log: Output written on main.pdf (25 pages)",
+  "total_page_delta": 2,
+  "ai_report_start_page": 26,
+  "ai_report_pages": 2,
+  "body_pages_excluding_ai_report": 25,
+  "baseline_body_pages_excluding_ai_report": 24,
+  "body_page_delta": 1,
+  "body_sections_last_page": 24,
+  "references_pages": "25",
+  "twenty_five_page_limit_ok": true
+ },
+ "paper_integrity": {
+  "baseline": "data/runs/T001/fingerprint_start.json",
+  "n_baseline_files": 57,
+  "changed": [
+   "paper/ai_report.tex",
+   "paper/main.aux",
+   "paper/main.lof",
+   "paper/main.log",
+   "paper/main.lot",
+   "paper/main.out",
+   "paper/main.pdf",
+   "paper/main.toc",
+   "paper/references.tex",
+   "paper/sec1_intro.tex",
+   "paper/sec2_assumptions.tex"
+  ],
+  "source_changed": [
+   "paper/ai_report.tex",
+   "paper/references.tex",
+   "paper/sec1_intro.tex",
+   "paper/sec2_assumptions.tex"
+  ],
+  "build_artifacts_changed": [
+   "paper/main.aux",
+   "paper/main.lof",
+   "paper/main.log",
+   "paper/main.lot",
+   "paper/main.out",
+   "paper/main.pdf",
+   "paper/main.toc"
+  ],
+  "added": [],
+  "removed": [],
+  "unchanged_count": 46
+ },
+ "readonly_integrity": {
+  "data_excluding_runs": {
+   "baseline_files": 29,
+   "current_files": 29,
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "unchanged": true
+  },
+  "review": {
+   "baseline_files": 6,
+   "current_files": 6,
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "unchanged": true
+  },
+  "peer_workspace": "not path-compared: the T001 fingerprint stores the 审查与规划/ tree name in a non-UTF-8 form; no T013 script writes there."
+ },
+ "code_integrity": {
+  "baseline": "data/runs/T001/fingerprint_start.json (code tree)",
+  "t013_new": [
+   "code/t013_delivery.py",
+   "code/t013_refs.py",
+   "code/t013_validate.py"
+  ],
+  "unexpected_added": [],
+  "t013_modified_existing": [],
+  "changed_since_T001": [
+   "code/lib.py",
+   "code/sim_cell.py"
+  ],
+  "note": "code/lib.py and code/sim_cell.py changed in T001/T004, not T013; T013 only adds the three t013_*.py scripts."
+ },
+ "code_changes": [
+  {
+   "file": "code/t013_refs.py",
+   "status": "new",
+   "what": "Crossref lookup for every DOI in references.tex and HTTP accessibility check for the two A7 news URLs; writes 交付/T013_ref_verification.json.",
+   "why": "the task requires a DOI/URL and a Crossref title for every new entry, and the A7 links must be accessible."
+  },
+  {
+   "file": "code/t013_delivery.py",
+   "status": "new",
+   "what": "this delivery builder; hashes paper/, data/ and review/ against the T001 start fingerprint, parses the citation map, page counts and compile logs.",
+   "why": "assemble the T013 evidence and the citation table."
+  },
+  {
+   "file": "code/t013_validate.py",
+   "status": "new",
+   "what": "delivery validator for checks 1-10.",
+   "why": "self-check the delivery before sending it."
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T013_delivery.json",
+  "reference_verification": "交付/T013_ref_verification.json",
+  "citation_map": "交付/T013_citation_map.md",
+  "xelatex_pass1_log": "交付/T013_xelatex_pass1.log",
+  "xelatex_pass2_log": "交付/T013_xelatex_pass2.log",
+  "compiled_pdf": "paper/main.pdf"
+ },
+ "notes": [
+  "The AI report's two query/output examples are from the T005 validation work, not from the final paper text; they are real working-record examples and their outputs are archived under data/runs/T005/.",
+  "The runtime reported the model identifier deepseek-flash[1m] for this revision; the product/tool version is Claude Code 2.1.322. The identifier is disclosed as reported, not inferred.",
+  "References were switched from footnotesize to scriptsize to keep the body (including references) at 25 pages after adding 9 entries; the text is still legible at print size. This is a page-count compromise: T012 should restore \\small if the body shortens, then re-check the 25-page limit.",
+  "sec10_evaluation.tex:95-96 still says every number is written to a result file and the whole chain is reproducible. That is a related universal claim and is outside T013's allowed file set; T012 should reconcile it with the two exceptions now listed in the AI report.",
+  "paper/preview/*.png are from the pre-T013 build and are stale; they were not regenerated because preview images are outside the allowed source-edit scope.",
+  "paper/build.log, paper/b1.log and paper/b2.log are pre-T013 build logs and were not overwritten; the authoritative T013 logs are 交付/T013_xelatex_pass1.log and 交付/T013_xelatex_pass2.log.",
+  "The A7 sources are news reports, not peer-reviewed articles; they are used only to establish the historical fact that Mobike was operating red-envelope bikes in 2017, not to support a model parameter.",
+  "The 14 pre-existing DOI entries were also re-checked; all 20 DOI entries (14 old + 6 new) returned matching Crossref metadata.",
+  "The AI report is 2 pages and starts on p.26; the 25-page body limit is met with the AI report excluded (total 27 pages).",
+  "The AI report's sentence 'The next revision will replace the constant with the revised fleet estimate' is a live action item, not a statement about T013; after T012 updates the paper it must be revisited and either fulfilled or removed."
+ ]
+}

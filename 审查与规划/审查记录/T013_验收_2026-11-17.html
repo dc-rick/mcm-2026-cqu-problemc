@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T013 验收记录 · 引用、AI 报告与合规</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T013 验收记录 · 引用、AI 报告与合规</h1>
+<p class="meta">验收：2026-11-17（R1 后）　·　交付：<code>交付/T013_delivery.json</code> 及两份附件　·　结论：<strong>通过</strong></p>
+
+<h2>1. 我独立核过的</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>做法</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>引用完整性</td><td>自写脚本扫 <code>paper/*.tex</code> 的 <code>\cite</code> 与 <code>references.tex</code> 的 <code>\bibitem</code></td><td>32 ↔ 32；未定义 0、孤儿 0、重复 0</td></tr>
+<tr><td>AI 报告五要素</td><td>读 <code>ai_report.tex</code> 与 PDF p26</td><td>标题、工具+版本+日期、行内 <code>\cite{aiapp}</code>（sec2:6）、references:162、两组真实 Query/Output，齐全</td></tr>
+<tr><td>示例数字</td><td>用 <code>dest_validation.json</code> 按出行数加权重算</td><td>attraction top-5 0.01081、uniform 0.00095、增益 0.0685–0.0705 nats、3.23–3.38 pp，全部一致</td></tr>
+<tr><td>两条不实声明</td><td>grep 旧句；核对 code 行</td><td>旧句不存在；新句与 <code>90_figs.py:256/258</code>、<code>50_q5_platform.py:37–38</code>、<code>lib.py:9–12</code> 一致</td></tr>
+<tr><td>343,638 硬编码清单（R1）</td><td>grep 全部出现处并核对使用行</td><td>20/21/24/30 四个脚本 + 90 两行全部写入；<code>20:26</code> 写 <code>q2_state.npz</code>、<code>24:36</code> 定 I0c、<code>21:19</code> 式内抵消、<code>30:16</code> 未使用，描述准确</td></tr>
+<tr><td>A7</td><td>grep 源码 + 抽 PDF 文本</td><td>“no reward records … since March 2017 [30, 31]”，正文与 PDF 一致；旧句 “nobody was offered” 已无</td></tr>
+<tr><td>文献</td><td>Crossref 抽查 <code>pal2017</code>、<code>simini2012</code></td><td>题名、期刊一致；交付称 20/20 DOI 核过</td></tr>
+<tr><td>编译与页数</td><td>读两份日志与 PDF</td><td>pass1 115 预期 undefined，pass2 0；27 页；AI 报告 p26–27；正文含 references 25 页</td></tr>
+<tr><td>文件边界</td><td>对 T001 指纹重算 SHA-256</td><td>paper/ 11 个变动（4 源文件 + 7 构建产物）；data/（不含 runs）、review/ 未变</td></tr>
+<tr><td>数字未动</td><td>sec1/sec2 的数字逐个对照 T003 溯源表</td><td>全部命中，无新增/改写的结果数字</td></tr>
+</tbody></table></div>
+
+<h2>2. R1 的那一项</h2>
+<div class="box">
+<p>初版把 343,638 只写成“展示常数”，只列了 <code>90_figs.py:256/258</code>。它不是展示值：<code>20_q2_diag.py:11</code> 用它算初值并写进 <code>q2_state.npz</code>（Q2/Q5 都读），<code>24_cell_curve.py:9</code> 用它定格子初值。R1 已补全四处脚本 + 两处图线，并明确“input to the Q2/Q5 runs, not a display value”。</p>
+</div>
+
+<h2>3. 转给 T012</h2>
+<ul>
+<li><code>references.tex</code> 的 <code>\scriptsize</code> 是为压 25 页做的妥协；T012 正文缩短后应恢复 <code>\small</code> 并复查页数。</li>
+<li>AI 报告的“The next revision will replace …”在 T012 完成后必须回来兑现或删掉，否则是过期承诺。</li>
+<li><code>sec10_evaluation.tex:95–96</code> 仍有“每个数字都写入结果文件、链条可复现”的强声明，与 AI 报告的口径冲突，T012 一并改。</li>
+</ul>
+
+<h2>4. 判定</h2>
+<div class="box ok">
+<p><strong>通过。</strong>H7（A7）、H9（AI 报告）、M7（文献）关闭。合规层面只剩 T012 的复位工作与 T014 终检。</p>
+</div>
+
+</main>
+</body>
+</html>

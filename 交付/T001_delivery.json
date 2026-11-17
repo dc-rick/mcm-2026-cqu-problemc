@@ -1,0 +1,769 @@
+{
+ "task": "T001",
+ "title": "车队规模审计与重估（R1 已补）",
+ "finished_at": "2026-11-17T22:06:07",
+ "resdir": "data/runs/T001",
+ "checks": {
+  "1_number_traceable": true,
+  "2_old_results_untouched": true,
+  "3_readonly_trees_untouched": true,
+  "4_new_results_in_runs_dir": true,
+  "5_change_list_complete": true,
+  "6_failures_explicit": true,
+  "7_magnitude_sanity": true,
+  "8_boundary_conditions": "n/a",
+  "9_untested_branches_declared": true,
+  "10_caliber_unchanged": true,
+  "reasons": {
+   "8": "no optimisation or ODE is solved in T001; residuals are not defined. The only numerical invariants relevant here (F >= observed union, I0 >= 0) are checked in check 7.",
+   "2": "fingerprint_diff.json: data/ excluding runs/ has 0 added, 0 removed, 0 modified",
+   "3": "paper/, review/ and data/ (excluding runs/) have 0 added, 0 removed, 0 modified. 审查与规划/ changed during the run, but only in files the peer session writes (its acceptance record and two ledgers); see fingerprints.peer_workspace_delta. The executor wrote nothing there."
+  }
+ },
+ "fingerprints": {
+  "start": "data/runs/T001/fingerprint_start.json",
+  "end": "data/runs/T001/fingerprint_end.json",
+  "diff": "data/runs/T001/fingerprint_diff.json",
+  "lib_py_sha_before": "d62fd79de2767923ad68f57d115661f12577ce415ac58c775ac53c1e38735635",
+  "lib_py_sha_after": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "code_added": [
+   "code/audit/t001_delivery.py",
+   "code/audit/t001_fleet.py",
+   "code/audit/t001_impact.py",
+   "code/audit/t003_numbers.py"
+  ],
+  "code_modified": [
+   "code/__pycache__/lib.cpython-311.pyc",
+   "code/lib.py"
+  ],
+  "readonly_unchanged": true,
+  "peer_workspace_delta": [
+   "审查与规划/审查记录/T001_验收_2026-11-17.html",
+   "审查与规划/台账/任务台账.csv",
+   "审查与规划/台账/问题台账.csv"
+  ],
+  "peer_workspace_note": "审查与规划/ changed while T001 ran, but every changed path is a file the peer session maintains (its own T001 acceptance record and two ledgers). The executor wrote nothing there; all executor outputs live in data/runs/T001/ and 交付/."
+ },
+ "methods": {
+  "reproduction_343638": {
+   "formula": "single day: T=trips, D=distinct bikes; solve mu/(1-exp(-mu))=T/D; F=T/mu. Filter: start/end lat>35, lon>110 (02_recon_spatial.py). Day 2017-05-16: T=288,691, D=195,301, T/D=1.478185, mu=0.840102, F=343,637.986 -> 343,638",
+   "units": "bicycles"
+  },
+  "lib_filter_difference": {
+   "formula": "lib.load_trips keeps only starts in 39.4<lat<40.4, 115.8<lon<117.0; the crude filter keeps 12 fringe records (lat 38.03-40.17, lon 114.5-117.4) on 5/16: T 288,679->288,691, D 195,289->195,301, F 343,604.83->343,637.99 (gap 33.16)",
+   "units": "bicycles"
+  },
+  "observed_lower_bound": {
+   "formula": "|{bikeid}| over the window under lib.load_trips filter",
+   "units": "bicycles"
+  },
+  "chapman": {
+   "formula": "N=(n1+1)(n2+1)/(m+1)-1; SE^2=(n1+1)(n2+1)(n1-m)(n2-m)/((m+1)^2(m+2)); 95% CI = N +/- 1.96 SE",
+   "units": "bicycles"
+  },
+  "chao1": {
+   "formula": "Nhat = S + f1^2/(2 f2), S=distinct observed, f1=seen in exactly one period, f2=seen in both; log-normal 95% CI on the undetected part",
+   "units": "bicycles"
+  },
+  "beta_binomial": {
+   "formula": "each bike's daily appearance probability q ~ Beta(a,b); over 9 days k~BetaBin(9,a,b); fit zero-truncated MLE (Nelder-Mead in log a,b); P0=B(a,9+b)/B(a,b); N=D/(1-P0); 95% CI = percentile bootstrap (600 resamples of the day-count histogram)",
+   "units": "bicycles"
+  },
+  "homogeneous_9day": {
+   "formula": "paper's estimator on the 9-day window: solve m/(1-exp(-m))=T9/D9 = 5.3278 -> m=5.301 (expected sampled trips per bike over 9 days); F=T9/m",
+   "units": "bicycles"
+  },
+  "zt_nb": {
+   "formula": "trips per bike ~ zero-truncated negative binomial P(n)=Gamma(n+r)/(Gamma(r)n!) q^r (1-q)^n; MLE in (r,q); P0=q^r; N=D/(1-P0); 95% CI = percentile bootstrap",
+   "units": "bicycles"
+  },
+  "rides_per_bike": {
+   "formula": "scaled trips per day / fleet = (274,357/0.128)/F",
+   "units": "rides per bicycle per day"
+  },
+  "right_sizing": {
+   "formula": "LP initial inventory is share*(alpha*FLEET), i.e. it depends on physical P=alpha*FLEET; total(P)=1.0*P+obj(P); P*=274,910 at old alpha 0.8, total 390k CNY; alpha*=P*/F under a new constant",
+   "units": "bicycles, CNY/day"
+  }
+ },
+ "cases": [
+  {
+   "method": "A: observed union (9 days)",
+   "point": 462893.0,
+   "lo": 462893.0,
+   "hi": null,
+   "delta_vs_old": 119255.0,
+   "ratio_vs_old": 1.347036707232611,
+   "note": "analytic lower bound; no interval exists"
+  },
+  {
+   "method": "A: observed union (14 days)",
+   "point": 484754.0,
+   "lo": 484754.0,
+   "hi": null,
+   "delta_vs_old": 141116.0,
+   "ratio_vs_old": 1.4106530709642124,
+   "note": "analytic lower bound; no interval exists"
+  },
+  {
+   "method": "B: Chapman (first5_last4)",
+   "point": 477564.51984662295,
+   "lo": 477276.5977604782,
+   "hi": 477852.4419327677,
+   "delta_vs_old": 133926.51984662295,
+   "ratio_vs_old": 1.3897314029491004,
+   "note": "n1=397166, n2=390416, m=324689"
+  },
+  {
+   "method": "B: Chao1 (first5_last4)",
+   "point": 492306.29336072365,
+   "lo": 491841.5860831755,
+   "hi": 492778.46051396953,
+   "delta_vs_old": 148668.29336072365,
+   "ratio_vs_old": 1.432630539581547,
+   "note": "f1=138204, f2=324689"
+  },
+  {
+   "method": "B: Chapman (odd_even)",
+   "point": 470478.45969785354,
+   "lo": 470281.99471319315,
+   "hi": 470674.9246825139,
+   "delta_vs_old": 126840.45969785354,
+   "ratio_vs_old": 1.3691106911862296,
+   "note": "n1=423382, n2=394702, m=355191"
+  },
+  {
+   "method": "B: Chao1 (odd_even)",
+   "point": 479221.84955418354,
+   "lo": 478903.05678854446,
+   "hi": 479546.990131624,
+   "delta_vs_old": 135583.84955418354,
+   "ratio_vs_old": 1.3945542971213414,
+   "note": "f1=107702, f2=355191"
+  },
+  {
+   "method": "B: Chapman (first3_last6)",
+   "point": 477482.2237032503,
+   "lo": 477183.861551039,
+   "hi": 477780.5858554616,
+   "delta_vs_old": 133844.2237032503,
+   "ratio_vs_old": 1.3894919179579974,
+   "note": "n1=334875, n2=428634, m=300616"
+  },
+  {
+   "method": "B: Chao1 (first3_last6)",
+   "point": 506692.7723491098,
+   "lo": 506085.1222679364,
+   "hi": 507308.97117949405,
+   "delta_vs_old": 163054.77234910981,
+   "ratio_vs_old": 1.4744957552689453,
+   "note": "f1=162277, f2=300616"
+  },
+  {
+   "method": "C: zero-truncated beta-binomial (days-seen)",
+   "point": 483787.2060108598,
+   "lo": 483506.4143931417,
+   "hi": 484052.9019323646,
+   "delta_vs_old": 140149.2060108598,
+   "ratio_vs_old": 1.4078396626998755,
+   "note": "a=4.620, b=7.566, P0=0.04319"
+  },
+  {
+   "method": "D: homogeneous Poisson corrected to 9 days",
+   "point": 465212.22628098674,
+   "lo": 462893.0,
+   "hi": null,
+   "delta_vs_old": 121574.22628098674,
+   "ratio_vs_old": 1.3537857462823866,
+   "note": "same estimator as the paper, window=9 days; solves m/(1-e^-m)=5.3278 -> m=5.301; lower bound D9 by construction; heterogeneity rejected by GOF"
+  },
+  {
+   "method": "E: zero-truncated NB (trips-per-bike)",
+   "point": 478337.26491168817,
+   "lo": 478152.46031499084,
+   "hi": 478542.97216821933,
+   "delta_vs_old": 134699.26491168817,
+   "ratio_vs_old": 1.39198012126624,
+   "note": "r=4.489, P0=0.03229"
+  },
+  {
+   "method": "0: exact reproduction of the paper constant",
+   "point": 343637.9864744583,
+   "lo": 343637.9864744583,
+   "hi": 343637.9864744583,
+   "delta_vs_old": -0.013525541697163135,
+   "ratio_vs_old": 0.9999999606401454,
+   "note": "F=T/mu on 2017-05-16 under 02_recon_spatial.py's crude filter; reproduces 343,637.986 -> 343,638 (|delta|=0.014)"
+  }
+ ],
+ "affected": [
+  {
+   "location": "code/20_q2_diag.py:11 and :26",
+   "quantity": "I0 = init_share * FLEET (initial inventory of every zone)",
+   "relation": "linear in FLEET",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "sum I0 goes 343,638 -> 462,893 (LB) / 483,787 (BB). Diagnostics in memory: zones ever negative stays 0; min inventory/initial goes 0.928 -> 0.946 (LB) / 0.949 (BB); stockout bike-hours stays 0."
+  },
+  {
+   "location": "code/21_q2_opt.py:19, :30, :58",
+   "quantity": "I0_base = RQ['I0']/FLEET, then I0 = I0_base*FLEET*alpha",
+   "relation": "cancels inside the file; depends on q2_state.npz, not on the literal",
+   "multiplier_at_lower_bound": "invariant as written",
+   "multiplier_at_beta_binomial": "invariant as written",
+   "detail": "If q2_state.npz is regenerated with a new constant, I0 scales by Fnew/Fold and the LP must be re-solved. At alpha=1 unmet=0 in every solved row, so a larger I0 cannot change the alpha=1 solution; at alpha<1 unmet>0, so those rows do move."
+  },
+  {
+   "location": "code/22_q2_sim.py:15-16",
+   "quantity": "I0_base = st['I0'] (absolute bicycles) driving the Q2 simulation",
+   "relation": "linear in FLEET through q2_state.npz",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "the simulated service level shifts with I0; direction: a larger fleet gives fewer unmet departures, so the 'no shortage' conclusion is strengthened, not weakened"
+  },
+  {
+   "location": "code/50_q5_platform.py:14-15",
+   "quantity": "I0 = st['I0'] in the Q5 split-fleet experiment",
+   "relation": "linear in FLEET through q2_state.npz",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "the same inventory level is split across platforms; its scale moves with the constant, so the 'zero unmet in 24 runs' result is a function of the chosen fleet"
+  },
+  {
+   "location": "code/95_numbers.py:49-50",
+   "quantity": "I0 quantiles and sum printed for the paper",
+   "relation": "linear in FLEET through q2_state.npz",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "these are the paper's inventory levels in Sec 5.1; with a new constant the quantiles scale linearly (1,986 -> 2,675 at the LB, 2,796 at the beta-binomial; 6,912 -> 9,311 / 9,731)"
+  },
+  {
+   "location": "code/24_cell_curve.py:9 and :36",
+   "quantity": "I0c = (last-end share) * FLEET (cell initial inventory)",
+   "relation": "linear in FLEET; the unmet curve is a function of P=alpha*FLEET",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "the curve does not move once plotted against physical inventory P; only the alpha labels change: alpha_new = alpha_old*343,638/Fnew"
+  },
+  {
+   "location": "code/30_q3_incentive.py:16",
+   "quantity": "FLEET defined but never used (dead constant)",
+   "relation": "no dependency",
+   "multiplier_at_lower_bound": 1.0,
+   "multiplier_at_beta_binomial": 1.0,
+   "detail": "grep shows the name appears only on line 16; Q3 results do not depend on it"
+  },
+  {
+   "location": "code/90_figs.py:256 and :258 (two literal 343638, not a reference)",
+   "quantity": "panel (d) total cost = 1.0*343638*alpha + LP objective",
+   "relation": "capital term linear in the literal; optimum in physical terms invariant",
+   "multiplier_at_lower_bound": 1.347036707232611,
+   "multiplier_at_beta_binomial": 1.4078396626998755,
+   "detail": "P*=274,910 and 390k CNY/day do not change; the alpha label of the optimum moves 0.800 -> 0.594 (LB) / 0.568 (BB). Editing the literal without SAVE-ING the axis label gives a wrong figure."
+  },
+  {
+   "location": "code/40_q4_efence.py (no FLEET at all)",
+   "quantity": "fence capacity is built from scaled arrivals only",
+   "relation": "no code dependency",
+   "multiplier_at_lower_bound": 1.0,
+   "multiplier_at_beta_binomial": 1.0,
+   "detail": "paper only: sec7_q4.tex:88 compares 344,463 slots with the fleet; slots/fleet goes 1.0024 -> 0.7442 (LB) / 0.7120 (BB), so the '0.2% margin / not a coincidence' claim fails even harder"
+  }
+ ],
+ "affected_paper": [
+  {
+   "file": "paper/sec3_data.tex",
+   "lines": [
+    85,
+    96,
+    97,
+    139,
+    140
+   ],
+   "numbers": [
+    "343,638",
+    "6.2",
+    "3.4e5"
+   ],
+   "effect": "fleet estimate and rides/bike"
+  },
+  {
+   "file": "paper/summary.tex",
+   "lines": [
+    24,
+    49
+   ],
+   "numbers": [
+    "3.4e5",
+    "6.2",
+    "427k",
+    "390k"
+   ],
+   "effect": "abstract fleet + right-sizing"
+  },
+  {
+   "file": "paper/sec5_q2.tex",
+   "lines": [
+    17,
+    18,
+    19
+   ],
+   "numbers": [
+    "1,986",
+    "6,912",
+    "-349"
+   ],
+   "effect": "1,986 and 6,912 are I0 min/median and scale linearly with the constant (verified: 1,986 = min init_share*343,638); -349 is the flow-only excursion min(cum) and does NOT move with the fleet"
+  },
+  {
+   "file": "paper/sec7_q4.tex",
+   "line": 88,
+   "numbers": [
+    "344,463",
+    "343,638"
+   ],
+   "effect": "slots-vs-fleet comparison"
+  },
+  {
+   "file": "paper/sec9_sensitivity.tex",
+   "lines": [
+    103,
+    123
+   ],
+   "numbers": [
+    "343,638",
+    "6.2"
+   ],
+   "effect": "sensitivity narrative"
+  },
+  {
+   "file": "figs/fig4_q2.pdf (panel d)",
+   "numbers": [
+    "343638 literal",
+    "optimum label 390k"
+   ],
+   "effect": "axis is relative to the constant; relabel needed if constant changes"
+  }
+ ],
+ "evidence": {
+  "reproduction": {
+   "day": "2017-05-16",
+   "filter": "start/end lat>35, lon>110 (02_recon_spatial.py)",
+   "trips": 288691,
+   "used_bikes": 195301,
+   "T_over_D": 1.4781849555301816,
+   "mu": 0.8401021172362667,
+   "fleet": 343637.9864744583,
+   "fleet_rounded": 343638,
+   "matches_343638": true,
+   "delta_vs_constant": -0.013525541697163135,
+   "lib_filter_same_day": {
+    "trips": 288679,
+    "used_bikes": 195289,
+    "fleet": 343604.83048336837,
+    "delta_vs_crude": -33.15599108993774
+   },
+   "extra_records_kept_by_crude_filter": 12,
+   "extra_distinct_bikes": 12,
+   "extra_start_lat_range": [
+    38.02848815917969,
+    40.17494201660156
+   ],
+   "extra_start_lon_range": [
+    114.51667785644531,
+    117.40882873535156
+   ],
+   "note": "343,638 is the single-day 5/16 Poisson-occupancy estimate under 02_recon_spatial.py's crude filter; the lib filter gives 343,604.8 (difference fully accounted for by the extra records)."
+  },
+  "per_day": [
+   {
+    "date": "2017-05-10",
+    "trips": 262513,
+    "used": 177736,
+    "T_over_D": 1.4769827159382456,
+    "mu": 0.8382137553510582,
+    "fleet": 313181.45082223695
+   },
+   {
+    "date": "2017-05-11",
+    "trips": 272132,
+    "used": 185808,
+    "T_over_D": 1.46458710066305,
+    "mu": 0.8186928546388923,
+    "fleet": 332398.16184792714
+   },
+   {
+    "date": "2017-05-12",
+    "trips": 265063,
+    "used": 181420,
+    "T_over_D": 1.4610461911586374,
+    "mu": 0.8130993138571168,
+    "fleet": 325990.92814703647
+   },
+   {
+    "date": "2017-05-13",
+    "trips": 225181,
+    "used": 162614,
+    "T_over_D": 1.3847577699337081,
+    "mu": 0.6906425765837609,
+    "fleet": 326045.6387062753
+   },
+   {
+    "date": "2017-05-14",
+    "trips": 236551,
+    "used": 168321,
+    "T_over_D": 1.405356432055418,
+    "mu": 0.7240840755234857,
+    "fleet": 326689.96321868076
+   },
+   {
+    "date": "2017-05-15",
+    "trips": 279514,
+    "used": 189923,
+    "T_over_D": 1.471722750799008,
+    "mu": 0.8299416466923987,
+    "fleet": 336787.5333331673
+   },
+   {
+    "date": "2017-05-16",
+    "trips": 288679,
+    "used": 195289,
+    "T_over_D": 1.4782143387492384,
+    "mu": 0.8401482586665004,
+    "fleet": 343604.83048336837
+   },
+   {
+    "date": "2017-05-18",
+    "trips": 322141,
+    "used": 195365,
+    "T_over_D": 1.6489186906559516,
+    "mu": 1.1000916310968543,
+    "fleet": 292831.06142604415
+   },
+   {
+    "date": "2017-05-19",
+    "trips": 314437,
+    "used": 195071,
+    "T_over_D": 1.6119105351384881,
+    "mu": 1.0450341396570426,
+    "fleet": 300886.82088720216
+   },
+   {
+    "date": "2017-05-20",
+    "trips": 134120,
+    "used": 103594,
+    "T_over_D": 1.2946695754580382,
+    "mu": 0.5408263043794559,
+    "fleet": 247990.89636346238
+   },
+   {
+    "date": "2017-05-21",
+    "trips": 209389,
+    "used": 151779,
+    "T_over_D": 1.3795650254646559,
+    "mu": 0.6821664778291241,
+    "fleet": 306947.0676224724
+   },
+   {
+    "date": "2017-05-22",
+    "trips": 124771,
+    "used": 100841,
+    "T_over_D": 1.2373042710802153,
+    "mu": 0.44213381378018946,
+    "fleet": 282201.89479113434
+   },
+   {
+    "date": "2017-05-23",
+    "trips": 150434,
+    "used": 117391,
+    "T_over_D": 1.2814781371655408,
+    "mu": 0.5183708447242839,
+    "fleet": 290205.3646169362
+   },
+   {
+    "date": "2017-05-24",
+    "trips": 128385,
+    "used": 105455,
+    "T_over_D": 1.2174387179365607,
+    "mu": 0.4073041405133265,
+    "fleet": 315206.7146633866
+   }
+  ],
+  "gof_days_seen": [
+   {
+    "k": 1,
+    "observed": 0.13291192565020427,
+    "beta_binomial": 0.12056465369343003,
+    "paper_homog_1day": 0.006169616438839063,
+    "homog_9day": 0.03617494906809208
+   },
+   {
+    "k": 2,
+    "observed": 0.1727721093211606,
+    "beta_binomial": 0.1860571225206932,
+    "paper_homog_1day": 0.032491755124853666,
+    "homog_9day": 0.11608358933993888
+   },
+   {
+    "k": 3,
+    "observed": 0.19919506235782353,
+    "beta_binomial": 0.21183675112832923,
+    "paper_homog_1day": 0.09981710547315588,
+    "homog_9day": 0.21729539462228376
+   },
+   {
+    "k": 4,
+    "observed": 0.19524814589980838,
+    "beta_binomial": 0.1926741443302979,
+    "paper_homog_1day": 0.19712933010847053,
+    "homog_9day": 0.2614837408683689
+   },
+   {
+    "k": 5,
+    "observed": 0.15471178004420028,
+    "beta_binomial": 0.14358886157222994,
+    "paper_homog_1day": 0.25954117185833153,
+    "homog_9day": 0.2097720382197323
+   },
+   {
+    "k": 6,
+    "observed": 0.09272553268249897,
+    "beta_binomial": 0.0871499074550201,
+    "paper_homog_1day": 0.22780854867387557,
+    "homog_9day": 0.11219131732047194
+   },
+   {
+    "k": 7,
+    "observed": 0.03994011575029218,
+    "beta_binomial": 0.04146259363396446,
+    "paper_homog_1day": 0.1285429454205727,
+    "homog_9day": 0.03857317349289987
+   },
+   {
+    "k": 8,
+    "observed": 0.011104078048274655,
+    "beta_binomial": 0.01406032453629034,
+    "paper_homog_1day": 0.04231002391960069,
+    "homog_9day": 0.0077362106696743545
+   },
+   {
+    "k": 9,
+    "observed": 0.0013912502457371358,
+    "beta_binomial": 0.002605641129753053,
+    "paper_homog_1day": 0.006189502982300331,
+    "homog_9day": 0.0006895863985379449
+   }
+  ],
+  "capture_recapture": [
+   {
+    "split": "first5_last4",
+    "daysA": "2017-05-10;2017-05-11;2017-05-12;2017-05-13;2017-05-14",
+    "daysB": "2017-05-15;2017-05-16;2017-05-18;2017-05-19",
+    "lp_n1": 397166,
+    "lp_n2": 390416,
+    "lp_both": 324689,
+    "lp_lp": 477564.56503300084,
+    "lp_chapman": 477564.51984662295,
+    "lp_se": 146.89902354323817,
+    "lp_lo": 477276.5977604782,
+    "lp_hi": 477852.4419327677,
+    "chao_f1": 138204,
+    "chao_f2": 324689,
+    "chao_extra": 29413.293360723645,
+    "chao_N": 492306.29336072365,
+    "chao_var": 57117.37763082485,
+    "chao_lo": 491841.5860831755,
+    "chao_hi": 492778.46051396953
+   },
+   {
+    "split": "odd_even",
+    "daysA": "2017-05-10;2017-05-12;2017-05-14;2017-05-16;2017-05-19",
+    "daysB": "2017-05-11;2017-05-13;2017-05-15;2017-05-18",
+    "lp_n1": 423382,
+    "lp_n2": 394702,
+    "lp_both": 355191,
+    "lp_lp": 470478.4810538555,
+    "lp_chapman": 470478.45969785354,
+    "lp_se": 100.23723707162969,
+    "lp_lo": 470281.99471319315,
+    "lp_hi": 470674.9246825139,
+    "chao_f1": 107702,
+    "chao_f2": 355191,
+    "chao_extra": 16328.849554183524,
+    "chao_N": 479221.84955418354,
+    "chao_var": 26982.07792182941,
+    "chao_lo": 478903.05678854446,
+    "chao_hi": 479546.990131624
+   },
+   {
+    "split": "first3_last6",
+    "daysA": "2017-05-10;2017-05-11;2017-05-12",
+    "daysB": "2017-05-13;2017-05-14;2017-05-15;2017-05-16;2017-05-18;2017-05-19",
+    "lp_n1": 334875,
+    "lp_n2": 428634,
+    "lp_both": 300616,
+    "lp_lp": 477482.2722343455,
+    "lp_chapman": 477482.2237032503,
+    "lp_se": 152.22558786291376,
+    "lp_lo": 477183.861551039,
+    "lp_hi": 477780.5858554616,
+    "chao_f1": 162277,
+    "chao_f2": 300616,
+    "chao_extra": 43799.77234910983,
+    "chao_N": 506692.7723491098,
+    "chao_var": 97468.9428950117,
+    "chao_lo": 506085.1222679364,
+    "chao_hi": 507308.97117949405
+   }
+  ],
+  "beta_binomial": {
+   "a": 4.619773233700398,
+   "b": 7.566408521798789,
+   "p0": 0.04318883540378444,
+   "N": 483787.2060108598,
+   "boot_lo": 483506.4143931417,
+   "boot_hi": 484052.9019323646,
+   "boot_mean": 483781.6293627855,
+   "boot_sd": 139.45221825053997
+  },
+  "homogeneous_9day": {
+   "m": 5.3012600715923925,
+   "mu_day": 0.5890288968435992,
+   "fleet": 465212.22628098674
+  },
+  "nb": {
+   "r": 4.488743264319826,
+   "q": 0.465417936672565,
+   "p0": 0.032287396455594024,
+   "N": 478337.26491168817
+  },
+  "diagnostics": [
+   {
+    "F": 343638.0,
+    "sum_I0": 343638.0,
+    "zones_ever_negative": 0,
+    "stockout_bike_hours": 0.0,
+    "stockout_share_of_mass": 0.0,
+    "worst_zone_deficit": 0.0,
+    "buffer_over_I0_median": 0.01949210206578885,
+    "buffer_over_I0_min": 0.001882156526397721,
+    "min_inventory_ratio": 0.9279194490708472
+   },
+   {
+    "F": 462893.0,
+    "sum_I0": 462893.0,
+    "zones_ever_negative": 0,
+    "stockout_bike_hours": 0.0,
+    "stockout_share_of_mass": 0.0,
+    "worst_zone_deficit": 0.0,
+    "buffer_over_I0_median": 0.014470357014868554,
+    "buffer_over_I0_min": 0.0013972570430277839,
+    "min_inventory_ratio": 0.9464895421615963
+   },
+   {
+    "F": 477565.0,
+    "sum_I0": 477565.0,
+    "zones_ever_negative": 0,
+    "stockout_bike_hours": 0.0,
+    "stockout_share_of_mass": 0.0,
+    "worst_zone_deficit": 0.0,
+    "buffer_over_I0_median": 0.01402579119006533,
+    "buffer_over_I0_min": 0.0013543297863500465,
+    "min_inventory_ratio": 0.9481335182431874
+   },
+   {
+    "F": 483787.0,
+    "sum_I0": 483787.0,
+    "zones_ever_negative": 0,
+    "stockout_bike_hours": 0.0,
+    "stockout_share_of_mass": 0.0,
+    "worst_zone_deficit": 0.0,
+    "buffer_over_I0_median": 0.013845405043301184,
+    "buffer_over_I0_min": 0.001336911707876111,
+    "min_inventory_ratio": 0.9488005747153351
+   },
+   {
+    "F": 492306.0,
+    "sum_I0": 492305.99999999994,
+    "zones_ever_negative": 0,
+    "stockout_bike_hours": 0.0,
+    "stockout_share_of_mass": 0.0,
+    "worst_zone_deficit": 0.0,
+    "buffer_over_I0_median": 0.013605820302176998,
+    "buffer_over_I0_min": 0.001313777415709457,
+    "min_inventory_ratio": 0.9496865438158539
+   }
+  ],
+  "scale": {
+   "old": {
+    "F": 343638.0,
+    "ratio_vs_old": 1.0,
+    "I0_multiplier": 1.0,
+    "rides_per_bike": 6.237418628032988,
+    "slots_over_fleet": 1.0024007822184973
+   },
+   "lower_bound_9d": {
+    "F": 462893.0,
+    "ratio_vs_old": 1.347036707232611,
+    "I0_multiplier": 1.347036707232611,
+    "rides_per_bike": 4.630474132250866,
+    "slots_over_fleet": 0.7441525363312904
+   },
+   "chapman_first5_last4": {
+    "F": 477565.0,
+    "ratio_vs_old": 1.3897328002141789,
+    "I0_multiplier": 1.3897328002141789,
+    "rides_per_bike": 4.488214300671113,
+    "slots_over_fleet": 0.7212902955618606
+   },
+   "beta_binomial": {
+    "F": 483787.0,
+    "ratio_vs_old": 1.4078390632002282,
+    "I0_multiplier": 1.4078390632002282,
+    "rides_per_bike": 4.430491233745429,
+    "slots_over_fleet": 0.7120137581208259
+   },
+   "chao1_first5_last4": {
+    "F": 492306.0,
+    "ratio_vs_old": 1.4326296858903846,
+    "I0_multiplier": 1.4326296858903846,
+    "rides_per_bike": 4.353824780725809,
+    "slots_over_fleet": 0.6996928739442542
+   }
+  },
+  "figure": "data/runs/T001/fig_fleet_estimates.png",
+  "tables": [
+   "data/runs/T001/methods.csv",
+   "data/runs/T001/diagnostics_by_fleet.csv",
+   "data/runs/T001/scaling_table.csv",
+   "data/runs/T001/gof_days_seen.csv",
+   "data/runs/T001/capture_recapture.csv",
+   "data/runs/T001/per_day_estimates.csv"
+  ]
+ },
+ "notes": [
+  "343,638 IS reproducible to 0.014 bicycles, but only for the single day 2017-05-16 under 02_recon_spatial.py's crude filter. The paper calls it 'the fleet' and quotes 6.2 rides per bike per day from it. The comment 20_q2_diag.py:11 is technically true (it is a Poisson-occupancy estimate) but does not say 'single day'; the constant and the comment are jointly misleading about the caliber.",
+  "The 33-bicycle gap to the lib-filter value is fully accounted for: 12 fringe records (lat 38.03-40.17, lon 114.5-117.4, all outside the Beijing bbox) on 5/16, 12 distinct bikes, T +12 and D +12 -> F +33.16.",
+  "All closed-fleet methods give >= 462,893. Point estimates: lower bound 462,893 (9 d) / 484,754 (14 d); Chapman 470,478-477,565; Chao1 479,222-506,693; zero-truncated beta-binomial 483,787 [483,506, 484,053]; zero-truncated NB 478,337 [478,152, 478,543]; the paper's own homogeneous model corrected to 9 days gives 465,212.",
+  "The bootstrap/parametric intervals are sampling-only and are tiny because n is 4.6e5. The real uncertainty is model specification: the methods span 465k-507k. Do not quote 483,787 [483.5k, 484.1k] as if the interval covered model uncertainty.",
+  "GOF rejects homogeneity: observed share seen exactly 1 day = 13.29%; the paper's one-day homogeneous model extended to 9 days predicts 0.62%; the homogeneous model corrected to the 9-day window predicts 3.62%; the beta-binomial predicts 12.06%.",
+  "Assumptions behind the estimates: closed population over 5/10-5/19; daily usage iid within a bike given its rate; the order sampling rate p is irrelevant to all estimators (it only rescales the per-bike rate axis). Capture-recapture also assumes equal catchability across periods; heterogeneity biases Lincoln-Petersen downward and Chao1 is a lower-bound correction.",
+  "Open-fleet alternative (decision item B6, NOT decided here): if Mobike was still deploying during the window, the 9/14-day union is not a lower bound for any single-day fleet, and 343,638 could be a legitimate 5/16 snapshot. Then the errors are the wording ('the fleet'), the 6.2 rides/bike/day inference, and the direct comparison with 484,754 distinct bikes. This needs the user: choose closed-fleet interval vs single-day snapshot + growth narrative.",
+  "Impact: the state variable is the PHYSICAL fleet P=alpha*FLEET, not the constant by itself. q2_state.npz (written by 20_q2_diag.py:55, where I0=init_share*FLEET at :26) carries I0 in absolute bicycles and is read by 22_q2_sim.py:15-16 (Q2 simulation), 50_q5_platform.py:14-15 (Q5 split-fleet experiment) and 95_numbers.py:49-50 (I0 quantiles quoted in the paper). So the constant DOES reach Q2, Q5 and the paper numbers through that file. What is invariant is the right-sizing curve as a function of P=alpha*FLEET: P*=274,910 and 390k CNY/day stay, while the I0 levels scale by Fnew/Fold, the alpha labels rescale (0.800 -> 0.568 at the beta-binomial), and 6.2 -> 4.43 rides/bike/day. At alpha=1 unmet=0 in every solved row, so a larger I0 does not change the alpha=1 LP solution; at alpha<1 unmet>0 the rows move.",
+  "90_figs.py:256/258 hold the literal 343638, not the constant - a second failure mode: a future edit of FLEET alone leaves the figure stale. It is listed separately in affected[] for that reason.",
+  "Only existing file changed: code/lib.py lines 8-9 (DATA/FIG) plus 'import os'; absolute D:\\code\\mcm paths replaced by paths derived from __file__. code/__pycache__/lib.cpython-311.pyc changed as a side effect of importing lib; no source semantics changed.",
+  "Not tested: time-varying fleet models (growth curve), day-level capture occasions with Mh/jackknife estimators, beta-binomial with temporal correlation, and any re-solve of Q2-Q5. The Q2 invariance statement at alpha=1 is read off q2_results.json (unmet=0), not re-solved."
+ ],
+ "open_decisions": [
+  {
+   "id": "B6",
+   "raised": "2026-11-17",
+   "issue": "Is the fleet a closed population over 5/10-5/19 (then F >= 462,893, central ~484k, and 343,638 is invalid), or an open/growing population (then 343,638 may be a 5/16 snapshot and the paper's error is wording plus the 6.2 rides/bike/day claim)? T001 does not decide this.",
+   "options": [
+    "closed-fleet: adopt ~465k-507k with explicit interval",
+    "open-fleet: keep a single-day estimate but relabel and bound it",
+    "report both in the paper, one as main and one as scenario"
+   ]
+  }
+ ]
+}

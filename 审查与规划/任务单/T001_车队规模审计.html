@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T001 车队规模审计与重估</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:15px;margin:18px 0 4px}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+code,pre{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace}
+code{padding:1px 4px;word-break:break-all}
+pre{padding:10px 12px;overflow-x:auto;line-height:1.5}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T001 · 车队规模审计与重估</h1>
+<p class="meta">下达：2026-11-17　·　指导方：美赛指导agent　·　执行方：美赛工作Agent　·　前置：无　·　预计 0.5 天</p>
+
+<h2>背景</h2>
+<p>Q2 的初始库存、Q2 的持有成本、Q4 的容量、Q3 的候选车主池，全部乘以同一个常数：<code>FLEET = 343638.0</code>。这个常数在四处硬编码：</p>
+<ul>
+<li><code>code/20_q2_diag.py:11</code>（注释写 “Poisson-occupancy fleet estimate for the observed system”）→ 第 26 行 <code>I0 = init_share * FLEET</code></li>
+<li><code>code/21_q2_opt.py:19</code> → 第 30、58 行</li>
+<li><code>code/24_cell_curve.py:9</code> → 第 36 行</li>
+<li><code>code/30_q3_incentive.py:16</code></li>
+<li>另外 <code>code/90_figs.py:256</code>、<code>:258</code> 直接写了 <code>343638</code></li>
+</ul>
+<p>数据本身给出一个硬约束：车队不可能少于观测到的不同单车数。指导方按 <code>lib.load_trips</code> 的口径（沿 <code>lib.py</code> 的北京边界过滤）重算：<code>ALL_DAYS</code> 中的 9 个实际存在日期共出现 <strong>462,893</strong> 辆不同单车；全部 14 个日期共 <strong>484,754</strong> 辆。两者都大于 343,638。</p>
+<p><strong>这批数字请你独立复核，不要直接采信。</strong> 如果复核结果与上面不同，先在回执里写明你的口径与数值差异。</p>
+
+<h2>要解决的问题</h2>
+<p>343,638 是怎么算出来的？在它显然违反“车队 ≥ 观测单车数”的前提下，用数据能给出的车队规模是多少？所有依赖它的数字会被放大或缩小多少？</p>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li><strong>前置修复</strong>：<code>lib.py:8–9</code> 的 <code>DATA</code>、<code>FIG</code> 指向 <code>D:\code\mcm\2026CQU_C\...</code>，该目录在本机不存在。改成以项目根为基准的相对路径。这是本任务唯一允许修改的既有文件。</li>
+<li><strong>指纹快照</strong>：对 <code>data/</code>（排除 <code>runs/</code>）、<code>paper/</code> 生成文件清单 + SHA-256，交付时附上。</li>
+<li><strong>复现 343,638</strong>：按“Poisson-occupancy”的说法反推公式（例如用同时占用数、或用 p 反推车队），给出每一步中间量。能复现就给出公式；不能复现就明确写“无法复现”，并给出最接近的公式与差值。</li>
+<li><strong>重估</strong>，至少两种互相独立的方法，每种给点估计与 95% 区间：
+  <ul>
+  <li>(a) 观测下界：<code>ALL_DAYS</code> 与全部日期的不同 <code>bikeid</code> 数。</li>
+  <li>(b) 捕获–再捕获：按日期把数据切成两组（如 5/10–5/14 与 5/15–5/19），Lincoln–Petersen 或 Chao1。</li>
+  <li>(c) 异质暴露模型：拟合单车逐日出行的概率分布（如 beta-binomial / 零截断泊松），给 N 的 MLE 与区间；并用“只出现 1 天的单车占比”做拟合优度检验（指导方复核到观测值 13.3%、同质模型预测 0.62%，请独立重算）。</li>
+  </ul></li>
+<li><strong>影响面</strong>：逐处给出数值随 FLEET 的缩放关系（线性/非线性），至少覆盖：<code>I0</code>、每车每天单量（论文 6.2）、Q2 区时成本里的 <code>c_bike*FLEET*alpha</code>、Q4 容量、Q3 的 N 与总成本。</li>
+<li><strong>产出</strong>：<code>data/runs/T001/fleet_estimate.json</code> + 一张方法对比表（CSV 或 PNG）。</li>
+</ol>
+</td><td>
+<ol>
+<li>不改 <code>20/21/24/30/90</code> 里的 FLEET 与 343638（除 <code>lib.py</code> 路径外，既有脚本一律不动）。</li>
+<li>不重跑 Q2、Q3、Q4、Q5。</li>
+<li>不改 <code>paper/</code> 任何文件。</li>
+<li>不覆盖、不删除 <code>data/</code> 下的现有文件。</li>
+<li>不决定新车队值是否进入正文——那是用户的决定（见推进路线 B1 之后的 T002/T012）。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>验收标准（逐条可自动判定）</h2>
+<ol>
+<li>交付中“<code>ALL_DAYS</code> 不同单车数”的重算值等于 <strong>462,893</strong>；全部日期等于 <strong>484,754</strong>。口径必须写明（是否过 <code>lib.load_trips</code> 的边界过滤）。数值不同即视为口径不同，必须在 <code>notes</code> 里说明。</li>
+<li>至少两种独立方法的点估计与 95% 区间；<strong>所有方法的下界 ≥ 462,893</strong>。任何方法给出小于该值的点估计，即为不合格，必须解释原因并作废该方法。</li>
+<li>343,638 的来历：给出公式与中间量；复现值与 343,638 相差 ≤ 1 辆，或明确写“无法复现”并给最接近值与差值。</li>
+<li>每车每天单量：旧值 6.2（论文值）与新值 = 全部单量 / FLEET<sub>new</sub>，两者都给出，并给新值的区间。</li>
+<li><code>affected[]</code> 覆盖上面列出的 6 个文件位置，逐处写“随 FLEET 线性/非线性”和“若 FLEET 取新值，该量的变化倍数”。</li>
+<li>自检 1–10 全为 true；第 8 项（边界条件）本任务无求解，填 <code>n/a</code> 并说明理由。</li>
+<li><code>notes</code> 里必须写明：估计依赖的假设（抽样独立性、活跃天分布、是否与 p 耦合）、哪些部分数据无法裁决。</li>
+</ol>
+
+<h2>只读区</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>（绝对路径：<code>d:\code\mcm2026_problemA\mcm\2026CQU_C\</code> 下同名目录）。</p>
+
+<h2>算力 / 时间限制</h2>
+<p>单机 CPU；单次运行 ≤ 30 分钟；并行进程 ≤ 4。不需要 Gurobi。</p>
+
+<h2>失败时怎么办</h2>
+<ul>
+<li>若捕获–再捕获的分组不可行（某组单车太少），换分组方式并说明，不要跳过。</li>
+<li>若某方法无法给出区间（如解析下界），写明“无区间”并给出理由，不要用别的方法的区间顶替。</li>
+<li>若发现 343,638 另有正确解释（例如它对应的是“同时在线车”而非车队），照实写，并在回执中提出——这属于口径问题，需要用户裁决。</li>
+</ul>
+
+<h2>交付形式</h2>
+<p><code>交付/T001_delivery.json</code>（字段见 <a href="推进路线_2026-11-17.html#r7">推进路线 §7.2</a>）+ <code>data/runs/T001/</code> 下的产物 + 指纹清单。<br>
+完成后 SendMessage 给 <strong>美赛指导agent</strong>，首行：<code>T001 已交付：交付/T001_delivery.json</code>。动手前先回执（≤10 行）。</p>
+
+<div class="box warn">
+<p><strong>提醒：</strong>审查方给出的任何数字（包括 462,893、13.3%、0.62%）都是待核对的线索，不是结论。你的回执与交付应基于你自己跑出来的数。</p>
+</div>
+
+</main>
+</body>
+</html>

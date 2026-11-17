@@ -1,0 +1,144 @@
+% ============================ 1. INTRODUCTION ============================
+\section{Introduction}
+
+\subsection{A city that rides, and the problem that follows}
+
+Between 2016 and 2018, dockless shared bicycles changed how Chinese cities moved.
+Unlike the earlier station-based systems of Hangzhou and Shanghai, a dockless fleet
+imposes no docking constraint: a rider may leave the bicycle wherever the journey
+ends, and the next rider finds it through a phone application. The convenience is
+real, and so is the externality. Because no station absorbs the end of a trip, the
+spatial distribution of bicycles is simply the integral of every rider's private
+choice, and that distribution drifts. Bicycles pile up at subway exits, at shopping
+centres and at the foot of office towers, while residential streets empty by nine in
+the morning. Operators respond with trucks; cities respond with parking rules; and
+both are expensive because neither is guided by a model of where the bicycles will
+go.
+
+This paper builds that model from the largest artefact the industry left behind: the
+2017 Mobike Algorithm Challenge dataset, which records 3,213,310 orders placed on
+484,754 bicycles by 349,241 users in Beijing between 10 and 24 May 2017. Each order
+carries an order identifier, a user identifier, a bicycle identifier, a start time,
+a bicycle type, and origin and destination coordinates encoded as seven-character
+geohashes. There is no inventory record, no station, and no record of a user who
+wanted to ride and found no bicycle.
+
+\subsection{The five questions}
+
+The problem poses five questions, which we restate in operational terms:
+
+\begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=2.2em]
+\item \textbf{Behaviour.} Build a mathematical model of how users ride: when they
+  start, where they go, and how long it takes.
+\item \textbf{Rebalancing.} Design an optimal repositioning and scheduling plan for
+  a typical day, using trucks or tricycles to move bicycles between areas.
+\item \textbf{Incentives.} Explore a scheme that pays users to end their trips where
+  the platform wants bicycles.
+\item \textbf{E-fences.} Predict parking demand by location and propose a layout and
+  capacity plan for electronic fences.
+\item \textbf{Competition.} Discuss how the coexistence of competing platforms
+  affects the resolution of the problems above.
+\end{enumerate}
+
+\subsection{Three things the data do not tell us}
+
+Most of the analytical difficulty in this problem is not in the optimisation; it is
+in three quantities the dataset does not contain, and which a careless model would
+silently assume.
+
+\textbf{No inventory.} The data record movements, not stocks. A cell that receives no
+arrivals may be empty or may hold fifty bicycles that nobody rode. Any statement
+about a ``shortage'' therefore requires an assumption about where the bicycles were
+at midnight, and that assumption is not identified by the data (Section~\ref{sec:sens}).
+
+\textbf{Unknown sampling rate.} The file is described as a sample of the operator's
+orders. If only a fraction $p$ of orders is present, then every count in the file is
+a count of $1/p$ of reality, and the fleet is larger than the number of distinct
+bicycle identifiers. We estimate $p$ from the internal consistency of successive
+rides of the same bicycle, and we show that the fleet estimate is invariant to it.
+
+\textbf{Truncated demand.} A user who wants to ride and finds no bicycle never
+appears. The observed trips are therefore demand censored at supply, which biases any
+naive estimate of demand downward exactly where the system is most stressed. Our
+models avoid this bias by treating observed trips as realisations of a rate process
+rather than as the demand itself, and by reporting service quality as a simulated
+quantity rather than a fitted one.
+
+\subsection{Related work}
+
+Bike-share research divides into three strands. The first documents the systems and
+their users \cite{shaheen2010,fishman2013}; studies of station-based and free-floating
+systems add land-use effects on bicycle flows \cite{faghih2014}, predictors of
+shared-bicycle use \cite{bachand2012}, and dockless travel patterns in Singapore and
+Nanjing \cite{shen2018,du2018}. The second treats rebalancing as a vehicle-routing or
+inventory problem: static repositioning \cite{raviv2013}, the static rebalancing
+problem with multiple vehicles \cite{chemia2013}, inventory-plus-routing formulations
+with service-level constraints \cite{schuijbroek2017}, and stationless static
+rebalancing for free-floating systems \cite{pal2017}. The third replaces trucks with
+prices, either by dynamic redistribution with user incentives \cite{pfrommer2014} or
+by mechanism design for balanced systems \cite{singla2015}. The probabilistic
+analysis of station occupancy that underlies both is given in \cite{omahony2015}.
+
+Our approach differs from all three in one respect: the behavioural model is not a
+convenience for generating demand but the object of study in its own right, and the
+same estimated object is then reused, without re-fitting, in the optimisation (Q2),
+the incentive design (Q3) and the parking forecast (Q4). Spatial interaction models
+of the gravity family \cite{wilson1970,erlander1990,fotheringham1989} supply the
+destination choice; the discrete-choice foundation is due to \cite{mcfadden1974}.
+The radiation model offers an opportunity-based alternative \cite{simini2012}. The
+latent-class segmentation uses $k$-means \cite{lloyd1982} with the silhouette criterion
+\cite{rousseeuw1987}. The competition discussion draws on the economics of spatial
+and platform competition \cite{hotelling1929,katz1985,rochet2003}.
+
+\subsection{Executive summary: contributions and answers}
+
+The contributions are four.
+
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{A diagnosis.} The Beijing system of May 2017 was oversupplied. We
+  establish this three ways --- a fleet estimate from occupancy, a zone-level
+  stockout diagnostic, and a cell-level simulation --- and it reframes Q2 from
+  ``prevent shortages'' to ``minimise the cost of restoring balance''.
+\item \textbf{One model, four uses.} A single estimated gravity model feeds the
+  rebalancing LP, the incentive supply curve and the parking forecast, so the four
+  answers are internally consistent.
+\item \textbf{An incentive supply curve.} Rather than assert an acceptance rate, we
+  derive the cost of voluntary relocation as a function of the reward, integrate it
+  over the observed detour distribution, and solve for the cost-minimising reward and
+  the resulting split between incentives and trucks.
+\item \textbf{Explicit uncertainty.} The unidentified quantities are bounded, not
+  assumed: the sampling rate is estimated and shown to be irrelevant to the fleet
+  size, the initial inventory is bracketed by two estimators, and every behavioural
+  parameter is swept in Section~\ref{sec:sens}.
+\end{enumerate}
+
+\tabref{tab:answers} states the answer to each question in one line.
+
+\begin{table}[htbp]
+\centering
+\caption[Answers at a glance]{Answers at a glance. All figures are for the typical weekday defined in
+Section~\ref{sec:data}; costs are in 2017 CNY.}
+\label{tab:answers}
+\small
+\begin{tabular}{@{}p{0.7cm}p{4.1cm}p{5.0cm}p{4.6cm}@{}}
+\toprule
+ & \textbf{Question} & \textbf{Model} & \textbf{Answer} \\
+\midrule
+Q1 & Behaviour & NHPP arrivals + singly-constrained gravity + speed-based duration & $\beta$ falls from 2.52 (midday) to 2.01 (morning); top-5 hit rate 0.40--0.48 \\
+Q2 & Rebalancing & Time-space network LP with truck flow conservation & 23{,}959 bikes/day, 5{,}441 truck-km, 3.48 CNY/bike; fleet $\alpha=0.8$ optimal \\
+Q3 & Incentives & Logit acceptance integrated over the detour distribution & Reward 1.20 CNY, 115{,}385 placements, 34.9\% cheaper than all-truck \\
+Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 626 fences at 450 m cover 75.3\%; median capacity 417 slots \\
+Q5 & Competition & Split-fleet simulation + externality accounting & No availability loss; capital, land and data are duplicated \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Roadmap}
+
+Section~\ref{sec:assume} states assumptions and notation.
+Section~\ref{sec:data} describes the data, the geohash decoding, the sampling-rate
+estimate and the fleet-size estimate.
+Section~\ref{sec:q1} builds and validates the behavioural model.
+Sections~\ref{sec:q2}--\ref{sec:q5} answer Q2--Q5.
+Section~\ref{sec:sens} reports sensitivity and the boundaries of validity, and
+Section~\ref{sec:eval} evaluates the work.

@@ -1,0 +1,79 @@
+% ============================ SUMMARY SHEET ============================
+\begin{center}
+{\Large\bfseries The Geometry of a Bicycle City: Behaviour, Rebalancing,\\ Incentives and Fences in Beijing's Dockless Bike-Share System}\\[6pt]
+{\large 2026 CQU Mathematical Contest in Modeling, Problem C}\\[10pt]
+\begin{tabular}{ll}
+\textbf{Team Control Number:} & \rule{3.2cm}{0.4pt} \\
+\textbf{Problem Chosen:} & C \\
+\end{tabular}
+\end{center}
+
+\vspace{4pt}
+\hrule
+\vspace{8pt}
+
+\begin{center}{\large\bfseries Summary}\end{center}
+
+Beijing's dockless bike-share system in May 2017 was not short of bicycles. It was
+short of bicycles \emph{in the right place at the right time}, and it did not know it.
+Using 3.21 million order records from 484,754 bicycles ridden by 349,241 users over
+fourteen days, this paper builds one behavioural model and uses it to answer four
+operational questions on a common footing.
+
+\textbf{The central finding is a diagnosis of oversupply.} We estimate the fleet at
+3.4$\times10^5$ bicycles serving 6.2 rides each per day --- a supply level at which
+the daily deficit appears as idle stock rather than unmet demand. At every
+resolution we examine, from 50 traffic zones down to 5,263 neighbourhood cells, no
+zone ever runs out of bicycles. Every subsequent question is therefore posed as a
+question of \emph{cost and placement}, not of shortage.
+
+\textbf{Behaviour (Q1).} Trips are modelled as a marked spatio-temporal point
+process: a non-homogeneous Poisson arrival stream, a singly-constrained gravity
+destination choice with a time-varying distance-decay parameter, and a
+speed-based duration model. The decay parameter is identified by maximum
+likelihood and ranges from 2.01 (morning, longer commute trips) to 2.52 (midday,
+short errands). On two held-out days the model attains a per-trip log-loss of
+3.24--3.52 against 3.28--3.65 for a distance-only benchmark and 7.9--8.2 for an
+attraction-only one, and it predicts the top-five destinations correctly 40--48\%
+of the time. A latent-class analysis separates five user types whose trip shares
+(51.8\% for the multi-purpose majority, 29.6\% for a heavy short-trip minority)
+explain the shape of the hourly profile.
+
+\textbf{Rebalancing (Q2).} A time-space network linear program moves bicycles
+between 50 zones with a fleet of trucks. Because no zone is ever dry, the binding
+constraint is not service but the cost of returning the system to a balanced state:
+the optimal plan moves 23,959 bicycles per day (1.12\% of all trips) over 5,441
+truck-kilometres, at 3.48 CNY per bicycle relocated. Because the trucks run at
+night, the plan is best read as an overnight reset. Rebalancing and fleet size are
+substitutes: shrinking the fleet to 80\% of its observed size while adding trucks
+lowers total daily cost from 427k to 390k CNY, an interior optimum.
+
+\textbf{Incentives (Q3).} We derive the supply curve of voluntary relocations from
+a logit acceptance model in which users trade a cash reward against a detour. The
+platform should offer a uniform reward of 1.20 CNY, buying 115,385 relocations
+(53.3\% of the peak-hour deficit) for 138k CNY and leaving the rest to trucks --- a
+34.9\% saving over moving every bicycle by truck. The limit is physical, not
+financial: within a 450 m detour only 71.9\% of the deficit has any qualifying
+trip nearby, and reaching 95\% requires a 1,025 m catchment.
+
+\textbf{E-fences (Q4).} Parking demand is the arrival process, whose peak we
+characterise by Monte Carlo. A greedy maximal-coverage layout of 626 fences at a
+450 m walking radius covers 75.3\% of arrivals; the required capacity is brutally
+skewed, with a median of 417 slots and a maximum of 4,827. Electronic fences
+without enforced caps merely formalise the bicycle mountain.
+
+\textbf{Competition (Q5).} Splitting the fleet among competing platforms does not
+reduce availability in a saturated system --- we verify this down to a 35\% share ---
+but it multiplies capital, trucks, land and, most damagingly, fragments the data
+needed to run any of the models above.
+
+The paper is explicit about what it cannot identify: the initial inventory of
+bicycles, the order sampling rate, and the true demand of users who never ride. Each
+is bounded rather than assumed away, and the sensitivity analysis reports how far
+the conclusions move when they are perturbed.
+
+\vfill
+\noindent\textbf{Keywords:} dockless bike sharing; gravity model; time-space network;
+linear programming; discrete choice; maximal coverage; Beijing.
+
+\newpage

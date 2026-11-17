@@ -1,0 +1,110 @@
+% ============================ AI USE REPORT ============================
+\section*{Report on Use of AI Tools}
+\addcontentsline{toc}{section}{Report on Use of AI Tools}
+
+\subsection*{Tool used}
+
+Claude Code (Anthropic), version 2.1.322, a command-line agentic coding assistant
+based on a large language model, used from 11 to 17 November 2026. The runtime
+reported the model identifier \texttt{deepseek-flash[1m]} for this revision. The tool
+operated in a local development environment with file-system access and the ability
+to execute Python and typeset \LaTeX{}.
+
+\subsection*{What the tool did}
+
+\begin{enumerate}[leftmargin=1.6em]
+\item \textbf{Data engineering.} Wrote and debugged the geohash decoder, the
+  cleaning pipeline that converts the 191 MB order file into a typed columnar store,
+  and the aggregation to cells, zones and time bands.
+\item \textbf{Modelling and computation.} Implemented the gravity model and its
+  maximum-likelihood estimator, the user segmentation, the time-space network linear
+  program (formulated by the authors, encoded with Gurobi's Python interface), the
+  discrete-event simulators, the logit incentive model, the maximal-coverage siting
+  heuristic and the Monte-Carlo capacity model.
+\item \textbf{Figures.} Produced all six figures as vector PDFs with matplotlib.
+\item \textbf{Text.} Drafted the \LaTeX{} manuscript, tables and reference list from
+  the computed results under the authors' direction and repeated review.
+\end{enumerate}
+
+\subsection*{Representative queries and outputs}
+
+The two examples below are from the validation stage and are reproduced from the
+working record; the outputs are archived in
+\texttt{data/runs/T005/dest\_validation.json} and
+\texttt{data/runs/T005/k\_stability.json}.
+
+\noindent\textbf{Example 1: held-out comparison of destination models.}
+\begin{quote}
+\small
+\textbf{Query.} Compare the gravity destination model with distance-only,
+attraction-only and uniform benchmarks on held-out days. Fit each model's own
+distance-decay parameter; report negative log-likelihood per trip and top-five hit
+rate; do not use AIC.
+
+\textbf{Output.} The script fitted five time bands and scored 555{,}675 held-out
+trips. Pooled negative log-likelihood was 3.4185 for the full model, 3.4881 for
+distance-only, 8.1124 for attraction-only and 8.5685 for uniform; pooled top-five
+hit rates were 0.4255, 0.3924, 0.0108 and 0.00095. Because the attraction field is a
+smoothed empirical density, the comparison uses out-of-sample loss rather than AIC.
+The full model reduced loss by 0.0696 nats (95\% bootstrap interval 0.0685--0.0705)
+and raised the top-five hit rate by 3.31 percentage points (3.23--3.38).
+\end{quote}
+
+\noindent\textbf{Example 2: stability of the user segmentation.}
+\begin{quote}
+\small
+\textbf{Query.} Test whether the published $k=5$ segmentation is stable. Run
+$k=3$--$6$ with at least 20 random initialisations per $k$; report pairwise adjusted
+Rand index (mean and minimum), silhouette score, cross-$k$ agreement, and agreement
+with the published labels.
+
+\textbf{Output.} The published $k=5$ labels were recovered at ARI 0.994, but across
+20 initialisations the pairwise ARI was 0.665 on average and 0.305 at worst. The
+best-run silhouette on a 40{,}000-user subsample was 0.256 at $k=5$ and 0.263 at
+$k=6$; the mean silhouette on a 10{,}000-user subsample was 0.251 at $k=5$ and 0.246
+at $k=6$. The output therefore did not support the claim that the segmentation is
+stable across random initialisations.
+\end{quote}
+
+\subsection*{What was verified, and how}
+
+\begin{itemize}[leftmargin=1.4em]
+\item \textbf{Result numbers are script-generated, with listed exceptions.} Most
+  values quoted in the text are printed by \texttt{95\_numbers.py} from the result
+  files under \texttt{data/}. The constant 343{,}638 is still hard-coded in four
+  computation scripts and two figure lines: \texttt{20\_q2\_diag.py} line 11,
+  used at line 26 for the initial inventory written to \texttt{q2\_state.npz};
+  \texttt{24\_cell\_curve.py} line 9, used at line 36 for the cell-level initial
+  inventory; \texttt{21\_q2\_opt.py} line 19, where it cancels algebraically;
+  \texttt{30\_q3\_incentive.py} line 16, where it is declared but unused; and
+  \texttt{90\_figs.py} lines 256 and 258, the cost curve. It is an input to the
+  Q2/Q5 runs, not a display value. The Q5 interpretation text in
+  \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. The next
+  revision will replace the constant with the revised fleet estimate and move
+  that text into the script.
+\item \textbf{The computation is reproducible in a fixed order, not by a single
+  command.} After the preparation scripts 00--04, the numbered stages are run from
+  the project root in the order 10 $\to$ 11 $\to$ 20 $\to$ 21 $\to$ \dots $\to$ 95;
+  later stages read the outputs of earlier ones (\texttt{q1\_params.json},
+  \texttt{q2\_state.npz}, and so on). \texttt{lib.py} resolves \texttt{data/} and
+  \texttt{figs/} relative to its own file, so the tree can be moved. The pipeline is
+  reproducible, but it requires the stated order and is not unattended.
+\item \textbf{References were checked against Crossref.} Every bibliographic entry
+  with a DOI was retrieved from the Crossref API and its authors, year, title,
+  journal, volume, issue and pages were compared with the entry. Entries without a
+  DOI are books, standards, datasets or news reports cited from their published
+  editions or URLs; the McFadden chapter was checked against the standard pagination
+  of \emph{Frontiers in Econometrics}.
+\item \textbf{External data were fetched from source.} The subway entrances used in
+  Q4/Q5 come from a dated Overpass API query (11 November 2026) whose raw response is
+  archived with the code, so the 1,097 entrances can be recounted.
+\item \textbf{The AI did not invent results.} Where a quantity was not identified by
+  the data --- the sampling rate, the initial inventory, the incentive parameters ---
+  the manuscript says so and reports a bound or a sweep rather than a point estimate.
+\end{itemize}
+
+\subsection*{What the tool did not do}
+
+The research questions, the modelling choices, the interpretation of the results and
+the final text were directed and reviewed by the authors. The authors are responsible
+for the content of the paper, including any error that survived review.

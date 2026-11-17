@@ -1,0 +1,1022 @@
+{
+ "task": "T003",
+ "title": "论文数字溯源台账",
+ "generated_at": "2026-11-17T22:27:40",
+ "scope": {
+  "files": [
+   "paper/summary.tex",
+   "paper/sec1_intro.tex",
+   "paper/sec2_assumptions.tex",
+   "paper/sec3_data.tex",
+   "paper/sec4_q1.tex",
+   "paper/sec5_q2.tex",
+   "paper/sec6_q3.tex",
+   "paper/sec7_q4.tex",
+   "paper/sec8_q5.tex",
+   "paper/sec9_sensitivity.tex",
+   "paper/sec10_evaluation.tex",
+   "paper/ai_report.tex"
+  ],
+  "n_files": 12,
+  "in_scope_tokens": 738,
+  "excluded_tokens": 206,
+  "exclusion_rules": [
+   {
+    "rule": "length_with_unit",
+    "count": 25,
+    "category": "带单位长度"
+   },
+   {
+    "rule": "\\\\cite[a-z]*\\{[^}]*\\}",
+    "count": 25,
+    "category": "交叉引用/标签"
+   },
+   {
+    "rule": "subscript_group",
+    "count": 24,
+    "category": "下标/上标索引"
+   },
+   {
+    "rule": "\\b(?:19|20)\\d{2}\\b",
+    "count": 20,
+    "category": "日历年"
+   },
+   {
+    "rule": "\\\\label\\{[^}]*\\}",
+    "count": 20,
+    "category": "交叉引用/标签"
+   },
+   {
+    "rule": "\\\\ref\\{[^}]*\\}",
+    "count": 15,
+    "category": "交叉引用/标签"
+   },
+   {
+    "rule": "\\b\\d{1,2}\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\b",
+    "count": 12,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "^\\s*\\d{2}\\s*--\\s*\\d{2}\\s*&",
+    "count": 10,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\d+(?:st|nd|rd|th)[- ]percentile",
+    "count": 9,
+    "category": "索引/百分位记号"
+   },
+   {
+    "rule": "\\\\includegraphics\\[[^]]*\\]",
+    "count": 6,
+    "category": "交叉引用/标签"
+   },
+   {
+    "rule": "\\d+\\s*,\\s*\\\\dots\\s*,\\s*\\d+",
+    "count": 6,
+    "category": "索引/百分位记号"
+   },
+   {
+    "rule": "\\\\(?:sub)*section\\*?\\{[^}]*\\}",
+    "count": 5,
+    "category": "交叉引用/标签"
+   },
+   {
+    "rule": "\\bbetween\\s+\\d{1,2}\\s+and\\s+\\d{1,2}\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\b",
+    "count": 4,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\b\\d{1,2}:\\d{2}\\b",
+    "count": 4,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\[\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*\\)",
+    "count": 3,
+    "category": "索引/百分位记号"
+   },
+   {
+    "rule": "\\\\\\\\\\s*\\[[^]]*\\]",
+    "count": 2,
+    "category": "排版参数"
+   },
+   {
+    "rule": "\\\\rule\\{[^}]*\\}\\{[^}]*\\}",
+    "count": 2,
+    "category": "排版参数"
+   },
+   {
+    "rule": "\\\\vspace\\*?\\{[^}]*\\}",
+    "count": 2,
+    "category": "排版参数"
+   },
+   {
+    "rule": "\\b\\d{1,2}\\s*--\\s*\\d{1,2}\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\b",
+    "count": 2,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\d{1,2}\\s*(?:a\\.m\\.|p\\.m\\.)",
+    "count": 2,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "(?<=\\bin )\\d{2}\\s*--\\s*\\d{2}\\b",
+    "count": 2,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\b\\d{2}\\s*--\\s*\\d{2}\\b(?=\\s+or\\b)",
+    "count": 2,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\bor\\s+\\d{2}\\s*--\\s*\\d{2}\\b",
+    "count": 2,
+    "category": "时间/日期标签"
+   },
+   {
+    "rule": "\\\\hspace\\*?\\{[^}]*\\}",
+    "count": 1,
+    "category": "排版参数"
+   },
+   {
+    "rule": "\\\\texttt\\{[^}]*\\.py\\}",
+    "count": 1,
+    "category": "代码文件名"
+   }
+  ],
+  "exclusion_rule_count": 25
+ },
+ "totals": {
+  "in_scope_tokens": 738,
+  "ok": 702,
+  "no_code": 22,
+  "conflict": 14,
+  "covered_ok": 674,
+  "should_cover": 710,
+  "coverage": 0.9492957746478873,
+  "coverage_all_in_scope": 0.9512195121951219,
+  "constants_excluded": 28,
+  "constant_filter": "status=ok and 结果文件:字段 contains one of formula constant, model variant definition, 表头, 定义值, 编码常数, 理论常数, geometry definition",
+  "denominator_reproduce": "len(data/runs/T003/tokens_raw.csv) - count(marker-matched ok rows); run python code/audit/t003_map.py",
+  "coverage_numerator_note": "coverage = covered_ok / should_cover = 674/710；covered_ok = ok − constants_excluded，不是 ok 本身。"
+ },
+ "resubmission": {
+  "round": 2,
+  "changes": [
+   "R1：C3a–C3d 从 conflict 降级为“标签歧义”（数值正确，行标签单数 fence 有歧义），conflict token 18→14、冲突记录 10→6。",
+   "R2：totals 增加 covered_ok；覆盖率分子明确为 ok−常数，不是 ok。",
+   "R3：C2 备注补总量反证（seg0 用户数×9.18×10 天 = 1,220.8 万单，为窗口全样本 246.6 万单的 4.95 倍）。"
+  ]
+ },
+ "per_file": {
+  "paper/summary.tex": {
+   "total": 42,
+   "ok": 42,
+   "no-code": 0,
+   "conflict": 0
+  },
+  "paper/sec1_intro.tex": {
+   "total": 20,
+   "ok": 20,
+   "no-code": 0,
+   "conflict": 0
+  },
+  "paper/sec2_assumptions.tex": {
+   "total": 18,
+   "ok": 15,
+   "no-code": 3,
+   "conflict": 0
+  },
+  "paper/sec3_data.tex": {
+   "total": 70,
+   "ok": 64,
+   "no-code": 3,
+   "conflict": 3
+  },
+  "paper/sec4_q1.tex": {
+   "total": 122,
+   "ok": 113,
+   "no-code": 2,
+   "conflict": 7
+  },
+  "paper/sec5_q2.tex": {
+   "total": 116,
+   "ok": 115,
+   "no-code": 1,
+   "conflict": 0
+  },
+  "paper/sec6_q3.tex": {
+   "total": 116,
+   "ok": 116,
+   "no-code": 0,
+   "conflict": 0
+  },
+  "paper/sec7_q4.tex": {
+   "total": 82,
+   "ok": 74,
+   "no-code": 7,
+   "conflict": 1
+  },
+  "paper/sec8_q5.tex": {
+   "total": 32,
+   "ok": 28,
+   "no-code": 4,
+   "conflict": 0
+  },
+  "paper/sec9_sensitivity.tex": {
+   "total": 105,
+   "ok": 101,
+   "no-code": 1,
+   "conflict": 3
+  },
+  "paper/sec10_evaluation.tex": {
+   "total": 13,
+   "ok": 12,
+   "no-code": 1,
+   "conflict": 0
+  },
+  "paper/ai_report.tex": {
+   "total": 2,
+   "ok": 2,
+   "no-code": 0,
+   "conflict": 0
+  }
+ },
+ "tables": {
+  "table1": {
+   "label": "tab:answers",
+   "tokens": 16,
+   "ok": 16,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 0,
+   "total_cells": 4,
+   "covered_cells": 4,
+   "cell_ok": 4,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table2": {
+   "label": "tab:notation",
+   "tokens": 2,
+   "ok": 2,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 0,
+   "total_cells": 2,
+   "covered_cells": 2,
+   "cell_ok": 2,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table3": {
+   "label": "tab:data",
+   "tokens": 18,
+   "ok": 17,
+   "no-code": 0,
+   "conflict": 1,
+   "caption_tokens": 0,
+   "total_cells": 18,
+   "covered_cells": 18,
+   "cell_ok": 17,
+   "cell_conflict": 1,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table4": {
+   "label": "tab:q1",
+   "tokens": 42,
+   "ok": 42,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 1,
+   "total_cells": 36,
+   "covered_cells": 36,
+   "cell_ok": 36,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table5": {
+   "label": "tab:seg",
+   "tokens": 30,
+   "ok": 25,
+   "no-code": 0,
+   "conflict": 5,
+   "caption_tokens": 0,
+   "total_cells": 30,
+   "covered_cells": 30,
+   "cell_ok": 25,
+   "cell_conflict": 5,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table6": {
+   "label": "tab:q2",
+   "tokens": 64,
+   "ok": 64,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 1,
+   "total_cells": 63,
+   "covered_cells": 63,
+   "cell_ok": 63,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table7": {
+   "label": "tab:supply",
+   "tokens": 47,
+   "ok": 47,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 3,
+   "total_cells": 44,
+   "covered_cells": 44,
+   "cell_ok": 44,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table8": {
+   "label": "tab:fence",
+   "tokens": 18,
+   "ok": 18,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 0,
+   "total_cells": 18,
+   "covered_cells": 18,
+   "cell_ok": 18,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  },
+  "table9": {
+   "label": "tab:q3sens",
+   "tokens": 35,
+   "ok": 35,
+   "no-code": 0,
+   "conflict": 0,
+   "caption_tokens": 1,
+   "total_cells": 34,
+   "covered_cells": 34,
+   "cell_ok": 34,
+   "cell_conflict": 0,
+   "cell_no_code": 0,
+   "cell_coverage": 1.0
+  }
+ },
+ "conflicts": [
+  {
+   "id": "C1",
+   "quantity": "2017-05-16 车队估计 F=T/μ（同一日同一量）",
+   "a_coord": "paper/sec3_data.tex:85",
+   "a_value": "343,638",
+   "b_coord": "paper/sec9_sensitivity.tex:18",
+   "b_value": "343,605",
+   "note": "两处相差 33 辆。来源分别是 code/02_recon_spatial.py:56 的粗过滤（start/end lat>35, lon>110；F=343,637.986）与 code/60_sensitivity.py:29 的 lib 过滤（39.4<lat<40.4, 115.8<lon<117.0；343,604.83）。相差的 12 条边缘记录是过滤口径差异，不是计算错误；论文两值并存的写法需要统一。",
+   "occurrence_ids": [
+    "N0109",
+    "N0115",
+    "N0143",
+    "N0563",
+    "N0628",
+    "N0648",
+    "N0716"
+   ],
+   "n_occurrence_tokens": 7
+  },
+  {
+   "id": "C2a",
+   "quantity": "Regular multi-purpose 每用户每日出行次数（表 5 Trips per day）",
+   "a_coord": "paper/sec4_q1.tex:177",
+   "a_value": "9.18",
+   "b_coord": "data/q1_segments.csv:seg=0.trips",
+   "b_value": "0.92（= 9.1797 / 10 天）",
+   "note": "code/11_q1_extra.py:72-78 的 feat.trips = 用户在该 10 天窗口内的总出行次数（g.size()），没有除以天数；表头却写 Trips per day。窗口为 2017-05-10 至 05-19 共 10 个日历日（9 天有数据），故每日应为 0.92，论文值高 10 倍。正文 sec4_q1.tex:187/190 的“9.2 times a day”/“14 times a day”是同一错误的复述。 总量反证（R3）：seg0 有 132,984 名用户，若真按 9.18 单/天计，10 天为 132,984×9.18×10=1,220.8 万单，是 5/10–05/19 窗口全样本 246.6 万单的 4.95 倍；user_features 的每用户 10 天 9.36 单（日均 0.94）与“10 天累计”口径一致。",
+   "occurrence_ids": [
+    "N0238",
+    "N0265"
+   ],
+   "n_occurrence_tokens": 2
+  },
+  {
+   "id": "C2b",
+   "quantity": "Heavy short-trip 每用户每日出行次数（表 5 Trips per day）",
+   "a_coord": "paper/sec4_q1.tex:178",
+   "a_value": "13.98",
+   "b_coord": "data/q1_segments.csv:seg=3.trips",
+   "b_value": "1.40（= 13.9792 / 10 天）",
+   "note": "code/11_q1_extra.py:72-78 的 feat.trips = 用户在该 10 天窗口内的总出行次数（g.size()），没有除以天数；表头却写 Trips per day。窗口为 2017-05-10 至 05-19 共 10 个日历日（9 天有数据），故每日应为 1.40，论文值高 10 倍。正文 sec4_q1.tex:187/190 的“9.2 times a day”/“14 times a day”是同一错误的复述。 总量反证（R3）：seg0 有 132,984 名用户，若真按 9.18 单/天计，10 天为 132,984×9.18×10=1,220.8 万单，是 5/10–05/19 窗口全样本 246.6 万单的 4.95 倍；user_features 的每用户 10 天 9.36 单（日均 0.94）与“10 天累计”口径一致。",
+   "occurrence_ids": [
+    "N0244",
+    "N0267"
+   ],
+   "n_occurrence_tokens": 2
+  },
+  {
+   "id": "C2c",
+   "quantity": "Commuter 每用户每日出行次数（表 5 Trips per day）",
+   "a_coord": "paper/sec4_q1.tex:179",
+   "a_value": "3.71",
+   "b_coord": "data/q1_segments.csv:seg=2.trips",
+   "b_value": "0.37（= 3.7055 / 10 天）",
+   "note": "code/11_q1_extra.py:72-78 的 feat.trips = 用户在该 10 天窗口内的总出行次数（g.size()），没有除以天数；表头却写 Trips per day。窗口为 2017-05-10 至 05-19 共 10 个日历日（9 天有数据），故每日应为 0.37，论文值高 10 倍。 总量反证（R3）：seg0 有 132,984 名用户，若真按 9.18 单/天计，10 天为 132,984×9.18×10=1,220.8 万单，是 5/10–05/19 窗口全样本 246.6 万单的 4.95 倍；user_features 的每用户 10 天 9.36 单（日均 0.94）与“10 天累计”口径一致。",
+   "occurrence_ids": [
+    "N0250"
+   ],
+   "n_occurrence_tokens": 1
+  },
+  {
+   "id": "C2d",
+   "quantity": "Low frequency 每用户每日出行次数（表 5 Trips per day）",
+   "a_coord": "paper/sec4_q1.tex:180",
+   "a_value": "2.48",
+   "b_coord": "data/q1_segments.csv:seg=1.trips",
+   "b_value": "0.25（= 2.4813 / 10 天）",
+   "note": "code/11_q1_extra.py:72-78 的 feat.trips = 用户在该 10 天窗口内的总出行次数（g.size()），没有除以天数；表头却写 Trips per day。窗口为 2017-05-10 至 05-19 共 10 个日历日（9 天有数据），故每日应为 0.25，论文值高 10 倍。 总量反证（R3）：seg0 有 132,984 名用户，若真按 9.18 单/天计，10 天为 132,984×9.18×10=1,220.8 万单，是 5/10–05/19 窗口全样本 246.6 万单的 4.95 倍；user_features 的每用户 10 天 9.36 单（日均 0.94）与“10 天累计”口径一致。",
+   "occurrence_ids": [
+    "N0256"
+   ],
+   "n_occurrence_tokens": 1
+  },
+  {
+   "id": "C2e",
+   "quantity": "Weekend / leisure 每用户每日出行次数（表 5 Trips per day）",
+   "a_coord": "paper/sec4_q1.tex:181",
+   "a_value": "2.25",
+   "b_coord": "data/q1_segments.csv:seg=4.trips",
+   "b_value": "0.23（= 2.2541 / 10 天）",
+   "note": "code/11_q1_extra.py:72-78 的 feat.trips = 用户在该 10 天窗口内的总出行次数（g.size()），没有除以天数；表头却写 Trips per day。窗口为 2017-05-10 至 05-19 共 10 个日历日（9 天有数据），故每日应为 0.23，论文值高 10 倍。 总量反证（R3）：seg0 有 132,984 名用户，若真按 9.18 单/天计，10 天为 132,984×9.18×10=1,220.8 万单，是 5/10–05/19 窗口全样本 246.6 万单的 4.95 倍；user_features 的每用户 10 天 9.36 单（日均 0.94）与“10 天累计”口径一致。",
+   "occurrence_ids": [
+    "N0262"
+   ],
+   "n_occurrence_tokens": 1
+  }
+ ],
+ "label_ambiguities": [
+  {
+   "id": "L1",
+   "coord": "paper/sec8_q5.tex:45",
+   "value": "460",
+   "field": "data/q5_summary.json:capacity_duplication.median.2[0]=230.05",
+   "product": "2×230.05=460.1",
+   "row": "表 8 Median fence · 2 平台",
+   "note": "R1 验收：C3 降级为标签歧义，不是数值冲突。q5_summary 的 230.05/172.0/2,451/1,656.05 是单平台容量，表内 460/516/4,902/4,968 是同一地点跨平台总槽位，增量 +10.3%/+23.7% 与 +1.6%/+2.9% 正是用总量算的；正文“three platforms need 24% more parking space”也是总空间口径。建议行标签改 “Total slots per fence location”或在表注说明。"
+  },
+  {
+   "id": "L2",
+   "coord": "paper/sec8_q5.tex:45",
+   "value": "516",
+   "field": "data/q5_summary.json:capacity_duplication.median.3[0]=172.0",
+   "product": "3×172.0=516.0",
+   "row": "表 8 Median fence · 3 平台",
+   "note": "R1 验收：C3 降级为标签歧义，不是数值冲突。q5_summary 的 230.05/172.0/2,451/1,656.05 是单平台容量，表内 460/516/4,902/4,968 是同一地点跨平台总槽位，增量 +10.3%/+23.7% 与 +1.6%/+2.9% 正是用总量算的；正文“three platforms need 24% more parking space”也是总空间口径。建议行标签改 “Total slots per fence location”或在表注说明。"
+  },
+  {
+   "id": "L3",
+   "coord": "paper/sec8_q5.tex:46",
+   "value": "4,902",
+   "field": "data/q5_summary.json:capacity_duplication.largest.2[0]=2,451",
+   "product": "2×2,451=4,902",
+   "row": "表 8 Largest fence · 2 平台",
+   "note": "R1 验收：C3 降级为标签歧义，不是数值冲突。q5_summary 的 230.05/172.0/2,451/1,656.05 是单平台容量，表内 460/516/4,902/4,968 是同一地点跨平台总槽位，增量 +10.3%/+23.7% 与 +1.6%/+2.9% 正是用总量算的；正文“three platforms need 24% more parking space”也是总空间口径。建议行标签改 “Total slots per fence location”或在表注说明。"
+  },
+  {
+   "id": "L4",
+   "coord": "paper/sec8_q5.tex:46",
+   "value": "4,968",
+   "field": "data/q5_summary.json:capacity_duplication.largest.3[0]=1,656.05",
+   "product": "3×1,656.05=4,968.15",
+   "row": "表 8 Largest fence · 3 平台",
+   "note": "R1 验收：C3 降级为标签歧义，不是数值冲突。q5_summary 的 230.05/172.0/2,451/1,656.05 是单平台容量，表内 460/516/4,902/4,968 是同一地点跨平台总槽位，增量 +10.3%/+23.7% 与 +1.6%/+2.9% 正是用总量算的；正文“three platforms need 24% more parking space”也是总空间口径。建议行标签改 “Total slots per fence location”或在表注说明。"
+  }
+ ],
+ "no_code": [
+  {
+   "id": "N0063",
+   "coord": "paper/sec2_assumptions.tex:13",
+   "token": "8.2",
+   "meaning": "日订单量变异系数（%）",
+   "source": "—",
+   "result": "无脚本产出；01_recon.py:23-26 只打印逐日量",
+   "note": "可由 trips.parquet 逐日量复算，但无代码行/结果字段",
+   "clue": null
+  },
+  {
+   "id": "N0066",
+   "coord": "paper/sec2_assumptions.tex:19",
+   "token": "0.83",
+   "meaning": "15 分钟计数方差均值比中位数",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": "K8"
+  },
+  {
+   "id": "N0068",
+   "coord": "paper/sec2_assumptions.tex:21",
+   "token": "2.04",
+   "meaning": "合并后方差均值比",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": "K8"
+  },
+  {
+   "id": "N0085",
+   "coord": "paper/sec3_data.tex:15",
+   "token": "99.6",
+   "meaning": "wx4 前缀记录占比（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "可由 trips.parquet geohash 前缀复算",
+   "clue": null
+  },
+  {
+   "id": "N0123",
+   "coord": "paper/sec3_data.tex:107",
+   "token": "95.8",
+   "meaning": "格点覆盖典型日出行份额（%）",
+   "source": "code/10_q1_model.py:28",
+   "result": "打印 both-in share（全 14 天）=95.6%",
+   "note": "无典型日口径的落盘字段；全 14 天 95.6%、典型日复算 94.8%，均非论文 95.8%",
+   "clue": null
+  },
+  {
+   "id": "N0126",
+   "coord": "paper/sec3_data.tex:113",
+   "token": "4",
+   "meaning": "小区尺度（km）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "由 1,247 km²/50 得 ≈5 km；论文写 4 km",
+   "clue": "K8"
+  },
+  {
+   "id": "N0162",
+   "coord": "paper/sec4_q1.tex:57",
+   "token": "0.3",
+   "meaning": "最忙时段零吸引格点份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0163",
+   "coord": "paper/sec4_q1.tex:57",
+   "token": "30.6",
+   "meaning": "夜间零吸引格点份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0278",
+   "coord": "paper/sec5_q2.tex:20",
+   "token": "172",
+   "meaning": "5 分钟/格点下干涸格点数",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": "K8"
+  },
+  {
+   "id": "N0541",
+   "coord": "paper/sec7_q4.tex:58",
+   "token": "700",
+   "meaning": "可接受的骑行距离（m）",
+   "source": "—",
+   "result": "叙述性假设",
+   "note": "无来源，修辞性距离",
+   "clue": null
+  },
+  {
+   "id": "N0560",
+   "coord": "paper/sec7_q4.tex:83",
+   "token": "67",
+   "meaning": "足球场数",
+   "source": "—",
+   "result": "48.22/0.72≈67",
+   "note": "无脚本；依赖足球场面积假设",
+   "clue": null
+  },
+  {
+   "id": "N0561",
+   "coord": "paper/sec7_q4.tex:84",
+   "token": "0.7",
+   "meaning": "最大围栏用地（公顷）",
+   "source": "—",
+   "result": "4,827×1.4/10,000=0.676",
+   "note": "无脚本，paper-side arithmetic",
+   "clue": null
+  },
+  {
+   "id": "N0572",
+   "coord": "paper/sec7_q4.tex:94",
+   "token": "5{,}000",
+   "meaning": "单点集中容量（槽）",
+   "source": "—",
+   "result": "叙述性假设",
+   "note": "无来源，修辞值",
+   "clue": null
+  },
+  {
+   "id": "N0573",
+   "coord": "paper/sec7_q4.tex:96",
+   "token": "10",
+   "meaning": "最忙格点份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0574",
+   "coord": "paper/sec7_q4.tex:97",
+   "token": "40",
+   "meaning": "最忙 10% 格点承接份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0577",
+   "coord": "paper/sec7_q4.tex:102",
+   "token": "89.8",
+   "meaning": "超过 150 槽的围栏份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "可由 q4_frontier.npz:caps 复算，但无代码行",
+   "clue": null
+  },
+  {
+   "id": "N0612",
+   "coord": "paper/sec8_q5.tex:66",
+   "token": "4.2",
+   "meaning": "中位格点标准误（辆）",
+   "source": "—",
+   "result": "sqrt(17.9)=4.23",
+   "note": "解析推导，无脚本产出",
+   "clue": "K8"
+  },
+  {
+   "id": "N0613",
+   "coord": "paper/sec8_q5.tex:67",
+   "token": "7.3",
+   "meaning": "1/3 份额标准误（辆）",
+   "source": "—",
+   "result": "sqrt(3×17.9)=7.33",
+   "note": "解析推导，无脚本产出",
+   "clue": "K8"
+  },
+  {
+   "id": "N0617",
+   "coord": "paper/sec8_q5.tex:116",
+   "token": "10",
+   "meaning": "最忙格点份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0618",
+   "coord": "paper/sec8_q5.tex:116",
+   "token": "40",
+   "meaning": "承接出行份额（%）",
+   "source": "—",
+   "result": "无脚本产出",
+   "note": "疑似 no-code（任务单线索）",
+   "clue": null
+  },
+  {
+   "id": "N0722",
+   "coord": "paper/sec9_sensitivity.tex:122",
+   "token": "1{,}200",
+   "meaning": "研究区面积（km²）",
+   "source": "—",
+   "result": "5,263×0.556×0.426≈1,247",
+   "note": "无脚本产出；由格点数与格点尺寸可复算",
+   "clue": "K8"
+  },
+  {
+   "id": "N0729",
+   "coord": "paper/sec10_evaluation.tex:61",
+   "token": "0.6",
+   "meaning": "假设失效时的奖励阈值（CNY）",
+   "source": "—",
+   "result": "外推情景，无脚本产出",
+   "note": "κ<1.0 未在表 9 扫描，无法核对",
+   "clue": "K1"
+  }
+ ],
+ "no_code_summary": {
+  "total": 22,
+  "mapped_to_clue8": 7,
+  "outside_known_clues": 14,
+  "note": "线索 1–7 是口径/冲突/无数值文本断言；线索 8 才是 no-code 集合。其余 no-code 行为本次新增发现：sec2:13、sec3:15、sec3:107（95.8）、sec4:57（0.3/30.6）、sec7:58/83/84/94/96/97/102、sec8:116（10/40）。"
+ },
+ "clues": [
+  {
+   "id": "K1",
+   "title": "§10.3 的节省/覆盖结论与表 9 不一致",
+   "verdict": "部分成立",
+   "evidence": "表 9 的 saving 是 1−total/all-truck（口径 A），§10.3 的“cover less than a third of the deficit”是覆盖份额（口径 B），两者不可直接相减比较；可比处（κ=1.0 时 saving=23.8%）与表 9 一致。表 9 的 κ=1.0（恰为基线的一半）行最优奖励仍为 1.20 CNY，说明 §10.3 的“低于 0.6 CNY”只可能发生在 κ<1.0；该区间没有已扫描结果（表 9 只扫 κ=1.0/3.0，基线 2.0），0.6 CNY 无法核对。",
+   "coords": [
+    "paper/sec10_evaluation.tex:61",
+    "paper/sec9_sensitivity.tex:55-61"
+   ],
+   "row_count": 35,
+   "row_ids": [
+    "N0729",
+    "N0658",
+    "N0659",
+    "N0660",
+    "N0661",
+    "N0662",
+    "N0663",
+    "N0664",
+    "N0665",
+    "N0666",
+    "N0667",
+    "N0668",
+    "N0669",
+    "N0670",
+    "N0671",
+    "N0672",
+    "N0673",
+    "N0674",
+    "N0675",
+    "N0676",
+    "N0677",
+    "N0678",
+    "N0679",
+    "N0680",
+    "N0681",
+    "N0682",
+    "N0683",
+    "N0684",
+    "N0685",
+    "N0686",
+    "N0687",
+    "N0688",
+    "N0689",
+    "N0690",
+    "N0691"
+   ],
+   "no_code_ids": [
+    "N0729"
+   ],
+   "no_code_count": 1
+  },
+  {
+   "id": "K2",
+   "title": "表 5 的 Trips per day 单位错误",
+   "verdict": "确认",
+   "evidence": "q1_segments.csv 的 trips 是 10 天窗口内每用户总出行次数，未除以 10；表头写 per day，正文“9.2 times a day”/“14 times a day”沿用同一错误。逐行见 C2a–C2e。",
+   "coords": [
+    "paper/sec4_q1.tex:177",
+    "paper/sec4_q1.tex:178",
+    "paper/sec4_q1.tex:179",
+    "paper/sec4_q1.tex:180",
+    "paper/sec4_q1.tex:181",
+    "paper/sec4_q1.tex:187",
+    "paper/sec4_q1.tex:190"
+   ],
+   "row_count": 33,
+   "row_ids": [
+    "N0235",
+    "N0236",
+    "N0237",
+    "N0238",
+    "N0239",
+    "N0240",
+    "N0241",
+    "N0242",
+    "N0243",
+    "N0244",
+    "N0245",
+    "N0246",
+    "N0247",
+    "N0248",
+    "N0249",
+    "N0250",
+    "N0251",
+    "N0252",
+    "N0253",
+    "N0254",
+    "N0255",
+    "N0256",
+    "N0257",
+    "N0258",
+    "N0259",
+    "N0260",
+    "N0261",
+    "N0262",
+    "N0263",
+    "N0264",
+    "N0265",
+    "N0267",
+    "N0268"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K3",
+   "title": "K=60 与 K=40 是否矛盾",
+   "verdict": "不成立",
+   "evidence": "Q=40 是单车容量（code/21_q2_opt.py:20 Q_TRUCK=40，sec2_assumptions.tex:41 Q=40），K=60 是卡车数量（sec5_q2.tex:104 表 6 行，code/21_q2_opt.py:145-148）。两者量纲不同，不构成冲突。",
+   "coords": [
+    "paper/sec2_assumptions.tex:41",
+    "paper/sec5_q2.tex:104",
+    "paper/sec5_q2.tex:76"
+   ],
+   "row_count": 7,
+   "row_ids": [
+    "N0069",
+    "N0314",
+    "N0315",
+    "N0316",
+    "N0317",
+    "N0318",
+    "N0291"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K4",
+   "title": "图 4(c) 成功率与正文 99.96%/98.4% 是否矛盾",
+   "verdict": "不成立",
+   "evidence": "1−816.42/2,143,414=99.962%；1−34,492.53/2,143,414=98.391%。正文两个服务率与 q2_results.json 的 unmet 完全一致（sec5_q2.tex:136）。",
+   "coords": [
+    "paper/sec5_q2.tex:136",
+    "paper/sec5_q2.tex:108",
+    "paper/sec5_q2.tex:110"
+   ],
+   "row_count": 17,
+   "row_ids": [
+    "N0372",
+    "N0373",
+    "N0374",
+    "N0335",
+    "N0336",
+    "N0337",
+    "N0338",
+    "N0339",
+    "N0340",
+    "N0341",
+    "N0349",
+    "N0350",
+    "N0351",
+    "N0352",
+    "N0353",
+    "N0354",
+    "N0355"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K5",
+   "title": "摘要 426k 与 427k 是否两值并存",
+   "verdict": "不成立",
+   "evidence": "摘要只有 427k（summary.tex:49）；未取整值为 343,638+83,325.24=426,963.24，四舍五入即 427k。论文没有 426k。",
+   "coords": [
+    "paper/summary.tex:49"
+   ],
+   "row_count": 2,
+   "row_ids": [
+    "N0026",
+    "N0027"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K6",
+   "title": "“ten usable days / 十个可用日”是否成立",
+   "verdict": "部分成立",
+   "evidence": "抽样窗口确为 10 个日历日（ALL_DAYS=2017-05-10 至 05-19，code/lib.py:21），但 5 月 17 日无任何订单，实际有数据的只有 9 天（trips.parquet 逐日计数；sec3_data.tex:131 的 14 是10–24 日整窗的有数据日数）。写成 ten usable days 不准确，应写 ten-day window, nine days with data。",
+   "coords": [
+    "paper/sec4_q1.tex:158",
+    "paper/sec9_sensitivity.tex:131",
+    "paper/sec3_data.tex:131"
+   ],
+   "row_count": 1,
+   "row_ids": [
+    "N0132"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K7",
+   "title": "通勤高峰份额、骑行时长、聚类稳定性",
+   "verdict": "部分成立",
+   "evidence": "高峰份额 91%（sec4_q1.tex:192）有 q1_segments.csv seg2.peak=0.9104 支撑，成立；骑行时长 5.9/3.0/11.9 min（sec4_q1.tex:130）由 code/11_q1_extra.py:88-90 打印，但未落盘到结果文件；“stable across random initialisations”（sec4_q1.tex:158）没有任何已保存的数值证据。",
+   "coords": [
+    "paper/sec4_q1.tex:192",
+    "paper/sec4_q1.tex:130",
+    "paper/sec4_q1.tex:158"
+   ],
+   "row_count": 5,
+   "row_ids": [
+    "N0269",
+    "N0270",
+    "N0225",
+    "N0226",
+    "N0227"
+   ],
+   "no_code_ids": [],
+   "no_code_count": 0
+  },
+  {
+   "id": "K8",
+   "title": "已知 no-code 集合是否确实无代码/无结果字段",
+   "verdict": "确认",
+   "evidence": "0.83 与 2.04（sec2:19/21，15 分钟计数方差均值比）、172 个干涸格点（sec5:20）、Q5 标准误 4.2/7.3（sec8:66/67）、1,200 km²（sec9:122）、约 4 km 小区尺度（sec3:113）在现有 code/ 与 data/ 中均无产出脚本或结果字段。",
+   "coords": [
+    "paper/sec2_assumptions.tex:19",
+    "paper/sec2_assumptions.tex:21",
+    "paper/sec5_q2.tex:20",
+    "paper/sec8_q5.tex:66",
+    "paper/sec8_q5.tex:67",
+    "paper/sec9_sensitivity.tex:122",
+    "paper/sec3_data.tex:113"
+   ],
+   "row_count": 12,
+   "row_ids": [
+    "N0065",
+    "N0066",
+    "N0068",
+    "N0278",
+    "N0279",
+    "N0611",
+    "N0612",
+    "N0613",
+    "N0722",
+    "N0124",
+    "N0125",
+    "N0126"
+   ],
+   "no_code_ids": [
+    "N0066",
+    "N0068",
+    "N0126",
+    "N0278",
+    "N0612",
+    "N0613",
+    "N0722"
+   ],
+   "no_code_count": 7
+  }
+ ],
+ "scope_notes": [
+  "references.tex 不纳入扫描：其年份/卷号按任务约定整体排除。",
+  "表格单元格总数只统计含至少一个数值 token 的单元格；纯标签单元格不计。",
+  "同一单元格内的多个 token（如 Top-5 的 0.476 / 0.401）计为一个 cell、两个 token。"
+ ],
+ "paper_integrity": {
+  "baseline": "data\\runs\\T001\\fingerprint_start.json",
+  "changed": [],
+  "added": [],
+  "removed": [],
+  "unchanged": true,
+  "n_files": 57
+ },
+ "reproduce": {
+  "scan": "python code/audit/t003_numbers.py",
+  "map": "python code/audit/t003_map.py",
+  "scan_outputs": [
+   "data/runs/T003/tokens_raw.csv",
+   "data/runs/T003/exclusions.csv",
+   "data/runs/T003/table_cells.csv",
+   "data/runs/T003/scan_summary.json"
+  ]
+ },
+ "outputs": {
+  "numbers_csv": "交付/T003_numbers.csv",
+  "delivery_json": "交付/T003_delivery.json",
+  "paper_hashes": "data/runs/T003/paper_hashes.json"
+ },
+ "method_notes": [
+  "扫描对象：paper/ 下 12 个文件（summary、sec1–sec10、ai_report）；数字 token 由 code/audit/t003_numbers.py 的正则提取，覆盖科学计数法、1{,}234 千分位、维度对（如 153×153）与普通小数；逐条排除规则及计数见 scope.exclusion_rules。",
+  "一个数值 token 一行；表格单元格按 (行号, 第几个 &) 归组，同一单元格内的多个 token（如 Top-5 的 0.476 / 0.401）计为一个 cell、两个 token。",
+  "ok = 脚本显式计算/落盘/打印，或为有明确出处的定义参数/公式常数；no-code = 现有 code/ 与 data/ 无产出脚本或结果字段；conflict = 同一量在论文/结果字段中有两个可指认且不兼容的值（数值或口径）；标签歧义单列 label_ambiguities，不计入 conflict。",
+  "constants_excluded 仅用于覆盖率分母：把结果字段为 formula constant / model variant definition / 表头 / 定义值 / 编码常数 / 理论常数 / geometry definition 的 ok 行视为无需溯源的常数；coverage_all_in_scope 为不过滤常数的覆盖率。",
+  "冲突不改论文、不判定正确值；只登记两坐标与两值，交由验收方决定。"
+ ]
+}

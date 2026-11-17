@@ -1,0 +1,102 @@
+% ======================= 2. ASSUMPTIONS AND NOTATION =======================
+\section{Assumptions and Notation}\label{sec:assume}
+
+Every simplification below is stated with its rationale and with the direction in
+which it pushes the answer, so that a reader can discount the results accordingly.
+The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
+
+\subsection{Assumptions}
+
+\begin{enumerate}[label=\textbf{A\arabic*.},leftmargin=2.4em]
+\item \emph{Stationary weekday regime.} The seven weekdays between 10 and 19 May
+  that are fully covered by the sample are exchangeable draws from one daily regime.
+  Weather, holidays and price promotions are not modelled. The observed daily volume
+  varies with a coefficient of variation of 8.2\% around its mean (\figref{fig:data}a),
+  so any single-day quantity in this paper carries that order of sampling noise.
+
+\item \emph{Poisson trip generation.} Departures from cell $i$ in time interval
+  $t$ are Poisson with rate $\lambda_{it}$, constant on 15-minute intervals. This is
+  the standard assumption for individual trip-making and it is adequate here: within a
+  cell, the variance-to-mean ratio of 15-minute counts has a median of 0.83 across
+  cells, against 1.0 for a Poisson process. Pooled across cells the ratio rises to
+  2.04, which reflects the heterogeneity of the rates, not a failure of the model.
+
+\item \emph{Supply-independent destination choice.} A rider chooses a destination
+  without regard to whether a bicycle will be available there. This is the usual
+  assumption of trip-distribution modelling, and here it is also empirically safe:
+  the zone-level simulation of Section~\ref{sec:q2} finds no stockout, so censoring
+  is negligible at the scale at which the model is used.
+
+\item \emph{Endogenous attraction.} The attraction of a destination is measured by
+  the arrivals it actually receives. The model is therefore a description of an
+  equilibrium, not a structural model of land use: it may be used to predict how
+  flows respond to \emph{distance} and to \emph{time of day}, but not to predict the
+  consequence of changing what is built at a destination. We flag this again in
+  Section~\ref{sec:eval}.
+
+\item \emph{Homogeneous, reliable bicycles.} All bicycles in service are usable; a
+  bicycle identifier persists until the bicycle is retired. The dataset reports a
+  bicycle type, which is constant per bicycle and therefore carries no information
+  for our purposes.
+
+\item \emph{Truck operations.} A truck carries at most $Q=40$ bicycles, travels one
+  inter-zone leg per hour, and unloads entirely at its destination. Loading and
+  unloading are assumed to fit inside the same hour. Trucks may serve only the eight
+  nearest zones within 9 km, a restriction that keeps the arc set to 290 and matches
+  the range of an overnight shift.
+
+\item \emph{Utility of accepting an incentive.} A rider offered $r$ CNY to end at a
+  different cell evaluates $U = \kappa r - \rho\,\tau(d) + \epsilon$, with $\tau(d)$
+  the extra travel and walking time for a detour $d$, and $\epsilon$ logistic. The
+  parameters $\kappa,\rho$ and the inertia constant $c_0$ are not identified from our
+  data: the order file contains no reward records, although Mobike had been operating
+  red-envelope (hongbao) bikes since March 2017 \cite{technode2017,sixthtone2017}.
+  They are therefore treated as behavioural parameters and swept in
+  Section~\ref{sec:sens}.
+
+\item \emph{Parking demand equals arrivals.} A parked bicycle occupies space where
+  its trip ended. Parking demand at a location is therefore the arrival process,
+  which is observable; the duration of occupancy does not matter for capacity,
+  because a dockless bicycle stays until someone rides it away.
+
+\item \emph{Cost parameters.} A bicycle costs 1.0 CNY per day to own and maintain
+  (about 1{,}000 CNY over a three-year life); a truck costs 600 CNY per day to own,
+  insure and staff, and 6 CNY per kilometre to run. These are planning assumptions
+  of the right order for 2017 Beijing; the truck-kilometre price is swept from 3 to
+  12 CNY in Section~\ref{sec:sens}, and all costs are linear in the others.
+\end{enumerate}
+
+\subsection{Notation}
+
+\tabref{tab:notation} lists the symbols that recur. Two index sets run in parallel ---
+cells $i,j$ for behaviour, parking and incentives, and zones $z$ for rebalancing ---
+because the two models operate at different resolutions; where a quantity exists at
+both, the subscript makes the resolution explicit. Time is indexed by the hour $t$ in
+the optimisation and grouped into five bands $h$ where the decay is estimated, since
+the behaviour model needs a rate at 15-minute resolution but a distance decay only at
+the resolution of the daily rhythm.
+
+\begin{table}[htbp]
+\centering
+\caption[Principal symbols]{Principal symbols. Indices are suppressed where the meaning is clear.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}ll@{\hspace{1.2cm}}ll@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$i,j$ & origin, destination cell & $\beta_h$ & distance decay in time band $h$ \\
+$z$ & traffic zone ($Z=50$) & $d_{ij}$ & great-circle distance (km) \\
+$t$ & hour ($T=24$) & $A_j$ & attraction of destination $j$ \\
+$h$ & time band (five per day) & $P(j\mid i,h)$ & destination probability \\
+$\lambda_{it}$ & departure rate (trips/h) & $n_{ij}$ & observed OD count \\
+$p$ & order sampling rate & $\mu$ & rides per bicycle per day \\
+$F$ & fleet size (bicycles) & $D$ & distinct bicycles observed \\
+$I_{zt}$ & inventory of zone $z$ at $t$ & $u_{zt}$ & unmet departures \\
+$x_{ijt}$ & bicycles moved $i\to j$ in $t$ & $m_{ijt}$ & trucks moved $i\to j$ in $t$ \\
+$K$ & trucks in service & $\alpha$ & fleet size relative to observed \\
+$q(r)$ & placements bought by reward $r$ & $r$ & reward (CNY) \\
+$R$ & catchment radius (km) & $w_c$ & parking capacity (slots) \\
+\bottomrule
+\end{tabular}
+\end{table}

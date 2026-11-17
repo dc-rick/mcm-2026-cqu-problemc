@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T005 验收记录 · Q1 验证补齐</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+code,pre{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace}
+code{padding:1px 4px;word-break:break-all}
+pre{padding:10px 12px;overflow-x:auto;line-height:1.5}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T005 验收记录 · Q1 验证补齐</h1>
+<p class="meta">验收：2026-11-17　·　交付：<code>交付/T005_delivery.json</code>、<code>data/runs/T005/</code>　·　结论：<strong>通过</strong>（两项未独立复算，见 §2）</p>
+
+<h2>1. 我独立复算的数字</h2>
+<p>复算方式：只读 <code>data/runs/T005/dest_validation.json</code>、<code>fig3_redraw.json</code>、<code>k_stability_labels.npz</code> 与 <code>data/q1_params.json</code>，不调用执行方脚本。</p>
+<div class="tw"><table>
+<thead><tr><th>量</th><th class="num">执行方</th><th class="num">我的复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>测试集规模（5/12、5/19）</td><td class="num">555,675</td><td class="num">555,675（五带求和）</td><td>一致</td></tr>
+<tr><td>汇总 nlp：完整 / 距离 / 吸引 / 均匀</td><td class="num">3.4185 / 3.4881 / 8.1124 / 8.5685</td><td class="num">3.418483 / 3.488057 / 8.112398 / 8.568456</td><td>一致（按出行数加权）</td></tr>
+<tr><td>汇总结论差（距离 − 完整）</td><td class="num">0.069574 nats</td><td class="num">0.069574</td><td>一致</td></tr>
+<tr><td>top-5 命中：完整 / 距离</td><td class="num">0.42549 / 0.39236</td><td class="num">0.425493 / 0.392361</td><td>一致</td></tr>
+<tr><td>均匀基准</td><td class="num">ln 5263 = 8.568456；5/5263 = 0.00095</td><td class="num">同</td><td>一致</td></tr>
+<tr><td>五带 β（完整模型）</td><td class="num">2.0963 / 2.0144 / 2.5175 / 2.1297 / 2.3640</td><td class="num">与 <code>q1_params.json</code> 逐位相同（如早晨 2.0144205638093586）</td><td>一致，模型是论文原模型</td></tr>
+<tr><td>同格出行占比</td><td class="num">9.5387%（观测）</td><td class="num">1 − 502,671/555,675 = 9.5390%</td><td>一致</td></tr>
+<tr><td>k=5 与 k=6 标签 ARI</td><td class="num">0.822894</td><td class="num">0.8229（<code>adjusted_rand_score</code> 重算）</td><td>一致</td></tr>
+<tr><td>k=5 标签规模</td><td class="num">329,249 用户</td><td class="num">29,424 / 132,920 / 49,448 / 50,283 / 67,174，合计 329,249</td><td>一致</td></tr>
+</tbody></table></div>
+
+<h2>2. 两项未能独立复算（验收附带条件）</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>为什么复算不了</th><th>我做了什么替代检查</th><th>条件</th></tr></thead>
+<tbody>
+<tr><td>图 3a 的 KS = 0.098</td><td><code>fig3_redraw.json</code> 只存了 KS 标量，观测/合成距离数组没有落盘；重算需要重跑抽样</td><td>分带值 0.075–0.119、对 GPS 的 0.190–0.199 与汇总 0.098/0.187 自洽；旧值 0.196 也被同一脚本复现为 0.1957</td><td>T012 若在正文引用 KS，必须由 <code>code/t005_fig3.py</code> 重跑一次并保留数组，不得从 JSON 转抄</td></tr>
+<tr><td>k=5 两两 ARI 均值 0.665 / 最小 0.306</td><td><code>k_stability_labels.npz</code> 每个 k 只存一条标签（发布版），20 次初始化的标签没存</td><td>跨 k ARI（0.8229）可复算，且与交付一致；轮廓系数 0.256 vs 0.263 与交付自洽</td><td>论文不得声明“stable”；若正文要写具体 ARI，须重跑 k_stability 并落盘 20×4 标签</td></tr>
+</tbody></table></div>
+
+<h2>3. 结论 → 论文改动（注入 T012）</h2>
+<div class="tw"><table>
+<thead><tr><th>位置</th><th>原文</th><th>改为</th></tr></thead>
+<tbody>
+<tr><td><code>sec4_q1.tex:87–91</code> 表 4 距离列</td><td>3.488 / 3.646 / 3.279 / 3.562 / 3.395</td><td>3.487 / 3.645 / 3.278 / 3.561 / 3.394（距离模型自身 MLE；top-5 不变）</td></tr>
+<tr><td><code>sec4_q1.tex:104–108</code></td><td>收益 0.035–0.175 nats、1.7–7.5 pp</td><td>0.034–0.174 nats、1.7–7.4 pp；最大在夜间、最小在晚间（方向不变）</td></tr>
+<tr><td><code>sec4_q1.tex:139–141</code></td><td>KS = 0.196，差异集中在最短出行</td><td>完整模型跨格 KS = 0.098；旧 0.196 来自 A=1、仅早晨、同格硬编码 0.30 km；中心点对 GPS 为 0.187，旧差主要来自几何而非模型</td></tr>
+<tr><td><code>sec4_q1.tex:148</code> 图 3(c)</td><td>对数纵轴</td><td>线性差值图；同格出行剔除并在图注计数（观测 9.5%，模型 12.4%，高估约 3 pp）</td></tr>
+<tr><td><code>sec4_q1.tex:160–163</code></td><td>k=5 由轮廓系数选中，跨随机初始化稳定</td><td>k=5 最佳轮廓 0.256、k=6 0.263；10k 均值 0.251 vs 0.246；k=5 两两 ARI 0.665（最小 0.306）。k=5 不是唯一轮廓最优，也不稳定</td></tr>
+<tr><td><code>sec4_q1.tex:157–161</code></td><td>“回到起点格的出行占比”</td><td>该特征是“重复使用当天已用过的起点格”；起终点同格 9.0%（重度段 16.5%）</td></tr>
+<tr><td><code>sec4_q1.tex:190</code></td><td>四分之一出行回到同一格</td><td>同格 16.5%；四分之一是“起点格重访”25.7%</td></tr>
+<tr><td><code>sec4_q1.tex:171–181</code> 表 5</td><td>每人每天 9.18 / 13.98 / 3.71 / 2.48 / 2.25</td><td>这是十天合计；按活跃天 1.64 / 2.47 / 1.16 / 1.19 / 1.25（H10）</td></tr>
+</tbody></table></div>
+
+<h2>4. 残余风险（写进 T012 任务单，不单独返工）</h2>
+<div class="box warn">
+<ul>
+<li><strong>k=6 比 k=5 轮廓略高。</strong>改写成“按预测任务与可解释性选 k=5，轮廓差异在噪声内”可以，但不能写“silhouette 选中 k=5”。若改 k=6，Q3/Q5 的分段标签与结论全部要重跑，不建议在此时改 k。</li>
+<li><strong>置信区间偏窄。</strong>500 次 bootstrap 把出行当独立样本，按天分块会更宽；正文引用区间时要加一句“按出行重抽，未按天聚类”。</li>
+<li><strong>留出日比随机样本“容易”。</strong>绝对 nlp 3.418 偏乐观 0.037 nats，但完整−距离的对比只差 0.0001 nats，对比结论稳。正文应只引用对比，不引用绝对水平作为拟合优度排名。</li>
+<li><strong>同格 3 pp 高估</strong>是模型口径限制（格子模型没有格内几何），写进 limitations，不修模型。</li>
+</ul>
+</div>
+
+<h2>5. 判定</h2>
+<div class="box ok">
+<p><strong>通过。</strong>M2 问题关闭；H12（return_share 标签）转入 T012。两项未复算已定条件：KS 与两两 ARI 若要进正文，必须重跑并落盘；在此之前正文只能写定性结论（“旧图不是完整模型”“k=5 不稳定”）或写交付里已核的数字。</p>
+</div>
+
+<p class="meta">本记录只写我复算过的与不能复算的；完整数字见 <code>data/runs/T005/</code>。验收用的复算命令未落盘，规则同 T001：任何一项都可要求我重跑。</p>
+
+</main>
+</body>
+</html>

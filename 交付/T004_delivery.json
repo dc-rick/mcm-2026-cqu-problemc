@@ -1,0 +1,2178 @@
+{
+ "task": "T004",
+ "title": "空间分辨率与步行半径",
+ "generated_at": "2026-11-17T23:00:47",
+ "resdir": "data/runs/T004",
+ "headline": {
+  "abstract_claim_old": "At every resolution ... no zone ever runs out of bicycles",
+  "coarse_R300_a1_fleet343638": 0.1341355278256054,
+  "coarse_R450_a1_fleet343638": 0.058391658974479566,
+  "coarse_R450_a1_fleet495540": 0.03513963231022278,
+  "fine_R450_a1_fleet495540": 0.0206830219648444,
+  "cells_with_neighbour_300_450_600": [
+   0,
+   4885,
+   5091
+  ],
+  "dry_cells_172_condition": "hourly, unscaled cell path; the stated 5-minute 1/p-scaled path gives 2,306"
+ },
+ "neighbour_geometry": {
+  "coarse": {
+   "n_cells": 5263,
+   "radii": {
+    "0.30": {
+     "cells_with_neighbour": 0,
+     "cells_without_neighbour": 5263,
+     "neighbour_count_hist": {
+      "0": 5263
+     },
+     "mean_neighbours": 0.0,
+     "unique_distances_km": [],
+     "n_directed_edges": 0
+    },
+    "0.45": {
+     "cells_with_neighbour": 4885,
+     "cells_without_neighbour": 378,
+     "neighbour_count_hist": {
+      "0": 378,
+      "1": 1172,
+      "2": 3713
+     },
+     "mean_neighbours": 1.6336690100703022,
+     "unique_distances_km": [
+      0.426
+     ],
+     "n_directed_edges": 8598
+    },
+    "0.60": {
+     "cells_with_neighbour": 5091,
+     "cells_without_neighbour": 172,
+     "neighbour_count_hist": {
+      "0": 172,
+      "1": 336,
+      "2": 623,
+      "3": 1090,
+      "4": 3042
+     },
+     "mean_neighbours": 3.2338970169105075,
+     "unique_distances_km": [
+      0.426,
+      0.556
+     ],
+     "n_directed_edges": 17020
+    },
+    "0.70": {
+     "cells_with_neighbour": 5091,
+     "cells_without_neighbour": 172,
+     "neighbour_count_hist": {
+      "0": 172,
+      "1": 336,
+      "2": 623,
+      "3": 1090,
+      "4": 3042
+     },
+     "mean_neighbours": 3.2338970169105075,
+     "unique_distances_km": [
+      0.426,
+      0.556
+     ],
+     "n_directed_edges": 17020
+    },
+    "0.80": {
+     "cells_with_neighbour": 5172,
+     "cells_without_neighbour": 91,
+     "neighbour_count_hist": {
+      "0": 91,
+      "1": 121,
+      "2": 198,
+      "3": 259,
+      "4": 343,
+      "5": 482,
+      "6": 551,
+      "7": 794,
+      "8": 2424
+     },
+     "mean_neighbours": 6.333269998099943,
+     "unique_distances_km": [
+      0.426,
+      0.556,
+      0.7004
+     ],
+     "n_directed_edges": 33332
+    }
+   },
+   "lattice": [
+    {
+     "dx_km": 0.0,
+     "dy_km": 0.556,
+     "distance_km": 0.556,
+     "pairs": 4211
+    },
+    {
+     "dx_km": 0.426,
+     "dy_km": 0.0,
+     "distance_km": 0.426,
+     "pairs": 4299
+    },
+    {
+     "dx_km": 0.426,
+     "dy_km": 0.556,
+     "distance_km": 0.7,
+     "pairs": 8156
+    }
+   ],
+   "interpretation": "300 m: 0 of 5,263 cells have any neighbour (nearest centre 426 m), so the walk branch never fires. 450 m: 4,885 cells have 1-2 neighbours, all east-west; 378 edge cells have none. 600 m: 5,091 cells have neighbours; east-west 426 m and north-south 556 m are reachable, diagonal 700 m is not. R=0.70 is identical to R=0.60 because the diagonal distance is slightly above 0.700 km. The 172 cells with no neighbour at R=600 are numerically coincidental with the paper's 172 dry cells and are unrelated.",
+   "anisotropy": "A circular radius on a rectangular lattice is an artifact: at 450 m the reachable graph is a one-dimensional east-west chain, not a disc."
+  },
+  "fine": {
+   "n_cells": 11269,
+   "radii": {
+    "0.30": {
+     "cells_with_neighbour": 10801,
+     "cells_without_neighbour": 468,
+     "neighbour_count_hist": {
+      "0": 468,
+      "1": 1055,
+      "2": 1937,
+      "3": 3163,
+      "4": 4646
+     },
+     "mean_neighbours": 2.9285650900701037,
+     "median_neighbours": 3.0,
+     "unique_distances_km": [
+      0.213,
+      0.278
+     ],
+     "n_directed_edges": 33002
+    },
+    "0.45": {
+     "cells_with_neighbour": 11048,
+     "cells_without_neighbour": 221,
+     "neighbour_count_hist": {
+      "0": 221,
+      "1": 319,
+      "2": 404,
+      "3": 602,
+      "4": 675,
+      "5": 893,
+      "6": 1049,
+      "7": 1276,
+      "8": 1479,
+      "9": 1834,
+      "10": 2517
+     },
+     "mean_neighbours": 6.995474310054131,
+     "median_neighbours": 8.0,
+     "unique_distances_km": [
+      0.213,
+      0.278,
+      0.3502,
+      0.426
+     ],
+     "n_directed_edges": 78832
+    },
+    "0.60": {
+     "cells_with_neighbour": 11147,
+     "cells_without_neighbour": 122,
+     "neighbour_count_hist": {
+      "0": 122,
+      "1": 157,
+      "2": 167,
+      "3": 212,
+      "4": 239,
+      "5": 288,
+      "6": 324,
+      "7": 353,
+      "8": 390,
+      "9": 407,
+      "10": 536,
+      "11": 559,
+      "12": 567,
+      "13": 592,
+      "14": 633,
+      "15": 748,
+      "16": 808,
+      "17": 914,
+      "18": 950,
+      "19": 1144,
+      "20": 1159
+     },
+     "mean_neighbours": 13.425681071967343,
+     "median_neighbours": 15.0,
+     "unique_distances_km": [
+      0.213,
+      0.278,
+      0.3502,
+      0.426,
+      0.5087,
+      0.556,
+      0.5954
+     ],
+     "n_directed_edges": 151294
+    }
+   },
+   "lattice": [
+    {
+     "dx_km": 0.0,
+     "dy_km": 0.278,
+     "distance_km": 0.278,
+     "distance_m": 278.0,
+     "pairs": 8145
+    },
+    {
+     "dx_km": 0.213,
+     "dy_km": 0.0,
+     "distance_km": 0.213,
+     "distance_m": 213.0,
+     "pairs": 8356
+    },
+    {
+     "dx_km": 0.213,
+     "dy_km": 0.278,
+     "distance_km": 0.35,
+     "distance_m": 350.2,
+     "pairs": 15230
+    },
+    {
+     "dx_km": 0.426,
+     "dy_km": 0.0,
+     "distance_km": 0.426,
+     "distance_m": 426.0,
+     "pairs": 7685
+    }
+   ],
+   "interpretation": "At 0.0025 deg the spacings are 213 m east-west, 278 m north-south and 350 m diagonal. A 300 m radius now reaches 1-4 real neighbours (mean 2.93), so the 300 m experiment finally exercises walking; 450 m reaches mean 7.0 and 600 m mean 13.4. Resolution and radius are therefore not separable in the coarse-grid comparison."
+  }
+ },
+ "simulator_defect": {
+  "location": "code/sim_cell.py, walk-to-neighbour branch",
+  "old_behaviour": "I[j] -= 1 removed a bicycle from the donor cell, but the in-flight arrival pool was fed only from `take` (bicycles taken at the departure cell). Every walked trip deleted one bicycle.",
+  "measured_loss_before_fix": {
+   "R300": {
+    "borrowed": 0,
+    "inventory_residual": 0.0,
+    "min_inventory": 0.0,
+    "unmet_share": 0.13324630555896522
+   },
+   "R450": {
+    "borrowed": 240170,
+    "inventory_residual": 240170.0,
+    "min_inventory": 0.0,
+    "unmet_share": 0.1509019574196641
+   },
+   "R600": {
+    "borrowed": 314073,
+    "inventory_residual": 314073.0,
+    "min_inventory": 0.0,
+    "unmet_share": 0.20817029750600632
+   }
+  },
+  "fix": "borrow[c] counts walked trips; the zone loop schedules take[idx].sum() + borrow[idx].sum() arrivals, so a borrowed ride re-enters the fleet through the same one-step in-flight pool. The destination kernel remains the demand cell's zone.",
+  "baseline_effect": "At R=300 m no neighbour is reachable, borrowed=0, so the published 13.4% curve is bit-identical; the fix changes only R>=426 m runs.",
+  "consequence": "Before the fix, unmet rose with radius (R=450 14.90%, R=600 20.52% at 343,638) because bicycles were being deleted; those numbers are invalid."
+ },
+ "simulation_results": {
+  "seed_set": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "n_seeds": 5,
+  "fleet_343638_paper_calibration": {
+   "coarse_343638_R300_a1.0": {
+    "R_m": 300,
+    "alpha": 1.0,
+    "fleet": 343638.0,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.13324630555896522,
+     0.13504398128916567,
+     0.13447994600156796,
+     0.13345015333207227,
+     0.13445725294625588
+    ],
+    "mean": 0.1341355278256054,
+    "std": 0.0007595842719080099
+   },
+   "coarse_343638_R300_a0.8": {
+    "R_m": 300,
+    "alpha": 0.8,
+    "fleet": 274910.4,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.1628578422801189,
+     0.1635940687490574,
+     0.1648267594171338,
+     0.1637152298614789,
+     0.16346905699872039
+    ],
+    "mean": 0.16369259146130188,
+    "std": 0.0007147254762273696
+   },
+   "coarse_343638_R450_a1.0": {
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 343638.0,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.05839695368935845,
+     0.05771727059060585,
+     0.0591797304807409,
+     0.05855578378958118,
+     0.05810855632211147
+    ],
+    "mean": 0.058391658974479566,
+    "std": 0.0005438217750330632
+   },
+   "coarse_343638_R450_a0.8": {
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 274910.4,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.0772007928407469,
+     0.07698429989610397,
+     0.07745812249780817,
+     0.07678853621357548,
+     0.07659888050048871
+    ],
+    "mean": 0.07700612638974465,
+    "std": 0.0003375894710133231
+   },
+   "coarse_343638_R600_a1.0": {
+    "R_m": 600,
+    "alpha": 1.0,
+    "fleet": 343638.0,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.02309657472187713,
+     0.023212762888705604,
+     0.02321842670128393,
+     0.02376560564241235,
+     0.024067879312604873
+    ],
+    "mean": 0.02347224985337678,
+    "std": 0.00042241080521836883
+   },
+   "coarse_343638_R600_a0.8": {
+    "R_m": 600,
+    "alpha": 0.8,
+    "fleet": 274910.4,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.03224470164985802,
+     0.032694050453187865,
+     0.03271914870792687,
+     0.03282934911595206,
+     0.032323805821296334
+    ],
+    "mean": 0.032562211149644235,
+    "std": 0.0002602993830384682
+   }
+  },
+  "fleet_495540_bridge": {
+   "coarse_495540_R450_a1.0": {
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.035526891429648155,
+     0.03579031020727955,
+     0.03451414035877847,
+     0.0351168838431855,
+     0.034749935712222235
+    ],
+    "mean": 0.03513963231022278,
+    "std": 0.0005284345900543644
+   },
+   "coarse_495540_R450_a0.8": {
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.04793868640655574,
+     0.047949205756369705,
+     0.04865145112035302,
+     0.049380168272982174,
+     0.04888364150814945
+    ],
+    "mean": 0.048560630612882016,
+    "std": 0.0006214662762984653
+   }
+  },
+  "fleet_495540_closed_fleet": {
+   "coarse_R300_a1.0": {
+    "grid": "coarse",
+    "R_m": 300,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.09060035864878464,
+     0.09157730650918937,
+     0.09048158296983931,
+     0.09160129920738654,
+     0.0920037343914109
+    ],
+    "mean": 0.09125285634532215,
+    "std": 0.0006728881855053222
+   },
+   "coarse_R300_a0.8": {
+    "grid": "coarse",
+    "R_m": 300,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.11489727984622886,
+     0.11511903357137093,
+     0.1156641560191434,
+     0.11574014516342537,
+     0.11611532475232848
+    ],
+    "mean": 0.1155071878704994,
+    "std": 0.0004927956282929144
+   },
+   "coarse_R450_a1.0": {
+    "grid": "coarse",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.035526891429648155,
+     0.03579031020727955,
+     0.03451414035877847,
+     0.0351168838431855,
+     0.034749935712222235
+    ],
+    "mean": 0.03513963231022278,
+    "std": 0.0005284345900543644
+   },
+   "coarse_R450_a0.8": {
+    "grid": "coarse",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.04793868640655574,
+     0.047949205756369705,
+     0.04865145112035302,
+     0.049380168272982174,
+     0.04888364150814945
+    ],
+    "mean": 0.048560630612882016,
+    "std": 0.0006214662762984653
+   },
+   "coarse_R600_a1.0": {
+    "grid": "coarse",
+    "R_m": 600,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.012857049541352892,
+     0.012682022831188777,
+     0.012796759676806659,
+     0.012699263415691274,
+     0.012871585844846167
+    ],
+    "mean": 0.012781336261977153,
+    "std": 8.762773425018734e-05
+   },
+   "coarse_R600_a0.8": {
+    "grid": "coarse",
+    "R_m": 600,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.017906959930780838,
+     0.018360803531889337,
+     0.018145255293395775,
+     0.018312739822742907,
+     0.018400775614631184
+    ],
+    "mean": 0.01822530683868801,
+    "std": 0.00020282145817070624
+   },
+   "fine_R300_a1.0": {
+    "grid": "fine",
+    "R_m": 300,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.04814066604998245,
+     0.04819216639933772,
+     0.047458186181677554,
+     0.04727238870626938,
+     0.047431589103949776
+    ],
+    "mean": 0.04769899928824337,
+    "std": 0.0004329489217853028
+   },
+   "fine_R300_a0.8": {
+    "grid": "fine",
+    "R_m": 300,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.06354548783742683,
+     0.06367329287842163,
+     0.06377450488572058,
+     0.06336936369317213,
+     0.0631904743435597
+    ],
+    "mean": 0.06351062472766018,
+    "std": 0.00023439285922199527
+   },
+   "fine_R450_a1.0": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.020355700745166357,
+     0.020931026986739543,
+     0.02053977706322578,
+     0.020570031739663413,
+     0.021018573289426905
+    ],
+    "mean": 0.0206830219648444,
+    "std": 0.0002804132022533816
+   },
+   "fine_R450_a0.8": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.027990224519577334,
+     0.028263907536438388,
+     0.02831982961600047,
+     0.028065758638091437,
+     0.027570329782844093
+    ],
+    "mean": 0.028042010018590347,
+    "std": 0.0002967112303073989
+   },
+   "fine_R600_a1.0": {
+    "grid": "fine",
+    "R_m": 600,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.006831127006598283,
+     0.007215495416080808,
+     0.007101877814422036,
+     0.0067987845239868274,
+     0.006929785514763018
+    ],
+    "mean": 0.006975414055170196,
+    "std": 0.0001786972646909703
+   },
+   "fine_R600_a0.8": {
+    "grid": "fine",
+    "R_m": 600,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.009570177594391483,
+     0.009854333316270896,
+     0.009740572013630698,
+     0.009455687206612563,
+     0.009556275499698376
+    ],
+    "mean": 0.009635409126120802,
+    "std": 0.00015953391947838008
+   },
+   "fine_R450_a1.0_I0zero": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0_zero",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.020677888542526175,
+     0.020699623690236122,
+     0.020553453781382132,
+     0.020601282489271674,
+     0.02084705996829309
+    ],
+    "mean": 0.020675861694341838,
+    "std": 0.00011227571481667191
+   },
+   "fine_R450_a0.8_I0zero": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0_zero",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.028135150108448873,
+     0.028040023908774053,
+     0.028302257297382213,
+     0.028078894350582882,
+     0.028539684672347593
+    ],
+    "mean": 0.028219202067507127,
+    "std": 0.0002052212653649306
+   },
+   "fine_R450_a1.0_demandmatched": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 446959.3267593576,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.02396085819007923,
+     0.023723579254477174,
+     0.023912102505705364,
+     0.023883240931779508,
+     0.02382021077452917
+    ],
+    "mean": 0.02385999833131409,
+    "std": 9.168013521950285e-05
+   },
+   "fine_R450_a0.8_demandmatched": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 357567.46140748606,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.03261967295004274,
+     0.03241063360346072,
+     0.03294696835796953,
+     0.03213741980761062,
+     0.032001646679644266
+    ],
+    "mean": 0.03242326827974558,
+    "std": 0.0003783088434682088
+   }
+  },
+  "reproduce_old_curve": {
+   "a1.0": {
+    "old_curve_mean": 0.13425674428323295,
+    "old_curve_std": 0.0007506769225344591,
+    "rerun_seeds_0_2_mean": 0.13425674428323295,
+    "rerun_seeds_0_2_std": 0.0007506769225344591,
+    "delta": 0.0
+   },
+   "a0.8": {
+    "old_curve_mean": 0.16375955681543672,
+    "old_curve_std": 0.0008122800823169274,
+    "rerun_seeds_0_2_mean": 0.16375955681543672,
+    "rerun_seeds_0_2_std": 0.0008122800823169274,
+    "delta": 0.0
+   }
+  },
+  "conservation": {
+   "coarse": {
+    "R300": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "borrowed": [
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    "R450": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "borrowed": [
+      181198,
+      181323,
+      183324,
+      182511,
+      182024
+     ]
+    },
+    "R600": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "borrowed": [
+      228515,
+      226679,
+      227058,
+      227903,
+      229496
+     ]
+    }
+   },
+   "fine": {
+    "R300": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781
+     ],
+     "borrowed": [
+      228621,
+      226472,
+      227640,
+      226557,
+      226257
+     ]
+    },
+    "R450": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781
+     ],
+     "borrowed": [
+      244182,
+      243227,
+      242698,
+      243568,
+      242878
+     ]
+    },
+    "R600": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "inventory_residual": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "min_inventory": [
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781,
+      0.002079558992505781
+     ],
+     "borrowed": [
+      234110,
+      233623,
+      234142,
+      231661,
+      233990
+     ]
+    }
+   },
+   "before_fix_seed0": {
+    "R300": {
+     "borrowed": 0,
+     "inventory_residual": 0.0,
+     "min_inventory": 0.0,
+     "unmet_share": 0.13324630555896522
+    },
+    "R450": {
+     "borrowed": 240170,
+     "inventory_residual": 240170.0,
+     "min_inventory": 0.0,
+     "unmet_share": 0.1509019574196641
+    },
+    "R600": {
+     "borrowed": 314073,
+     "inventory_residual": 314073.0,
+     "min_inventory": 0.0,
+     "unmet_share": 0.20817029750600632
+    }
+   }
+  },
+  "reading": "At the paper's 343,638 calibration the five-seed mean is 13.41% at R=300 (13.4257% for seeds 0-2, exactly the stored curve), 5.84% at R=450 and 2.35% at R=600. At the closed-fleet centre 495,540 the same radii give 9.13%, 3.51% and 1.28%. The main coarse-grid specification asked for by the task (R=450, alpha=1) is therefore 5.84% at 343,638 and 3.51% at 495,540."
+ },
+ "dry_cells": {
+  "paper_claim": "some 172 of 5,263 cells do run dry",
+  "finding": "172 is reproduced exactly by an HOURLY, UNSCALED deterministic cell path I_c(t)=I0c+cumsum(arrivals-departures). The 5-minute 1/p-scaled path described in the paper gives 2,306; hourly scaled gives 2,251; 5-minute unscaled gives 175. No LP rerun was done: q2_plan.npz and q2_solution.npz are zone-level (50 zones), so they cannot yield a count over 5,263 cells. Robustness: all 12 hourly phase offsets give 169-174 dry cells (172 at three of them), and a one-step arrival lag also gives 172; the match is not a single lucky timestamp.",
+  "definitions": {
+   "hourly_unscaled": {
+    "cells_negative": 172,
+    "cells_below_one": 213,
+    "min_inventory": -126.24810853369075,
+    "I0_of_dry": {
+     "zero": 3,
+     "below_one": 9,
+     "median": 7.340661490410884,
+     "max": 126.72299836077738
+    },
+    "dry_cells_typical_departures": 6529.285714285715,
+    "dry_share_of_typical_departures": 0.02379846519295476,
+    "note": "all dry cells are low-stock cells; the path is hourly and unscaled, so only small I0 cells cross zero"
+   },
+   "hourly_scaled": {
+    "cells_negative": 2251,
+    "cells_below_one": 2312,
+    "min_inventory": -2166.706004917669
+   },
+   "5min_unscaled": {
+    "cells_negative": 175,
+    "cells_below_one": 219,
+    "min_inventory": -126.39096567654789
+   },
+   "5min_scaled": {
+    "cells_negative": 2306,
+    "cells_below_one": 2365,
+    "min_inventory": -2166.706004917669
+   }
+  },
+  "robustness": {
+   "phase_offsets_hourly_unscaled": {
+    "0": 171,
+    "1": 173,
+    "2": 174,
+    "3": 173,
+    "4": 173,
+    "5": 173,
+    "6": 172,
+    "7": 169,
+    "8": 169,
+    "9": 171,
+    "10": 172,
+    "11": 172
+   },
+   "arrival_lag": {
+    "0": 172,
+    "11": 172
+   },
+   "first_start_I0": {
+    "0": 0,
+    "11": 0
+   }
+  },
+  "stochastic_343638": {
+   "model": "CellSim at FLEET=343,638, 5-min steps; 'dry' = end-of-step inventory < 1 at least once",
+   "note": "separate model; never substituted for the fluid count",
+   "by_radius": {
+    "R300": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "cells_below_one": [
+      2470,
+      2443,
+      2479,
+      2467,
+      2458
+     ],
+     "unmet_share": [
+      0.13324630555896522,
+      0.13504398128916567,
+      0.13447994600156796,
+      0.13345015333207227,
+      0.13445725294625588
+     ],
+     "mean_cells_below_one": 2463.4,
+     "mean_unmet": 0.1341355278256054
+    },
+    "R450": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "cells_below_one": [
+      2758,
+      2768,
+      2810,
+      2766,
+      2790
+     ],
+     "unmet_share": [
+      0.05839695368935845,
+      0.05771727059060585,
+      0.0591797304807409,
+      0.05855578378958118,
+      0.05810855632211147
+     ],
+     "mean_cells_below_one": 2778.4,
+     "mean_unmet": 0.058391658974479566
+    },
+    "R600": {
+     "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "cells_below_one": [
+      2661,
+      2636,
+      2647,
+      2671,
+      2672
+     ],
+     "unmet_share": [
+      0.02309657472187713,
+      0.023212762888705604,
+      0.02321842670128393,
+      0.02376560564241235,
+      0.024067879312604873
+     ],
+     "mean_cells_below_one": 2657.4,
+     "mean_unmet": 0.02347224985337678
+    }
+   }
+  },
+  "side_by_side_rule": "The fluid count and the stochastic count are different models and are never substituted for one another. The stochastic count is cells whose end-of-step inventory is below one bicycle at least once; it rises from 2,463 at R=300 to 2,778 at R=450 even though unserved departures fall from 13.41% to 5.84%, because walking moves emptiness between cells."
+ },
+ "fine_grid": {
+  "diagnostics": {
+   "step_deg": 0.0025,
+   "n_cells": 11269,
+   "n_coarse_cells": 5263,
+   "n_zones": 50,
+   "all_days": [
+    "2017-05-10",
+    "2017-05-11",
+    "2017-05-12",
+    "2017-05-13",
+    "2017-05-14",
+    "2017-05-15",
+    "2017-05-16",
+    "2017-05-17",
+    "2017-05-18",
+    "2017-05-19"
+   ],
+   "trips_all_days": 2466211,
+   "trips_with_both_cells_mapped": 2118653,
+   "share_trips_mapped": 0.8590720745305248,
+   "coarse_support": {
+    "n_cells": 5263,
+    "trips_mapped": 2357826,
+    "share_trips_mapped": 0.9560520166360461,
+    "typical_day_departures": 274357.4285714286,
+    "share_of_fine_typical_departures": 1.1086914856277248
+   },
+   "per_cell_trips_10days": {
+    "min": 54.0,
+    "p10": 104.0,
+    "median": 257.0,
+    "mean": 396.8359215547076,
+    "p90": 826.2000000000007,
+    "max": 8358.0
+   },
+   "typical_day_departures": {
+    "zero_cells": 21,
+    "min": 0.0,
+    "median": 13.571428571428585,
+    "mean": 21.959408237516314,
+    "max": 421.1428571428571,
+    "total": 247460.57142857136
+   },
+   "gps_error_deg": 0.0006866455078125,
+   "gps_error_m_lat": 76.35498046875,
+   "gps_error_m_lon": 58.502197265625,
+   "cell_m_lat": 278.0,
+   "cell_m_lon": 213.00000000000003,
+   "cell_over_gps_lat": 3.640888888888889,
+   "cell_over_gps_lon": 3.640888888888889,
+   "last_trip_end": {
+    "bikes": 425065,
+    "cells_with_evidence": 11244,
+    "cells_without_evidence": 25,
+    "departures_in_no_evidence_cells": 106.42857142857144,
+    "share_departures_no_evidence": 0.00043008294539274383,
+    "default_weight": 26.0,
+    "note": "main I0 gives each no-evidence cell its zone's median positive last-trip-end count; the zero-evidence variant leaves them at 0"
+   },
+   "geohash_cell_m": [
+    153.0,
+    117.0
+   ]
+  },
+  "support_verdict": "supported, with reduced coverage. Cell dimensions 213 x 278 m are 3.64x the constant GPS error (58.5 m lon, 76.4 m lat), and the median retained cell has 257 trips over 10 days (p10 104). But 85.9% of box-filtered trips map to retained fine cells versus 95.6% at 0.005 deg, and typical-day departures are 90.2% of the coarse total, so the fine-grid level is not directly comparable to the coarse level without the demand-matched row.",
+  "results_fleet495540": {
+   "coarse_R300_a1.0": {
+    "grid": "coarse",
+    "R_m": 300,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.09060035864878464,
+     0.09157730650918937,
+     0.09048158296983931,
+     0.09160129920738654,
+     0.0920037343914109
+    ],
+    "mean": 0.09125285634532215,
+    "std": 0.0006728881855053222
+   },
+   "coarse_R300_a0.8": {
+    "grid": "coarse",
+    "R_m": 300,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.11489727984622886,
+     0.11511903357137093,
+     0.1156641560191434,
+     0.11574014516342537,
+     0.11611532475232848
+    ],
+    "mean": 0.1155071878704994,
+    "std": 0.0004927956282929144
+   },
+   "coarse_R450_a1.0": {
+    "grid": "coarse",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.035526891429648155,
+     0.03579031020727955,
+     0.03451414035877847,
+     0.0351168838431855,
+     0.034749935712222235
+    ],
+    "mean": 0.03513963231022278,
+    "std": 0.0005284345900543644
+   },
+   "coarse_R450_a0.8": {
+    "grid": "coarse",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.04793868640655574,
+     0.047949205756369705,
+     0.04865145112035302,
+     0.049380168272982174,
+     0.04888364150814945
+    ],
+    "mean": 0.048560630612882016,
+    "std": 0.0006214662762984653
+   },
+   "coarse_R600_a1.0": {
+    "grid": "coarse",
+    "R_m": 600,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.012857049541352892,
+     0.012682022831188777,
+     0.012796759676806659,
+     0.012699263415691274,
+     0.012871585844846167
+    ],
+    "mean": 0.012781336261977153,
+    "std": 8.762773425018734e-05
+   },
+   "coarse_R600_a0.8": {
+    "grid": "coarse",
+    "R_m": 600,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.017906959930780838,
+     0.018360803531889337,
+     0.018145255293395775,
+     0.018312739822742907,
+     0.018400775614631184
+    ],
+    "mean": 0.01822530683868801,
+    "std": 0.00020282145817070624
+   },
+   "fine_R300_a1.0": {
+    "grid": "fine",
+    "R_m": 300,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.04814066604998245,
+     0.04819216639933772,
+     0.047458186181677554,
+     0.04727238870626938,
+     0.047431589103949776
+    ],
+    "mean": 0.04769899928824337,
+    "std": 0.0004329489217853028
+   },
+   "fine_R300_a0.8": {
+    "grid": "fine",
+    "R_m": 300,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.06354548783742683,
+     0.06367329287842163,
+     0.06377450488572058,
+     0.06336936369317213,
+     0.0631904743435597
+    ],
+    "mean": 0.06351062472766018,
+    "std": 0.00023439285922199527
+   },
+   "fine_R450_a1.0": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.020355700745166357,
+     0.020931026986739543,
+     0.02053977706322578,
+     0.020570031739663413,
+     0.021018573289426905
+    ],
+    "mean": 0.0206830219648444,
+    "std": 0.0002804132022533816
+   },
+   "fine_R450_a0.8": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.027990224519577334,
+     0.028263907536438388,
+     0.02831982961600047,
+     0.028065758638091437,
+     0.027570329782844093
+    ],
+    "mean": 0.028042010018590347,
+    "std": 0.0002967112303073989
+   },
+   "fine_R600_a1.0": {
+    "grid": "fine",
+    "R_m": 600,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.006831127006598283,
+     0.007215495416080808,
+     0.007101877814422036,
+     0.0067987845239868274,
+     0.006929785514763018
+    ],
+    "mean": 0.006975414055170196,
+    "std": 0.0001786972646909703
+   },
+   "fine_R600_a0.8": {
+    "grid": "fine",
+    "R_m": 600,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.009570177594391483,
+     0.009854333316270896,
+     0.009740572013630698,
+     0.009455687206612563,
+     0.009556275499698376
+    ],
+    "mean": 0.009635409126120802,
+    "std": 0.00015953391947838008
+   },
+   "fine_R450_a1.0_I0zero": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 495540.0,
+    "i0": "I0_zero",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.020677888542526175,
+     0.020699623690236122,
+     0.020553453781382132,
+     0.020601282489271674,
+     0.02084705996829309
+    ],
+    "mean": 0.020675861694341838,
+    "std": 0.00011227571481667191
+   },
+   "fine_R450_a0.8_I0zero": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 396432.0,
+    "i0": "I0_zero",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.028135150108448873,
+     0.028040023908774053,
+     0.028302257297382213,
+     0.028078894350582882,
+     0.028539684672347593
+    ],
+    "mean": 0.028219202067507127,
+    "std": 0.0002052212653649306
+   },
+   "fine_R450_a1.0_demandmatched": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 1.0,
+    "fleet": 446959.3267593576,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.02396085819007923,
+     0.023723579254477174,
+     0.023912102505705364,
+     0.023883240931779508,
+     0.02382021077452917
+    ],
+    "mean": 0.02385999833131409,
+    "std": 9.168013521950285e-05
+   },
+   "fine_R450_a0.8_demandmatched": {
+    "grid": "fine",
+    "R_m": 450,
+    "alpha": 0.8,
+    "fleet": 357567.46140748606,
+    "i0": "I0c",
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "values": [
+     0.03261967295004274,
+     0.03241063360346072,
+     0.03294696835796953,
+     0.03213741980761062,
+     0.032001646679644266
+    ],
+    "mean": 0.03242326827974558,
+    "std": 0.0003783088434682088
+   }
+  },
+  "i0_no_evidence": {
+   "bikes": 425065,
+   "cells_with_evidence": 11244,
+   "cells_without_evidence": 25,
+   "departures_in_no_evidence_cells": 106.42857142857144,
+   "share_departures_no_evidence": 0.00043008294539274383,
+   "default_weight": 26.0,
+   "note": "main I0 gives each no-evidence cell its zone's median positive last-trip-end count; the zero-evidence variant leaves them at 0"
+  },
+  "i0_zero_sensitivity": {
+   "R450_a1": 0.020675861694341838,
+   "R450_a1_default": 0.0206830219648444,
+   "R450_a08": 0.028219202067507127,
+   "R450_a08_default": 0.028042010018590347
+  },
+  "demand_matched": {
+   "fleet": 446959.3267593576,
+   "R450_a1": 0.02385999833131409,
+   "R450_a08": 0.03242326827974558
+  }
+ },
+ "replacement_text": {
+  "abstract_24_27": {
+   "english": "The 50-zone inventory never goes negative: the smallest zone holds 1,986 bicycles at midnight and the worst cumulative excursion is -349. At neighbourhood scale the shortage is local, not systemic. On the 0.005-degree grid a 300 m walk reaches no neighbouring cell, so the earlier 13.4% is a no-walking bound; with a 450 m walk unmet demand is 5.8% at the paper's 343,638-bicycle calibration and 3.5% at the closed-fleet estimate of 495,540. A 0.0025-degree grid covering 86% of trips gives 2.1% at 495,540. The system has enough bicycles; it does not have them everywhere.",
+   "word_count": 94,
+   "paper_untouched": true
+  },
+  "sec9_106_108": {
+   "english": "The consequence is a wide range in the simulated service level at cell resolution. In the zone-level inventory path of Section Q2 no zone goes negative. On the 0.005-degree grid, a 300 m radius reaches no neighbouring cell centre (the nearest is 426 m), so 13.4% is the no-walking bound. With a 450 m radius, unmet demand is 5.8% at 343,638 bicycles and 3.5% at the closed-fleet estimate of 495,540; 600 m gives 2.3% and 1.3%. On a 0.0025-degree grid, which covers 86% of trips, 450 m gives 2.1%.",
+   "word_count": 89,
+   "paper_untouched": true
+  },
+  "note": "The final clause of the abstract ('The system has enough bicycles; it does not have them everywhere') is a suggested framing, not a decision; the reviewer may keep the facts and change the conclusion. The sentence immediately above the abstract replacement still carries the T001-R2 fleet rewrite and is not changed here."
+ },
+ "affected": [
+  {
+   "coord": "paper/summary.tex:24-27",
+   "old": "At every resolution ... no zone ever runs out of bicycles",
+   "new": "see replacement_text.abstract_24_27; 13.4% -> 5.8%/3.5%",
+   "why": "the claim is contradicted by sec5 and sec9 and by every run"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:19-22",
+   "old": "some 172 of 5,263 cells do run dry",
+   "new": "172 only under an hourly unscaled path; the stated 5-minute 1/p-scaled path gives 2,306; stochastic gives 2,463 at R=300",
+   "why": "the number's stated model does not reproduce it"
+  },
+  {
+   "coord": "paper/sec9_sensitivity.tex:103-113",
+   "old": "5,263 cells served by 343,638; 300 m walking radius; 13.4% at alpha=1; 40.3% at alpha=0.2",
+   "new": "300 m reaches no neighbour; 450 m gives 5.8% at 343,638 and 3.5% at 495,540; alpha=0.2 value not rerun under walking",
+   "why": "the 13.4% is a no-walking number and the radius was never active"
+  },
+  {
+   "coord": "paper/sec7_q4.tex (450 m coverage radius)",
+   "old": "450 m coverage radius",
+   "new": "unchanged; T004 shows 450 m is the first radius that reaches any coarse-grid neighbour (east-west only)",
+   "why": "consistency note only"
+  }
+ ],
+ "methods": {
+  "neighbours": "cKDTree.query_ball_point on cell centres; x=(lon-116)*85.2 km, y=(lat-39)*111.2 km; distance in km; counts exclude self.",
+  "simulator": "CellSim, 288 five-minute steps; departures Poisson(dep5); take=min(d,floor(I)); residual walked to the neighbour with the most bicycles inside R; borrowed rides enter the one-step in-flight pool; unmet_share=unmet/(unmet+served).",
+  "fleet_scale": "coarse inputs store FLEET=343,638, scaled by 495540/343638 for the closed-fleet rows; fine inputs store 495,540 directly.",
+  "fluid_dry": "I_c(t)=I0c+cumsum(arrivals-departures); dry = min<0 at the stated sampling; scaled uses 1/0.128.",
+  "fine_grid": "same construction as 10_q1_model.py at step 0.0025, threshold 50 on starts or ends over the 10 well-covered days; zones inherited from the parent 0.005 cell.",
+  "uncertainty": "mean and sample standard deviation over seeds 0-4; the seed spread is Monte Carlo only, not model uncertainty."
+ },
+ "cases": [
+  {
+   "label": "coarse_343638_R300_a1.0",
+   "mean": 0.1341355278256054,
+   "sd": 0.0007595842719080099,
+   "fleet": 343638.0,
+   "grid": "0.005 deg",
+   "R_m": 300,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R300_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_343638_R300_a0.8",
+   "mean": 0.16369259146130188,
+   "sd": 0.0007147254762273696,
+   "fleet": 274910.4,
+   "grid": "0.005 deg",
+   "R_m": 300,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R300_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_343638_R450_a1.0",
+   "mean": 0.058391658974479566,
+   "sd": 0.0005438217750330632,
+   "fleet": 343638.0,
+   "grid": "0.005 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R450_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_343638_R450_a0.8",
+   "mean": 0.07700612638974465,
+   "sd": 0.0003375894710133231,
+   "fleet": 274910.4,
+   "grid": "0.005 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R450_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_343638_R600_a1.0",
+   "mean": 0.02347224985337678,
+   "sd": 0.00042241080521836883,
+   "fleet": 343638.0,
+   "grid": "0.005 deg",
+   "R_m": 600,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R600_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_343638_R600_a0.8",
+   "mean": 0.032562211149644235,
+   "sd": 0.0002602993830384682,
+   "fleet": 274910.4,
+   "grid": "0.005 deg",
+   "R_m": 600,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_results.json:results.coarse_343638_R600_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_495540_R450_a1.0",
+   "mean": 0.03513963231022278,
+   "sd": 0.0005284345900543644,
+   "fleet": 495540.0,
+   "grid": "0.005 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_results.json:results.coarse_495540_R450_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_495540_R450_a0.8",
+   "mean": 0.048560630612882016,
+   "sd": 0.0006214662762984653,
+   "fleet": 396432.0,
+   "grid": "0.005 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_results.json:results.coarse_495540_R450_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_R300_a1.0",
+   "mean": 0.09125285634532215,
+   "sd": 0.0006728881855053222,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 300,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R300_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_R300_a0.8",
+   "mean": 0.1155071878704994,
+   "sd": 0.0004927956282929144,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 300,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R300_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_R450_a1.0",
+   "mean": 0.03513963231022278,
+   "sd": 0.0005284345900543644,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R450_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_R450_a0.8",
+   "mean": 0.048560630612882016,
+   "sd": 0.0006214662762984653,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R450_a0.8",
+   "note": ""
+  },
+  {
+   "label": "coarse_R600_a1.0",
+   "mean": 0.012781336261977153,
+   "sd": 8.762773425018734e-05,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 600,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R600_a1.0",
+   "note": ""
+  },
+  {
+   "label": "coarse_R600_a0.8",
+   "mean": 0.01822530683868801,
+   "sd": 0.00020282145817070624,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 600,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.coarse_R600_a0.8",
+   "note": ""
+  },
+  {
+   "label": "fine_R300_a1.0",
+   "mean": 0.04769899928824337,
+   "sd": 0.0004329489217853028,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 300,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R300_a1.0",
+   "note": ""
+  },
+  {
+   "label": "fine_R300_a0.8",
+   "mean": 0.06351062472766018,
+   "sd": 0.00023439285922199527,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 300,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R300_a0.8",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a1.0",
+   "mean": 0.0206830219648444,
+   "sd": 0.0002804132022533816,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a1.0",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a0.8",
+   "mean": 0.028042010018590347,
+   "sd": 0.0002967112303073989,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a0.8",
+   "note": ""
+  },
+  {
+   "label": "fine_R600_a1.0",
+   "mean": 0.006975414055170196,
+   "sd": 0.0001786972646909703,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 600,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R600_a1.0",
+   "note": ""
+  },
+  {
+   "label": "fine_R600_a0.8",
+   "mean": 0.009635409126120802,
+   "sd": 0.00015953391947838008,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 600,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R600_a0.8",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a1.0_I0zero",
+   "mean": 0.020675861694341838,
+   "sd": 0.00011227571481667191,
+   "fleet": 495540.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a1.0_I0zero",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a0.8_I0zero",
+   "mean": 0.028219202067507127,
+   "sd": 0.0002052212653649306,
+   "fleet": 396432.0,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a0.8_I0zero",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a1.0_demandmatched",
+   "mean": 0.02385999833131409,
+   "sd": 9.168013521950285e-05,
+   "fleet": 446959.3267593576,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 1.0,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a1.0_demandmatched",
+   "note": ""
+  },
+  {
+   "label": "fine_R450_a0.8_demandmatched",
+   "mean": 0.03242326827974558,
+   "sd": 0.0003783088434682088,
+   "fleet": 357567.46140748606,
+   "grid": "0.005 or 0.0025 deg",
+   "R_m": 450,
+   "alpha": 0.8,
+   "source": "data/runs/T004/sim_fine.json:runs.fine_R450_a0.8_demandmatched",
+   "note": ""
+  }
+ ],
+ "comparisons": [
+  {
+   "label": "R=450 vs R=300, alpha=1, 343,638",
+   "old": 0.1341355278256054,
+   "new": 0.058391658974479566,
+   "diff": -0.07574386885112583,
+   "unit": "unmet share"
+  },
+  {
+   "label": "495,540 vs 343,638, R=450, alpha=1",
+   "old": 0.058391658974479566,
+   "new": 0.03513963231022278,
+   "diff": -0.023252026664256784,
+   "unit": "unmet share"
+  },
+  {
+   "label": "fine vs coarse, R=450, alpha=1, 495,540",
+   "old": 0.03513963231022278,
+   "new": 0.0206830219648444,
+   "diff": -0.01445661034537838,
+   "unit": "unmet share"
+  },
+  {
+   "label": "fine demand-matched vs coarse, R=450, alpha=1",
+   "old": 0.03513963231022278,
+   "new": 0.02385999833131409,
+   "diff": -0.011279633978908691,
+   "unit": "unmet share"
+  },
+  {
+   "label": "dry-cell count: paper vs 5-min scaled vs stochastic R=300",
+   "old": 172,
+   "new": 2306,
+   "third": 2463.4,
+   "unit": "cells",
+   "comparable": false
+  }
+ ],
+ "checks": {
+  "1_numbers_traceable": true,
+  "2_old_data_unchanged": true,
+  "3_readonly_untouched": true,
+  "4_new_results_in_T004": true,
+  "5_change_list": true,
+  "6_failures_explicit": true,
+  "7_magnitude": true,
+  "8_boundary_conditions": true,
+  "9_untested_branches": true,
+  "10_caliber_unchanged": true,
+  "reasons": {
+   "1": "every case names its JSON file and key; neighbour and fine numbers come from data/runs/T004/*.json",
+   "2": "data/ excluding data/runs against the T001 start fingerprint: 0 changed, 0 added, 0 removed; cell_fleet_curve.npy and cell_sim_inputs.npz are also compared explicitly in paper_integrity",
+   "3": "paper tree unchanged against the T001 start fingerprint: 0 changed, 0 added, 0 removed; T004 scripts contain no write path to review/ or 审查与规划/, which are owned by the reviewer",
+   "4": "all new artifacts are under data/runs/T004",
+   "5": "code_changes lists every new script and the one modified file",
+   "6": "172 is not reproduced by the paper's stated 5-minute scaled path (2,306); coarse R=450 reaches only east-west neighbours; the 0.700 km diagonal is outside R=0.70; the alpha=0.2 curve was not rerun under walking",
+   "7": "fleet 495,540 >= observed union 484,754; all unmet shares are in [0,1]; inventory is non-negative at every step; the fine-grid demand base is 90.2% of the coarse base",
+   "8": "fleet conservation residual is exactly 0 for every grid, radius and seed after the fix; minimum inventory is 0.0 (coarse) and 0.0021 (fine), never negative; the final in-transit pool is included in the residual",
+   "9": "see notes",
+   "10": "no paper edit, no Q2 LP rerun, no Q4 siting rerun; 343,638 retained only as the reproduction calibration and 495,540 as the closed-fleet bridge; p=0.128 unchanged"
+  }
+ },
+ "paper_integrity": {
+  "paper": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 57,
+   "unchanged": true
+  },
+  "data_excluding_runs": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 29,
+   "unchanged": true
+  },
+  "lib_py_sha_now": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_sha_t001": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_unchanged": true,
+  "sim_cell_py_sha_now": "6484d022f2dce73902d4d06e0877b7ce56e056143265ba1f255ce2043ba93742",
+  "sim_cell_py_sha_t001": "910e51329ec6b03bda0a6af461a849960992338b5eb4aac6fddb84373e66b00a",
+  "sim_cell_py_changed": true,
+  "cell_fleet_curve_sha_now": "4dcdd3addf8d7a00b93408ba3425c6254ce38f8d25d2c9c3f06e72ce7d83992e",
+  "cell_fleet_curve_sha_t001": "4dcdd3addf8d7a00b93408ba3425c6254ce38f8d25d2c9c3f06e72ce7d83992e",
+  "cell_fleet_curve_unchanged": true,
+  "cell_sim_inputs_sha_now": "bfb909232720071eca9cce2d00e913d833c2ca898ff29ddcfd94852e7b503467",
+  "cell_sim_inputs_sha_t001": "bfb909232720071eca9cce2d00e913d833c2ca898ff29ddcfd94852e7b503467",
+  "cell_sim_inputs_unchanged": true
+ },
+ "code_integrity": {
+  "baseline": "data/runs/T001/fingerprint_end.json (code tree)",
+  "changed": [
+   "code/__pycache__/sim_cell.cpython-311.pyc",
+   "code/audit/t001_delivery.py",
+   "code/audit/t003_numbers.py",
+   "code/sim_cell.py"
+  ],
+  "added_count": 22,
+  "removed": [],
+  "t004_modified": [
+   "code/sim_cell.py",
+   "code/__pycache__/sim_cell.cpython-311.pyc"
+  ],
+  "pre_existing_since_T001": [
+   "code/audit/t001_delivery.py",
+   "code/audit/t003_numbers.py"
+  ],
+  "explanation": "t001_delivery.py (22:06) and t003_numbers.py (22:11) were changed before T004 started and were not touched by T004; the bytecode file is regenerated by Python when sim_cell.py is imported."
+ },
+ "code_changes": [
+  {
+   "file": "code/sim_cell.py",
+   "status": "modified",
+   "what": "walk-branch fleet conservation: borrow[c] counted and added to the in-flight arrival pool; docstring records the T004 fix",
+   "why": "without it every walked trip deleted a bicycle; R=450 lost 240,170 bicycles/day and R=600 lost 314,073",
+   "baseline": "R=300 bit-identical because borrow=0"
+  },
+  {
+   "file": "code/__pycache__/sim_cell.cpython-311.pyc",
+   "status": "regenerated",
+   "what": "bytecode cache of sim_cell.py",
+   "why": "Python import cache; not source"
+  },
+  {
+   "file": "code/audit/t001_delivery.py",
+   "status": "pre-existing change",
+   "what": "mtime 22:06, before T004 started",
+   "why": "not modified by T004; listed for a complete code diff"
+  },
+  {
+   "file": "code/audit/t003_numbers.py",
+   "status": "pre-existing change",
+   "what": "mtime 22:11, before T004 started",
+   "why": "not modified by T004; listed for a complete code diff"
+  },
+  {
+   "file": "code/audit/t004_neighbours.py",
+   "status": "new",
+   "what": "coarse-grid reachable-neighbour counts and lattice distances"
+  },
+  {
+   "file": "code/audit/t004_neighbours_fine.py",
+   "status": "new",
+   "what": "fine-grid reachable-neighbour counts and lattice distances"
+  },
+  {
+   "file": "code/audit/t004_sim.py",
+   "status": "new",
+   "what": "coarse 343,638 radius runs and 13.4% reproduction"
+  },
+  {
+   "file": "code/audit/t004_sim_fine.py",
+   "status": "new",
+   "what": "coarse 495,540 and fine-grid runs, I0-zero and demand-matched"
+  },
+  {
+   "file": "code/audit/t004_leak_check.py",
+   "status": "new",
+   "what": "before/after fleet-conservation measurement, all seeds"
+  },
+  {
+   "file": "code/audit/t004_fine_grid.py",
+   "status": "new",
+   "what": "0.0025-degree cell system, data support, fine inputs"
+  },
+  {
+   "file": "code/audit/t004_drycells.py",
+   "status": "new",
+   "what": "172-dry-cell reconstruction and stochastic side-by-side"
+  },
+  {
+   "file": "code/audit/t004_dry_search.py",
+   "status": "new",
+   "what": "definition search that located the hourly-unscaled path"
+  },
+  {
+   "file": "code/audit/t004_dry_robust.py",
+   "status": "new",
+   "what": "phase-offset/arrival-lag robustness of the 172 count"
+  },
+  {
+   "file": "code/audit/t004_validate.py",
+   "status": "new",
+   "what": "delivery validator"
+  },
+  {
+   "file": "code/audit/t004_delivery.py",
+   "status": "new",
+   "what": "this delivery builder"
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T004_delivery.json",
+  "neighbours_coarse": "data/runs/T004/neighbours.json",
+  "neighbours_fine": "data/runs/T004/neighbours_fine.json",
+  "coarse_runs": "data/runs/T004/sim_results.json",
+  "conservation": "data/runs/T004/conservation.json",
+  "fine_grid": "data/runs/T004/fine_grid.json",
+  "fine_cells": "data/runs/T004/fine_cells.parquet",
+  "fine_inputs": "data/runs/T004/fine_sim_inputs.npz",
+  "all_runs": "data/runs/T004/sim_fine.json",
+  "dry_cells": "data/runs/T004/dry_cells.json",
+  "dry_search": "data/runs/T004/dry_definition_search.json",
+  "dry_robustness": "data/runs/T004/dry_172_robustness.json"
+ },
+ "notes": [
+  "The 172 dry-cell number is not an LP result. The Q2 LP files are zone-level (50 zones); the only reconstruction that gives 172 is an hourly, unscaled cell path. The paper says the path is 1/p-scaled; the 5-minute scaled path gives 2,306. T012 must decide which statement to keep.",
+  "At 0.005 deg, R=450 reaches only east-west neighbours (426 m) and R=600 adds north-south (556 m); diagonal neighbours (700 m) are not reachable until R>0.700. This anisotropy is an artifact of a circular radius on a rectangular lattice, not a walking model.",
+  "A 0.0025 deg cell is 213 x 278 m, 3.64x the constant GPS error; it is above the coordinate resolution but 14.1% of box-filtered trips fall in sub-threshold fine cells, so the fine-grid level is supported with reduced coverage, not as a full-city estimate.",
+  "The fine-grid fleet is fixed at 495,540 while its demand base is 90.2% of the coarse base; the demand-matched row (446,959 bicycles) is the like-for-like comparison and gives 2.39% rather than 2.07% at R=450, alpha=1. After the simulator's 1/0.128 scaling the coarse day has 2.14M departures and the fine day 1.93M; all quoted unmet figures are ratios on their own demand base.",
+  "On the fine grid the original 300 m radius is physically active and gives 4.77% at 495,540; the coarse 300 m run is no-walking. If the paper keeps the 300 m label, the fine-grid number is the defensible one; the coarse R=450 number is the task's main specification.",
+  "A walked trip is dispatched with the demand cell's zone destination kernel, not the donor cell's; adjacent cells can cross a KMeans zone boundary, so this is an approximation. The donor choice is 'the reachable cell with the most bicycles'; nearest-first and random donor rules are untested.",
+  "No-evidence I0 cells: 25 of 11,269 (0.22%), carrying 0.043% of typical departures; giving them the zone-median default instead of zero changes the R=450 result by less than 0.02 percentage points.",
+  "Untested branches: non-circular walking areas; real pedestrian networks and barriers; walking willingness that depends on distance, weather or bike availability; competition between walkers; time-varying radius; the diagonal at exactly 0.70 km; the alpha=0.2 curve under walking; Q2 LP rerun (T007) and Q4 siting rerun (T009) are out of scope.",
+  "The seed spread is Monte Carlo only (0.03-0.24 percentage points); model uncertainty from p, fleet and I0 is larger and is not included in the quoted standard deviations.",
+  "The replacement texts are suggestions only; paper/ is byte-identical to the T001 start fingerprint and no conclusion is decided here."
+ ]
+}

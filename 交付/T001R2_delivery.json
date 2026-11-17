@@ -1,0 +1,437 @@
+{
+ "task": "T001-R2",
+ "title": "封闭车队口径与中心值",
+ "generated_at": "2026-11-17T22:37:16",
+ "caliber": {
+  "decision": "closed fleet: 10-24 May is one batch of bicycles",
+  "lower_bound": "observed 14-day union 484,754",
+  "old_value": "343,638 = 5/16 same-day occupancy estimate only"
+ },
+ "truncation_check": {
+  "daily": [
+   {
+    "date": "2017-05-10",
+    "trips": 262513,
+    "bikes": 177736,
+    "hours_with_orders": 24,
+    "min_hour_count": 191,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.014524994952630918
+   },
+   {
+    "date": "2017-05-11",
+    "trips": 272132,
+    "bikes": 185808,
+    "hours_with_orders": 24,
+    "min_hour_count": 181,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.01345303014713448
+   },
+   {
+    "date": "2017-05-12",
+    "trips": 265063,
+    "bikes": 181420,
+    "hours_with_orders": 24,
+    "min_hour_count": 161,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.01439280472944168
+   },
+   {
+    "date": "2017-05-13",
+    "trips": 225181,
+    "bikes": 162614,
+    "hours_with_orders": 24,
+    "min_hour_count": 209,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.017190615549269254
+   },
+   {
+    "date": "2017-05-14",
+    "trips": 236551,
+    "bikes": 168321,
+    "hours_with_orders": 24,
+    "min_hour_count": 179,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.014470452460568757
+   },
+   {
+    "date": "2017-05-15",
+    "trips": 279514,
+    "bikes": 189923,
+    "hours_with_orders": 24,
+    "min_hour_count": 146,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.01362364675830191
+   },
+   {
+    "date": "2017-05-16",
+    "trips": 288679,
+    "bikes": 195289,
+    "hours_with_orders": 24,
+    "min_hour_count": 157,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.011722362901354099
+   },
+   {
+    "date": "2017-05-18",
+    "trips": 322141,
+    "bikes": 195365,
+    "hours_with_orders": 24,
+    "min_hour_count": 222,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.015247981473950848
+   },
+   {
+    "date": "2017-05-19",
+    "trips": 314437,
+    "bikes": 195071,
+    "hours_with_orders": 24,
+    "min_hour_count": 234,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.016540674284514865
+   },
+   {
+    "date": "2017-05-20",
+    "trips": 134120,
+    "bikes": 103594,
+    "hours_with_orders": 20,
+    "min_hour_count": 0,
+    "zero_hours": 4,
+    "zero_hour_list": [
+     19,
+     20,
+     21,
+     22
+    ],
+    "night_share": 0.036348046525499556
+   },
+   {
+    "date": "2017-05-21",
+    "trips": 209389,
+    "bikes": 151779,
+    "hours_with_orders": 24,
+    "min_hour_count": 340,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.02736055857757571
+   },
+   {
+    "date": "2017-05-22",
+    "trips": 124771,
+    "bikes": 100841,
+    "hours_with_orders": 24,
+    "min_hour_count": 209,
+    "zero_hours": 0,
+    "zero_hour_list": [],
+    "night_share": 0.0341104904184466
+   },
+   {
+    "date": "2017-05-23",
+    "trips": 150434,
+    "bikes": 117391,
+    "hours_with_orders": 21,
+    "min_hour_count": 0,
+    "zero_hours": 3,
+    "zero_hour_list": [
+     9,
+     10,
+     19
+    ],
+    "night_share": 0.027320951380671924
+   },
+   {
+    "date": "2017-05-24",
+    "trips": 128385,
+    "bikes": 105455,
+    "hours_with_orders": 18,
+    "min_hour_count": 0,
+    "zero_hours": 6,
+    "zero_hour_list": [
+     9,
+     10,
+     20,
+     21,
+     22,
+     23
+    ],
+    "night_share": 0.03680336487907466
+   }
+  ],
+  "summary": {
+   "full_mean_trips": 274023.44444444444,
+   "trunc_mean_trips": 149419.8,
+   "volume_ratio": 0.5452810809780672,
+   "full_mean_bikes": 183505.22222222222,
+   "trunc_mean_bikes": 115812.0,
+   "bike_ratio": 0.6311101046473397,
+   "full_min_hours": 24,
+   "trunc_min_hours": 18,
+   "full_zero_hours": 0,
+   "trunc_zero_hours": 13
+  },
+  "zero_hour_blocks": {
+   "2017-05-20": [
+    19,
+    20,
+    21,
+    22
+   ],
+   "2017-05-23": [
+    9,
+    10,
+    19
+   ],
+   "2017-05-24": [
+    9,
+    10,
+    20,
+    21,
+    22,
+    23
+   ]
+  },
+  "effort_within_covered_hours": {
+   "2017-05-20": {
+    "covered_hours": 20,
+    "observed": 134120,
+    "expected_at_full_rate": 221137.11111111112,
+    "ratio_within_covered_hours": 0.606501547054266,
+    "full_day_ratio": 0.48944717220059436
+   },
+   "2017-05-21": {
+    "covered_hours": 24,
+    "observed": 209389,
+    "expected_at_full_rate": 274023.44444444444,
+    "ratio_within_covered_hours": 0.7641280490598736,
+    "full_day_ratio": 0.7641280490598736
+   },
+   "2017-05-22": {
+    "covered_hours": 24,
+    "observed": 124771,
+    "expected_at_full_rate": 274023.44444444444,
+    "ratio_within_covered_hours": 0.45532965346436294,
+    "full_day_ratio": 0.45532965346436294
+   },
+   "2017-05-23": {
+    "covered_hours": 21,
+    "observed": 150434,
+    "expected_at_full_rate": 230255.22222222225,
+    "ratio_within_covered_hours": 0.6533358876647507,
+    "full_day_ratio": 0.5489822241487042
+   },
+   "2017-05-24": {
+    "covered_hours": 18,
+    "observed": 128385,
+    "expected_at_full_rate": 215034.33333333334,
+    "ratio_within_covered_hours": 0.5970441929428324,
+    "full_day_ratio": 0.46851830601680067
+   }
+  },
+  "conclusion": "5/20-5/24 is a truncated sample, not a behaviour change: volume is 54.5% of 10-19 May, distinct bicycles 63.1%, 13 whole hour-blocks are missing (5/20 19-22; 5/23 9,10,19; 5/24 9,10,19-23), and the daily totals are 46-76% of the full-day rate even inside covered hours. The hourly shape differs from the full days (corr 0.65-0.78, max 6-10 pp), so the paper's 'indistinguishable' wording at sec3:32-33 is not supported. Missing whole hours are why the day cannot be refitted as if it were a uniform 54.5% subsample."
+ },
+ "methods": {
+  "A_9day_unseen_on_14day_union": {
+   "F": 506634.97452454094,
+   "multiplicative_check": 506634.974524541,
+   "unseen9": 0.04318883540378449,
+   "formula": "unseen9 = 1 - 462,893/483,787 = 4.319%; F_A = 484,754/(1 - unseen9) = 506,635",
+   "note": "upper reference; overstates the 14-day unseen share"
+  },
+  "B_chapman_9day_vs_5day": {
+   "F": 495539.98812757694,
+   "se": 131.31514948847217,
+   "ci95_sampling": [
+    495282.61043457955,
+    495797.36582057434
+   ],
+   "note": "central candidate; heterogeneity biases down, truncated second window biases up"
+  },
+  "C_homogeneous_day_extrapolation": {
+   "F": 488435.73029741074,
+   "notseen_per_day": 0.705301179893552,
+   "unseen14": 0.0075377988730859526,
+   "formula": "(1-q)^9 = 4.319% -> 1-q = 0.7053; (1-q)^14 = 0.754%; F_C = 484,754/(1 - 0.754%) = 488,436",
+   "note": "lower reference; ignores heterogeneity"
+  }
+ },
+ "refit_on_14_days": {
+  "attempted": false,
+  "reason": "the 5/20-5/24 days are not uniform subsamples: 13 whole hour-blocks are absent and the within-covered-hour volume is 46-76% of the full-day rate, so a 14-day usage-rate fit would mix truncated-day capture probabilities with real usage. The 9-day + union route and the two-window capture-recapture avoid fitting a usage distribution to the truncated days.",
+  "difference_if_forced": "a naive 14-day refit would make the low-volume days look like low-usage days and bias the estimated mean trips per bicycle downward, which inflates F; no such estimate is used."
+ },
+ "central": {
+  "F": 495539.98812757694,
+  "method": "B_chapman_9day_vs_5day",
+  "model_interval": [
+   484754,
+   506634.97452454094
+  ],
+  "interval_note": "lower = observed 14-day union (hard bound); upper = method A (normalised reference); not a sampling CI",
+  "interval_endpoint_decision": "for the acceptance session; this delivery does not choose which end to adopt"
+ },
+ "excluded_methods": [
+  {
+   "name": "beta-binomial 9-day",
+   "F": 483787.206,
+   "why": "9-day window; below 14-day union"
+  },
+  {
+   "name": "zero-truncated NB 9-day",
+   "F": 478337.265,
+   "why": "9-day window; below 14-day union"
+  },
+  {
+   "name": "homogeneous 9-day",
+   "F": 465212.226,
+   "why": "9-day window; below 14-day union"
+  }
+ ],
+ "exclusion_statement": "9 天点估计低于 14 天并集下界，故不作为中心值；被排除方法：β-二项 483,787、零截断 NB 478,337、同质 9 天 465,212。",
+ "conversions": {
+  "rides_per_day": 2143414.0625,
+  "rides_per_bike_per_day": {
+   "central": 4.325410892870622,
+   "lower": 4.4216531735684494,
+   "upper": 4.23068712244258,
+   "old": 6.237418873536888,
+   "formula": "2,143,414 / F"
+  },
+  "alpha_star": {
+   "central": 0.5547685486266435,
+   "lower": 0.5671123910272015,
+   "upper": 0.542619467315681,
+   "old_alpha": 0.8,
+   "formula": "274,910 / F"
+  },
+  "I0_multiplier_vs_343638": {
+   "central": 1.4420407743961947,
+   "lower": 1.4106531264873141,
+   "upper": 1.474327619371608,
+   "formula": "F / 343,638"
+  }
+ },
+ "affected_paper": [
+  {
+   "coord": "paper/summary.tex:23-24",
+   "old": "3.4e5 bicycles serving 6.2 rides each per day",
+   "new": "4.96e5 bicycles (interval 4.85e5-5.07e5) serving 4.3 rides each per day (4.23-4.42)"
+  },
+  {
+   "coord": "paper/sec3_data.tex:85",
+   "old": "F = T/mu = 343,638",
+   "new": "F = 495,540 (interval 484,754-506,640) under closed fleet"
+  },
+  {
+   "coord": "paper/sec3_data.tex:139-140 (table 3)",
+   "old": "Fleet estimate 343,638; rides per bicycle per day 6.2",
+   "new": "Fleet estimate 495,540 (484,754-506,640); rides per bicycle per day 4.3"
+  },
+  {
+   "coord": "paper/sec3_data.tex:96-97",
+   "old": "At 343,638 bicycles and 2.14e6 rides per day, 6.2 rides per bicycle per day",
+   "new": "At 495,540 bicycles and 2.14e6 rides per day, 4.3 rides per bicycle per day"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:14-15",
+   "old": "I_z0 is the zone's share of the fleet",
+   "new": "fleet level 495,540; every I_z0 scales by 495,540/343,638 = 1.442 versus the current numbers"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:17-19",
+   "old": "smallest zone 1,986, median 6,912 bicycles at midnight",
+   "new": "scale by 1.442: 2,864 and 9,968 (excursion -349 unchanged)"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:143-149",
+   "old": "alpha in {0.4,...,1.0}; alpha=0.8 = 275,000 bicycles",
+   "new": "same physical grid is alpha* in {0.277,...,0.693}; the 275,000-bicycle optimum is alpha*=0.555 (cost 390k unchanged); the old alpha=1 (343,638) is alpha*=0.693"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:159-163 (fig4_q2 panel d)",
+   "old": "total daily cost against fleet size, alpha grid 0.4-1.0",
+   "new": "multiply the fleet axis by 1.442 or relabel alpha as alpha*=alpha_old*343,638/495,540; optimum stays at 274,910 bicycles"
+  },
+  {
+   "coord": "paper/sec9_sensitivity.tex:17-22",
+   "old": "table of daily fleet estimates, adopted value 343,638",
+   "new": "relabel as same-day occupancy estimates; keep the daily table, but it no longer defines the fleet"
+  },
+  {
+   "coord": "paper/sec9_sensitivity.tex:31",
+   "old": "We adopt the weekday value 343,638",
+   "new": "closed-fleet centre 495,540 (484,754-506,640); 343,638 is demoted to the 5/16 same-day occupancy estimate"
+  },
+  {
+   "coord": "paper/sec9_sensitivity.tex:103",
+   "old": "5,263 cells are served by 343,638 bicycles",
+   "new": "5,263 cells are served by 495,540 bicycles"
+  },
+  {
+   "coord": "paper/sec5_q2.tex:19-21",
+   "old": "172 of 5,263 cells run dry",
+   "new": "affected; exact count requires the Q2 rerun in phase B (higher fleet, fewer dry cells)"
+  }
+ ],
+ "checks": {
+  "1_central_below_union": true,
+  "2_interval_lower_ge_union": true,
+  "3_two_methods_within_5pct": true,
+  "4_truncation_numbers": true,
+  "5_conversions_complete": true,
+  "6_old_results_untouched": true,
+  "7_paper_untouched": true,
+  "8_boundary_conditions": true,
+  "9_untested_branches_declared": true,
+  "10_caliber_unchanged": true,
+  "reasons": {
+   "8": "boundaries checked: F_center >= 484,754; interval lower = 484,754; all candidate methods are >= the observed union; alpha*=274,910/F lies in (0,1).",
+   "6": "data/ excluding data/runs: 0 changed, 0 added, 0 removed.",
+   "10": "code/lib.py SHA-256 unchanged; no SCALE constant was touched."
+  }
+ },
+ "paper_integrity": {
+  "paper": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 57,
+   "unchanged": true
+  },
+  "data_excluding_runs": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 29,
+   "unchanged": true
+  },
+  "lib_py_unchanged": true
+ },
+ "code_changes": [
+  "new code/audit/t001r2_truncation.py",
+  "new code/audit/t001r2_fleet.py",
+  "new code/audit/t001r2_delivery.py"
+ ],
+ "outputs": {
+  "delivery_json": "交付/T001R2_delivery.json",
+  "truncation": "data/runs/T001R2/truncation.json",
+  "fleet_closed": "data/runs/T001R2/fleet_closed.json"
+ },
+ "notes": [
+  "不重跑 Q2-Q5；Q2 的成本/卡车数只做 alpha 标签换算，物理车队点 274,910 不变。",
+  "区间下端是 14 天观测并集（硬下界），上端是方法 A（高估未见份额），不是抽样置信区间；Chapman 抽样 95% CI 仅 ±260 辆，模型不确定性主导。",
+  "方法 B 的第二窗口 5/20-5/24 是截断样本（单量 54.5%、单车数 63.1%、13 个零订单小时），这会降低 n2 与重叠 m、抬高 Chapman；异质性则压低 Chapman，两向部分抵消。",
+  "未测分支：按日分批投放的开放模型；若车队可跨城市调动，14 天并集不再是下界。",
+  "The 5/20-24 window is used only through presence/absence (capture-recapture); no usage-rate distribution is fitted on it.",
+  "The interval is a model-uncertainty envelope, not a sampling CI: the Chapman sampling 95% CI is 495,283-495,797, while the method envelope is 484,754-506,635.",
+  "The paper passage sec9:35-37 ('within 4%') is a separate T002 finding and is not changed here."
+ ]
+}

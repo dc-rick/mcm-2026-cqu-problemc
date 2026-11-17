@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+
+% ---------- page geometry ----------
+\usepackage[a4paper,top=2.1cm,bottom=2.1cm,left=2.2cm,right=2.2cm]{geometry}
+
+% ---------- fonts: Times for text and mathematics ----------
+\usepackage{fontspec}
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Termes Math}
+
+% ---------- mathematics ----------
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+% ---------- tables and figures ----------
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\usepackage{subcaption}
+
+% ---------- colour, links, headers ----------
+\usepackage{xcolor}
+\definecolor{navy}{HTML}{1F3864}
+\usepackage[colorlinks=true,linkcolor=navy,citecolor=navy,urlcolor=navy]{hyperref}
+\hypersetup{pdftitle={The Geometry of a Bicycle City: Behaviour, Rebalancing, Incentives and Fences in Beijing's Dockless Bike-Share System},
+            pdfsubject={2026 CQU MCM Problem C}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\usepackage{enumitem}
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt}
+\usepackage{float}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{3}
+
+% ---------- notation shortcuts ----------
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\ind}[1]{\mathbb{1}\!\left[#1\right]}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\eqnref}[1]{Eq.~\eqref{#1}}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\setlength{\abovedisplayskip}{5pt}
+\setlength{\belowdisplayskip}{5pt}
+\setlength{\abovedisplayshortskip}{2pt}
+\setlength{\belowdisplayshortskip}{2pt}
+\setcounter{tocdepth}{1}
+
+\begin{document}
+
+\thispagestyle{empty}
+\input{summary}
+\newpage
+{\small
+\setlength{\parskip}{0pt}
+\tableofcontents
+\vspace{8pt}
+\listoffigures
+\listoftables
+}
+\newpage
+
+\input{sec1_intro}
+\input{sec2_assumptions}
+\input{sec3_data}
+\input{sec4_q1}
+\input{sec5_q2}
+\input{sec6_q3}
+\input{sec7_q4}
+\input{sec8_q5}
+\input{sec9_sensitivity}
+\input{sec10_evaluation}
+
+\newpage
+\input{references}
+\newpage
+\input{ai_report}
+
+\end{document}

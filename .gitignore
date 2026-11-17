@@ -1,0 +1,30 @@
+# Data and derived matrices are not stored in this repository.
+#
+# `data/` holds the competition order file and derived arrays:
+#   - trips.parquet        87 MB, cleaned order table
+#   - dist_matrix.npy     106 MB, 5,263 x 5,263 cell distance matrix
+#   - runs/               per-task simulation outputs
+# GitHub rejects files above 100 MB, and the order data is distributed
+# under the competition's terms, so it is excluded here.  See DATA.md for
+# how to obtain it and rebuild every derived file.
+data/
+
+# Claude Code session state (local only)
+.claude/
+
+# LaTeX build artifacts
+paper/main.aux
+paper/main.log
+paper/main.out
+paper/main.toc
+paper/main.lof
+paper/main.lot
+paper/main.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+.DS_Store

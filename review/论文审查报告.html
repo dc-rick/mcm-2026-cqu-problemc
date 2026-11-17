@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>论文审查报告</title>
+<style>
+:root{
+  --bg:#f8f7f4; --card:#ffffff; --fg:#1f2328; --muted:#5b616e; --line:#dedad2; --soft:#f0eee9;
+  --accent:#1d5fa7; --accent-bg:#e9f1fb;
+  --p0:#b42318; --p0-bg:#fdeceb; --p1:#8a5300; --p1-bg:#fff3dc; --p2:#3b6d11; --p2-bg:#edf6e3;
+  --ok:#22703a; --ok-bg:#e6f4ea;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181c; --card:#1e2127; --fg:#e6e6e6; --muted:#a3a9b5; --line:#343842; --soft:#262a31;
+    --accent:#7fb2f0; --accent-bg:#1c2a3d;
+    --p0:#ff8a80; --p0-bg:#3a1f1f; --p1:#f3c26b; --p1-bg:#3a2e17; --p2:#a5d67a; --p2-bg:#22301a;
+    --ok:#86d39b; --ok-bg:#1b2f22;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181c; --card:#1e2127; --fg:#e6e6e6; --muted:#a3a9b5; --line:#343842; --soft:#262a31;
+  --accent:#7fb2f0; --accent-bg:#1c2a3d;
+  --p0:#ff8a80; --p0-bg:#3a1f1f; --p1:#f3c26b; --p1-bg:#3a2e17; --p2:#a5d67a; --p2-bg:#22301a;
+  --ok:#86d39b; --ok-bg:#1b2f22;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 "PingFang SC","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 96px}
+h1{font-size:1.7rem;line-height:1.35;margin:.2em 0 .4em}
+h1 small{display:block;font-size:1rem;font-weight:500;color:var(--muted);margin-top:.3em}
+h2{font-size:1.35rem;margin:2.6em 0 .8em;padding-bottom:.35em;border-bottom:2px solid var(--line)}
+h3{font-size:1.1rem;margin:1.8em 0 .6em}
+h4{font-size:1rem;margin:1.3em 0 .4em}
+p,li,td{overflow-wrap:anywhere}
+a{color:var(--accent)}
+.meta{color:var(--muted);font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+.verdict{border-left:5px solid var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0}
+.kv{background:var(--soft);border-radius:8px;padding:10px 12px}
+.kv b{display:block;font-size:.84rem;color:var(--muted);font-weight:500}
+.kv span{font-size:1.08rem;font-weight:650}
+.tag{display:inline-block;padding:.05em .55em;border-radius:5px;font-size:.78rem;font-weight:700;white-space:nowrap;vertical-align:.08em}
+.p0{color:var(--p0);background:var(--p0-bg)}
+.p1{color:var(--p1);background:var(--p1-bg)}
+.p2{color:var(--p2);background:var(--p2-bg)}
+.ok{color:var(--ok);background:var(--ok-bg)}
+.info{color:var(--accent);background:var(--accent-bg)}
+.table-wrap{overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.55}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{background:var(--soft);font-weight:650}
+tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-bg)}
+code{font-family:Consolas,"Cascadia Mono","SFMono-Regular",monospace;font-size:.86em;background:var(--soft);padding:.05em .35em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--soft);padding:10px 12px;border-radius:8px;overflow-x:auto;font-size:.82rem;line-height:1.5}
+nav.toc ol{columns:2;column-gap:32px;padding-left:1.6em;margin:.4em 0}
+nav.toc li{break-inside:avoid}
+.note{color:var(--muted);font-size:.9rem}
+.good{border-left:4px solid var(--ok)}
+.bad{border-left:4px solid var(--p0)}
+@media (max-width:640px){nav.toc ol{columns:1} h1{font-size:1.4rem}}
+@media print{body{background:#fff} .card,.table-wrap{break-inside:avoid} a{color:inherit}}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+<h1>论文审查报告
+<small>The Geometry of a Bicycle City: Behaviour, Rebalancing, Incentives and Fences in Beijing's Dockless Bike-Share System（2026 重庆大学数学建模秋季赛 C 题）</small></h1>
+<p class="meta">审查日期：2026-11-17 ｜ 审查对象：<code>paper/</code>（编译后 25 页）、<code>code/</code>（22 个脚本）、<code>data/</code>（结果文件） ｜ 方法：对照题目与竞赛 AI 政策通读论文，阅读全部脚本，用独立脚本重算关键数字，联网核实一条史实 ｜ 论文与代码均未改动</p>
+</header>
+
+<nav class="toc card" aria-label="目录">
+<strong>目录</strong>
+<ol>
+<li><a href="#s1">总评与评级</a></li>
+<li><a href="#s2">题目与竞赛规则符合性</a></li>
+<li><a href="#s3">数据、抽样率与车队规模</a></li>
+<li><a href="#s4">问题 1：出行行为模型</a></li>
+<li><a href="#s5">问题 2：调度优化</a></li>
+<li><a href="#s6">问题 3：激励机制</a></li>
+<li><a href="#s7">问题 4：电子围栏</a></li>
+<li><a href="#s8">问题 5：多平台竞争</a></li>
+<li><a href="#s9">灵敏度与不确定性</a></li>
+<li><a href="#s10">关键说法核验表</a></li>
+<li><a href="#s11">写作、排版与图表</a></li>
+<li><a href="#s12">引用与 AI 使用报告</a></li>
+<li><a href="#s13">修改清单（按优先级）</a></li>
+<li><a href="#s14">与其他美赛论文对比及评分</a></li>
+<li><a href="#s15">对照项目七条建模标准</a></li>
+<li><a href="#s16">附录：核验方法与数字</a></li>
+</ol>
+</nav>
+
+<section id="s1">
+<h2>1. 总评与评级</h2>
+<div class="card verdict">
+<p><strong>结论：</strong>这篇论文的写作、图表和问题意识达到往届 O/F 档论文的水平。“车不缺，缺的是时间和位置”这一诊断贯穿全文，对数据识别不了的量的处理也少见地认真。但正文里有一批只读论文就能发现的前后矛盾。代码核验又发现两处核心问题：Q1 的模型实际上没有用于 Q2–Q5，Q3 的“节省 34.9%”被明显高估。按美赛标准，当前版本最可能获 M；修完第 13 节的 P0 问题后，有竞争 F 的基础。</p>
+<div class="grid">
+ <div class="kv"><b>当前版本，评委只读论文</b><span>M（Meritorious），约 77/100</span></div>
+ <div class="kv"><b>当前版本，计入代码核验</b><span>约 64/100，相当于 H</span></div>
+ <div class="kv"><b>完成 P0 修改后（预估）</b><span>约 82/100，M 上沿，可冲 F</span></div>
+ <div class="kv"><b>冲 O 还需要</b><span>Q1→Q2→Q3 真正联成一个模型</span></div>
+</div>
+<p class="note">评分细则和分档方法见第 14 节。评委看不到代码，所以预期奖项以“只读论文”一栏为准；第二栏说明的是，如果评委读出了这些问题，论文会落到哪一档。美赛各奖项的大致比例为 O 约 0.1–0.2%、F 约 1%、M 约 7%、H 约 20–25%，各年略有不同，仅供参考。</p>
+</div>
+
+<h3>主要优点</h3>
+<ol>
+<li><strong>先诊断，再建模。</strong>论文先用车队估计和区级库存轨迹判断系统是否缺车，再把 Q2–Q5 都放到“成本与布局”的框架下。这种贯穿全文的判断是 O 奖论文常见的特征，也是本文最有价值的部分。</li>
+<li><strong>认真处理数据识别不了的量。</strong>订单抽样率、午夜库存和未被满足的需求都单独讨论了（§1.3、§3.3、§9.4）。用同一辆车相邻订单的位置是否连续来估计抽样率，是巧妙的想法。</li>
+<li><strong>方法选择合理，有对照。</strong>NHPP 加单约束重力模型，用最大似然估计，并有留出日检验和两个基准模型；time-space network LP 用 Gurobi 求到最优；激励部分给出供给曲线和一阶条件；围栏容量用蒙特卡罗 95 分位；还用 OpenStreetMap 的地铁出口做了外部检验。</li>
+<li><strong>结论可执行。</strong>激励方案的五条规则和监管的四条措施都很具体，§9.5 写明了适用范围。</li>
+<li><strong>写作与版面。</strong>英文简洁地道，图为矢量 PDF；摘要页在一页内给出每问的方法和数字；题目要求的各部分齐全，正文在 25 页以内。</li>
+</ol>
+
+<h3>主要问题</h3>
+<ol>
+<li><span class="tag p0">P0</span> <strong>Q1 模型没有被下游使用。</strong>Q2–Q5 的脚本都不读取 <code>q1_params.json</code>，直接用观测的 OD 和到达量。题目明确要求 Q2 “Based on the travel behavior model built above”，Q4 “Using the travel behaviour model from Question (1) to predict parking demand”，论文却写 “One model, four uses”。（第 2、4 节）</li>
+<li><span class="tag p0">P0</span> <strong>Q3 的节省被高估。</strong>代码把本来就停在缺车格子里的骑行算作“被奖励改道”。只修这一处，节省就从 34.9% 降到 19.8%。如果再按论文 §6.7 的发放规则，把付给“本来就会停进目标格的人”的钱算进去，节省只剩约 2%。（第 6 节）</li>
+<li><span class="tag p0">P0</span> <strong>首页的车队估计小于观测到的单车数。</strong>论文估计车队为 343,638 辆，但它自己报告数据里有 484,754 辆不同的车，只看 9 个工作日也有 462,893 辆。这个估计依赖“每辆车使用率相同”的假设，而该假设被数据否定。（第 3 节）</li>
+<li><span class="tag p0">P0</span> <strong>“任何分辨率都不缺车”与正文矛盾。</strong>摘要这样写，§5.1 却说有 172 个格子会断供，§9 报告格子级未满足率为 13.4%。另外，格子级仿真的步行半径（300 m）小于格子间距（426 m），等于不允许用户到邻格取车。（第 5 节）</li>
+<li><span class="tag p0">P0</span> <strong>Q2 的诊断混用了单位，“夜间作业”与方案不符。</strong>“最大回撤 −349 辆，最小库存 1,986 辆”这组对比里，前者是未缩放的样本量，统一单位后是 −2,723 辆。调度方案在 21:00–06:00 的装车量只占 40.4%，而全天均匀分布时这一比例是 37.5%；图 4b 本身也显示全天都在作业。（第 5 节）</li>
+<li><span class="tag p0">P0</span> <strong>其他只读论文就能发现的问题。</strong>§10.3 与表 9 的数字不符；表 5 的“每天骑行次数”实际是 10 天的合计；“2017 年 5 月没有人收到过奖励”与摩拜“红包车”的史实不符；AI 使用报告缺少模型版本和参考文献条目，还有两条声明与代码不符。（第 10、12 节）</li>
+</ol>
+
+<h3>如果时间有限</h3>
+<ul>
+<li><strong>只有 1 天：</strong>先改只涉及文字的 P0（P0-4、P0-5、P0-7、P0-8，P0-9 的文字部分，以及 P0-6 中删去“夜间作业”），再按第 6 节的口径重算 Q3（P0-3 的计算部分，代码改动约 20 行）。这些都不需要重新设计模型，却能消除评委最容易看到的矛盾。</li>
+<li><strong>有 3–4 天：</strong>完成全部 P0，特别是把 Q1 模型接入 Q2/Q4（P0-1）和修正车队估计（P0-2），再做 P1 中的抽样率灵敏度分析和图 3a 的重画。</li>
+</ul>
+</section>
+
+<section id="s2">
+<h2>2. 题目与竞赛规则符合性</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>要求</th><th>来源</th><th>状态</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>一页摘要页</td><td>题目</td><td><span class="tag ok">达标</span></td><td>第 1 页，在一页内。Team Control Number 为空白，提交前要填。</td></tr>
+<tr><td>目录</td><td>题目</td><td><span class="tag p2">基本达标</span></td><td>第 2 页。References 没有进目录。</td></tr>
+<tr><td>五问的完整解答</td><td>题目</td><td><span class="tag ok">达标</span></td><td>每问都有模型、结果和建议。</td></tr>
+<tr><td>Executive Summary（可并入正文）</td><td>题目</td><td><span class="tag ok">达标</span></td><td>§1.5，含表 1 汇总各问答案。</td></tr>
+<tr><td>引用与参考文献</td><td>题目</td><td><span class="tag p2">基本达标</span></td><td>23 条，格式统一。Q5 的部分引用不对题，行业史实没有来源（第 12 节）。</td></tr>
+<tr><td>Report on Use of AI Tools</td><td>竞赛 AI 政策</td><td><span class="tag p1">部分达标</span></td><td>有报告，但缺模型版本和日期，参考文献里没有 AI 条目，正文没有行内引用，标题也不是政策规定的写法（第 12 节）。</td></tr>
+<tr><td>25 页限制（AI 报告不计）</td><td>竞赛规则</td><td><span class="tag ok">达标</span></td><td>AI 报告在第 25 页，其余 24 页。</td></tr>
+<tr><td>Q2 基于前面建立的出行行为模型</td><td>题目 Q2 原文</td><td><span class="tag p0">未达标</span></td><td>LP 的输入是观测到的典型日 OD，不是 Q1 模型的输出。</td></tr>
+<tr><td>Q4 用 Q1 的模型预测停车需求</td><td>题目 Q4 原文</td><td><span class="tag p0">未达标</span></td><td>停车需求取自观测到达量。</td></tr>
+</tbody></table></div>
+
+<h3>Q1 模型与下游的关系（P0-1）</h3>
+<p><strong>代码证据。</strong>只有三个脚本用到 <code>q1_params.json</code>：<code>10_q1_model.py</code>（写出）、<code>90_figs.py:124</code>（画图）、<code>95_numbers.py:32</code>（打印数字）。Q2–Q5 的脚本（<code>20_q2_diag.py</code>、<code>21_q2_opt.py</code>、<code>30_q3_incentive.py</code>、<code>40_q4_efence.py</code>、<code>50_q5_platform.py</code>）读的是 <code>typical_day.npz</code> 里观测的典型日 OD、到达和出发，或者直接读 <code>trips.parquet</code>。</p>
+<p><strong>论文中的相应说法。</strong>§1.5 “One model, four uses. A single estimated gravity model feeds the …”；§4.5 “it is adequate as the demand engine for Q2–Q4”；§6.7 “recomputed hourly from the demand model of Section 4”；§10.1 “One model, four answers. The gravity model of Q1 is not a decorative first …”。</p>
+<p><strong>风险。</strong>评委看不到代码，但 §5.1 公式 (9) 写明 <i>a</i>、<i>d</i> 是“典型日的小时到达和出发量”，细心的评委能看出 Q2 用的是观测数据。问题不只是没满足题目字面要求，论文还做了一条不实陈述。</p>
+<p><strong>两种改法。</strong></p>
+<ol>
+<li><strong>推荐：用 Q1 模型生成需求。</strong>NHPP 速率给出每格每时段的出发量，重力模型 P(j | i, t) 给出去向，相乘得到模型 OD，用它驱动 Q2 的 LP 和 Q4 的占用模拟。“观测输入”和“模型输入”两套结果并列报告，两者的差别本身就是对 Q1 的检验。模型输入还能做观测数据做不到的情景分析，例如距离衰减系数 β 变化或新增吸引点。</li>
+<li><strong>最低限度：如实改写。</strong>写明 Q2–Q4 以观测典型日为输入，Q1 模型用于解释和情景分析。这样做不再有不实陈述，但仍不满足题目字面要求，所以建议至少在 Q2、Q4 各补一组“模型输入”的对照结果。</li>
+</ol>
+</section>
+
+<section id="s3">
+<h2>3. 数据、抽样率与车队规模</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>论文意识到订单文件是抽样数据，并想办法从数据本身估计抽样率；车队估计 F̂ = T/μ 对抽样率不变，§3.4 的推导是对的；§3.2 解释了为什么只用 7 个工作日。这些都是多数参赛论文不会做的工作。</p>
+</div>
+
+<h3>3.1 车队估计小于观测单车数（P0-2）</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>量</th><th class="n">数值</th><th>来源</th></tr></thead>
+<tbody>
+<tr><td>论文估计的车队 F̂</td><td class="n">343,638</td><td>§3.4。数值来自 <code>02_recon_spatial.py</code> 的过滤口径；只用 5 月 16 日一天得 343,605</td></tr>
+<tr><td>数据中出现过的不同单车（14 天）</td><td class="n">484,754</td><td>论文摘要、§1</td></tr>
+<tr><td>10–19 日中有数据的 9 天内出现过的不同单车</td><td class="n">462,893</td><td>check2.py</td></tr>
+<tr><td>按论文的同质泊松模型，9 天内应能看到的不同单车</td><td class="n">343,459</td><td>check2.py</td></tr>
+<tr><td>9 天中恰好只出现 1 天的车：观测 / 模型预测</td><td class="n">13.3% / 0.62%</td><td>check2.py</td></tr>
+</tbody></table></div>
+<p><strong>原因。</strong>T/D 方法假设每辆车每天被骑的次数服从同一个泊松分布。实际上各车使用率差别很大，有的车停在偏僻处几天都没人骑，这时 T/D 会低估车队。一个封闭车队的估计值不可能小于观测到的不同车数，所以 343,638 至少低估了 35%（462,893 / 343,638 = 1.35）。另一种可能是车队在这段时间内有增减（2017 年摩拜仍在大量投放新车），这一点论文也需要说明。</p>
+<p><strong>影响方向。</strong>车队更大，意味着每车每天的骑行次数低于 6.2（按 462,893 辆算不超过 4.6 次），Q2 的初始库存也更大，“供给过剩”的结论会更强。同时 §7.3 中“围栏容量约等于车队”的对照会失效。所以修正它不会动摇主线，但必须修，因为这个矛盾在摘要页上就能看到。</p>
+<p><strong>建议。</strong>用跨天的捕获—再捕获方法给出下界，例如 Chao1：F̂ ≥ S<sub>obs</sub> + f<sub>1</sub>²/(2f<sub>2</sub>)，其中 S<sub>obs</sub> 是观测到的不同车数，f<sub>1</sub>、f<sub>2</sub> 是恰好出现 1 天、2 天的车数；或者改用允许个体使用率不同的模型（负二项、混合泊松）。在论文中把 F 写成区间，说明车队是否封闭，再把新的 F 带入初始库存 I<sub>z0</sub>、§5.4 的车队规模分析和 §7.3。</p>
+
+<h3>3.2 抽样率 p 的偏差方向（P1-1）</h3>
+<p>§3.3 的推理是：同一 153 m 格内重新停放会造成“假匹配”，所以 12.8% 高估了匹配率，因而是 p 的<em>下界</em>。这里方向反了：匹配率被高估，说明真实的 p 更低，就这一种偏差而言，12.8% 是<em>上界</em>。</p>
+<p>反方向的偏差更大。车停在格子边界另一侧、GPS 漂移、运营方用卡车或人工搬车（这正是 Q2 研究的对象），都会造成“假不匹配”，使 12.8% 低估 p。放宽“下一单起点等于上一单终点”的判定后：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>判定为“同一位置”的容差</th><th class="n">相邻订单匹配率</th></tr></thead>
+<tbody>
+<tr><td>同一个 7 位 geohash（论文的做法）</td><td class="n">12.83%</td></tr>
+<tr><td>160 m 以内</td><td class="n">17.7%</td></tr>
+<tr><td>250 m 以内</td><td class="n">20.0%</td></tr>
+</tbody></table></div>
+<p><strong>影响。</strong>车队估计不受 p 影响，但所有按 1/p 缩放的流量都与 1/p 成正比，包括 Q2 的出发和到达、Q3 的缺口 N 与奖励支出、Q4 的围栏容量。p 从 0.128 改为 0.177，这些量下降 28%；改为 0.20，下降 36%。论文没有对 Q2–Q4 做 p 的灵敏度分析。由于车队不随 p 变而流量随 p 下降，p 越大，“供给过剩”越明显；但 Q4 的围栏总容量会从 34.4 万降到约 24.9 万（p = 0.177），§7.3 的“容量≈车队”也随之不成立。</p>
+<p><strong>建议。</strong>改正 §3.3 的论述；把 p 当作区间（例如 0.128–0.20）处理，Q2–Q4 的主要数字给出区间；讨论运营调度造成的假不匹配。</p>
+
+<h3>3.3 抽样机制没有说明（P1-1）</h3>
+<p>表 5 中多用途类用户人均 9.2 单、重度短途类 14 单（这是 10 天合计，见第 4 节）。如果订单是逐单独立按 p 抽样的，真实值约为每人每天 9.2 / 10 / 0.128 ≈ 7.2 次和 14 / 10 / 0.128 ≈ 10.9 次，很难成立。数据更像是按用户抽样，即被抽中用户的订单全部保留。</p>
+<p>两种机制下，1/p 缩放的含义不同。按用户抽样时，单车相邻订单检验仍近似给出抽样比例，流量的缩放仍然成立，但人均次数和用户分群这类用户层面的统计不应缩放。建议在假设中写明采用哪种机制，并指出哪些结论对它敏感。</p>
+
+<h3>3.4 小问题</h3>
+<ul>
+<li>§4.6 等处写 “ten usable days”，实际是 9 天：5 月 17 日没有数据，但 <code>lib.py:18</code> 的 <code>ALL_DAYS</code> 列了 10 天。</li>
+<li>§3.5 中区的订单量 “604 and 12,119 trips per day” 是样本单位，其他地方多用缩放后的单位，需要逐处标注。</li>
+<li><code>lib.py:8–9</code> 的数据路径写死为 <code>D:\code\mcm\2026CQU_C\…</code>，项目已经搬到 <code>d:\code\mcm2026_problemA\mcm\2026CQU_C</code>，脚本按原样无法运行。</li>
+</ul>
+</section>
+
+<section id="s4">
+<h2>4. 问题 1：出行行为模型</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>生成、去向、时长三层结构清楚，每层都写了假设。β 按时段分别估计，并给出行为解释：早高峰 2.01 最弱（通勤距离长），午间 2.52 最强（短途办事）。检验有留出日、两个基准模型和 top-5 命中率（40–48%）。用户分群把行为特征和运营含义联系了起来。</p>
+</div>
+
+<h3>4.1 下游没有使用（P0-1）</h3>
+<p>见第 2 节。这是 Q1 最大的问题：模型本身不差，但它在全文里只承担了“描述”的角色。</p>
+
+<h3>4.2 图 3a 不是完整模型的模拟（P1-2）</h3>
+<p>§4.5 说模拟时“draw each trip's time from the Poisson rates, its destination from (4), its duration from (8)”。<code>90_figs.py</code> 的 <code>fig3</code>（第 123–143 行）实际是这样做的：</p>
+<ul>
+<li>只取早高峰时段的 β 和早高峰的起点；</li>
+<li>权重只有 exp(−β·D)，没有吸引力项（第 135–136 行的 A 乘了 0，是死代码）；</li>
+<li>同格行程的距离固定为 0.30 km；</li>
+<li>然后与<em>全时段</em>的观测距离分布比较。</li>
+</ul>
+<p>KS = 0.196 在几十万样本量下是很大的差异，不能据此说模型“reproduces the distance distribution”。建议按论文的描述做真正的全模型模拟（全部时段，含吸引力项），同格行程用格内距离分布代替固定的 0.30 km，再报告 KS 和分位数对比；差异仍大的话，如实写出原因。</p>
+
+<h3>4.3 时长“与观测一致”没有依据（P0-7）</h3>
+<p>数据只有开始时间和起终点 geohash，没有结束时间，也没有时长。§4.4 最后一句 “which matches the observed distribution of within-day ride durations” 应删除。可以改为与文献中的骑行速度或时长分布比较，并给出引用。</p>
+
+<h3>4.4 基准模型被削弱（P1-2）</h3>
+<p>“只看距离”的基准（<code>10_q1_model.py:136</code>，<code>norm_logp(-beta * D)</code>）直接沿用重力模型的 β，没有单独拟合。基准因此被削弱，重力模型的优势（每单 0.035–0.175 nats，即似然高 4%–19%）只是上限。图 3c 用对数坐标，重力模型与距离基准的差距几乎看不见，与“只看吸引力”基准（7.9–8.2）的差距却被放大。建议单独拟合基准，图上用线性坐标或直接画两者之差。</p>
+<p class="note">训练日（10、11、15、16、18 日）和测试日（12、19 日）是固定的。这本身没问题，但正文应写明；最好再换一种划分，看结果是否稳定。</p>
+
+<h3>4.5 用户分群（P0-7、P1-2）</h3>
+<ul>
+<li><strong>表 5 的单位。</strong>“Trips”列是每个用户 10 天的订单数（<code>11_q1_extra.py:37</code> 的 <code>g.size()</code>），不是每天的次数。验证方法：各类用户数乘以该列再求和，约为 236 万，正好等于 10 天的样本订单数。所以正文的 “rides 9.2 times a day”、“14 times a day”，以及据此得出的 “courier-like” 解读，都差了约 10 倍。</li>
+<li><strong>return_share 的含义。</strong>代码中它表示“当天已从同一起点格出发过”（<code>11_q1_extra.py:51–52</code>，<code>key.duplicated()</code>），也就是重复起点。正文写成了“回到起点格的行程比例”。</li>
+<li><strong>谁制造了高峰。</strong>通勤类贡献全部订单的 10.6%，其中 91% 在高峰时段；而高峰订单占全部订单的 48.1%。所以通勤类只占高峰订单的约 20%（0.0966 / 0.4807）。“The peak is made by a minority of trips — commuters” 不成立，高峰主要来自其他类用户。</li>
+<li><strong>聚类质量。</strong>k = 5 时 silhouette 为 0.256。按 Kaufman 和 Rousseeuw 的经验标准，这处在“弱结构”（0.26–0.50）的下沿，k = 3、4 时的 0.239 和 0.237 则属于“没有明显结构”。代码只试了 k = 3、4、5（<code>11_q1_extra.py:63</code>），最优值落在搜索边界上，且是在 4 万人的子样本上计算的。“stable across random initialisations” 没有对应的代码。</li>
+</ul>
+<p><strong>建议。</strong>改表 5 的列名和相应正文；k 的搜索范围扩大到 2–10，用多次初始化之间的调整兰德指数（ARI）报告稳定性；把 return_share 改名为“重复起点比例”；重写“谁制造了高峰”一段。</p>
+</section>
+
+<section id="s5">
+<h2>5. 问题 2：调度优化</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>先诊断再优化。time-space network 中单车和卡车的守恒约束都写全了，目标函数的每一项都有解释。Gurobi 求到了最优（gap 为 0）。把车队规模当作决策变量，得出“调度与车队规模互为替代”的观点，这有新意。表 6 有不派卡车的对照行，3.48 元/辆的单位成本量级也合理。</p>
+</div>
+
+<h3>5.1 诊断混用了单位（P0-5）</h3>
+<p><code>20_q2_diag.py</code> 中 <code>IQ = I0[:, None] + cum</code>：<code>I0</code> 是按车队缩放后的午夜库存，<code>cum</code> 是未缩放的样本净流量累计。§5.1 却说 <i>a</i>、<i>d</i> 已 “scaled by 1/p”。统一按 1/p 缩放后：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>指标</th><th>论文</th><th>统一单位后</th></tr></thead>
+<tbody>
+<tr><td>最大累计回撤</td><td>−349 辆</td><td>−2,723 辆（区 24，午夜库存 11,443）</td></tr>
+<tr><td>最大相对回撤</td><td>未报告</td><td>区 47 降到午夜库存的 43.7%（午夜 4,778 辆）</td></tr>
+<tr><td>全天漂移 Σ|I<sub>z,24</sub> − I<sub>z0</sub>|</td><td>45,119（取自 LP 不派车方案）</td><td>46,395（诊断脚本里的原值 5,939 是样本单位）</td></tr>
+<tr><td>是否有区的库存变为负数</td><td>没有</td><td>没有</td></tr>
+</tbody></table></div>
+<p>“50 个区都不会断供”仍然成立，但余量远没有“349 对 1,986”看起来那么大。§10.3 用这组数字为“供给过剩”辩护（“survives any plausible redistribution of midnight bicycles among zones”），需要改写。另外，至少有一个区—小时的出发量超过了该小时开始时的库存（两者之比最小为 0.92），共有 165 个区—小时的出发量超过库存的一半，所以 “stocks are deep enough to absorb the commute” 应当弱化。随机波动方面，库存至少是该小时出发量泊松标准差的 56 倍，§8.2 中“库存远大于随机波动”的说法大体成立。</p>
+
+<h3>5.2 “任何分辨率都不缺车”（P0-4）</h3>
+<ul>
+<li>摘要：“At every resolution we examine, from 50 traffic zones down to 5,263 neighbourhood cells, no zone ever runs out of bicycles.”</li>
+<li>§5.1：“some 172 of 5,263 cells do run dry”。我没有找到产生 172 这个数的代码。</li>
+<li>§9.4 和 <code>cell_fleet_curve.npy</code>：格子级未满足率在 α = 1.0 时为 13.4%，α = 0.2 时为 40.3%。</li>
+<li>格子仿真的 <code>walk_km=0.30</code>（<code>sim_cell.py:13</code>）小于格子东西向间距 426 m。5,263 个格子没有一个在 300 m 内有邻格（check1.py），用户不能到邻格取车，所以 13.4% 是“完全不步行”情形下的上限。</li>
+</ul>
+<p><strong>建议。</strong>摘要改为“在 50 个区的层面不缺车；格子层面的结果取决于午夜库存分布和步行替代，本文无法确定”。步行半径改为不小于 450 m，或直接用点到点距离，重跑格子曲线后再决定怎么写。</p>
+
+<h3>5.3 “夜间作业”与“卡车回家”（P0-6）</h3>
+<p>摘要、§5.1、§5.3、图 4 标题、§7.1 和 §10.4 都说方案以夜间作业为主。<code>q2_plan.npz</code> 中各小时的装车量（0–23 时）如下：</p>
+<pre>1787  89 1724  640 1226  618 1216  464 1261  643 1170  693
+1022 871  953 1027  825  999  905  988 1249 1187  596 1806</pre>
+<p>21:00–06:00 的装车量占 40.4%，而全天均匀分布时这一比例是 37.5%。卡车每小时有 42–56 段行程，全天都差不多。图 4b 本身也显示全天作业（见论文第 14 页）。模型里没有任何随时段变化的成本或班次约束，所以方案本来就不可能偏向夜间。</p>
+<p>§5.2 说 “every truck returns home by midnight”，但 <code>21_q2_opt.py:107–108</code> 只约束了起止时刻的卡车<em>总数</em>（<code>fleet0</code>、<code>fleetT</code>），没有逐区约束，卡车可以在另一个区结束一天。另外，<code>fleet0</code> 写在按区的循环里，被重复添加了 50 次。这不影响结果，但应移出循环。</p>
+<p>每天共有 1,107.7 段卡车行程，60 辆车平均每辆 18.5 段。按“一段一小时”的假设，每辆车每天作业 18.5 小时，需要 2–3 班司机，而论文没有说明 f = 600 元/车/天是否包含多班人工。</p>
+<p><strong>建议（二选一）。</strong>(a) 加入时段成本（例如白天的 c<sub>km</sub> 乘以拥堵系数）、司机班次约束和逐区回家约束，然后重解，让“夜间作业”成为模型的结果；(b) 删去所有 “night shift / overnight reset” 的说法。(a) 更好，因为它同时回答了题目中“典型一天怎么调度”的时间维度。</p>
+
+<h3>5.4 推荐方案不是最便宜的（P0-7）</h3>
+<div class="table-wrap"><table>
+<thead><tr><th class="n">α</th><th class="n">K</th><th class="n">调运量</th><th class="n">车公里</th><th class="n">未满足</th><th class="n">期末偏差</th><th class="n">目标值（元/天）</th></tr></thead>
+<tbody>
+<tr><td class="n">1.0</td><td class="n">40</td><td class="n">19,200</td><td class="n">4,125</td><td class="n">0</td><td class="n">7,995</td><td class="n">82,333</td></tr>
+<tr class="hl"><td class="n">1.0</td><td class="n">60（推荐）</td><td class="n">23,959</td><td class="n">5,441</td><td class="n">0</td><td class="n">900</td><td class="n">83,325</td></tr>
+</tbody></table></div>
+<p>按论文自己的目标函数，K = 40 更优。如果推荐 K = 60 是因为期末偏差更小，就应把偏差上限写成硬约束并说明阈值；否则应推荐 K = 40。图 4d 中 α = 1 的点是 426k（对应 K = 40），正文写的是 427k（对应 K = 60）。调运量主要由 c<sub>dev</sub> = 3 决定（偏差罚金越高，调得越多），但 c<sub>dev</sub>、w、f 和 c<sub>bike</sub> 都没有做灵敏度分析。</p>
+
+<h3>5.5 LP 与仿真不一致（P1-3）</h3>
+<p>LP 的服务约束（<code>21_q2_opt.py:88</code>）是 <code>dep − u ≤ I</code>，只用小时初的库存，不计同一小时内的到达。所以 α = 1、K = 0 时 LP 有 1,276 个未满足，而 5 分钟步长的仿真（<code>q2_sim.json</code>）在 α = 1.0 和 0.8 时未满足为 0，α = 0.6 时为 0.005%。LP 在 α = 0.6 时的未满足率是 2.5%（K = 0）和 1.6%（K = 80），后者就是表 6 中的 “98.4% served”。</p>
+<p>§5.4 的“内部最优 α = 0.8”来自 LP 的成本，而 α ≤ 0.8 时的未满足罚金有一部分就来自这个时间离散误差。建议把同小时的到达计入服务约束，或改用 15 分钟步长，然后重算 α 扫描。如果最优点移动了，摘要中的 “427k → 390k” 也要改。</p>
+
+<h3>5.6 Q3 借用的卡车单价（P1-3）</h3>
+<p><code>30_q3_incentive.py:109</code> 中 <code>TRUCK_UNIT = 83325.0 / 23959.0</code>，即 3.48 元/辆。这是平均成本，包含卡车固定成本 36,000 元（60 × 600，占 43%）和偏差罚金。Q3 却把它当作边际成本来比较。更合适的做法是用边际成本，或者直接把激励放进 LP（见第 6 节）。</p>
+</section>
+
+<section id="s6">
+<h2>6. 问题 3：激励机制</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>论文说清了激励只能让人多骑几百米，因此与卡车分工。它坚持按格子、按小时度量缺口和候选骑行，§6.1 指出用全天的骑行池会高估一个数量级，这个判断是对的。logit 接受模型、供给曲线和一阶条件构成了完整的结构；“天花板来自物理条件”的结论有意义；方案的五条规则（统一奖励、目标集合、终点验证、每日上限、预算）也很具体。</p>
+</div>
+
+<h3>6.1 距离只有五个取值</h3>
+<p>格子中心之间 1 km 以内的距离只有 0、0.426、0.556、0.700、0.852 km 五个值。论文的六个绕行距离带 [0,50)、[50,100)、[100,150)、[150,200)、[200,300)、[300,450) m 中，中间四个是空的。第一个带只包含距离 0，即缺口格自己（113,936 次候选骑行）；最后一个带只包含 0.426 km，即东西向邻格（220,138 次）。所以 §6.4 所说的“对绕行距离分布积分”实际上只有两个点。§6.3 的 “78% for a 50 m detour, through 54% at 225 m, to 21% at 450 m” 描述的距离上，没有任何候选骑行。</p>
+
+<h3>6.2 计算和设计上的问题（P0-3）</h3>
+<ol>
+<li><strong>本格到达被算成了改道</strong>（<code>30_q3_incentive.py:91–94</code>）。第一个带只含距离 0，计入的是缺口格自己在最坏小时的到达。这些车本来就停在缺口格，已经计入净流量 n<sub>ct</sub>，不是新增的补位。论文 71.9% 的覆盖率中，有 43.2 个百分点只来自本格到达。</li>
+<li><strong>邻格池的时段与正文不一致。</strong>正文说统计的是 “during c's deficit hour” 的邻格到达。代码中 <code>counts = ((dist&gt;=a)&amp;(dist&lt;b)) @ Dstar</code> 的 <code>Dstar</code> 按邻格索引，取的是邻格<em>自己</em>最坏小时的到达。按正文口径，邻格池为 334,147；按代码口径，为 219,954。</li>
+<li><strong>距离用了带中点。</strong>邻格的实际距离是 426 m，代码用带中点 375 m，接受率因此偏高。</li>
+<li><strong>不给奖励也有人改道。</strong>logit 模型在 r = 0 时 π &gt; 0，预测不给奖励也会有 39,048 次补位，占 N 的 18%。但观测数据本身就是“不给奖励”的情形，这些补位并没有发生。新增补位应按 π(d, r) − π(d, 0) 计算。</li>
+<li><strong>奖励付给了本来就会来的人。</strong>§6.7 规定，只要起点在目标格外、终点在目标格的围栏内，就发奖励。每个缺口格在它最坏的那一小时里，本来就有从其他格过来的骑行，合计每天 100,041 次。这里只算了最坏的一小时，所以是下限。r = 1.2 元时，这部分支出为 120,050 元/天，与论文算出的奖励总额 138,462 元相差不多。</li>
+<li><strong>与 Q2 的尺度不一致。</strong>N = 216,344 是各格最坏小时缺口之和，论文自己说它是 “a perfect incentive scheme that ignored inventory” 的工作量。以 N 为目标的全卡车基准是 752,404 元/天，为 Q2 最优方案（83,325 元/天）的 9 倍。按论文自己的“供给过剩”诊断，没有运营者会去把 N 全部填满，所以“比全卡车节省 34.9%”所比较的方案实际上并不存在。论文对 N 的称呼也不统一：§6.2 称为 “daily workload”，摘要称为 “peak-hour deficit”。</li>
+<li><strong>用平均成本作比较基准</strong>（见 5.6）。</li>
+</ol>
+
+<h3>6.3 逐项修正后的结果</h3>
+<p>我先复现了论文的结果：r* = 1.20，节省 34.9%；q* 为 115,440，与论文的 115,385 相差 0.05%，差别来自奖励网格的精度。然后逐项修正，每一行都在上一行的基础上累加。参数保持论文的基准值（κ = 2.0，ρ = 0.35，c<sub>0</sub> = 0.8），卡车单价 3.48 元/辆，全卡车基准 752,404 元/天。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>口径（逐行累加）</th><th class="n">r*（元）</th><th class="n">补位 q*</th><th class="n">占 N</th><th class="n">日总成本（元）</th><th class="n">比全卡车节省</th></tr></thead>
+<tbody>
+<tr><td>论文（复现）</td><td class="n">1.20</td><td class="n">115,440</td><td class="n">53.4%</td><td class="n">489,450</td><td class="n">34.9%</td></tr>
+<tr><td>① 去掉本格到达</td><td class="n">1.72</td><td class="n">84,598</td><td class="n">39.1%</td><td class="n">603,695</td><td class="n">19.8%</td></tr>
+<tr><td>② 邻格池改用缺口格的最坏小时（正文口径）</td><td class="n">1.62</td><td class="n">104,386</td><td class="n">48.3%</td><td class="n">558,472</td><td class="n">25.8%</td></tr>
+<tr><td>③ 用实际距离 426 m 代替带中点 375 m</td><td class="n">1.74</td><td class="n">101,786</td><td class="n">47.0%</td><td class="n">575,516</td><td class="n">23.5%</td></tr>
+<tr class="hl"><td>④ 扣除零奖励基线 π(d, 0)</td><td class="n">1.78</td><td class="n">100,874</td><td class="n">46.6%</td><td class="n">581,137</td><td class="n">22.8%</td></tr>
+<tr class="hl"><td>⑤ 按 §6.7 规则，付钱给本来就会停进目标格的骑行</td><td class="n">1.32</td><td class="n">68,382</td><td class="n">31.6%</td><td class="n">736,900</td><td class="n">2.1%</td></tr>
+</tbody></table></div>
+<p>①–④ 是对论文自己模型的计算修正，其中 ② 对论文有利。⑤ 是论文自己的发放规则带来的后果。在表 9 的参数范围内重算：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>参数组</th><th class="n">论文表 9 的节省</th><th class="n">④ 只付给改道者</th><th class="n">⑤ 按 §6.7 公开发放</th></tr></thead>
+<tbody>
+<tr><td>基准 κ = 2.0，ρ = 0.35，c<sub>0</sub> = 0.8</td><td class="n">34.9%</td><td class="n">22.8%（r* = 1.78）</td><td class="n">2.1%（r* = 1.32）</td></tr>
+<tr><td>κ = 1.0</td><td class="n">23.8%</td><td class="n">8.7%（2.15）</td><td class="n">0（不发奖励最优）</td></tr>
+<tr><td>κ = 3.0</td><td class="n">42.5%</td><td class="n">32.3%（1.42）</td><td class="n">14.9%（1.20）</td></tr>
+<tr><td>ρ = 0.20</td><td class="n">40.7%</td><td class="n">29.3%（1.41）</td><td class="n">13.0%（1.06）</td></tr>
+<tr><td>ρ = 0.50</td><td class="n">29.7%</td><td class="n">15.7%（2.16）</td><td class="n">0（不发奖励最优）</td></tr>
+<tr><td>c<sub>0</sub> = 0.4</td><td class="n">38.0%</td><td class="n">25.1%（1.65）</td><td class="n">5.9%（1.24）</td></tr>
+<tr><td>c<sub>0</sub> = 1.2</td><td class="n">31.9%</td><td class="n">20.4%（1.91）</td><td class="n">0（不发奖励最优）</td></tr>
+</tbody></table></div>
+<p><strong>怎么理解。</strong>计算修正后，如果奖励只付给被改道的人，按论文参数可节省约 23%，参数范围内为 9%–32%。这仍是一个有意义的结果，但最优奖励升到约 1.8 元，“激励承担卡车一半工作量”的说法需要改。按 §6.7 的公开发放规则，大部分奖励会付给本来就会这样骑的人，节省接近零（参数范围内为 0–15%）。这是机制设计的问题，不是计算问题，要靠改设计来解决。</p>
+
+<h3>6.4 建议</h3>
+<ol>
+<li>按 ①–④ 修正 <code>30_q3_incentive.py</code>：去掉距离为 0 的带；邻格池按缺口格的最坏小时取；用实际距离；接受率用 π(d, r) − π(d, 0)。</li>
+<li><strong>正面处理搭便车。</strong>可选的设计有两种。(a) 定向推送：只向 App 判断将在缺口格附近结束行程的用户显示奖励。无桩平台事先不知道终点，只能根据骑行方向和历史目的地预测，模型里要写出预测误差带来的额外支出。(b) 起点奖励：奖励骑走滞留区域的车。2017 年摩拜的红包车就是这种设计（骑行满 10 分钟可得 1–100 元随机红包），可以作为现实参照。两种设计都要在成本中计入付给“本来就会这样骑的人”的钱。</li>
+<li><strong>把 Q3 的目标与 Q2 对齐。</strong>激励要替代的是 Q2 方案中每天 23,959 辆的卡车调运，而不是 N。最好把激励作为 LP 中的一类新弧（单价 r，容量 q(r)），与卡车联合求解。这样平均成本与边际成本的问题会一并解决，Q2 和 Q3 也真正连成了一个模型。</li>
+<li>改正“2017 年 5 月没有奖励”的史实错误，并以红包车为参照，讨论 κ 的量级是否合理（第 10 节核验表 #14）。</li>
+<li>修正 §10.2、§10.3 关于参数敏感性的表述（第 9 节）。</li>
+</ol>
+
+<h3>6.5 中性的核验结果</h3>
+<ul>
+<li>对含噪声的小时净流量取最大值，会使 N 偏高约 5%。对小时订单数做 40 次泊松重抽样，N 的均值为 227,481（标准差 598），偏差修正后约为 205,207。</li>
+<li>但 95.3% 的 N 落在缺口超过 2 倍标准误的格子里（共 3,682 个格子），所以 N 的量级是可靠的。</li>
+<li>同一次邻格骑行被多个缺口格重复计算的程度很小，平均 1.09 次。</li>
+</ul>
+</section>
+
+<section id="s7">
+<h2>7. 问题 4：电子围栏</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>论文把停车需求定义为到达过程，用蒙特卡罗的 95 分位确定容量。它指出容量分布是长尾的（中位 417 位，90 分位 1,101 位，最大 4,827 位），并据此判断没有上限的围栏只是把“车山”合法化，这个判断有价值。论文比较了三种半径，还用 OSM 地铁出口做了外部检验：到达量前 300 的格子中有 15.7% 在地铁口 300 m 以内，而全部格子中只有 8.2%。</p>
+</div>
+
+<h3>7.1 需求来源（P0-1）</h3>
+<p>停车需求用的是观测到达量，不是 Q1 模型的输出，见第 2 节。</p>
+
+<h3>7.2 每天从零开始，忽略了站立库存（P1-4）</h3>
+<p>§7.1 说 “occupancy starts at zero, which is consistent with the nightly reset of Section 5: fences are emptied overnight”。但 Q2 方案每天只调动 23,959 辆，约占车队的 7%，而且并非集中在夜间（5.3）。午夜时绝大多数车都停在原地。围栏容量应等于午夜站立库存加上当天净流入的峰值，现在的算法低估了核心区的需求。</p>
+
+<h3>7.3 半径被网格量化（P1-4）</h3>
+<p>250 m 只覆盖围栏所在的格子；450 m 加上东西向邻格（426 m）；650 m 再加上南北向邻格（556 m）。所以三种“步行半径”的比较，实际上是三种邻域形状的比较。建议改用更细的网格（例如 0.002°），或直接用订单终点坐标计算距离。</p>
+
+<h3>7.4 覆盖区重叠（影响小）</h3>
+<p>每个围栏的容量计入了半径内所有格子的到达，相邻围栏的覆盖区会重叠。我核算后发现重叠只有约 3%：1,799 个被覆盖的格子只属于一个围栏，37 个属于两个，没有格子属于三个或更多。在正文说明一句即可。</p>
+
+<h3>7.5 “容量与车队一致不是巧合”（P0-7）</h3>
+<p>§7.3 说 “344,463 slots against 343,638 bicycles is a 0.2% margin, and the agreement is a check on the sizing rather than a coincidence”。这两个数之间没有推导关系。容量是各围栏当天净流入峰值的 95 分位之和，从零开始，不含站立库存，只覆盖 75.3% 的到达，而且随 1/p 缩放。车队估计不随 p 变化，本身又被低估了（3.1）。p = 0.177 时，容量约为 24.9 万，两者就不再一致。建议删除这句话。</p>
+
+<h3>7.6 推荐的“设上限布局”没有计算（P1-4）</h3>
+<p>§7.3 推荐 capped layout，并指出 89.8% 的围栏会超过 150 位。这意味着要大量新增围栏，或者把车引导到别处，而这恰恰是需要量化的部分：设上限后需要多少个围栏，覆盖率是多少，要转移多少辆车，激励成本是多少。代码中没有这一部分。</p>
+
+<h3>7.7 围栏数量来自停止规则（P1-4）</h3>
+<p>626 个围栏是贪心算法停止规则的结果：边际覆盖小于总到达的 0.05% 时停止，候选格子只取到达量前 2,500 名（<code>40_q4_efence.py:33、48</code>）。这个数量不是按成本选出来的。<code>q4_frontier.npz</code> 里已经有覆盖率—围栏数曲线，建议配上单个围栏的成本（土地、施工、管理），按边际成本等于边际收益来选数量。</p>
+
+<h3>7.8 OSM 数据的年份和检验对象（P1-4）</h3>
+<p>地铁出口数据是 2026 年 11 月 11 日查询的，而北京地铁在 2017 年之后新开了多条线路。可以用 Overpass 的历史查询，在查询开头加 <code>[date:"2017-05-15T00:00:00Z"]</code>，取 2017 年的数据。另外，这项检验用的是观测到达（<code>50_q5_platform.py</code> 中的 A 由观测终点统计得到），检验的是数据，不是模型。如果按 P0-1 改为用模型生成需求，就可以改为检验模型预测的吸引点。</p>
+</section>
+
+<section id="s8">
+<h2>8. 问题 5：多平台竞争</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>论文把“竞争的后果”拆成几类可量化的重复（车队、卡车、围栏）和数据碎片化，思路清楚。围栏容量的重复做了计算：两家平台各设围栏时，中位围栏的总容量增加 10%，三家时增加 24%。监管建议具体，例如共享车场、按实测服务水平设定车队上限。</p>
+</div>
+
+<h3>8.1 “可得性不受影响”来自分辨率（P1-5）</h3>
+<p>分平台仿真是在 50 个区上做的。最小的区午夜也有 1,986 辆车，按 0.35 的份额缩放后仍有约 695 辆，断供的概率本来就几乎为零。用户实际感受到的密度效应，即离自己平台最近的一辆车有多远，只在格子或点的尺度上才会出现，区级仿真看不到。所以 “Unserved demand was zero in all twenty-four runs” 推不出 “availability is neutral”。另外，<code>50_q5_platform.py:37–38</code> 写死的解释文字恰好相反：“service falls roughly linearly in the share”。建议修好步行半径后，在格子级重做分平台仿真，报告步行距离和未满足率随份额的变化。</p>
+
+<h3>8.2 卡车重复没有计算</h3>
+<p>§8.3 说每个平台的卡车会装得更空，但只有文字论证。可以直接用 Q2 的 LP 按份额 s 分别求解，比较份额为 s 的平台的成本与 s 乘以垄断成本。</p>
+
+<h3>8.3 史实没有来源</h3>
+<p>“fleets growing faster than ridership, and consolidation once the capital could no longer be financed” 需要引用，例如 2018 年美团收购摩拜等事件的报道。</p>
+
+<h3>8.4 引用不对题</h3>
+<p>公共空间被过度占用属于公共资源问题，应引用 Hardin (1968) 或 Ostrom (1990)。Katz &amp; Shapiro (1985) 讲的是网络外部性，Rochet &amp; Tirole (2003) 讲的是双边市场，都与这里的论证不符。Hotelling (1929) 在引言中被引用，但正文没有用到。</p>
+
+<h3>8.5 标准误无法复现</h3>
+<p>§8.4 说，对缺口为 17.9 的中位格子，缺口估计的标准误在全样本下约为 4.2，在三分之一样本下约为 7.3。我没有找到对应的代码。按泊松近似，取一个缺口接近中位数的格子（缺口 19.0，7 天样本中该小时到达 50 单、出发 67 单），标准误为 √(50 + 67) / (7 × 0.128) ≈ 12.1，三分之一样本下约为 21。两者之比为 √3，与论文一致，但水平差了约 3 倍。如果我的估算是对的，论文的论点（数据碎片化使小格子的缺口估计不可靠）反而更强。</p>
+</section>
+
+<section id="s9">
+<h2>9. 灵敏度与不确定性</h2>
+<h3>已经做了的</h3>
+<ul>
+<li>车队估计：以 5%–50% 的比例重抽样订单，F̂ 的变化在 4% 以内（§9.1）。</li>
+<li>激励参数：κ、ρ、c<sub>0</sub> 的单参数扫描（表 9）。</li>
+<li>卡车每公里成本（§9.3）。</li>
+<li>初始库存：两种估计方法的比较（§9.4）。</li>
+</ul>
+<h3>缺少的（P1-6）</h3>
+<ul>
+<li>抽样率 p 对 Q2–Q4 的影响（3.2）。所有流量都与 1/p 成正比，这是全文影响面最大的不确定量。</li>
+<li>c<sub>dev</sub>、w、f、c<sub>bike</sub>（5.4），其中 c<sub>dev</sub> 直接决定调运量。</li>
+<li>车队规模的区间（3.1）对 Q2 初始库存和 §5.4 的影响。</li>
+<li>多参数同时变化（蒙特卡罗）和按来源分解。建议把参数分三类：从数据识别的（β、NHPP 速率）、有偏差的估计（p、车队规模、初始库存）、纯假设的（κ、ρ、c<sub>0</sub>、成本参数），对每个主要结论分别报告三类来源造成的区间。</li>
+</ul>
+<h3>表述与表格不符（P0-7）</h3>
+<ul>
+<li>§10.2 说 “the qualitative conclusion survives a factor-of-two error in each”。表 9 中 κ 的范围是 1.0–3.0（向下 2 倍，向上 1.5 倍），ρ 是 0.20–0.50（向下 1.75 倍，向上 1.43 倍），c<sub>0</sub> 是 0.4–1.2（向下 2 倍，向上 1.5 倍）。没有一个参数在两个方向上都扫到 2 倍。</li>
+<li>§10.3 说 “If riders valued a yuan at less than about half of what we assume, the optimal reward would fall below 0.6 CNY and the incentive would cover less than a third of the deficit”。表 9 中 κ = 1.0（正好一半）时 r* = 1.20，覆盖 78,709 次，占 36.4%，两处都不符；κ 小于 1.0 的情形没有计算过。“if they valued it twice as much, the incentive would cover two-thirds” 对应 κ = 4.0，也没有计算过。</li>
+<li>按第 6 节修正后，这些参数下的节省都需要重算。</li>
+</ul>
+</section>
+
+<section id="s10">
+<h2>10. 关键说法核验表</h2>
+<p class="note">判定含义：<span class="tag ok">保留</span> 证据支持；<span class="tag p2">弱化</span> 方向对但说过头；<span class="tag p1">改写</span> 与证据不符，需要改成证据支持的说法；<span class="tag p0">删除</span> 没有证据，或与证据相反。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>原文说法（位置）</th><th>核验结果</th><th>判定</th><th>建议</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>“One model, four uses”（§1.5）；“adequate as the demand engine for Q2–Q4”（§4.5）；“One model, four answers”（§10.1）</td><td>Q2–Q5 的脚本都不读 <code>q1_params.json</code></td><td><span class="tag p1">改写</span></td><td>按 P0-1 真正接入后保留；否则如实说明输入是观测数据</td></tr>
+<tr><td>2</td><td>“At every resolution … down to 5,263 neighbourhood cells, no zone ever runs out”（摘要）</td><td>与 §5.1 的 172 个断供格、§9 的 13.4% 未满足矛盾；格子仿真不允许步行</td><td><span class="tag p1">改写</span></td><td>限定为 50 个区的层面</td></tr>
+<tr><td>3</td><td>“worst cumulative excursion … −349 bicycles”，对比最小库存 1,986（§5.1、§10.3）</td><td>−349 是样本单位；统一后为 −2,723，区 47 降到午夜库存的 43.7%</td><td><span class="tag p1">改写</span></td><td>报告缩放后的回撤和最大相对回撤</td></tr>
+<tr><td>4</td><td>“The plan is a nightly reset … mass of the schedule sits between 21:00 and 06:00”（摘要、§5.1、§5.3、图 4）</td><td>夜间占 40.4%，均匀分布为 37.5%；每小时 42–56 段行程；图 4b 显示全天作业</td><td><span class="tag p0">删除</span></td><td>或加入时段成本后重解</td></tr>
+<tr><td>5</td><td>“every truck returns home by midnight”（§5.2）</td><td>代码只有总数约束，没有逐区约束</td><td><span class="tag p1">改写</span></td><td>加逐区约束后重解</td></tr>
+<tr><td>6</td><td>“3.4×10<sup>5</sup> bicycles serving 6.2 rides each per day”（摘要、§3.4）</td><td>小于观测单车数 484,754（9 天内 462,893）；同质泊松假设被数据否定</td><td><span class="tag p1">改写</span></td><td>给下界或区间，换用允许异质的估计</td></tr>
+<tr><td>7</td><td>“12.8% an overestimate of the match rate and hence a lower bound on p”（§3.3）</td><td>方向反了；放宽容差后匹配率为 17.7%–20.0%</td><td><span class="tag p1">改写</span></td><td>p 作为区间处理</td></tr>
+<tr><td>8</td><td>“rides 9.2 times a day”、“14 times a day”、“courier-like”（§4.6、表 5）</td><td>是 10 天合计的次数</td><td><span class="tag p1">改写</span></td><td>改列名和解读</td></tr>
+<tr><td>9</td><td>“The peak is made by a minority of trips — commuters”（§4.6）</td><td>通勤类只占高峰订单的约 20%</td><td><span class="tag p1">改写</span></td><td>改为“高峰主要由非通勤用户构成”</td></tr>
+<tr><td>10</td><td>“which matches the observed distribution of within-day ride durations”（§4.4）</td><td>数据中没有时长</td><td><span class="tag p0">删除</span></td><td>改为与文献比较</td></tr>
+<tr><td>11</td><td>“the model reproduces the distance distribution”（§4.5）</td><td>图 3a 不是完整模型的模拟；KS = 0.196</td><td><span class="tag p2">弱化</span></td><td>重画图 3a 后按结果措辞</td></tr>
+<tr><td>12</td><td>“the resulting classes are stable across random initialisations”（§4.6）</td><td>没有对应代码；k 只试了 3–5</td><td><span class="tag p0">删除</span></td><td>或补 ARI 计算后保留</td></tr>
+<tr><td>13</td><td>“r = 1.20 … 53.3% … a 34.9% saving”（摘要、§6.5）</td><td>修正后节省为 22.8%（只付给改道者）或 2.1%（按 §6.7 发放）</td><td><span class="tag p1">改写</span></td><td>按第 6 节重算</td></tr>
+<tr><td>14</td><td>“nobody was offered a reward in May 2017”（A7、§6.3、§10.2）</td><td>摩拜红包车 2017 年 3 月下旬上线，5 月已有用户使用记录（来源见附录）</td><td><span class="tag p1">改写</span></td><td>改为“数据中没有奖励记录”，并引用红包车</td></tr>
+<tr><td>15</td><td>“survives a factor-of-two error in each”（§10.2）；“below 0.6 CNY … less than a third”（§10.3）</td><td>与表 9 不符，见第 9 节</td><td><span class="tag p1">改写</span></td><td>按表 9 的实际数字写</td></tr>
+<tr><td>16</td><td>“344,463 slots against 343,638 bicycles … a check on the sizing rather than a coincidence”（§7.3）</td><td>两者之间没有推导关系</td><td><span class="tag p0">删除</span></td><td>—</td></tr>
+<tr><td>17</td><td>“fences are emptied overnight”（§7.1）</td><td>Q2 每天只调动约 7% 的车</td><td><span class="tag p0">删除</span></td><td>把站立库存纳入容量</td></tr>
+<tr><td>18</td><td>“does not reduce availability … verified down to a 35% share”（摘要、§8.2）</td><td>区级仿真看不到密度效应</td><td><span class="tag p2">弱化</span></td><td>限定为区级，补格子级实验</td></tr>
+<tr><td>19</td><td>“about 4.2 bicycles from the full sample and 7.3 from a third”（§8.4）</td><td>没有对应代码；泊松近似约为 12.1 和 21</td><td><span class="tag p1">改写</span></td><td>补代码，按结果改数字</td></tr>
+<tr><td>20</td><td>“an interior optimum … from 427k to 390k CNY”（摘要、§5.4）</td><td>依赖 LP 时间离散造成的未满足；α = 1 的最低值是 426k</td><td><span class="tag p2">弱化</span></td><td>修正服务约束后重算</td></tr>
+<tr><td>21</td><td>“We recommend the plan at α = 1, K = 60”（§5.3）</td><td>K = 40 的目标值更低（82,333 对 83,325）</td><td><span class="tag p1">改写</span></td><td>给出理由或改推荐</td></tr>
+<tr><td>22</td><td>“No number in the text is typed by hand”（AI 报告）</td><td><code>FLEET = 343638</code> 在 4 个脚本中硬编码，<code>TRUCK_UNIT</code> 和 <code>TRUCK = 3.4778</code> 也是；至少 6 个文中数字找不到代码来源（附录）</td><td><span class="tag p1">改写</span></td><td>改代码使其成立，或如实描述</td></tr>
+<tr><td>23</td><td>“the scripts run from the raw order file without manual intervention”（AI 报告）</td><td>路径写死；<code>23_q2_saveplan.py</code> 依赖工作目录；没有一键运行脚本</td><td><span class="tag p1">改写</span></td><td>加 <code>run_all</code> 脚本和相对路径</td></tr>
+<tr><td>24</td><td>“no zone is ever negative”（§5.1，区级）</td><td>统一单位后仍成立</td><td><span class="tag ok">保留</span></td><td>补上真实的余量数字</td></tr>
+<tr><td>25</td><td>“The estimate is invariant to the sampling rate”（§3.4）</td><td>推导正确</td><td><span class="tag ok">保留</span></td><td>但要说明估计本身偏低（#6）</td></tr>
+<tr><td>26</td><td>“The limit is physical, not financial”（摘要、§6.6）</td><td>修正后，450 m 内的覆盖上限为 65.2%（只计邻格），结论仍成立</td><td><span class="tag ok">保留</span></td><td>更新数字</td></tr>
+<tr><td>27</td><td>容量分布严重右偏，无上限的围栏会形成“车山”（§7.3）</td><td>与结果文件一致（中位 417，最大 4,827）</td><td><span class="tag ok">保留</span></td><td>—</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="s11">
+<h2>11. 写作、排版与图表</h2>
+<div class="card good">
+<p><strong>做得好的地方。</strong>英文地道，段落主题句清楚，术语前后一致。每节先给结论再给证据，评委读起来省力。图都是矢量 PDF，多子图编排合理，坐标轴标注完整。表格用三线表。摘要页控制在一页之内。这些方面在参赛论文中属于最好的一档。</p>
+</div>
+<ul>
+<li><span class="tag p0">P0-7</span> <strong>图 4。</strong>图 4b 标题中的 “the plan is a night shift” 与图本身不符。图 4c 的注释 “×1.0 and ×0.9: zero unmet at every K” 在 ×0.9、K = 20 时不成立（未满足 2,843，占 0.13%）。图 4d 中 α = 1 的点是 426k，正文写的是 427k。</li>
+<li><span class="tag p1">P1-2</span> <strong>图 3。</strong>图 3a 的比较对象不一致（4.2）；图 3c 的对数坐标掩盖了重力模型与距离基准之间的差距（4.4）。</li>
+<li><span class="tag p2">P2</span> <strong>PDF 文本层中的分号。</strong>全文 71 个分号在 PDF 文本层中被映射为 U+037E（希腊问号）。屏幕显示和打印都看不出来，但复制、检索和查重系统读文本时会出错。可以试着把正文字体换成 TeX Gyre Termes（外观与 Times 相近），重新编译后用 pdftotext 检查。</li>
+<li><span class="tag p2">P2</span> <strong>记号冲突。</strong>w 既是步行速度（式 19，80 m/min），又是未满足罚金（式 10，6 元）；T 在记号表中是小时数（T = 24），在 §3.4 中是订单数；D 在 §3.4 中是去重后的车数，在 §7 中是出发量；c 既是格子下标，又是各项成本系数的符号。建议统一记号表（表 2）后逐一替换。</li>
+<li><span class="tag p2">P2</span> <strong>单位。</strong>样本单位与缩放后的单位混用（3.4）。</li>
+<li><span class="tag p2">P2</span> <strong>目录与首页。</strong>References 没有进目录；Team Control Number 为空白。</li>
+<li><span class="tag p2">P2</span> <strong>措辞。</strong>有些句子语气过强，例如 “The result is unambiguous”（§5.1）、“brutally skewed”（摘要）、“exactly the volume the analysis recommends”（§6.7）。数字修正后，这类措辞的强度应随之降低。</li>
+</ul>
+</section>
+
+<section id="s12">
+<h2>12. 引用与 AI 使用报告</h2>
+<h3>12.1 参考文献</h3>
+<ul>
+<li>共 23 条，格式统一。AI 报告称有 DOI 的条目都用 Crossref 核对过，OSM 的引用也写明了查询日期，这些做得好。</li>
+<li><strong>缺少直接相关的文献</strong>（P1-7）。共享单车调度、用户激励和覆盖选址各有经典文献，可考虑补充，引用前请用 Crossref 或出版商页面核对卷期页码：
+ <ul>
+ <li>Pal &amp; Zhang (2017)，无桩共享单车的静态调度，<i>Transportation Research Part C</i>；</li>
+ <li>Fricker &amp; Gast (2016)，共享单车系统中的激励与再分配，<i>EURO Journal on Transportation and Logistics</i>；</li>
+ <li>Chung, Freund &amp; Shmoys (2018)，对 Citi Bike “Bike Angels” 激励计划的分析，ACM COMPASS；</li>
+ <li>Church &amp; ReVelle (1974)，最大覆盖选址问题，<i>Papers of the Regional Science Association</i>。</li>
+ </ul></li>
+<li>Q5 的经济学引用不对题（8.4）；行业史实缺来源（8.3）；红包车的史实需要改正并引用（核验表 #14）。</li>
+</ul>
+
+<h3>12.2 AI 使用报告与 COMAP 政策的对照（P0-9）</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>政策要求</th><th>论文现状</th><th>建议</th></tr></thead>
+<tbody>
+<tr><td>写明 AI 工具的名称和版本。政策示例的格式是 “OpenAI ChatGPT (Nov 5, 2023 version, ChatGPT-4)”</td><td>只写了 “Claude Code (Anthropic)”，没有模型版本，也没有使用日期</td><td>写明 Claude Code 的版本、所用模型的名称和版本，以及使用的起止日期</td></tr>
+<tr><td>正文用行内引用，参考文献列出所有 AI 工具</td><td>参考文献中没有 AI 条目，正文中没有行内引用</td><td>在参考文献中加 AI 工具条目，在由 AI 起草的文字和代码对应的章节加行内引用</td></tr>
+<tr><td>文末附 “Report on Use of AI Tools”，不计入 25 页</td><td>有，但标题是 “AI Use Report”</td><td>标题改为政策原文</td></tr>
+<tr><td>政策示例要求列出提问（Query）和输出（Output）</td><td>只有用途概述</td><td>列出关键提问和对应产出，并说明完整记录可以提供</td></tr>
+<tr><td>核实 AI 生成内容的准确性</td><td>有 “What was verified” 一节，但其中两条与代码不符</td><td>见核验表 #22、#23</td></tr>
+</tbody></table></div>
+<p class="note">AI 报告明确写了由 AI 起草全文，这符合披露要求。但评委面对大量由 AI 起草的文字时可能更挑剔，而正文中的数字矛盾会加重“生成后没有核对”的印象。所以 P0 中的文字修正，对这一点也有帮助。</p>
+</section>
+
+<section id="s13">
+<h2>13. 修改清单（按优先级）</h2>
+<p class="note">P0：评委读论文就可能发现的问题、核心结论不成立的问题，以及合规缺口，必须修改。P1：修完才有竞争 F 的基础。P2：润色。工作量按熟悉代码的一名队员估计。</p>
+
+<h3>P0：必须修改</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>问题</th><th>怎么改</th><th>工作量</th><th>见</th></tr></thead>
+<tbody>
+<tr><td><span class="tag p0">P0-1</span></td><td>Q1 模型没有接入 Q2/Q4（合规问题，也是不实陈述）</td><td>用 NHPP × 重力模型生成典型日 OD，驱动 LP 和围栏占用模拟；与观测输入的结果并列报告</td><td>1 天</td><td>2、4</td></tr>
+<tr><td><span class="tag p0">P0-2</span></td><td>车队估计小于观测到的单车数</td><td>用 Chao1 下界或混合泊松模型重估，写成区间；更新 I<sub>z0</sub>、“每车每天 6.2 次”、§5.4 和 §7.3</td><td>半天</td><td>3.1</td></tr>
+<tr><td><span class="tag p0">P0-3</span></td><td>Q3 的节省被高估</td><td>按第 6 节的 ①–④ 修改计算；正面处理搭便车（定向推送或起点奖励）；目标与 Q2 对齐，最好把激励放进 LP</td><td>计算半天；改设计和联合求解再加 1 天</td><td>6</td></tr>
+<tr><td><span class="tag p0">P0-4</span></td><td>“任何分辨率都不缺车”</td><td>改摘要、§5.1 和 §9.4；步行半径改为不小于 450 m，重跑格子曲线</td><td>半天</td><td>5.2</td></tr>
+<tr><td><span class="tag p0">P0-5</span></td><td>Q2 诊断混用单位</td><td>改用缩放后的 −2,723 和 43.7%；改 §5.1 和 §10.3</td><td>1 小时</td><td>5.1</td></tr>
+<tr><td><span class="tag p0">P0-6</span></td><td>“夜间作业”和“卡车回家”</td><td>加时段成本、班次约束和逐区回家约束后重解；或者删去相关说法</td><td>重解半天；只改文字 1 小时</td><td>5.3</td></tr>
+<tr><td><span class="tag p0">P0-7</span></td><td>正文中能看到的数字矛盾</td><td>§10.2、§10.3 与表 9；表 5 的单位和解读；通勤类占高峰的比例；推荐 K = 60 的理由；图 4 的标题、注释和 426k；时长、聚类稳定性、“不是巧合”等没有依据的句子</td><td>3 小时</td><td>4、5、7、9、10</td></tr>
+<tr><td><span class="tag p0">P0-8</span></td><td>“2017 年 5 月无人收到奖励”</td><td>A7、§6.3 和 §10.2 改为“数据中没有奖励记录”，并引用红包车</td><td>30 分钟</td><td>10 #14</td></tr>
+<tr><td><span class="tag p0">P0-9</span></td><td>AI 报告不符合政策</td><td>写明版本和日期；加参考文献条目和行内引用；改标题；修正两条与代码不符的声明</td><td>文字 1 小时；让代码真能一键运行另需 2–3 小时</td><td>12.2</td></tr>
+</tbody></table></div>
+
+<h3>P1：冲 F 需要</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>编号</th><th>问题</th><th>怎么改</th><th>工作量</th><th>见</th></tr></thead>
+<tbody>
+<tr><td><span class="tag p1">P1-1</span></td><td>抽样率与抽样机制</td><td>改正 §3.3 中偏差方向的论述；p 作为区间（0.128–0.20），Q2–Q4 报告区间；写明抽样机制的假设</td><td>半天</td><td>3.2、3.3</td></tr>
+<tr><td><span class="tag p1">P1-2</span></td><td>Q1 的检验</td><td>重画图 3a（完整模型）；单独拟合距离基准；图 3c 改用线性坐标；k 扩展到 2–10 并报告 ARI；return_share 改名</td><td>半天</td><td>4</td></tr>
+<tr><td><span class="tag p1">P1-3</span></td><td>Q2 的 LP</td><td>服务约束计入同小时到达，或改用 15 分钟步长；重算 α 扫描；扫描 c<sub>dev</sub>、w、f、c<sub>bike</sub>；说明司机班次；给 Q3 提供边际成本</td><td>1 天</td><td>5.4–5.6</td></tr>
+<tr><td><span class="tag p1">P1-4</span></td><td>Q4</td><td>容量计入站立库存；细化网格；计算设上限的布局；按成本选围栏数量；OSM 改用 2017 年的历史查询；说明覆盖区重叠</td><td>1 天</td><td>7</td></tr>
+<tr><td><span class="tag p1">P1-5</span></td><td>Q5</td><td>在格子级做分平台仿真；按份额分别求解 LP，量化卡车重复；补史实来源；改引用；补标准误的代码</td><td>1 天</td><td>8</td></tr>
+<tr><td><span class="tag p1">P1-6</span></td><td>不确定性按来源分解</td><td>三类参数分别给出区间，至少做一次多参数蒙特卡罗</td><td>半天</td><td>9</td></tr>
+<tr><td><span class="tag p1">P1-7</span></td><td>文献</td><td>补 12.1 所列的文献，核对后引用</td><td>1–2 小时</td><td>12.1</td></tr>
+</tbody></table></div>
+
+<h3>P2：润色</h3>
+<ul>
+<li>PDF 文本层的分号（U+037E）；记号冲突；标注样本单位和缩放单位；“ten usable days” 改为 9 天；References 进目录；填写 Team Control Number；降低过强的措辞。</li>
+<li>代码：改用相对路径；加 <code>run_all</code> 脚本；把重复添加的 <code>fleet0</code> 约束移出循环；删除死代码（如 <code>90_figs.py:135–136</code>、<code>10_q1_model.py</code> 第 95 行附近）；清理 <code>__pycache__</code> 和旧的预览图与编译日志。</li>
+<li>在附录中说明 N 约 5% 的偏差（6.5）和 Q4 约 3% 的覆盖区重叠（7.4）。</li>
+</ul>
+
+<h3>建议的修改顺序</h3>
+<ol>
+<li>先做 P0-2（车队）和 P1-1（抽样率），因为它们会改变 Q2–Q4 的输入。</li>
+<li>再做 P0-1（接入 Q1 模型），然后依次重跑 Q2、Q3、Q4、Q5。</li>
+<li>最后一次性更新全部数字，包括摘要、表 1 和图。用 <code>95_numbers.py</code> 从结果文件重新提取，不要手工改。</li>
+</ol>
+<p>只做文字修正（不重跑模型）约需 1 天；P0 全部做完约需 3.5–4.5 天；P0 加 P1 约需 8–9 天。</p>
+</section>
+
+<section id="s14">
+<h2>14. 与往届美赛论文对比及评级</h2>
+<p class="note">对比依据：COMAP 每年在 <em>The UMAP Journal</em> 上发表的评委评论（Judges' Commentary），以及往届 O/F 论文的常见写法。这些材料描述的是普遍规律，不针对本题。本文出自重庆大学校内赛，但这里按美赛标准评级。</p>
+
+<h3>14.1 逐项对比</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>维度</th><th>往届 O/F 论文的常见做法</th><th>典型 M 论文</th><th>本文现状</th></tr></thead>
+<tbody>
+<tr><td>问题拆解</td><td>一条模型主线贯穿各问，后一问用前一问的输出</td><td>各问分别建模，衔接松散</td><td>拆解清楚，但 Q1 的模型没有进入 Q2–Q4，Q3 与 Q2 的目标也不一致（P0-1、P0-3）</td></tr>
+<tr><td>数据使用</td><td>先分析数据的产生方式，再决定怎么用；关键参数给出区间</td><td>直接使用，偶尔讨论偏差</td><td>做得细（抽样率、典型日、格子尺度），但车队估计和抽样率的推理有误（P0-2、P1-1）</td></tr>
+<tr><td>机理与假设</td><td>每条假设说明理由和影响方向</td><td>假设清单较长，理由较少</td><td>A1–A8 都写了理由，好于典型 M；少数假设与数据矛盾（A7 红包）</td></tr>
+<tr><td>验证</td><td>留出数据检验、基准模型对比、极限情形</td><td>拟合优度为主</td><td>有留出日和基准对比；图 3a 不是完整模型，k 的选择缺少稳定性证据</td></tr>
+<tr><td>灵敏度与不确定性</td><td>按来源分解，并说明对结论的影响</td><td>单参数龙卷风图</td><td>龙卷风图加少量组合；没有按来源分解（P1-6）</td></tr>
+<tr><td>数字一致性</td><td>摘要、正文、表、图完全一致，能从代码重现</td><td>偶有不一致</td><td>能看到多处矛盾（P0-7），部分数字找不到对应代码（附录 16.3）</td></tr>
+<tr><td>写作与图</td><td>摘要一页内给出全部关键数字；图紧扣结论</td><td>摘要偏概括</td><td>摘要和图的质量接近 F；英文通顺</td></tr>
+<tr><td>合规</td><td>AI 报告完整，页数合规</td><td>大多合规</td><td>AI 报告缺版本、引用和查询示例（P0-9）</td></tr>
+</tbody></table></div>
+
+<h3>14.2 评分</h3>
+<p>三列分别是：只读论文的评委会给的分；对照代码核验后的分；P0 全部修完后的预计分。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>评分项</th><th>满分</th><th>只读论文</th><th>对照代码</th><th>P0 修完</th></tr></thead>
+<tbody>
+<tr><td>摘要</td><td class="n">10</td><td class="n">8.5</td><td class="n">8</td><td class="n">9</td></tr>
+<tr><td>假设</td><td class="n">10</td><td class="n">8</td><td class="n">7</td><td class="n">8.5</td></tr>
+<tr><td>模型设计</td><td class="n">20</td><td class="n">16</td><td class="n">14</td><td class="n">16</td></tr>
+<tr><td>正确性</td><td class="n">20</td><td class="n">14</td><td class="n">10</td><td class="n">16</td></tr>
+<tr><td>验证与灵敏度</td><td class="n">15</td><td class="n">11</td><td class="n">9</td><td class="n">11</td></tr>
+<tr><td>各问衔接</td><td class="n">10</td><td class="n">7</td><td class="n">4</td><td class="n">8</td></tr>
+<tr><td>写作与图表</td><td class="n">10</td><td class="n">9</td><td class="n">9</td><td class="n">9</td></tr>
+<tr><td>合规</td><td class="n">5</td><td class="n">3.5</td><td class="n">3</td><td class="n">4.5</td></tr>
+<tr class="hl"><td><strong>合计</strong></td><td class="n">100</td><td class="n"><strong>77</strong></td><td class="n"><strong>64</strong></td><td class="n"><strong>82</strong></td></tr>
+</tbody></table></div>
+<p class="note">分数到奖项的对应是本报告自定的经验区间，不是 COMAP 的官方标准：≥90 为 O，85–89 为 F，75–84 为 M，62–74 为 H，低于 62 为 S。各奖项的大致比例：O 约 0.1–0.2%，F 约 1%，M 约 7%，H 约 20–25%。</p>
+
+<div class="verdict">
+<p><strong>评级：M（Meritorious）最有可能。</strong></p>
+<ul>
+<li>评委只读论文、没有发现第 10 节的矛盾时，约 77 分，属于 M。</li>
+<li>评委发现了 Q1 未接入、车队小于观测单车数或 Q2 诊断的单位问题时，会降到 H。美赛评委不看代码，但这几处在正文里就能看出来。</li>
+<li>P0 修完约 82 分，属于 M 的上段，有机会冲 F。</li>
+<li>要到 O，需要把 Q1→Q2→Q3 合成一个模型，也就是需求模型驱动带激励弧的 LP。目前的结构达不到。</li>
+</ul>
+</div>
+</section>
+
+<section id="s15">
+<h2>15. 项目七条标准评分卡</h2>
+<p class="note">标准取自项目 <code>CLAUDE.md</code>。</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>标准</th><th>评级</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td>假设明确</td><td><span class="tag p1">部分达标</span></td><td>A1–A8 写了理由；A7 与事实不符；p 的取值、步行半径 0.30 km、TRUCK_UNIT 是隐含假设，正文没有说明</td></tr>
+<tr><td class="n">2</td><td>物理严谨、量级核查</td><td><span class="tag p1">部分达标</span></td><td>机理清楚；车队 343,638 小于观测到的 462,893 辆单车，属于没有做量级核查；Q2 诊断混用样本单位和缩放单位</td></tr>
+<tr><td class="n">3</td><td>边界条件清楚</td><td><span class="tag p1">部分达标</span></td><td>LP 的初值和容量写清了；没有逐区回家约束、司机班次和夜间成本，与正文说法不符</td></tr>
+<tr><td class="n">4</td><td>数据范围即有效范围</td><td><span class="tag ok">基本达标</span></td><td>只用 2017 年 5 月数据，局限性中有说明；“任何分辨率”一句超出了检验范围</td></tr>
+<tr><td class="n">5</td><td>数字来自结果</td><td><span class="tag p0">未达标</span></td><td>多处硬编码（FLEET、TRUCK、Q5 的打印文字）；部分数字找不到代码；正文中有互相矛盾的数字</td></tr>
+<tr><td class="n">6</td><td>不确定性按来源分解</td><td><span class="tag p0">未达标</span></td><td>只有单参数扫描；没有区分识别参数、假设负荷和文献值</td></tr>
+<tr><td class="n">7</td><td>图填满坐标轴</td><td><span class="tag ok">基本达标</span></td><td>大部分图合格；图 3a 画的不是完整模型；图 3c 的对数坐标掩盖了差异</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="s16">
+<h2>16. 附录：复核方法与来源</h2>
+
+<h3>16.1 环境</h3>
+<p>Python 3.11，用 <code>-I</code>（隔离模式）运行；只读访问 <code>data/</code> 下的文件；没有修改论文、代码和数据。脚本放在 <code>review/scripts/</code>，在项目根目录运行：</p>
+<pre>python -I review/scripts/check1.py data
+python -I review/scripts/check2.py data
+python -I review/scripts/check3.py data
+python -I review/scripts/check4.py data
+python -I review/scripts/check5.py data</pre>
+
+<h3>16.2 脚本说明</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>脚本</th><th>检查内容</th></tr></thead>
+<tbody>
+<tr><td><code>check1.py</code></td><td>Q2 诊断的单位换算；Q3 格子中心距离和本格覆盖率；格子模拟器 300 m 步行半径能否碰到邻格；Q2 方案的作业时段和卡车利用</td></tr>
+<tr><td><code>check2.py</code></td><td>车队估计与观测单车数；用“上一单终点到下一单起点的跳跃距离”检验抽样率；日流量变异系数、围栏容量、热点集中度、格子车队曲线</td></tr>
+<tr><td><code>check3.py</code></td><td>Q3 重算 N、搭便车人数、邻格候选池两种定义；Q4 覆盖区重叠；Q5 中位缺口格的泊松标准误；Q2 库存深度</td></tr>
+<tr><td><code>check4.py</code></td><td>Q3 修正阶梯 ①–④；r = 0 时的安放量；候选池重复计数；N 的自助法偏差；Q2 最差偏移和漂移</td></tr>
+<tr><td><code>check5.py</code></td><td>在表 9 各组参数下重算修正 ④ 和 ⑤（付给搭便车者）的节省</td></tr>
+</tbody></table></div>
+
+<h3>16.3 关键输出（摘录）</h3>
+<pre>Q3 阶梯（r* / q* / 占 N / 总成本 / 节省）
+  论文复现   1.20 115,440 53.4% 489,450 34.9%
+  ① 去本格  1.72  84,598 39.1% 603,695 19.8%
+  ② 缺口时段 1.62 104,386 48.3% 558,472 25.8%
+  ③ 真实距离 1.74 101,786 47.0% 575,516 23.5%
+  ④ 去基线   1.78 100,874 46.6% 581,137 22.8%
+  ⑤ 付搭便车 1.32  68,382 31.6% 736,900  2.1%
+  表 9 各组：④ 8.7–32.3%，⑤ 0–14.9%
+  搭便车 100,041 人/天；r = 1.2 时成本 120,050 元；r = 0 时安放 39,048（N 的 18%）
+  N 自助法：均值 227,481（sd 598），偏差校正约 205,207
+
+车队：9 天观测单车 462,893；14 天 484,754；均匀模型预测 343,459
+      只出现 1 天的单车：观测 13.3%，模型 0.62%
+抽样率：精确匹配 12.83%；160 m 内 17.7%；250 m 内 20.0%
+
+Q2：最差偏移 −2,723（区 24，I0 = 11,443）；区 47 最低降到 43.7%（I0 = 4,778）
+    漂移 46,395；库存/当小时出车 最小 0.92；低于 2 的区时 165 个
+
+Q4：覆盖区重叠 1.03 倍；被 1/2/3+ 个围栏覆盖的格子 1,799/37/0；p = 0.177 时容量约 249k
+Q5：中位缺口格标准误 12.1（论文 4.2）；样本量取 1/3 时约 21</pre>
+
+<h3>16.4 无法复现或未找到代码的数字</h3>
+<ul>
+<li>A2 中的离散度 0.83 和 2.04：未找到代码。</li>
+<li>“172 个格子”：未找到代码。</li>
+<li>Q5 标准误 4.2 和 7.3：未找到代码，按泊松公式复核得 12.1（16.3）。</li>
+<li>聚类稳定性的说法：未找到代码。</li>
+<li>研究区面积 1,200 km² 和“约 4 km”：未找到代码。</li>
+</ul>
+
+<h3>16.5 2017 年摩拜红包车的来源</h3>
+<ul>
+<li><a href="https://technode.com/2017/03/24/mobike-jumps-on-hongbao-bandwagon-with-mobike-mo-money/">TechNode, 2017-03-24</a></li>
+<li><a href="https://qz.com/942372/mobike-one-of-chinas-top-bike-sharing-startups-is-now-paying-users-to-ride-its-bikes">Quartz, 2017</a></li>
+<li><a href="https://www.sixthtone.com/news/1000130/bike-sharing-company-ofo-targeted-by-hongbao-hackers">Sixth Tone, 2017</a></li>
+<li><a href="https://www.scmp.com/tech/start-ups/article/2082484/sales-chinese-characteristic-cash-giveaways-free-service">SCMP, 2017</a></li>
+<li><a href="https://www.v2ex.com/t/364509">V2EX 帖子，2017-05-28</a></li>
+</ul>
+</section>
+
+</main>
+</body>
+</html>

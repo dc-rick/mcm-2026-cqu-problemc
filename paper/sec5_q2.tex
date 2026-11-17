@@ -1,0 +1,165 @@
+% =============================== 5. Q2 ===============================
+\section{Question 2: Optimal Repositioning on a Typical Day}\label{sec:q2}
+
+\subsection{First, a diagnostic: is the system short of bicycles?}
+
+Before optimising anything we should know what the optimisation is for. A shortage
+would appear as a zone whose inventory reaches zero before the day ends. We therefore
+build the flow-only inventory path of each zone,
+\begin{equation}
+\tilde I_{zt} \;=\; I_{z0} + \sum_{s\le t}\left(a_{zs}-d_{zs}\right),
+\label{eq:path}
+\end{equation}
+where $a$ and $d$ are the hourly arrivals and departures of a typical day scaled by
+$1/p$, and $I_{z0}$ is the zone's share of the fleet at midnight, taken from the
+distribution of the last recorded trip end of each bicycle.
+
+The result is unambiguous. The smallest zone holds 1{,}986 bicycles at midnight and
+the median zone 6{,}912. The worst cumulative excursion of any zone over the day is
+$-349$ bicycles, and \textbf{no zone is ever negative}. At the 5-minute and cell
+resolution of Section~\ref{sec:sens} some 172 of 5{,}263 cells do run dry, all of them
+cells whose midnight stock is not identified; the zone level, where stocks are large
+enough to be identified from the data, never does.
+
+What the day does produce is drift. Left alone, the 50 zones end the day
+$\sum_z|I_{z,24}-I_{z0}|=45{,}119$ bicycle-positions away from where they started ---
+the morning commute empties the residential north and fills the office core, and the
+evening does the reverse imperfectly. Rebalancing is therefore not a rescue operation;
+it is a \emph{reset}. That is the problem Q2 solves, and it explains why the optimal
+schedule in \figref{fig:q2}b runs at night.
+
+\subsection{A time-space network program}
+
+Let $z=1,\dots,50$ index zones and $t=0,\dots,23$ hours. The decision variables are
+the inventory $I_{zt}$, the bicycles moved $x_{ijt}$ and the trucks moved $m_{ijt}$ on
+arc $(i,j)$ of a sparse zone graph (the eight nearest neighbours of each zone within
+9 km; 290 arcs, mean length 5.97 km), the trucks present $n_{zt}$, the unmet
+departures $u_{zt}$, and the end-of-day deviations $dp_z,dm_z$.
+
+\begin{align}
+\min\quad
+& c_{\text{km}}\sum_{t}\sum_{(i,j)} d_{ij}\,m_{ijt}
++ c_{\text{load}}\sum_t\sum_{(i,j)} x_{ijt}
++ w\sum_t\sum_z u_{zt}
++ c_{\text{dev}}\sum_z\left(dp_z+dm_z\right)
++ f K \label{eq:q2obj}\\
+\text{s.t.}\quad
+& I_{z,0} = I_{z0}, \label{eq:q2init}\\
+& I_{z,t+1} = I_{z,t} + a_{zt} - \left(d_{zt}-u_{zt}\right)
+  - \sum_{j} x_{zjt} + \sum_{i} x_{izt}, \label{eq:q2bal}\\
+& d_{zt} - u_{zt} \;\le\; I_{z,t}, \label{eq:q2serv}\\
+& x_{ijt} \;\le\; Q\,m_{ijt}, \label{eq:q2cap}\\
+& \sum_{j} m_{zjt} \;\le\; n_{zt}, \label{eq:q2truck}\\
+& n_{z,t+1} = n_{zt} - \sum_j m_{zjt} + \sum_i m_{izt},
+  \qquad \sum_z n_{z,0} = \sum_z n_{z,23} = K, \label{eq:q2fleet}\\
+& \big[I_{z,23} + a_{z,23} - (d_{z,23}-u_{z,23})
+   - \textstyle\sum_j x_{zj,23} + \sum_i x_{iz,23}\big] - I_{z0} = dp_z - dm_z,
+  \label{eq:q2dev}\\
+& I,u,x,m,n,dp,dm \;\ge\; 0 . \notag
+\end{align}
+
+The objective has five parts, each with a distinct meaning. $c_{\text{km}}=6$ CNY per
+truck-kilometre is the running cost. $c_{\text{load}}=0.5$ CNY per bicycle loaded and
+unloaded is the handling cost. $w=6$ CNY per unmet departure is a service penalty: it
+is set above the cost of moving a bicycle so that the program will always prefer to
+serve a rider when it physically can. $c_{\text{dev}}=3$ CNY per bicycle of end-of-day
+drift penalises leaving the system out of balance, with the absolute value linearised
+by the pair $dp,dm$. $f=600$ CNY per truck per day is the ownership cost of a truck,
+charged on the fleet size $K$ rather than on trucks actually used, because a truck that
+is bought must be paid for whether it drives or not.
+
+The constraints are the physics. \eqnref{eq:q2bal} is conservation of bicycles: what is
+parked tomorrow is what is parked today plus arrivals minus served departures minus
+what trucks take away plus what they bring. \eqnref{eq:q2serv} is the service
+constraint --- a departure can only be served if a bicycle is present, and anything
+else becomes unmet demand $u$. \eqnref{eq:q2cap} couples bikes to trucks: a truck
+carries at most $Q=40$ bicycles, so moving $x$ bicycles requires $x/Q$ trucks on that
+arc in that hour. \eqnref{eq:q2truck} and \eqnref{eq:q2fleet} are conservation of
+trucks: a truck can leave only from where it is, the fleet is constant, and every
+truck returns home by midnight. \eqnref{eq:q2dev} defines the end-of-day deviation,
+which is what makes the plan a reset rather than a one-way transfer.
+
+The program is solved to optimality with Gurobi \cite{gurobi} through its Python
+interface. Truck flows are left continuous: at the scale of tens of vehicles a
+fractional truck is a planning artefact smaller than the uncertainty in the cost
+parameters, and the resulting plan is rounded up when a schedule is drawn.
+
+\subsection{Results}
+
+\begin{table}[htbp]
+\centering
+\caption[Q2 solutions]{Q2 solutions. ``Moved'' is bicycles relocated; ``dev'' is
+$\sum_z|I_{z,24}-I_{z0}|$; cost is the objective in CNY per day and includes the fixed
+truck cost $600K$. $\alpha$ scales the observed fleet.}
+\label{tab:q2}
+\small
+\begin{tabular}{@{}rrrrrrr@{}}
+\toprule
+$\alpha$ & $K$ & \textbf{Moved} & \textbf{Truck-km} & \textbf{Unserved} &
+\textbf{Dev} & \textbf{Cost} \\
+\midrule
+1.0 & 0   & 0      & 0     & 1{,}276 & 45{,}119 & 143{,}014 \\
+1.0 & 20  & 9{,}600  & 1{,}739 & 0 & 27{,}195 & 108{,}820 \\
+1.0 & 40  & 19{,}200 & 4{,}125 & 0 & 7{,}995  & 82{,}333 \\
+\textbf{1.0} & \textbf{60} & \textbf{23{,}959} & \textbf{5{,}441} & \textbf{0} &
+\textbf{900} & \textbf{83{,}325} \\
+1.0 & 150 & 24{,}409 & 4{,}990 & 0 & 600 & 133{,}946 \\
+0.9 & 60  & 25{,}403 & 5{,}688 & 0 & 600 & 84{,}628 \\
+0.8 & 80  & 31{,}632 & 7{,}330 & 816 & 816 & 115{,}145 \\
+0.7 & 100 & 34{,}271 & 7{,}860 & 10{,}430 & 10{,}430 & 218{,}167 \\
+0.6 & 80  & 28{,}794 & 6{,}592 & 34{,}493 & 34{,}493 & 412{,}379 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\tabref{tab:q2} and \figref{fig:q2} contain the answer. We recommend the plan at
+$\alpha=1$, $K=60$: \textbf{23{,}959 bicycles relocated per day over 5{,}441
+truck-kilometres}, at a daily cost of 83{,}325 CNY including the trucks, or
+\textbf{3.48 CNY per bicycle moved}. Three features deserve comment.
+
+\textbf{The plan is a nightly reset.} \figref{fig:q2}b plots deliveries by zone and
+hour. The mass of the schedule sits between 21:00 and 06:00, when a truck-kilometre is
+cheapest in congestion terms and when the fleet is idle. During the day the program
+moves almost nothing, because nothing needs moving: the stocks are deep enough to
+absorb the commute. The number of moves, 23{,}959, is close to half the drift of
+45{,}119, as it should be --- moving a bicycle from a surplus zone to a deficit zone
+corrects two zone-deviations at once.
+
+\textbf{Trucks are not the only instrument.} The no-truck row of \tabref{tab:q2} shows
+what happens without them: 1{,}276 departures cannot be served (0.06\% of trips) and
+the system ends the day 45{,}119 bicycles out of balance. Sixty trucks buy back both,
+and the cost curve in \figref{fig:q2}d shows sharply diminishing returns: going from
+60 to 150 trucks shortens each truck's route and cuts truck-kilometres, but adds
+50{,}600 CNY to the daily bill and saves nothing.
+
+\textbf{Service is not the binding constraint; balance is.} At $\alpha=0.8$ and $K=80$
+the system still serves 99.96\% of trips, and at $\alpha=0.6$ it serves 98.4\% --- the
+shortage only becomes visible when the fleet is cut by 40\%. This is the operational
+face of the oversupply diagnosis.
+
+\subsection{Right-sizing the fleet}
+
+Because the fleet level is a decision the operator controls, we repeat the program for
+fleet multipliers $\alpha\in\{0.4,\dots,1.0\}$, each at its own best truck fleet.
+Adding the capital and maintenance cost of bicycles at 1.0 CNY per bicycle per day
+gives the total cost curve of \figref{fig:q2}d, which has an interior minimum at
+\textbf{$\alpha=0.8$: 275{,}000 bicycles and 80 trucks, costing 390{,}000 CNY per day}
+against 427{,}000 at the observed fleet. Cutting further raises the cost steeply,
+because the trucks can no longer keep up: at $\alpha=0.6$ the daily cost is 619{,}000
+CNY.
+
+The optimum is shallow --- $\alpha=0.9$ costs 394{,}000, within 1\% of the minimum ---
+which is itself informative. A 10\% fleet reduction is nearly free; a 40\% reduction is
+not. The operator's problem in 2017 was not that the fleet was too small but that it
+was too large by roughly a fifth, and no amount of trucking fixes that.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{../figs/fig4_q2.pdf}
+\caption[Q2: net flow and the nightly plan]{Q2. (a) Net flow in the morning peak by zone, sized by total flow: the core
+gains bicycles, the residential periphery loses them. (b) Optimal delivery schedule by
+zone and hour; the plan is a night shift. (c) Unserved demand against truck fleet, by
+fleet multiplier. (d) Total daily cost against fleet size, each point at its best truck
+fleet.}
+\label{fig:q2}
+\end{figure}

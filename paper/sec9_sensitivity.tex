@@ -1,0 +1,134 @@
+% =========================== 9. SENSITIVITY ===========================
+\section{Sensitivity and the Boundaries of Validity}\label{sec:sens}
+
+Four quantities are not identified by the data --- the sampling rate, the initial
+inventory, the incentive parameters and the cost parameters --- and one is estimated
+with sampling error, the fleet size. We perturb each and report how far the
+conclusions move.
+
+\subsection{The fleet estimate}
+
+Applying \eqnref{eq:fleet} day by day gives the estimates below.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Date (May 2017)} & 10 & 11 & 12 & 15 & 16 \\
+\textbf{Fleet estimate} & 313{,}181 & 332{,}398 & 325{,}991 & 336{,}788 & 343{,}605 \\
+\midrule
+\textbf{Date (May 2017)} & 13 & 14 & 18 & 19 & 21 \\
+\textbf{Fleet estimate} & 326{,}046 & 326{,}690 & 292{,}831 & 300{,}887 & 306{,}947 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The estimate ranges from 292{,}831 to 343{,}605, with mean 320{,}536 and standard
+deviation 15{,}580 --- a coefficient of variation of 4.9\%. The low values on 18 and 19
+May coincide with the highest trips-per-bicycle ratios of the sample (1.65 against
+1.46), which is what a day of unusually many short trips would produce; the estimate
+is sensitive to the tail of the rides-per-bicycle distribution, and a promotion that
+adds many single-trip users biases it downward. We adopt the weekday value 343{,}638
+and treat fleet level as a decision variable $\alpha$ rather than a fixed fact, which
+is what Q2's right-sizing analysis requires anyway.
+
+The unknown sampling rate does not matter. Resampling the orders of 16 May at rates
+from 5\% to 50\% and re-estimating gives 330{,}586 to 338{,}401 bicycles, within 4\% of
+the full-sample value, exactly as the invariance argument of \S\ref{sec:data} predicts.
+
+\subsection{The incentive parameters}
+
+The three logit parameters of \eqnref{eq:logit} were varied one at a time around the
+baseline ($\kappa=2.0$, $\rho=0.35$, $c_0=0.8$), re-solving \eqnref{eq:mix} each time.
+
+\begin{table}[htbp]
+\centering
+\caption[Sensitivity of the incentive design]{Sensitivity of the incentive design. The all-truck baseline is 752{,}404 CNY
+per day.}
+\label{tab:q3sens}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Variant} & \textbf{Optimal reward} & \textbf{Placements} &
+\textbf{Total cost} & \textbf{Saving vs truck} \\
+\midrule
+Baseline & 1.20 & 115{,}385 & 489{,}578 & 34.9\% \\
+Value of money $\kappa=1.0$ & 1.20 & 78{,}709 & 573{,}116 & 23.8\% \\
+$\kappa=3.0$ & 1.05 & 131{,}671 & 432{,}730 & 42.5\% \\
+Cost of time $\rho=0.20$ & 1.00 & 123{,}685 & 445{,}935 & 40.7\% \\
+$\rho=0.50$ & 1.30 & 102{,}666 & 528{,}814 & 29.7\% \\
+Inertia $c_0=0.4$ & 1.05 & 117{,}884 & 466{,}202 & 38.0\% \\
+$c_0=1.2$ & 1.35 & 112{,}779 & 512{,}429 & 31.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The qualitative conclusion is robust: in every variant incentives are worth using, the
+optimal reward lies between 1.00 and 1.35 CNY, and the saving over an all-truck policy
+lies between 24\% and 43\%. The level of the reward and the size of the programme are
+not robust in the same way --- they move with the behavioural parameters by up to a
+factor of 1.7 in placements --- which is why we present the design as a function of a
+parameter that a pilot study should estimate before the scheme is scaled.
+
+\subsection{The price of a truck-kilometre}
+
+Re-solving the Q2 program at $\alpha=1$, $K=60$ with the truck-kilometre price at 3, 6
+and 12 CNY gives:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+$c_{\text{km}}$ (CNY/km) & \textbf{Bicycles moved} & \textbf{Truck-km} & \textbf{Cost (CNY/day)} \\
+\midrule
+3  & 25{,}587 & 5{,}814 & 66{,}242 \\
+6  & 23{,}959 & 5{,}441 & 83{,}325 \\
+12 & 21{,}835 & 4{,}906 & 113{,}964 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A four-fold increase in the truck price reduces the relocation volume by only 15\%,
+because the program is constrained by the need to restore balance, not by the budget.
+The plan is therefore robust to the most uncertain of the operating costs: getting the
+price wrong by a factor of two changes the schedule by a few thousand bicycles, not by
+its structure.
+
+\subsection{The initial inventory}
+
+This is the largest single uncertainty, and it is structural rather than parametric.
+The data record where each bicycle ended its last observed trip, not where it stood at
+midnight. Two estimators are available --- the last-trip-end distribution and the
+first-trip-start distribution --- and they agree at the zone level but not at the cell
+level, where 5,263 cells are served by 343,638 bicycles and many cells have no evidence
+of any bicycle at all.
+
+The consequence is a wide range in the simulated service level at cell resolution. In
+the zone-level simulation of \S\ref{sec:q2} no departure is ever unmet; in the
+cell-level simulation with a 300 m walking radius, 13.4\% of departures go unserved at
+$\alpha=1$, rising to 40.3\% at $\alpha=0.2$. The gap is not a modelling failure but an
+identification result: the cell-level figure is dominated by cells whose midnight stock
+is unknown, and it is best read as an upper bound on unmet demand. The zone-level
+figure, where stocks are large enough to be inferred, is the reliable one, and the LP's
+deterministic service metric lies between them.
+
+We use this spread explicitly rather than choosing a point. All statements about
+service in this paper are made at the zone level or in the LP; no conclusion depends on
+the cell-level figure, which we report because suppressing it would overstate the
+precision of the model.
+
+\subsection{Range of validity}
+
+The conclusions hold for a dense, flat, monocentric city of about 1{,}200 km$^2$ with
+6.2 rides per bicycle per day, in mild weather, on a weekday. They should not be
+extrapolated to:
+
+\begin{itemize}[leftmargin=1.4em]
+\item \emph{systems with stations}, where the docking constraint changes the inventory
+  process and the rebalancing problem becomes a routing problem with hard capacity;
+\item \emph{low-density cities}, where the walking radius of Q4 covers a much smaller
+  share of arrivals and the incentive pool of Q3 vanishes;
+\item \emph{extreme weather or holidays}, not represented in the ten usable days;
+\item \emph{the long run}, where the attraction $A_j$ itself changes with land use. The
+  model is a description of an equilibrium, not a forecast of one.
+\end{itemize}

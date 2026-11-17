@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCM 2026 CQU C · 推进路线</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#ffffff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b763;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b763;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:24px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:19px;margin:34px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--warn)}
+.box.bad{border-left-color:var(--hi)}
+.box.good{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.hl td{background:rgba(31,78,121,.06)}
+code,pre{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,"SFMono-Regular",Menlo,monospace}
+code{padding:1px 4px;word-break:break-all}
+pre{padding:10px 12px;overflow-x:auto;line-height:1.5}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.tag{display:inline-block;font-size:12px;line-height:1.6;padding:0 7px;border-radius:10px;border:1px solid var(--line);white-space:nowrap}
+.tag.h{color:var(--hi);border-color:var(--hi)}
+.tag.m{color:var(--warn);border-color:var(--warn)}
+.tag.l{color:var(--muted)}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.run{color:#fff;background:var(--accent);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>MCM 2026 CQU C · 推进路线与任务体系</h1>
+<p class="meta">项目：<code>d:\code\mcm2026_problemA\mcm\2026CQU_C</code>　·　版本：2026-11-17 v1　·　指导方：美赛指导agent　·　执行方：美赛工作Agent</p>
+
+<div class="box">
+<p><strong>一句话：</strong>审查报告已经给出问题清单（<a href="../review/论文审查报告.html">review/论文审查报告.html</a>）。这份路线把清单变成 14 个可验收的任务，按“先冻结输入口径、再修模型链、再重算结论、最后成稿”的顺序推进。M1 输入口径已冻结：车队 495,540（区间 484,754–506,635）、抽样率 0.128（实测 0.185，区间 0.13–0.20）、格距 0.005°。当前在 B 阶段，<strong>T005</strong>（Q1 验证）执行中。</p>
+</div>
+
+<h2 id="r1">1. 角色、边界与权限</h2>
+<div class="tw"><table>
+<thead><tr><th>角色</th><th>做什么</th><th>不做什么</th></tr></thead>
+<tbody>
+<tr><td><strong>指导方</strong>（本会话）</td><td>写任务单；独立复核交付数字；维护问题、决策、任务三本台账；有权退回；对论文口径只提建议，不拍板</td><td>不改 <code>code/</code>、<code>paper/</code>、<code>data/</code>；不跑求解；不写 <code>交付/</code></td></tr>
+<tr><td><strong>执行方</strong>（美赛工作Agent）</td><td>改代码、跑模型、出结果、画图、写论文；交付 JSON</td><td>不写 <code>审查与规划/</code>；不自行决定论文口径与假设取舍</td></tr>
+<tr><td><strong>用户</strong></td><td>产品决策：口径、假设取舍、是否放宽验收、是否赶时间跳步</td><td>不需要在两边之间传话</td></tr>
+</tbody></table></div>
+
+<h3>1.1 目录与通道</h3>
+<div class="tw"><table>
+<thead><tr><th>路径</th><th>归属</th><th>规则</th></tr></thead>
+<tbody>
+<tr><td><code>code/</code></td><td>执行方</td><td>可改。新脚本可直接加；已有脚本的修改必须在交付里逐文件说明</td></tr>
+<tr><td><code>paper/</code></td><td>执行方</td><td>T012 起才允许改；之前只读</td></tr>
+<tr><td><code>data/</code></td><td>执行方</td><td><strong>现有文件只读、不覆盖</strong>。新结果一律写 <code>data/runs/T00x/</code></td></tr>
+<tr><td><code>交付/</code></td><td>执行方写、指导方读</td><td>每任务一份 <code>T00x_delivery.json</code> + 必要的表与图</td></tr>
+<tr><td><code>审查与规划/</code></td><td>指导方</td><td><strong>执行方只读，任何情况下不写入</strong>（含临时脚本、日志）</td></tr>
+<tr><td><code>review/</code></td><td>指导方</td><td>审查报告与复核脚本，只读</td></tr>
+</tbody></table></div>
+
+<div class="box warn">
+<p><strong>两条硬规则，先于一切任务</strong></p>
+<ol>
+<li><strong>新结果写新目录。</strong><code>data/</code> 下现有 19 个结果文件（<code>q2_results.json</code>、<code>q3_cell.npz</code> 等）是论文所有数字的来源，一旦被覆盖，就失去新旧对照，回不去。所有重跑写 <code>data/runs/T00x/</code>。</li>
+<li><strong>动手前先记指纹。</strong>任务开始时对 <code>data/</code>（除 <code>runs/</code>）和 <code>paper/</code> 记一次文件清单与哈希，交付时附上“未改动”的证明。</li>
+</ol>
+</div>
+
+<h2 id="r2">2. 基线现状</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>现状（2026-11-17 核查）</th><th>对本路线的影响</th></tr></thead>
+<tbody>
+<tr><td>论文</td><td><code>paper/main.pdf</code> 26 页，11-11 22:23 编译；sec1–sec10 + summary + references + ai_report；6 张图</td><td>初判 M（约 77 分）；修改后目标 M 上段、冲 F</td></tr>
+<tr><td>代码</td><td><code>code/</code> 18 个脚本 + <code>lib.py</code>、<code>sim.py</code>、<code>sim_cell.py</code></td><td>可复现大部分数字；有硬编码与死代码</td></tr>
+<tr><td>结果</td><td>没有 <code>results/</code> 目录，结果与输入混在 <code>data/</code>（19 个结果文件 + 3 个原始/中间文件）</td><td>必须先分流，否则重跑即覆盖</td></tr>
+<tr><td>已知缺陷</td><td>9 项 P0、7 项 P1、7 项 P2，见 <a href="../review/论文审查报告.html#s13">审查报告 §13</a> 与 <code>台账/问题台账.csv</code></td><td>全部映射到 T001–T014</td></tr>
+<tr><td>关键矛盾</td><td>车队 343,638 ＜ 9 天观测到的 462,893 辆不同单车</td><td>T001 首先处理，因为它决定 Q2–Q4 的全部输入</td></tr>
+</tbody></table></div>
+
+<h2 id="r3">3. 路线总览</h2>
+<p>四个阶段、四个里程碑。每个阶段结束时有一个“能不能往下一阶段走”的闸门，由指导方按交付验收。</p>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>内容</th><th>任务</th><th>里程碑（闸门）</th><th>累计工作量</th></tr></thead>
+<tbody>
+<tr><td>A　输入口径</td><td>车队、抽样率、数字溯源、空间分辨率</td><td>T001–T004</td><td><strong>M1 输入口径冻结</strong>：所有下游模型用同一套车队、p、格距</td><td class="n">2.5 天</td></tr>
+<tr><td>B　模型链</td><td>Q1 验证 → 接入 Q2/Q4 → Q2 硬化 → Q3/Q4/Q5 重做</td><td>T005–T010</td><td><strong>M2 模型链贯通</strong>：Q1 的 OD 真能驱动 Q2，Q3 与 Q2 同一目标</td><td class="n">6 天</td></tr>
+<tr><td>C　稳健性</td><td>灵敏度按来源分解、全文数字重提取与图重绘</td><td>T011–T012</td><td><strong>M3 结论定稿</strong>：摘要到附录全部数字来自同一次运行</td><td class="n">1 天</td></tr>
+<tr><td>D　合规成稿</td><td>引用与 AI 报告、终检、编译</td><td>T013–T014</td><td><strong>M4 可提交</strong>：七标准自评 + 核验表全绿 + PDF 干净</td><td class="n">1 天</td></tr>
+</tbody></table></div>
+
+<div class="box">
+<p><strong>时间预算：</strong>P0 全部（T001–T004、T006–T009 的 P0 部分、T013）约 3.5–4.5 天；P0+P1 全部 14 个任务约 10 天。先按 P0 推进，第 4 天在 <strong>B1</strong> 决策点确认是否继续做 P1。</p>
+</div>
+
+<h2 id="r4">4. 任务总表</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>标题</th><th>对应问题</th><th>依赖</th><th>工作量</th><th>状态</th></tr></thead>
+<tbody>
+<tr class="hl"><td><strong>T001</strong></td><td>车队规模审计与重估</td><td><span class="tag h">H2</span></td><td>无</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
+<tr><td><strong>T001-R2</strong></td><td>封闭车队口径与中心值</td><td><span class="tag h">H2</span></td><td>T001、B6</td><td class="n">0.2 天</td><td><span class="tag ok">通过</span></td></tr>
+<tr><td>T003</td><td>论文数字溯源表</td><td><span class="tag h">H8</span></td><td>无（只读）</td><td class="n">1 天</td><td><span class="tag ok">通过</span></td></tr>
+<tr><td>T002</td><td>抽样率与放大口径</td><td><span class="tag m">M1</span></td><td>T001</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
+<tr><td>T004</td><td>空间分辨率与步行半径</td><td><span class="tag h">H4</span></td><td>T001、T002</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
+<tr><td>T005</td><td>Q1 验证补齐</td><td><span class="tag m">M2</span></td><td>M1</td><td class="n">0.5 天</td><td><span class="tag run">已下达</span></td></tr>
+<tr><td>T006</td><td>Q1 模型接入 Q2/Q4</td><td><span class="tag h">H1</span></td><td>T005</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T007</td><td>Q2 LP 硬化与诊断口径</td><td><span class="tag h">H5</span> <span class="tag h">H6</span> <span class="tag m">M3</span></td><td>T006</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T008</td><td>Q3 激励方案重做</td><td><span class="tag h">H3</span></td><td>T007</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T009</td><td>Q4 电子围栏修正</td><td><span class="tag m">M4</span></td><td>T004</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T010</td><td>Q5 分平台模型修正</td><td><span class="tag m">M5</span></td><td>T002</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T011</td><td>不确定性按来源分解</td><td><span class="tag m">M6</span></td><td>T007–T010</td><td class="n">0.5 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T012</td><td>全文数字重提取与图表重绘</td><td><span class="tag h">H8</span></td><td>T011</td><td class="n">0.5 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T013</td><td>引用、AI 报告与合规</td><td><span class="tag h">H7</span> <span class="tag h">H9</span> <span class="tag m">M7</span></td><td>可与 C 阶段并行</td><td class="n">0.5 天</td><td><span class="tag ok">通过 11-17（R1 后）</span></td></tr>
+<tr><td>T014</td><td>终检与编译</td><td>全部</td><td>T012、T013</td><td class="n">0.5 天</td><td><span class="tag">待下达</span></td></tr>
+</tbody></table></div>
+
+<h2 id="r5">5. 逐任务说明</h2>
+<p class="meta">每个任务正式下达时会展开成独立任务单（含范围、验收标准、只读区、失败处理）。这里给目标、边界和验收锚点，便于提前排期。</p>
+
+<h3>A 阶段 · 输入口径</h3>
+<div class="tw"><table>
+<thead><tr><th>任务</th><th>目标</th><th>关键验收锚点</th></tr></thead>
+<tbody>
+<tr><td><strong>T001</strong> 车队规模审计</td><td>找出 343,638 的来历；用观测数据给新车队估计与区间；列出所有受影响数字</td><td>新估计下界 ≥ 观测单车数；≥2 种方法各有 95% 区间；能复现或明确否定 343,638</td></tr>
+<tr><td><strong>T003</strong> 数字溯源表</td><td>论文每个数字 → 文件 + 字段 + 口径；标出无法复现项和互相矛盾项</td><td>覆盖摘要、正文、表 1–9、图注；矛盾项逐条编号</td></tr>
+<tr><td><strong>T002</strong> 抽样率与放大口径</td><td>p 由单点 0.128 改为区间；说明抽样机制假设；给 Q2/Q4 对 p 的敏感性</td><td>p 区间有数据支撑；关键结论在 p 区间端点的变化量给出</td></tr>
+<tr><td><strong>T004</strong> 空间分辨率与步行半径</td><td>修正 0.30 km 步行半径与格距矛盾；“任何分辨率都不缺车”的结论作废并重跑</td><td>半径 ≥ 格距（或改用真实距离）；重跑后给出分辨率–缺口曲线</td></tr>
+</tbody></table></div>
+
+<h3>B 阶段 · 模型链</h3>
+<div class="tw"><table>
+<thead><tr><th>任务</th><th>目标</th><th>关键验收锚点</th></tr></thead>
+<tbody>
+<tr><td><strong>T005</strong> Q1 验证补齐</td><td>图 3a 换完整模型；距离基准单独拟合；k 的选择给出 ARI 证据</td><td>留出日误差在文中给出的阈值内；k 的敏感性表齐全</td></tr>
+<tr><td><strong>T006</strong> Q1 接入 Q2/Q4</td><td>用 NHPP×重力模型的典型日 OD 驱动 LP 与围栏模拟，与观测输入并列</td><td>两条链各自跑通；差异量化；论文不再声称“整合框架”而未接入</td></tr>
+<tr><td><strong>T007</strong> Q2 LP 硬化</td><td>服务约束计入同小时到达；逐区回家约束；司机班次与夜间成本；诊断单位统一；参数扫描</td><td>库存非负、回家残差为 0；诊断数字用缩放单位；扫描表完整</td></tr>
+<tr><td><strong>T008</strong> Q3 重做</td><td>修正 ①–⑤；处理搭便车；目标与 Q2 对齐；用 Q2 边际成本</td><td>节省率给出区间；搭便车成本单列；与 Q2 的成本口径一致</td></tr>
+<tr><td><strong>T009</strong> Q4 修正</td><td>容量计入站立库存；网格量化；围栏数从边际成本选；2017 年 OSM</td><td>覆盖重叠量化；前沿曲线单调；成本–覆盖散点与结论一致</td></tr>
+<tr><td><strong>T010</strong> Q5 修正</td><td>格子级分平台仿真；卡车重复量化；补标准误代码与史实引用</td><td>SE 可复现；卡车重复与单平台差异分列</td></tr>
+</tbody></table></div>
+
+<h3>C/D 阶段 · 稳健性与成稿</h3>
+<div class="tw"><table>
+<thead><tr><th>任务</th><th>目标</th><th>关键验收锚点</th></tr></thead>
+<tbody>
+<tr><td><strong>T011</strong> 按来源分解</td><td>识别参数、假设负荷、文献值三类分别给区间；至少一次多参数蒙特卡罗</td><td>方差贡献表；结论在区间内的稳健性判断</td></tr>
+<tr><td><strong>T012</strong> 数字重提取</td><td>扩展 <code>95_numbers.py</code>；摘要、表、图注全部来自同一次运行</td><td>任何数字 30 秒内可定位；与 T003 溯源表一致</td></tr>
+<tr><td><strong>T013</strong> 合规</td><td>AI 报告加版本与行内引用；参考文献补齐；A7、红包车表述修正</td><td>AI 报告三要素齐全；无未引用断言</td></tr>
+<tr><td><strong>T014</strong> 终检</td><td>七标准自评 + 核验表 + 25 页 + PDF 文本层</td><td>审查报告 §10 核验表全部通过；无 U+037E</td></tr>
+</tbody></table></div>
+
+<h2 id="r6">6. 决策节点：必须回到用户的事</h2>
+<p>下面五件事属于“产品决策”，两个会话只给建议，不自行拍板。B1 在第 4 天触发，其余在对应任务下达前触发。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>决定事项</th><th>选项</th><th>指导方建议</th><th>触发时点</th></tr></thead>
+<tbody>
+<tr><td><strong>B1</strong></td><td>时间预算</td><td>只做 P0（约 4.5 天，M 上段）／做 P0+P1（约 10 天，冲 F）</td><td>先看 T001–T004 的实际耗时，再在 M1 闸门后决定</td><td>A 阶段结束</td></tr>
+<tr><td><strong>B2</strong></td><td>Q2 是否加逐区回家约束后重解</td><td>重解（成本上升，论文“夜间作业”要改写）／只改文字，删去夜间与回家说法</td><td>重解。现有 LP 允许卡车把车留在任意区，成本被低估，属于结论级缺陷</td><td>T007 下达前</td></tr>
+<tr><td><strong>B3</strong></td><td>Q3 的主方案</td><td>定向推送（只奖励把车骑进缺口格的人，不做全量推送）／公开推送并付搭便车者（节省率会降到约 2%）</td><td>主方案做定向推送，把“公开推送”作为下界情景。否则摘要的 34.9% 站不住</td><td>T008 下达前</td></tr>
+<tr><td><strong>B4</strong></td><td>Q1 模型是否作为 Q2 的主输入</td><td>主结果用 Q1 生成的 OD，观测 OD 作对照／观测 OD 为主，Q1 放附录</td><td>主结果用 Q1 的 OD。评委看的就是“你的模型有没有被用上”</td><td>T006 下达前</td></tr>
+<tr><td><strong>B5</strong></td><td>Q4 的围栏距离与道路数据</td><td>保持 450 m 并说明是现状阈值／申请 2017 年 OSM 历史快照重算</td><td>先保持 450 m，但在文中写明这是用 2026 年数据设的阈值；历史快照作为可选加分项</td><td>T009 下达前</td></tr>
+</tbody></table></div>
+
+<h2 id="r7">7. 交付与审查协议</h2>
+<h3>7.1 一个任务的完整生命周期</h3>
+<ol>
+<li>指导方写 <code>审查与规划/任务单/T00x_*.html</code>，用 SendMessage 通知执行方。</li>
+<li>执行方回<strong>回执</strong>（不超过 10 行）：我理解要做的是 X；不做的是 Y；计划分几步；需要确认的点。</li>
+<li>执行方改代码、跑算例、逐项自检。新结果写 <code>data/runs/T00x/</code>。</li>
+<li>执行方写 <code>交付/T00x_delivery.json</code>，回消息首行“T00x 已交付：交付/T00x_delivery.json”。</li>
+<li>指导方独立复核（自己重算关键数字，不引用执行方的解释），逐项接受或退回。</li>
+<li>退回不等于重做：指导方给可执行项（改哪个文件、重跑哪个算例、补哪个字段），执行方按项修。</li>
+</ol>
+
+<h3>7.2 交付 JSON 必须包含的字段</h3>
+<div class="tw"><table>
+<thead><tr><th>字段</th><th>内容</th><th>为什么必须有</th></tr></thead>
+<tbody>
+<tr><td><code>task</code> / <code>finished_at</code> / <code>resdir</code></td><td>任务号、完成时间、结果目录</td><td>任何数字都能定位到一次具体运行</td></tr>
+<tr><td><code>checks{}</code></td><td>自检 1–10 的布尔值</td><td>指导方先看布尔值，再抽查个例</td></tr>
+<tr><td><code>methods{}</code></td><td>每个关键数字的算法（文字公式 + 单位）</td><td>下游能独立复算；也是“不造假”的载体</td></tr>
+<tr><td><code>cases[]</code></td><td>逐算例：旧值、新值、差值、求解质量、中间量</td><td>汇总数字永远可以从这里重算</td></tr>
+<tr><td><code>affected[]</code></td><td>受影响的论文位置（节、表、图）与受影响数字</td><td>指导方据此决定 T012 的改动范围</td></tr>
+<tr><td><code>notes[]</code></td><td>已知问题、未测分支、失败算例、实现偏离</td><td>主动暴露弱点优于被问出来</td></tr>
+</tbody></table></div>
+
+<h3>7.3 自检清单（每任务交卷前逐项跑）</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>检查项</th><th>判据</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td>数字可溯源</td><td>交付里每个数字都能给出“文件 + 字段 + 口径”，没有手抄值</td></tr>
+<tr><td class="n">2</td><td>旧结果未动</td><td><code>data/</code> 现有文件哈希与任务开始时的快照一致</td></tr>
+<tr><td class="n">3</td><td>只读区未写</td><td><code>paper/</code>、<code>审查与规划/</code>、<code>review/</code> 的修改时间早于本任务开始</td></tr>
+<tr><td class="n">4</td><td>新结果在新目录</td><td>本次产物全部位于 <code>data/runs/T00x/</code></td></tr>
+<tr><td class="n">5</td><td>改动面清单</td><td>列出所有被改的脚本，逐条说明改了什么、为什么</td></tr>
+<tr><td class="n">6</td><td>失败项显式</td><td>不可行、超时、未收敛的算例逐条列出，附原因</td></tr>
+<tr><td class="n">7</td><td>量级自查</td><td>新数字与观测对照（如车队 ≥ 观测单车数、库存 ≥ 0）</td></tr>
+<tr><td class="n">8</td><td>边界条件</td><td>流量守恒残差、逐区回家残差、非负残差逐时 ≤ 1e-6</td></tr>
+<tr><td class="n">9</td><td>未测分支声明</td><td>本次没覆盖的参数区间或代码分支，明确写“未测”</td></tr>
+<tr><td class="n">10</td><td>口径未擅改</td><td>没有替用户改动假设或论文措辞；涉及口径的改动在 <code>notes</code> 里单独列出</td></tr>
+</tbody></table></div>
+
+<h2 id="r8">8. 风险与停止条件</h2>
+<div class="tw"><table>
+<thead><tr><th>风险</th><th>表现</th><th>应对</th></tr></thead>
+<tbody>
+<tr><td>数字漂移</td><td>改模型后摘要、表、图各说各的</td><td>T012 一次性重提取；在此之前不动 <code>paper/</code> 的数字</td></tr>
+<tr><td>范围外溢</td><td>修 Q3 顺手改了 Q2 的目标函数</td><td>任务单写“不做”；交付里的 <code>affected</code> 必须完整</td></tr>
+<tr><td>结果倒退</td><td>加上真实约束后成本比原论文高，看起来“退步”</td><td>这是修正而非退步：正文写清旧值为何低估；T003 的溯源表留作对照</td></tr>
+<tr><td>数据不可得</td><td>2017 年 OSM、红包车官方数据拿不到</td><td>用可得来源 + 明确标注；不编造</td></tr>
+<tr><td>返工循环</td><td>同一任务连续退回 2 次以上</td><td>第 3 轮停下来，回到用户，重新划范围或降低验收</td></tr>
+</tbody></table></div>
+
+<div class="box bad">
+<p><strong>立即停止并上报的条件：</strong>① 发现新的、会推翻已有结论的建模缺陷；② 两个会话对同一数字无法用数据裁决；③ 需要修改只读区或放宽验收标准；④ 连续 3 轮没有实质进展。</p>
+</div>
+
+<h2 id="r9">9. 进度看板</h2>
+<div class="tw"><table>
+<thead><tr><th>里程碑</th><th>包含任务</th><th>完成判据</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>M0 工作区与基线</td><td>本文件、任务单、三本台账、数据指纹快照</td><td>执行方确认目录与边界</td><td><span class="tag ok">已就绪（待 T001 回执确认）</span></td></tr>
+<tr><td>M1 输入口径冻结</td><td>T001–T004</td><td>车队、p、格距三者定稿并写进交付</td><td><span class="tag ok">M1 已冻结，进入 B 阶段</span></td></tr>
+<tr><td>M2 模型链贯通</td><td>T005–T010</td><td>Q1 OD 驱动 Q2；Q3 与 Q2 同口径</td><td><span class="tag">T005 已通过；T006 待 B4</span></td></tr>
+<tr><td>M3 结论定稿</td><td>T011–T012</td><td>摘要到附录数字同源</td><td><span class="tag">未开始</span></td></tr>
+<tr><td>M4 可提交</td><td>T013–T014</td><td>终检全绿</td><td><span class="tag">T013 已通过；T014 待 T012</span></td></tr>
+</tbody></table></div>
+
+<div class="box"><p><strong>当前状态（2026-11-17）：</strong>M1 已冻结；T005 与 T013 已通过关闭（T013：AI 报告五要素齐全、343,638 硬编码清单补全、A7 改写、文献 23→32、32/32 引用、27 页/正文 25 页）。<strong>下一步只剩 T006，等用户对 B4 拍板；B7 影响 T012 的绝对数写法。</strong>B1/B2/B3/B5 可在 T006 跑起来后再定。</p></div>
+<p class="meta">维护：每接受一个任务，指导方更新 <code>台账/任务台账.csv</code> 与本节状态；问题关闭时更新 <code>台账/问题台账.csv</code>；用户做了决定，更新 <code>台账/决策台账.csv</code>。</p>
+
+</main>
+</body>
+</html>

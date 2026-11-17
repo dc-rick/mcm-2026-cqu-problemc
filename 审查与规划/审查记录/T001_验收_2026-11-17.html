@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T001 验收记录</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.bad{border-left-color:var(--hi)}
+.box.good{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+code,pre{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace}
+code{padding:1px 4px;word-break:break-all}
+pre{padding:10px 12px;overflow-x:auto;line-height:1.5}
+ul,ol{padding-left:22px;margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T001 验收记录 · 车队规模审计</h1>
+<p class="meta">验收日期 2026-11-17　·　交付 <code>交付/T001_delivery.json</code>（22:03）　·　结论：部分通过，第 5 项退回</p>
+
+<div class="box good">
+<p><strong>核心结论成立。</strong>343,638 精确复现为 343,637.986（单日 2017-05-16），它不是“车队”，而是一天的占用估计；用 9 天数据重估，车队在 465k–507k，所有方法的点估计都高于观测到的 462,893 辆不同单车。</p>
+</div>
+
+<h2>1. 我独立复算的数字</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>执行方</th><th>我的复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>5/16 粗过滤 T / D</td><td>288,691 / 195,301</td><td>288,691 / 195,301</td><td>一致</td></tr>
+<tr><td>μ（解 μ/(1−e<sup>−μ</sup>)=T/D）</td><td>0.840102</td><td>0.840102</td><td>一致</td></tr>
+<tr><td>F = T/μ</td><td>343,637.986</td><td>343,637.986</td><td>一致（差 0.014 内）</td></tr>
+<tr><td>lib 过滤同日 F</td><td>343,604.83</td><td>343,604.83</td><td>一致</td></tr>
+<tr><td>Chapman（first5_last4）</td><td>477,564.52</td><td>477,564.520（n1=397,166，n2=390,416，m=324,689）</td><td>一致</td></tr>
+<tr><td>Chao1（first5_last4）</td><td>492,306.29</td><td>492,306.293（f1=138,204，f2=324,689）</td><td>一致</td></tr>
+<tr><td>9 天不同单车 / 单量</td><td>462,893 / 2.47M</td><td>462,893 / 2,466,211，T/D=5.3278</td><td>一致</td></tr>
+<tr><td>每车每天单量</td><td>6.24 → 4.43</td><td>2,143,414/343,638=6.237；/483,787=4.430</td><td>一致</td></tr>
+<tr><td>β-二项 / 零截断 NB 的内部一致性</td><td>N=D/(1−P0)</td><td>462,893/0.95681=483,787；/0.96771=478,337</td><td>一致</td></tr>
+</tbody></table></div>
+
+<h2>2. 执行方对我的三处更正（我已核实，原表述作废）</h2>
+<p>我在任务单里说“6 个文件位置都受影响”。执行方指出其中三处不成立，我逐个查了源码：</p>
+<div class="tw"><table>
+<thead><tr><th>我原来的说法</th><th>实际</th><th>我核实的方式</th></tr></thead>
+<tbody>
+<tr><td><code>30_q3_incentive.py:16</code> 的 FLEET 影响 Q3</td><td>死常数，全文件只有定义行</td><td><code>grep -n FLEET</code> 仅第 16 行</td></tr>
+<tr><td><code>40_q4_efence.py</code> 含 FLEET</td><td>不含，且不读任何 fleet 相关文件</td><td>grep 无匹配；文件头自行从 trips 构建需求</td></tr>
+<tr><td><code>21_q2_opt.py</code> 的 FLEET 放大 I0</td><td>第 30 行除以 FLEET、第 58 行再乘回，常数在式内抵消</td><td>读 21 第 26–58 行</td></tr>
+</tbody></table></div>
+<p>这三条由我作废，不计入执行方的问题。</p>
+
+<h2>3. 退回项（只此一项）</h2>
+<div class="box bad">
+<p><strong>R1：影响面结论错误——“Q2/Q3/Q4 的解答不依赖这个常数”不成立。</strong></p>
+<p>执行方忽略了 <code>q2_state.npz</code> 这条数据链。该文件由 <code>20_q2_diag.py:55</code> 写出，其中 <code>I0 = init_share * FLEET</code>（第 26 行）；读取它的有：</p>
+<pre>21_q2_opt.py:29   RQ["I0"]            → I0_base*FLEET = RQ["I0"]（常数抵消，但数值仍来自 20）
+22_q2_sim.py:15   st["I0"]            → Q2 仿真
+50_q5_platform.py:15  I0 = st["I0"]   → Q5 的分平台实验
+95_numbers.py:50  st["I0"]            → 论文引用的 I0 分位数
+24_cell_curve.py:31 st["I0"]          → 格子车队曲线</pre>
+<p>也就是说：常数在 21 的公式里确实抵消，但 343,638 已经通过 <code>q2_state.npz</code> 写进了 Q2、Q5 和论文数字。正确表述是“物理车队 P=αF 才是状态变量，P* 不随常数变；但 I<sub>0</sub> 的水平与 α 的标签会变”，而不是“Q2 不依赖”。</p>
+<p><strong>要求：</strong>改 <code>notes</code> 与 <code>affected</code>，把 22、50、95 三处补进去，并写明 Q2 的成本曲线以物理 P 为横轴时才不变。不需要重跑。</p>
+</div>
+
+<h2>4. 通过的项</h2>
+<ul>
+<li>验收 1（462,893 / 484,754）：通过，我独立重算一致。</li>
+<li>验收 2（≥2 种方法、区间、下界 ≥ 462,893）：通过。Chapman 470,478–477,565；Chao1 479,222–506,693；β-二项 483,787；零截断 NB 478,337；同质 9 天 465,212。</li>
+<li>验收 3（复现 343,638）：通过，且给出了 33 辆差额的精确来源（12 条边界记录）。这项工作超出任务要求。</li>
+<li>验收 4（每车每天单量）：通过，6.24 → 4.43。</li>
+<li>验收 6（自检）、7（假设与未决项）：通过。把抽样区间与模型不确定性分开写，是正确的做法。</li>
+<li>只读区：<code>data/</code> 与 <code>paper/</code> 全部文件仍是 11-11 的时间戳，哈希快照一致；<code>lib.py</code> 只改了 8–9 行为相对路径，我确认改后代码可导入。</li>
+</ul>
+
+<h2>5. 上报用户的决策</h2>
+<p><strong>B6：</strong>车队按封闭总体（≈484k，9 天窗口）处理，还是当作增长中的开放总体（343,638 可作为 5/16 的当日快照重新表述）。这决定摘要里“6.2 次/车/天”和 §3 的整段写法。执行方已按流程上报，未自行选择。</p>
+
+<h2>6. 另一项待办的确认</h2>
+<p>执行方称“右尺寸化最优点 P*=274,910、总额 390k 不变”。我用 <code>data/q2_results.json</code> 逐个 α 取最优 K 复算：α=0.8、K=80 时总额 390,055 CNY，为全表最小；α=0.9 为 393,902。<strong>该结论成立</strong>，我先前按 K=60 单点看的结果是错的，已作废。</p>
+
+</main>
+</body>
+</html>

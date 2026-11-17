@@ -1,0 +1,396 @@
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex)
+ restricted \write18 enabled.
+entering extended mode
+(./main.tex
+LaTeX2e <2026-06-01>
+L3 programming layer <2026-09-09>
+(d:/texlive/2026/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(d:/texlive/2026/texmf-dist/tex/latex/base/size11.clo))
+(d:/texlive/2026/texmf-dist/tex/latex/geometry/geometry.sty
+(d:/texlive/2026/texmf-dist/tex/latex/graphics/keyval.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/iftex/ifvtex.sty
+(d:/texlive/2026/texmf-dist/tex/generic/iftex/iftex.sty)))
+(d:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec.sty
+(d:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+(d:/texlive/2026/texmf-dist/tex/latex/base/fontenc.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(d:/texlive/2026/texmf-dist/tex/latex/unicode-math/unicode-math.sty
+(d:/texlive/2026/texmf-dist/tex/latex/l3kernel/expl3.sty
+(d:/texlive/2026/texmf-dist/tex/latex/l3kernel/l3backend-xetex.def))
+(d:/texlive/2026/texmf-dist/tex/latex/unicode-math/unicode-math-xetex.sty
+(d:/texlive/2026/texmf-dist/tex/latex/l3packages/xparse/xparse.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/base/fix-cm.sty
+(d:/texlive/2026/texmf-dist/tex/latex/base/ts1enc.def))
+(d:/texlive/2026/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(d:/texlive/2026/texmf-dist/tex/latex/amsmath/amstext.sty
+(d:/texlive/2026/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(d:/texlive/2026/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(d:/texlive/2026/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex)))
+(d:/texlive/2026/texmf-dist/tex/latex/mathtools/mathtools.sty
+(d:/texlive/2026/texmf-dist/tex/latex/tools/calc.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/mathtools/mhsetup.sty)
+
+Package mathtools Warning: For best results, please load mathtools *before* 
+(mathtools)                unicode-math on input line 127.
+
+) (d:/texlive/2026/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/multirow/multirow.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/graphics/graphicx.sty
+(d:/texlive/2026/texmf-dist/tex/latex/graphics/graphics.sty
+(d:/texlive/2026/texmf-dist/tex/latex/graphics/trig.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(d:/texlive/2026/texmf-dist/tex/latex/graphics-def/xetex.def)))
+(d:/texlive/2026/texmf-dist/tex/latex/caption/caption.sty
+(d:/texlive/2026/texmf-dist/tex/latex/caption/caption3.sty))
+(d:/texlive/2026/texmf-dist/tex/latex/caption/subcaption.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/xcolor/xcolor.sty
+(d:/texlive/2026/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(d:/texlive/2026/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+(d:/texlive/2026/texmf-dist/tex/latex/hyperref/hyperref.sty
+(d:/texlive/2026/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+(d:/texlive/2026/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(d:/texlive/2026/texmf-dist/tex/generic/infwarerr/infwarerr.sty)))
+(d:/texlive/2026/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/hyperref/nameref.sty
+(d:/texlive/2026/texmf-dist/tex/latex/refcount/refcount.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+(d:/texlive/2026/texmf-dist/tex/latex/kvoptions/kvoptions.sty)))
+(d:/texlive/2026/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/stringenc/stringenc.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(d:/texlive/2026/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/hyperref/puenc.def)
+(d:/texlive/2026/texmf-dist/tex/latex/url/url.sty)
+(d:/texlive/2026/texmf-dist/tex/generic/bitset/bitset.sty
+(d:/texlive/2026/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty)))
+(d:/texlive/2026/texmf-dist/tex/latex/hyperref/hxetex.def
+(d:/texlive/2026/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(d:/texlive/2026/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))
+(d:/texlive/2026/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/enumitem/enumitem.sty)
+(d:/texlive/2026/texmf-dist/tex/latex/float/float.sty) (./main.aux)
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+
+Package unicode-math Warning: Using \overbracket and \underbracket from
+(unicode-math)                `mathtools' package.
+(unicode-math)                 
+(unicode-math)                 Use \Uoverbracket and \Uunderbracket for
+(unicode-math)                original `unicode-math' definition.
+
+
+Package unicode-math Warning: I'm going to overwrite the following commands
+(unicode-math)                from the `mathtools' package: 
+(unicode-math)                 
+(unicode-math)                     \dblcolon, \coloneqq, \Coloneqq, \eqqcolon.
+(unicode-math)                
+(unicode-math)                 
+(unicode-math)                 Note that since I won't overwrite the other
+(unicode-math)                colon-like commands, using them will lead to
+(unicode-math)                inconsistencies.
+
+(./main.out) (./main.out) (./summary.tex [1] [2]) (./main.toc) [3]
+(./sec1_intro.tex
+
+LaTeX Warning: Reference `sec:sens' on page 4 undefined on input line 52.
+
+
+LaTeX Warning: Citation `shaheen2010' on page 4 undefined on input line 70.
+
+
+LaTeX Warning: Citation `fishman2013' on page 4 undefined on input line 70.
+
+
+LaTeX Warning: Citation `raviv2013' on page 4 undefined on input line 71.
+
+
+LaTeX Warning: Citation `chemia2013' on page 4 undefined on input line 72.
+
+
+LaTeX Warning: Citation `schuijbroek2017' on page 4 undefined on input line 74.
+
+
+
+LaTeX Warning: Citation `pfrommer2014' on page 4 undefined on input line 75.
+
+
+LaTeX Warning: Citation `singla2015' on page 4 undefined on input line 76.
+
+
+LaTeX Warning: Citation `omahony2015' on page 4 undefined on input line 77.
+
+[4]
+
+LaTeX Warning: Citation `wilson1970' on page 5 undefined on input line 83.
+
+
+LaTeX Warning: Citation `erlander1990' on page 5 undefined on input line 83.
+
+
+LaTeX Warning: Citation `fotheringham1989' on page 5 undefined on input line 83
+.
+
+
+LaTeX Warning: Citation `mcfadden1974' on page 5 undefined on input line 84.
+
+
+LaTeX Warning: Citation `lloyd1982' on page 5 undefined on input line 85.
+
+
+LaTeX Warning: Citation `rousseeuw1987' on page 5 undefined on input line 86.
+
+
+LaTeX Warning: Citation `hotelling1929' on page 5 undefined on input line 87.
+
+
+LaTeX Warning: Citation `katz1985' on page 5 undefined on input line 87.
+
+
+LaTeX Warning: Citation `rochet2003' on page 5 undefined on input line 87.
+
+
+LaTeX Warning: Reference `sec:sens' on page 5 undefined on input line 108.
+
+
+Underfull \hbox (badness 1348) in paragraph at lines 123--124
+\TU/TimesNewRoman(0)/m/n/10 2.01 (morning); top-5 hit rate
+
+Underfull \hbox (badness 1210) in paragraph at lines 124--125
+[]\TU/TimesNewRoman(0)/m/n/10 23,959 bikes/day, 5,441 truck-
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--126
+[]\TU/TimesNewRoman(0)/m/n/10 Reward 1.20 CNY, 115,385
+
+Underfull \hbox (badness 6893) in paragraph at lines 126--127
+[]\TU/TimesNewRoman(0)/m/n/10 626 fences at 450 m cover
+
+Underfull \hbox (badness 5893) in paragraph at lines 126--127
+\TU/TimesNewRoman(0)/m/n/10 75.3%; median capacity 417
+
+LaTeX Warning: Reference `sec:q2' on page 5 undefined on input line 138.
+
+
+LaTeX Warning: Reference `sec:q5' on page 5 undefined on input line 138.
+
+
+LaTeX Warning: Reference `sec:sens' on page 5 undefined on input line 139.
+
+
+LaTeX Warning: Reference `sec:eval' on page 5 undefined on input line 140.
+
+) (./sec2_assumptions.tex
+Overfull \hbox (2.27321pt too wide) in paragraph at lines 134--2
+\TU/TimesNewRoman(0)/m/n/10.95 Section [][]2[][] states assumptions and notatio
+n. Section [][]3[][] describes the data, the geohash decoding, the sampling-
+[5]
+
+LaTeX Warning: Reference `sec:q2' on page 6 undefined on input line 26.
+
+
+LaTeX Warning: Reference `sec:eval' on page 6 undefined on input line 34.
+
+
+LaTeX Warning: Reference `sec:sens' on page 6 undefined on input line 52.
+
+
+LaTeX Warning: Reference `sec:sens' on page 6 undefined on input line 63.
+
+) (./sec3_data.tex [6]
+
+LaTeX Warning: Citation `mobike' on page 7 undefined on input line 7.
+
+
+LaTeX Warning: Citation `niemeyer2008' on page 7 undefined on input line 12.
+
+[7]
+
+LaTeX Warning: Reference `sec:sens' on page 8 undefined on input line 68.
+
+[8]
+
+LaTeX Warning: Reference `sec:sens' on page 9 undefined on input line 93.
+
+) (./sec4_q1.tex [9]
+
+LaTeX Warning: Citation `wilson1970' on page 10 undefined on input line 41.
+
+
+LaTeX Warning: Citation `virtanen2020' on page 10 undefined on input line 70.
+
+[10] [11]
+
+LaTeX Warning: Citation `lloyd1982' on page 12 undefined on input line 160.
+
+
+LaTeX Warning: Citation `rousseeuw1987' on page 12 undefined on input line 161.
+
+
+[12]) (./sec5_q2.tex
+
+LaTeX Warning: Reference `sec:sens' on page 13 undefined on input line 20.
+
+
+LaTeX Warning: Reference `fig:q2' on page 13 undefined on input line 29.
+
+[13]
+
+LaTeX Warning: Reference `eq:q2bal' on page 14 undefined on input line 71.
+
+
+LaTeX Warning: Reference `eq:q2serv' on page 14 undefined on input line 73.
+
+
+LaTeX Warning: Reference `eq:q2cap' on page 14 undefined on input line 75.
+
+
+LaTeX Warning: Reference `eq:q2truck' on page 14 undefined on input line 77.
+
+
+LaTeX Warning: Reference `eq:q2fleet' on page 14 undefined on input line 77.
+
+
+LaTeX Warning: Reference `eq:q2dev' on page 14 undefined on input line 79.
+
+
+LaTeX Warning: Citation `gurobi' on page 14 undefined on input line 82.
+
+[14]
+
+LaTeX Warning: Reference `tab:q2' on page 15 undefined on input line 115.
+
+
+LaTeX Warning: Reference `fig:q2' on page 15 undefined on input line 115.
+
+
+LaTeX Warning: Reference `fig:q2' on page 15 undefined on input line 120.
+
+
+LaTeX Warning: Reference `tab:q2' on page 15 undefined on input line 128.
+
+
+LaTeX Warning: Reference `fig:q2' on page 15 undefined on input line 131.
+
+
+LaTeX Warning: Reference `fig:q2' on page 15 undefined on input line 145.
+
+) (./sec6_q3.tex [15] [16]
+
+LaTeX Warning: Reference `sec:sens' on page 17 undefined on input line 51.
+
+
+LaTeX Warning: Reference `tab:supply' on page 17 undefined on input line 99.
+
+[17]
+
+LaTeX Warning: Reference `tab:supply' on page 18 undefined on input line 123.
+
+
+LaTeX Warning: Reference `fig:q3' on page 18 undefined on input line 132.
+
+
+LaTeX Warning: Reference `fig:q3' on page 18 undefined on input line 143.
+
+
+LaTeX Warning: Reference `sec:q4' on page 18 undefined on input line 166.
+
+) (./sec7_q4.tex [18]
+
+LaTeX Warning: Reference `sec:q2' on page 19 undefined on input line 21.
+
+
+LaTeX Warning: Citation `nemhauser1978' on page 19 undefined on input line 32.
+
+[19]
+
+LaTeX Warning: Reference `tab:fence' on page 20 undefined on input line 53.
+
+
+LaTeX Warning: Reference `fig:q4' on page 20 undefined on input line 53.
+
+
+LaTeX Warning: Reference `fig:q4' on page 20 undefined on input line 60.
+
+
+LaTeX Warning: Reference `fig:q4' on page 20 undefined on input line 68.
+
+
+LaTeX Warning: Reference `sec:q3' on page 20 undefined on input line 87.
+
+
+LaTeX Warning: Citation `osm' on page 20 undefined on input line 98.
+
+
+LaTeX Warning: Reference `fig:q4' on page 20 undefined on input line 98.
+
+) (./sec8_q5.tex [20]
+
+LaTeX Warning: Reference `sec:multihome' on page 21 undefined on input line 13.
+
+
+
+LaTeX Warning: Reference `sec:q2' on page 21 undefined on input line 17.
+
+[21]
+
+LaTeX Warning: Reference `sec:q4' on page 22 undefined on input line 38.
+
+
+LaTeX Warning: Reference `eq:deficit' on page 22 undefined on input line 65.
+
+
+LaTeX Warning: Citation `katz1985' on page 22 undefined on input line 85.
+
+
+LaTeX Warning: Citation `rochet2003' on page 22 undefined on input line 85.
+
+
+LaTeX Warning: Reference `sec:q2' on page 22 undefined on input line 86.
+
+
+LaTeX Warning: Reference `sec:q5' on page 22 undefined on input line 102.
+
+
+LaTeX Warning: Reference `sec:q4' on page 22 undefined on input line 102.
+
+[22]
+
+LaTeX Warning: Reference `sec:q4' on page 23 undefined on input line 115.
+
+) (./sec9_sensitivity.tex
+
+LaTeX Warning: Reference `eq:logit' on page 23 undefined on input line 41.
+
+
+LaTeX Warning: Reference `eq:mix' on page 23 undefined on input line 42.
+
+[23]
+
+LaTeX Warning: Reference `sec:q2' on page 24 undefined on input line 107.
+
+[24]) (./sec10_evaluation.tex [25]) [26] (./references.tex
+Underfull \hbox (badness 1253) in paragraph at lines 69--72
+[]\TU/TimesNewRoman(0)/m/n/10 Rousseeuw, P. J. (1987). Silhouettes: A graphical
+ aid to the interpretation and validation of cluster
+[27]) [28] (./ai_report.tex) [29] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)
+Output written on main.pdf (29 pages).
+Transcript written on main.log.

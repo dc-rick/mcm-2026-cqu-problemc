@@ -1,0 +1,1302 @@
+{
+ "task": "T005",
+ "title": "Q1 验证补齐",
+ "generated_at": "2026-11-17T23:18:44",
+ "resdir": "data/runs/T005",
+ "headline": {
+  "day_split": {
+   "train_days": [
+    "2017-05-10",
+    "2017-05-11",
+    "2017-05-15",
+    "2017-05-16",
+    "2017-05-18"
+   ],
+   "test_days": [
+    "2017-05-12",
+    "2017-05-19"
+   ],
+   "train_trips": 1364827,
+   "test_trips": 555675
+  },
+  "pooled_full_vs_distance_day": {
+   "nlp_full": 3.4184825609664276,
+   "nlp_distance": 3.4880567794910844,
+   "nlp_gain": 0.06957421451807022,
+   "top5_full": 0.42549331893642867,
+   "top5_distance": 0.39236064246187063,
+   "top5_gain": 0.03313267647455797
+  },
+  "attraction_gain_range": {
+   "nlp_min": 0.034273386001586914,
+   "nlp_max": 0.1744842529296875,
+   "top5_min": 0.017328718518920316,
+   "top5_max": 0.07389021006738011
+  },
+  "distance_beta_vs_full": [
+   {
+    "band": "night 0-5",
+    "beta_full": 2.096295062651722,
+    "beta_distance": 2.104662261262809,
+    "beta_diff": 0.008367198611086923,
+    "beta_diff_pct": 0.39914221810467754
+   },
+   {
+    "band": "morning 6-9",
+    "beta_full": 2.0144205638093586,
+    "beta_distance": 2.0353758582387793,
+    "beta_diff": 0.02095529442942068,
+    "beta_diff_pct": 1.0402641238825168
+   },
+   {
+    "band": "midday 10-15",
+    "beta_full": 2.517486794795088,
+    "beta_distance": 2.5690907711015187,
+    "beta_diff": 0.051603976306430877,
+    "beta_diff_pct": 2.0498211316588537
+   },
+   {
+    "band": "evening 16-19",
+    "beta_full": 2.129710496887778,
+    "beta_distance": 2.171054720126755,
+    "beta_diff": 0.04134422323897713,
+    "beta_diff_pct": 1.9413072011146548
+   },
+   {
+    "band": "late 20-23",
+    "beta_full": 2.3639788344958435,
+    "beta_distance": 2.406232694553231,
+    "beta_diff": 0.04225386005738763,
+    "beta_diff_pct": 1.7874043303944784
+   }
+  ],
+  "fig3_ks": {
+   "pooled_cross_cell": 0.09786120053891312,
+   "pooled_cross_cell_vs_gps": 0.18730045849888854,
+   "old_fig3a_ks": 0.19570831597637095
+  },
+  "k_stability": {
+   "best_silhouette_k_40k": 6,
+   "best_silhouette_k_10k_mean": 5,
+   "k5_silhouette_40k": 0.25622832775115967,
+   "k6_silhouette_40k": 0.26335379481315613,
+   "k5_silhouette_10k_mean": 0.25061418637633326,
+   "k6_silhouette_10k_mean": 0.24644747599959374,
+   "k5_ari_pairwise_mean": 0.6646132046046803,
+   "k5_ari_pairwise_min": 0.30545390288117896,
+   "k5_ari_vs_published": 0.9935679057175609,
+   "k3_ari_pairwise_mean": 0.49512888619004275,
+   "k3_ari_pairwise_min": 0.2077060249944421,
+   "cross_k_5_6": 0.8228942144625746,
+   "statement": "The published k=5 labels are recovered with ARI 0.994. But across 20 random initialisations k=5 has pairwise ARI 0.665 (min 0.305), so the label set is not stable. The best-run 40k silhouette is 0.256 at k=5 versus 0.263 at k=6; the mean 10k silhouette is 0.251 versus 0.246. k=5 and k=6 are close (cross-k ARI 0.823), but k=5 is not the single silhouette winner once k=6 is considered, and the stability claim is not supported."
+  },
+  "return_share": "Under the task's same-cell definition the heavy short-trip segment has 16.5% same-cell trips, not a quarter; the quarter is 25.7% under the origin-revisit definition. Overall same-cell is 9.0%."
+ },
+ "dest_validation": {
+  "day_split": {
+   "train_days": [
+    "2017-05-10",
+    "2017-05-11",
+    "2017-05-15",
+    "2017-05-16",
+    "2017-05-18"
+   ],
+   "test_days": [
+    "2017-05-12",
+    "2017-05-19"
+   ],
+   "train_trips": 1364827,
+   "test_trips": 555675,
+   "bands": [
+    {
+     "n_train": 18364,
+     "n_test": 8410,
+     "beta_full": 2.096295062651722,
+     "beta_distance": 2.104662261262809,
+     "beta_diff": 0.008367198611086923,
+     "train_ll_full": -58863.89329443542,
+     "train_ll_distance": -61888.53843563722,
+     "nlp": {
+      "full": 3.312717914581299,
+      "distance": 3.4872021675109863,
+      "attraction": 7.912347793579102,
+      "uniform": 8.568456649780273
+     },
+     "top5": {
+      "full": 0.4755053507728894,
+      "distance": 0.4016151407055093,
+      "attraction": 0.08727705112960761,
+      "uniform": 0.0009500285008550256
+     },
+     "top5_argpartition": {
+      "full": 0.47550535202026367,
+      "distance": 0.40142688155174255,
+      "attraction": 0.08727705478668213,
+      "uniform": 0.0009500285008550256
+     },
+     "delta_nlp_full_minus_distance": -0.17448437213897705,
+     "delta_nlp_ci95": [
+      -0.18836361169815063,
+      -0.15987730026245117
+     ],
+     "delta_top5_full_minus_distance": 0.07389021006738011,
+     "delta_top5_ci95": [
+      0.0653822334522394,
+      0.08160647047166072
+     ],
+     "full_choice_set": {
+      "beta_full": 2.0948313098110765,
+      "beta_distance": 2.1558160392732333,
+      "beta_diff": 0.06098472946215683,
+      "nlp_full": 3.312807559967041,
+      "nlp_distance": 3.4841468334198,
+      "beta_full_shift": -0.0014637528406455935,
+      "beta_distance_shift": 0.05115377801042431,
+      "nlp_full_shift": 8.96453857421875e-05,
+      "nlp_distance_shift": -0.0030553340911865234
+     },
+     "band": "night 0-5"
+    },
+    {
+     "n_train": 386102,
+     "n_test": 163723,
+     "beta_full": 2.0144205638093586,
+     "beta_distance": 2.0353758582387793,
+     "beta_diff": 0.02095529442942068,
+     "train_ll_full": -1381448.5877615754,
+     "train_ll_distance": -1436082.3534898027,
+     "nlp": {
+      "full": 3.5116140842437744,
+      "distance": 3.644617795944214,
+      "attraction": 8.082624435424805,
+      "uniform": 8.568456649780273
+     },
+     "top5": {
+      "full": 0.39864893753473857,
+      "distance": 0.3389047354372935,
+      "attraction": 0.016265277328170142,
+      "uniform": 0.0009500285008550256
+     },
+     "top5_argpartition": {
+      "full": 0.3986489474773407,
+      "distance": 0.3392009735107422,
+      "attraction": 0.016265276819467545,
+      "uniform": 0.0009500285008550256
+     },
+     "delta_nlp_full_minus_distance": -0.1330031156539917,
+     "delta_nlp_ci95": [
+      -0.13497266173362732,
+      -0.1308872550725937
+     ],
+     "delta_top5_full_minus_distance": 0.059744202097445076,
+     "delta_top5_ci95": [
+      0.05810968322512211,
+      0.06125391667633747
+     ],
+     "full_choice_set": {
+      "beta_full": 2.0136664837323495,
+      "beta_distance": 2.0355595667992956,
+      "beta_diff": 0.02189308306694615,
+      "nlp_full": 3.511643886566162,
+      "nlp_distance": 3.6446104049682617,
+      "beta_full_shift": -0.0007540800770091671,
+      "beta_distance_shift": 0.00018370856051630469,
+      "nlp_full_shift": 2.9802322387695312e-05,
+      "nlp_distance_shift": -7.3909759521484375e-06
+     },
+     "band": "morning 6-9"
+    },
+    {
+     "n_train": 366212,
+     "n_test": 147496,
+     "beta_full": 2.517486794795088,
+     "beta_distance": 2.5690907711015187,
+     "beta_diff": 0.051603976306430877,
+     "train_ll_full": -1198989.570604999,
+     "train_ll_distance": -1213051.524745786,
+     "nlp": {
+      "full": 3.2389509677886963,
+      "distance": 3.277851104736328,
+      "attraction": 8.0910062789917,
+      "uniform": 8.568455696105957
+     },
+     "top5": {
+      "full": 0.45753105168953734,
+      "distance": 0.440202333170617,
+      "attraction": 0.008732440201768183,
+      "uniform": 0.0009500285008550256
+     },
+     "top5_argpartition": {
+      "full": 0.45753106474876404,
+      "distance": 0.44062888622283936,
+      "attraction": 0.008732439950108528,
+      "uniform": 0.0009500285008550256
+     },
+     "delta_nlp_full_minus_distance": -0.038900408893823624,
+     "delta_nlp_ci95": [
+      -0.040363654494285583,
+      -0.037283457815647125
+     ],
+     "delta_top5_full_minus_distance": 0.01732871851892029,
+     "delta_top5_ci95": [
+      0.015950460803456818,
+      0.01849314275189384
+     ],
+     "full_choice_set": {
+      "beta_full": 2.5172879782327,
+      "beta_distance": 2.569290048384931,
+      "beta_diff": 0.05200207015223102,
+      "nlp_full": 3.2389538288116455,
+      "nlp_distance": 3.2778480052948,
+      "beta_full_shift": -0.0001988165623880711,
+      "beta_distance_shift": 0.0001992772834120693,
+      "nlp_full_shift": 2.86102294921875e-06,
+      "nlp_distance_shift": -3.0994415283203125e-06
+     },
+     "band": "midday 10-15"
+    },
+    {
+     "n_train": 428478,
+     "n_test": 164930,
+     "beta_full": 2.129710496887778,
+     "beta_distance": 2.171054720126755,
+     "beta_diff": 0.04134422323897713,
+     "train_ll_full": -1531455.0707244633,
+     "train_ll_distance": -1547949.9325861633,
+     "nlp": {
+      "full": 3.5171759128570557,
+      "distance": 3.5610883235931396,
+      "attraction": 8.139999389648438,
+      "uniform": 8.568456649780273
+     },
+     "top5": {
+      "full": 0.4083429333656703,
+      "distance": 0.38287101598658013,
+      "attraction": 0.005857030255259807,
+      "uniform": 0.0009500285008550256
+     },
+     "top5_argpartition": {
+      "full": 0.4083429276943207,
+      "distance": 0.38337475061416626,
+      "attraction": 0.0058570303954184055,
+      "uniform": 0.0009500285008550256
+     },
+     "delta_nlp_full_minus_distance": -0.04391275346279144,
+     "delta_nlp_ci95": [
+      -0.045372676104307175,
+      -0.04231756553053856
+     ],
+     "delta_top5_full_minus_distance": 0.025471917379090117,
+     "delta_top5_ci95": [
+      0.02399021554598921,
+      0.026658835061339155
+     ],
+     "full_choice_set": {
+      "beta_full": 2.1296279450620617,
+      "beta_distance": 2.1712242326773965,
+      "beta_diff": 0.04159628761533485,
+      "nlp_full": 3.5171778202056885,
+      "nlp_distance": 3.561084270477295,
+      "beta_full_shift": -8.255182571614839e-05,
+      "beta_distance_shift": 0.00016951255064157067,
+      "nlp_full_shift": 1.9073486328125e-06,
+      "nlp_distance_shift": -4.0531158447265625e-06
+     },
+     "band": "evening 16-19"
+    },
+    {
+     "n_train": 165671,
+     "n_test": 71116,
+     "beta_full": 2.3639788344958435,
+     "beta_distance": 2.406232694553231,
+     "beta_diff": 0.04225386005738763,
+     "train_ll_full": -558713.4172043289,
+     "train_ll_distance": -564499.9934799934,
+     "nlp": {
+      "full": 3.360048532485962,
+      "distance": 3.394321918487549,
+      "attraction": 8.184952735900879,
+      "uniform": 8.568455696105957
+     },
+     "top5": {
+      "full": 0.45470780133865796,
+      "distance": 0.4371156514239646,
+      "attraction": 0.005005905843973227,
+      "uniform": 0.0009500285008550256
+     },
+     "top5_argpartition": {
+      "full": 0.4547078013420105,
+      "distance": 0.4381292462348938,
+      "attraction": 0.005005905870348215,
+      "uniform": 0.0009500285008550256
+     },
+     "delta_nlp_full_minus_distance": -0.034273382276296616,
+     "delta_nlp_ci95": [
+      -0.03670627251267433,
+      -0.03197624906897545
+     ],
+     "delta_top5_full_minus_distance": 0.017592149914693368,
+     "delta_top5_ci95": [
+      0.01556772854678741,
+      0.019433390516901964
+     ],
+     "full_choice_set": {
+      "beta_full": 2.364999042891564,
+      "beta_distance": 2.4119965627110567,
+      "beta_diff": 0.04699751981949252,
+      "nlp_full": 3.3600385189056396,
+      "nlp_distance": 3.3942668437957764,
+      "beta_full_shift": 0.0010202083957207009,
+      "beta_distance_shift": 0.005763868157825591,
+      "nlp_full_shift": -1.0013580322265625e-05,
+      "nlp_distance_shift": -5.507469177246094e-05
+     },
+     "band": "late 20-23"
+    }
+   ],
+   "pooled": {
+    "n_test": 555675,
+    "nlp": {
+     "full": 3.4184825609664276,
+     "distance": 3.4880567794910844,
+     "attraction": 8.11239776058354,
+     "uniform": 8.56845627458857
+    },
+    "top5": {
+     "full": 0.42549331893642867,
+     "distance": 0.39236064246187063,
+     "attraction": 0.010810275790705,
+     "uniform": 0.0009500285008550256
+    },
+    "top5_argpartition": {
+     "full": 0.4254933236682764,
+     "distance": 0.3928375333716803,
+     "attraction": 0.01081027567434729,
+     "uniform": 0.0009500285008550256
+    },
+    "delta_nlp_full_minus_distance": -0.06957421451807022,
+    "delta_nlp_ci95": [
+     -0.0705147311091423,
+     -0.06850463896989822
+    ],
+    "delta_top5_full_minus_distance": 0.03313267647455797,
+    "delta_top5_ci95": [
+     0.03232217573221757,
+     0.03379436421169449
+    ]
+   }
+  },
+  "random_split": {
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "source_days": [
+    "2017-05-10",
+    "2017-05-11",
+    "2017-05-12",
+    "2017-05-15",
+    "2017-05-16",
+    "2017-05-18",
+    "2017-05-19"
+   ],
+   "train_size": "same per-band count as the day split",
+   "bands": {
+    "night 0-5": {
+     "beta_full_mean": 2.147531909414223,
+     "beta_full_sd": 0.01163947622725588,
+     "beta_distance_mean": 2.1544372546704724,
+     "beta_distance_sd": 0.010329322734000505,
+     "nlp_full_mean": 3.3695414066314697,
+     "nlp_full_sd": 0.02035027517450641,
+     "top5_full_mean": 0.4443915973047959,
+     "top5_full_sd": 0.006134139396639916,
+     "nlp_distance_mean": 3.5685580571492515,
+     "nlp_distance_sd": 0.016081860992327075,
+     "top5_distance_mean": 0.36123662306777643,
+     "top5_distance_sd": 0.0065476283433171505,
+     "nlp_attraction_mean": 7.8590348561604815,
+     "nlp_attraction_sd": 0.023335359587959,
+     "top5_attraction_mean": 0.09155766944114148,
+     "top5_attraction_sd": 0.0030478015738350283,
+     "nlp_uniform_mean": 8.568456967671713,
+     "nlp_uniform_sd": 5.506041232963808e-07,
+     "top5_uniform_mean": 0.0009500285008550256,
+     "top5_uniform_sd": 0.0,
+     "delta_nlp_mean": -0.19901667535305023,
+     "delta_nlp_sd": 0.009090451781766292,
+     "delta_top5_mean": 0.08315497423701944,
+     "delta_top5_sd": 0.0010759648350394874
+    },
+    "morning 6-9": {
+     "beta_full_mean": 2.0414191169489246,
+     "beta_full_sd": 0.00018776487810788302,
+     "beta_distance_mean": 2.0617248905779415,
+     "beta_distance_sd": 8.103317228319572e-05,
+     "nlp_full_mean": 3.5629045168558755,
+     "nlp_full_sd": 0.002140256445729181,
+     "top5_full_mean": 0.380178716490658,
+     "top5_full_sd": 0.0008045954818518934,
+     "nlp_distance_mean": 3.7018924554189048,
+     "nlp_distance_sd": 0.0012301727841566665,
+     "top5_distance_mean": 0.31762760543383917,
+     "top5_distance_sd": 0.0004840036044914357,
+     "nlp_attraction_mean": 8.070119222005209,
+     "nlp_attraction_sd": 0.0005358481477833293,
+     "top5_attraction_mean": 0.016935107875293436,
+     "top5_attraction_sd": 0.0002865716412870181,
+     "nlp_uniform_mean": 8.568456649780273,
+     "nlp_uniform_sd": 0.0,
+     "top5_uniform_mean": 0.0009500285008550256,
+     "top5_uniform_sd": 0.0,
+     "delta_nlp_mean": -0.13898787399133047,
+     "delta_nlp_sd": 0.0009106507587743414,
+     "delta_top5_mean": 0.06255111105681886,
+     "delta_top5_sd": 0.00042468611673738464
+    },
+    "midday 10-15": {
+     "beta_full_mean": 2.534346903279909,
+     "beta_full_sd": 0.0005020169855585564,
+     "beta_distance_mean": 2.587189772929601,
+     "beta_distance_sd": 0.0006220555705892895,
+     "nlp_full_mean": 3.266786813735962,
+     "nlp_full_sd": 0.0009714950355353278,
+     "top5_full_mean": 0.4495624740105946,
+     "top5_full_sd": 0.000855828424076553,
+     "nlp_distance_mean": 3.304288069407145,
+     "nlp_distance_sd": 0.000938383251035071,
+     "top5_distance_mean": 0.429142522885743,
+     "top5_distance_sd": 0.0004956396663792707,
+     "nlp_attraction_mean": 8.10661792755127,
+     "nlp_attraction_sd": 0.0002941447610860347,
+     "top5_attraction_mean": 0.00853808464862324,
+     "top5_attraction_sd": 0.00023935189075998095,
+     "nlp_uniform_mean": 8.568456649780273,
+     "nlp_uniform_sd": 0.0,
+     "top5_uniform_mean": 0.0009500285008550256,
+     "top5_uniform_sd": 0.0,
+     "delta_nlp_mean": -0.03750116874774297,
+     "delta_nlp_sd": 0.0003367443692395838,
+     "delta_top5_mean": 0.0204199511248516,
+     "delta_top5_sd": 0.000538738899971211
+    },
+    "evening 16-19": {
+     "beta_full_mean": 2.145550922895094,
+     "beta_full_sd": 0.0025951588033677597,
+     "beta_distance_mean": 2.188295896989002,
+     "beta_distance_sd": 0.0027765472430754815,
+     "nlp_full_mean": 3.557173490524292,
+     "nlp_full_sd": 0.005662149677800501,
+     "top5_full_mean": 0.3939368216819257,
+     "top5_full_sd": 0.0016651236308580476,
+     "nlp_distance_mean": 3.5959180990854898,
+     "nlp_distance_sd": 0.005863913286418645,
+     "top5_distance_mean": 0.3691515592473575,
+     "top5_distance_sd": 0.0007103802917449857,
+     "nlp_attraction_mean": 8.151107470194498,
+     "nlp_attraction_sd": 0.0008611643873151918,
+     "top5_attraction_mean": 0.005753956223852544,
+     "top5_attraction_sd": 7.951783816530661e-05,
+     "nlp_uniform_mean": 8.568456649780273,
+     "nlp_uniform_sd": 0.0,
+     "top5_uniform_mean": 0.0009500285008550256,
+     "top5_uniform_sd": 0.0,
+     "delta_nlp_mean": -0.03874480600158373,
+     "delta_nlp_sd": 0.0013241696582409778,
+     "delta_top5_mean": 0.024785262434568203,
+     "delta_top5_sd": 0.001127245902301987
+    },
+    "late 20-23": {
+     "beta_full_mean": 2.371292772687131,
+     "beta_full_sd": 0.003567850208813088,
+     "beta_distance_mean": 2.4150028336922804,
+     "beta_distance_sd": 0.0034009276673931154,
+     "nlp_full_mean": 3.377085288365682,
+     "nlp_full_sd": 0.007688149007227736,
+     "top5_full_mean": 0.4455396816468868,
+     "top5_full_sd": 0.003574617660258886,
+     "nlp_distance_mean": 3.4101219177246094,
+     "nlp_distance_sd": 0.0075179369332602,
+     "top5_distance_mean": 0.4265808288180188,
+     "top5_distance_sd": 0.002757835659491822,
+     "nlp_attraction_mean": 8.17770799001058,
+     "nlp_attraction_sd": 0.003720548910886298,
+     "top5_attraction_mean": 0.005779290173800551,
+     "top5_attraction_sd": 0.000767481525901074,
+     "nlp_uniform_mean": 8.568456013997396,
+     "nlp_uniform_sd": 5.506041232963808e-07,
+     "top5_uniform_mean": 0.0009500285008550256,
+     "top5_uniform_sd": 0.0,
+     "delta_nlp_mean": -0.03303663060069084,
+     "delta_nlp_sd": 0.0002997123174835651,
+     "delta_top5_mean": 0.018958852828868014,
+     "delta_top5_sd": 0.0008251499322916295
+    }
+   },
+   "pooled": {
+    "nlp": {
+     "full": 3.4558953857584918,
+     "distance": 3.52554062573901,
+     "attraction": 8.114420060005473,
+     "uniform": 8.568456573223171
+    },
+    "top5": {
+     "full": 0.4120160165564404,
+     "distance": 0.3771244682393286,
+     "attraction": 0.011089215818599002,
+     "uniform": 0.0009500285008550256
+    },
+    "delta_nlp_mean": -0.06964525580406189,
+    "delta_nlp_sd": 0.000765301165242831,
+    "delta_top5_mean": 0.034891548317111824,
+    "delta_top5_sd": 0.0005379535200249031
+   }
+  },
+  "paper_table_new_vs_old": [
+   {
+    "band": "night 0-5",
+    "train_trips": 18364,
+    "beta": 2.096295062651722,
+    "gravity_logloss": 3.312717914581299,
+    "distance_logloss_new": 3.4872021675109863,
+    "distance_logloss_old": 3.4878013,
+    "attraction_logloss": 7.912347793579102,
+    "uniform_logloss": 8.568456649780273,
+    "top5_gravity": 0.4755053507728894,
+    "top5_distance_new": 0.40142688155174255,
+    "top5_distance_old": 0.40142688
+   },
+   {
+    "band": "morning 6-9",
+    "train_trips": 386102,
+    "beta": 2.0144205638093586,
+    "gravity_logloss": 3.5116140842437744,
+    "distance_logloss_new": 3.644617795944214,
+    "distance_logloss_old": 3.6455083,
+    "attraction_logloss": 8.082624435424805,
+    "uniform_logloss": 8.568456649780273,
+    "top5_gravity": 0.39864893753473857,
+    "top5_distance_new": 0.3392009735107422,
+    "top5_distance_old": 0.33920097
+   },
+   {
+    "band": "midday 10-15",
+    "train_trips": 366212,
+    "beta": 2.517486794795088,
+    "gravity_logloss": 3.2389509677886963,
+    "distance_logloss_new": 3.277851104736328,
+    "distance_logloss_old": 3.2790344,
+    "attraction_logloss": 8.0910062789917,
+    "uniform_logloss": 8.568455696105957,
+    "top5_gravity": 0.45753105168953734,
+    "top5_distance_new": 0.44062888622283936,
+    "top5_distance_old": 0.4406289
+   },
+   {
+    "band": "evening 16-19",
+    "train_trips": 428478,
+    "beta": 2.129710496887778,
+    "gravity_logloss": 3.5171759128570557,
+    "distance_logloss_new": 3.5610883235931396,
+    "distance_logloss_old": 3.5624664,
+    "attraction_logloss": 8.139999389648438,
+    "uniform_logloss": 8.568456649780273,
+    "top5_gravity": 0.4083429333656703,
+    "top5_distance_new": 0.38337475061416626,
+    "top5_distance_old": 0.38337475
+   },
+   {
+    "band": "late 20-23",
+    "train_trips": 165671,
+    "beta": 2.3639788344958435,
+    "gravity_logloss": 3.360048532485962,
+    "distance_logloss_new": 3.394321918487549,
+    "distance_logloss_old": 3.3950362,
+    "attraction_logloss": 8.184952735900879,
+    "uniform_logloss": 8.568455696105957,
+    "top5_gravity": 0.45470780133865796,
+    "top5_distance_new": 0.4381292462348938,
+    "top5_distance_old": 0.43812925
+   }
+  ],
+  "distance_only_refit": [
+   {
+    "band": "night 0-5",
+    "old_ll_distance": 3.4878013,
+    "new_ll_distance": 3.4872021675109863,
+    "ll_improvement": 0.0005991324890137761,
+    "old_top5_dist": 0.40142688,
+    "new_top5_argpartition": 0.40142688155174255,
+    "new_top5_tie_aware": 0.4016151407055093,
+    "argpartition_reproduces_old": true
+   },
+   {
+    "band": "morning 6-9",
+    "old_ll_distance": 3.6455083,
+    "new_ll_distance": 3.644617795944214,
+    "ll_improvement": 0.0008905040557860566,
+    "old_top5_dist": 0.33920097,
+    "new_top5_argpartition": 0.3392009735107422,
+    "new_top5_tie_aware": 0.3389047354372935,
+    "argpartition_reproduces_old": true
+   },
+   {
+    "band": "midday 10-15",
+    "old_ll_distance": 3.2790344,
+    "new_ll_distance": 3.277851104736328,
+    "ll_improvement": 0.0011832952636718908,
+    "old_top5_dist": 0.4406289,
+    "new_top5_argpartition": 0.44062888622283936,
+    "new_top5_tie_aware": 0.440202333170617,
+    "argpartition_reproduces_old": true
+   },
+   {
+    "band": "evening 16-19",
+    "old_ll_distance": 3.5624664,
+    "new_ll_distance": 3.5610883235931396,
+    "ll_improvement": 0.0013780764068602736,
+    "old_top5_dist": 0.38337475,
+    "new_top5_argpartition": 0.38337475061416626,
+    "new_top5_tie_aware": 0.38287101598658013,
+    "argpartition_reproduces_old": true
+   },
+   {
+    "band": "late 20-23",
+    "old_ll_distance": 3.3950362,
+    "new_ll_distance": 3.394321918487549,
+    "ll_improvement": 0.0007142815124510093,
+    "old_top5_dist": 0.43812925,
+    "new_top5_argpartition": 0.4381292462348938,
+    "new_top5_tie_aware": 0.4371156514239646,
+    "argpartition_reproduces_old": true
+   }
+  ],
+  "old_q1_validation_status": "data/q1_validation.csv's ll_distance and top5_dist used the full model's beta (10_q1_model.py:136), not the distance model's MLE; the old distance column is superseded by the distance values here. The old distance values are invalid as a distance-model optimum; they are kept only for the reproduction comparison.",
+  "day_vs_random": {
+   "day_split_pooled": {
+    "n_test": 555675,
+    "nlp": {
+     "full": 3.4184825609664276,
+     "distance": 3.4880567794910844,
+     "attraction": 8.11239776058354,
+     "uniform": 8.56845627458857
+    },
+    "top5": {
+     "full": 0.42549331893642867,
+     "distance": 0.39236064246187063,
+     "attraction": 0.010810275790705,
+     "uniform": 0.0009500285008550256
+    },
+    "top5_argpartition": {
+     "full": 0.4254933236682764,
+     "distance": 0.3928375333716803,
+     "attraction": 0.01081027567434729,
+     "uniform": 0.0009500285008550256
+    },
+    "delta_nlp_full_minus_distance": -0.06957421451807022,
+    "delta_nlp_ci95": [
+     -0.0705147311091423,
+     -0.06850463896989822
+    ],
+    "delta_top5_full_minus_distance": 0.03313267647455797,
+    "delta_top5_ci95": [
+     0.03232217573221757,
+     0.03379436421169449
+    ]
+   },
+   "random_split_pooled": {
+    "nlp": {
+     "full": 3.4558953857584918,
+     "distance": 3.52554062573901,
+     "attraction": 8.114420060005473,
+     "uniform": 8.568456573223171
+    },
+    "top5": {
+     "full": 0.4120160165564404,
+     "distance": 0.3771244682393286,
+     "attraction": 0.011089215818599002,
+     "uniform": 0.0009500285008550256
+    },
+    "delta_nlp_mean": -0.06964525580406189,
+    "delta_nlp_sd": 0.000765301165242831,
+    "delta_top5_mean": 0.034891548317111824,
+    "delta_top5_sd": 0.0005379535200249031
+   },
+   "delta_full_minus_distance_day": -0.06957421451807022,
+   "delta_full_minus_distance_random": -0.06964525580406189,
+   "delta_top5_day": 0.03313267647455797,
+   "delta_top5_random": 0.034891548317111824,
+   "level_diff_nlp_full": 0.0374128247920642,
+   "level_diff_top5_full": -0.013477302379988287,
+   "reading": "The attraction gain is the same under both splits (difference 0.0001 nats and 0.0018 pp), but the absolute held-out level moves by 0.037 nats and 1.35 pp: the two held-out days are easier than a random 29% trip sample. The model comparison is robust; the absolute level is split-dependent."
+  },
+  "methods": {
+   "distance_matrix": "data/dist_matrix.npy; diagonal 0.35/sqrt(2)=0.2475 km",
+   "A": "Gaussian-smoothed training arrivals, sigma=1.2 cells",
+   "beta": "bounded scalar MLE, 0.05..8.0 1/km, xatol=1e-4; paper's choice-set convention (non-zero training destinations), with a full-choice-set sensitivity",
+   "nlp": "negative log-likelihood per test trip (nats)",
+   "top5": "expected share of test trips whose realised destination is in the origin's top-5, random tie-breaking; uniform = 5/n = 0.000950; argpartition convention also saved",
+   "ci": "500-draw trip bootstrap, 95th percentile interval"
+  }
+ },
+ "fig3": {
+  "script": "code/t005_fig3.py",
+  "figure_pdf": "data/runs/T005/t005_fig3_redraw.pdf",
+  "old_vs_new": "KS falls from 0.196 (old simplified fig 3a) to 0.098 (full model, cross-cell, cell-centre distances); the old 0.196 is reproduced by the published procedure and is mostly a cell-centre-vs-GPS geometry effect",
+  "synthetic_day": {
+   "seed": 20260517,
+   "bands": [
+    "night 0-5",
+    "morning 6-9",
+    "midday 10-15",
+    "evening 16-19",
+    "late 20-23"
+   ],
+   "trips": 277838,
+   "band_trips": {
+    "night 0-5": 4205,
+    "morning 6-9": 81862,
+    "midday 10-15": 73748,
+    "evening 16-19": 82465,
+    "late 20-23": 35558
+   },
+   "parameters": "beta from data/q1_params.json (fitted on 5 training days); A from training arrival field, sigma=1.2; origins from training origin field, sigma=1.0",
+   "observed": "held-out test days 2017-05-12,2017-05-19"
+  },
+  "distances": "cell-centre Euclidean distance for both observed and synthetic (data/dist_matrix.npy); observed GPS haversine shown as reference only",
+  "same_cell": {
+   "definition": "origin cell == destination cell; excluded from all distance panels and never assigned a fabricated distance",
+   "observed_share": 0.09538669186124983,
+   "synthetic_share": 0.12502249512305733,
+   "model_implied_share": 0.1236227770170307,
+   "by_band": {
+    "night 0-5": {
+     "observed": 0.10273483947681332,
+     "model_implied": 0.11409729853140288,
+     "synthetic": 0.11414982164090369
+    },
+    "morning 6-9": {
+     "observed": 0.07080251400230878,
+     "model_implied": 0.10557897759667244,
+     "synthetic": 0.10694827881068139
+    },
+    "midday 10-15": {
+     "observed": 0.11243694744264252,
+     "model_implied": 0.14727893208228032,
+     "synthetic": 0.1485599609480935
+    },
+    "evening 16-19": {
+     "observed": 0.09202085733341417,
+     "model_implied": 0.11578086623699867,
+     "synthetic": 0.11704359425210696
+    },
+    "late 20-23": {
+     "observed": 0.12355869283986726,
+     "model_implied": 0.1354132375014435,
+     "synthetic": 0.13760616457618538
+    }
+   }
+  },
+  "ks": {
+   "pooled_cross_cell": 0.09786120053891312,
+   "pooled_cross_cell_vs_gps": 0.18730045849888854,
+   "by_band": {
+    "night 0-5": {
+     "cell_centre": 0.1123198565576322,
+     "vs_gps": 0.19936386582873367
+    },
+    "morning 6-9": {
+     "cell_centre": 0.11938424843247342,
+     "vs_gps": 0.19803522390163653
+    },
+    "midday 10-15": {
+     "cell_centre": 0.0807405313983921,
+     "vs_gps": 0.1909679784893669
+    },
+    "evening 16-19": {
+     "cell_centre": 0.09979551834022271,
+     "vs_gps": 0.19035061273800258
+    },
+    "late 20-23": {
+     "cell_centre": 0.07493192089356249,
+     "vs_gps": 0.1927994994304417
+    }
+   },
+   "n_observed": 502671,
+   "n_synthetic": 243102
+  },
+  "old_fig3a": {
+   "procedure": "90_figs.py:131-143 reproduction: morning band only, A=1, 12,000 draws, same-cell forced to 0.30 km, observed GPS distances over the 7 typical days",
+   "ks": 0.19570831597637095,
+   "synthetic_same_cell_share": 0.11158333333333334
+  },
+  "bands": {
+   "night 0-5": {
+    "beta_full": 2.096295062651722,
+    "beta_distance": 2.104662261262809,
+    "n_test_cross": 7546,
+    "n_syn_cross": 3725,
+    "n_syn_total": 4205,
+    "observed_same_cell_share": 0.10273483947681332,
+    "model_implied_same_cell_share": 0.11409729853140288,
+    "synthetic_realised_same_cell_share": 0.11414982164090369,
+    "ks_cross_cell": 0.1123198565576322,
+    "ks_cross_cell_vs_gps": 0.19936386582873367
+   },
+   "morning 6-9": {
+    "beta_full": 2.0144205638093586,
+    "beta_distance": 2.0353758582387793,
+    "n_test_cross": 152131,
+    "n_syn_cross": 73107,
+    "n_syn_total": 81862,
+    "observed_same_cell_share": 0.07080251400230878,
+    "model_implied_same_cell_share": 0.10557897759667244,
+    "synthetic_realised_same_cell_share": 0.10694827881068139,
+    "ks_cross_cell": 0.11938424843247342,
+    "ks_cross_cell_vs_gps": 0.19803522390163653
+   },
+   "midday 10-15": {
+    "beta_full": 2.517486794795088,
+    "beta_distance": 2.5690907711015187,
+    "n_test_cross": 130912,
+    "n_syn_cross": 62792,
+    "n_syn_total": 73748,
+    "observed_same_cell_share": 0.11243694744264252,
+    "model_implied_same_cell_share": 0.14727893208228032,
+    "synthetic_realised_same_cell_share": 0.1485599609480935,
+    "ks_cross_cell": 0.0807405313983921,
+    "ks_cross_cell_vs_gps": 0.1909679784893669
+   },
+   "evening 16-19": {
+    "beta_full": 2.129710496887778,
+    "beta_distance": 2.171054720126755,
+    "n_test_cross": 149753,
+    "n_syn_cross": 72813,
+    "n_syn_total": 82465,
+    "observed_same_cell_share": 0.09202085733341417,
+    "model_implied_same_cell_share": 0.11578086623699867,
+    "synthetic_realised_same_cell_share": 0.11704359425210696,
+    "ks_cross_cell": 0.09979551834022271,
+    "ks_cross_cell_vs_gps": 0.19035061273800258
+   },
+   "late 20-23": {
+    "beta_full": 2.3639788344958435,
+    "beta_distance": 2.406232694553231,
+    "n_test_cross": 62329,
+    "n_syn_cross": 30665,
+    "n_syn_total": 35558,
+    "observed_same_cell_share": 0.12355869283986726,
+    "model_implied_same_cell_share": 0.1354132375014435,
+    "synthetic_realised_same_cell_share": 0.13760616457618538,
+    "ks_cross_cell": 0.07493192089356249,
+    "ks_cross_cell_vs_gps": 0.1927994994304417
+   }
+  },
+  "caption_suggestion": "Panel (a) compares cross-cell trips only: same-cell trips are 9.5% of held-out observed trips and are excluded because the 0.005-degree cell model carries no intra-cell geometry. The model implies 12.4% same-cell trips; the synthetic day realises 12.5%. Distances are cell-centre distances on both sides; KS = 0.098. Panel (c) plots differences, not a log axis, so the distance-only baseline is not visually flattened.",
+  "runtime_s": 6.257403373718262
+ },
+ "k_stability": {
+  "table": [
+   {
+    "k": 3,
+    "silhouette_10k_mean": 0.22988417074084283,
+    "silhouette_10k_min": 0.19220224022865295,
+    "silhouette_40k_representative": 0.23885098099708557,
+    "ari_pairwise_mean": 0.49512888619004275,
+    "ari_pairwise_min": 0.2077060249944421,
+    "ari_vs_published_k5": 0.3832554652954639,
+    "representative_sizes": [
+     142530,
+     110735,
+     75984
+    ],
+    "inertia_min": 1278272.375
+   },
+   {
+    "k": 4,
+    "silhouette_10k_mean": 0.2402888558804989,
+    "silhouette_10k_min": 0.22199201583862305,
+    "silhouette_40k_representative": 0.23734916746616364,
+    "ari_pairwise_mean": 0.5286853927564941,
+    "ari_pairwise_min": 0.18918294167332894,
+    "ari_vs_published_k5": 0.6827097942689037,
+    "representative_sizes": [
+     148367,
+     93597,
+     54280,
+     33005
+    ],
+    "inertia_min": 1096407.125
+   },
+   {
+    "k": 5,
+    "silhouette_10k_mean": 0.25061418637633326,
+    "silhouette_10k_min": 0.1863342821598053,
+    "silhouette_40k_representative": 0.25622832775115967,
+    "ari_pairwise_mean": 0.6646132046046803,
+    "ari_pairwise_min": 0.30545390288117896,
+    "ari_vs_published_k5": 0.9935679057175609,
+    "representative_sizes": [
+     132920,
+     67174,
+     50283,
+     49448,
+     29424
+    ],
+    "inertia_min": 939563.25
+   },
+   {
+    "k": 6,
+    "silhouette_10k_mean": 0.24644747599959374,
+    "silhouette_10k_min": 0.2047182023525238,
+    "silhouette_40k_representative": 0.26335379481315613,
+    "ari_pairwise_mean": 0.6875754233588276,
+    "ari_pairwise_min": 0.33918722382831173,
+    "ari_vs_published_k5": 0.8268462865784338,
+    "representative_sizes": [
+     122829,
+     63080,
+     54998,
+     47250,
+     29361,
+     11731
+    ],
+    "inertia_min": 809918.375
+   }
+  ],
+  "cross_k_matrix": {
+   "3": [
+    1.0,
+    0.2593661137000294,
+    0.38123913027876083,
+    0.3967279798006683
+   ],
+   "4": [
+    0.2593661137000294,
+    1.0,
+    0.6871801422425492,
+    0.5774515784413085
+   ],
+   "5": [
+    0.38123913027876083,
+    0.6871801422425492,
+    1.0,
+    0.8228942144625746
+   ],
+   "6": [
+    0.3967279798006683,
+    0.5774515784413085,
+    0.8228942144625746,
+    1.0
+   ]
+  },
+  "best_silhouette_k": 6,
+  "best_silhouette_k_10k": 5,
+  "verdict": {
+   "best_silhouette_k_40k": 6,
+   "best_silhouette_k_10k_mean": 5,
+   "k5_silhouette_40k": 0.25622832775115967,
+   "k6_silhouette_40k": 0.26335379481315613,
+   "k5_silhouette_10k_mean": 0.25061418637633326,
+   "k6_silhouette_10k_mean": 0.24644747599959374,
+   "k5_ari_pairwise_mean": 0.6646132046046803,
+   "k5_ari_pairwise_min": 0.30545390288117896,
+   "k5_ari_vs_published": 0.9935679057175609,
+   "k3_ari_pairwise_mean": 0.49512888619004275,
+   "k3_ari_pairwise_min": 0.2077060249944421,
+   "cross_k_5_6": 0.8228942144625746,
+   "statement": "The published k=5 labels are recovered with ARI 0.994. But across 20 random initialisations k=5 has pairwise ARI 0.665 (min 0.305), so the label set is not stable. The best-run 40k silhouette is 0.256 at k=5 versus 0.263 at k=6; the mean 10k silhouette is 0.251 versus 0.246. k=5 and k=6 are close (cross-k ARI 0.823), but k=5 is not the single silhouette winner once k=6 is considered, and the stability claim is not supported."
+  },
+  "n_users": 329249,
+  "n_seeds": 20,
+  "silhouette_sample": 10000,
+  "silhouette_paper_sample": 40000
+ },
+ "return_share": {
+  "definitions": {
+   "same_cell": "origin cell == destination cell on the 0.005-degree grid (the task's return_share definition)",
+   "origin_revisit": "11_q1_extra.py feature: current origin cell equals an origin this user already used earlier the same day",
+   "dest_revisit": "trip destination equals a cell this user used as an origin earlier the same day (including its own start)"
+  },
+  "overall": {
+   "trips": 2357826,
+   "users": 329249,
+   "trip_weighted_same_cell": 0.09030394948567028,
+   "same_cell_ci95": [
+    0.08993877451491608,
+    0.09067045943868604
+   ],
+   "user_mean_same_cell": 0.07593931644466599,
+   "user_median_same_cell": 0.0,
+   "trip_weighted_origin_revisit": 0.09632390176374338,
+   "user_mean_origin_revisit": 0.05152128858268724,
+   "trip_weighted_dest_revisit": 0.1966336786514357,
+   "user_mean_dest_revisit": 0.14169791571325763
+  },
+  "heavy_short_trip": {
+   "paper_sentence": "The heavy short-trip user rides 14 times a day over 0.67 km, with a quarter of trips returning to the same cell (paper/sec4_q1.tex:190)",
+   "feature_value_in_q1_segments": 0.2571796072029219,
+   "recomputed_origin_revisit_trip_weighted": 0.2639367443513044,
+   "recomputed_origin_revisit_user_mean": 0.2571796072029219,
+   "same_cell_trip_weighted": 0.16479821430873948,
+   "same_cell_user_mean": 0.1647918692834226,
+   "dest_revisit_trip_weighted": 0.32554337937486477
+  },
+  "paper_table_note": "The 'share' column in tab:seg is weekend share (0.19/0.20/0.07/0.03/0.79), not return share. The quarter in the text comes from q1_segments.csv's ret column, which is the origin-revisit feature.",
+  "adjacent_trips_per_day": {
+   "Heavy short-trip": {
+    "user_mean_n_days": 5.527568043900583,
+    "user_mean_trips_total": 13.9791512286956,
+    "user_mean_trips_per_active_day": 2.471760561320654
+   },
+   "Regular multi-purpose": {
+    "user_mean_n_days": 5.554337363893401,
+    "user_mean_trips_total": 9.179683270167839,
+    "user_mean_trips_per_active_day": 1.6420751476010005
+   },
+   "Commuter": {
+    "user_mean_n_days": 3.1788591399123325,
+    "user_mean_trips_total": 3.705499940765312,
+    "user_mean_trips_per_active_day": 1.1570355941709307
+   },
+   "Low frequency": {
+    "user_mean_n_days": 2.129686614300753,
+    "user_mean_trips_total": 2.4812535427969875,
+    "user_mean_trips_per_active_day": 1.192146615239072
+   },
+   "Weekend / leisure": {
+    "user_mean_n_days": 1.7852431145868752,
+    "user_mean_trips_total": 2.25409724583475,
+    "user_mean_trips_per_active_day": 1.2549450300351355
+   }
+  },
+  "reading": "Under the task's same-cell definition the heavy short-trip segment has 16.5% same-cell trips, not a quarter; the quarter is 25.7% under the origin-revisit definition. Overall same-cell is 9.0%."
+ },
+ "affected": [
+  {
+   "coord": "paper/sec4_q1.tex:87-91 (tab:q1 distance column)",
+   "old": "3.488 / 3.646 / 3.279 / 3.562 / 3.395",
+   "new": "3.487 / 3.645 / 3.278 / 3.561 / 3.394, from the distance model's own MLE (top-5 distance unchanged at three decimals)",
+   "why": "the old values used the full model's beta"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:104-108",
+   "old": "gain 0.035-0.175 nats and 1.7-7.5 pp",
+   "new": "0.034-0.174 nats and 1.7-7.4 pp; largest at night, smallest late evening (unchanged direction)",
+   "why": "recomputed from the fair distance baseline"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:139-141",
+   "old": "two-sample KS = 0.196; discrepancy confined to shortest trips",
+   "new": "full-model cross-cell KS = 0.098 (old 0.196); the old 0.196 came from A=1, morning only and a 0.30 km same-cell substitute. Comparing cell-centre synthetic distances with GPS observed distances gives 0.187, so most of the old gap was geometry, not model error",
+   "why": "fig 3a did not plot the full model"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:148-150 (fig 3 caption)",
+   "old": "(c) out-of-sample log-loss, logarithmic scale",
+   "new": "replacement figure with (c) as a linear difference plot; same-cell trips excluded and counted in the caption",
+   "why": "the log axis flattened the full-vs-distance difference"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:160-163",
+   "old": "k=5 selected by silhouette; stable across random initialisations",
+   "new": "k=5 best-run silhouette 0.256, k=6 0.263; mean 10k silhouette k=5 0.251 vs k=6 0.246; k=5 pairwise ARI 0.665 (min 0.306). k=5 is not the single silhouette winner and is not stable across initialisations",
+   "why": "the claim had no ARI computation, and k=6 was not tried"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:157-161",
+   "old": "feature described as 'share of trips that return to the origin cell'",
+   "new": "the feature is a repeated-origin indicator; same-cell o==d is 9.0% overall and 16.5% for the heavy segment",
+   "why": "definition mismatch"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:190",
+   "old": "heavy short-trip user ... with a quarter of trips returning to the same cell",
+   "new": "same-cell 16.5%; the quarter is origin revisit (feature 25.7%, trip-weighted 26.4%)",
+   "why": "the quarter is true only under the origin-revisit definition"
+  },
+  {
+   "coord": "paper/sec4_q1.tex:171-181 (tab:seg)",
+   "old": "'Trips per day' 9.18 / 13.98 / 3.71 / 2.48 / 2.25",
+   "new": "these are ten-day totals; per active day 1.64 / 2.47 / 1.16 / 1.19 / 1.25",
+   "why": "adjacent definition error; outside T005 acceptance but in the same sentence as the quarter"
+  }
+ ],
+ "methods": {
+  "split": "train 2017-05-10/11/15/16/18, test 2017-05-12/19; disjoint by day; random-trip control samples the same per-band training count from the same seven typical days",
+  "model": "P(j|i,h) = A_j(h) exp(-beta_h d_ij) / sum_k A_k(h) exp(-beta_h d_ik); A = Gaussian-smoothed training arrivals (sigma=1.2 cells); d from data/dist_matrix.npy",
+  "beta": "bounded scalar MLE 0.05-8.0 1/km, xatol 1e-4; distance-only model gets its own MLE with A=1",
+  "metrics": "nlp = negative log-likelihood per test trip; top-5 = expected hit rate with random tie-breaking; uniform = 5/5263 = 0.000950",
+  "uncertainty": "500-draw trip bootstrap for the full-minus-distance contrast; random split over three seeds",
+  "figure": "one synthetic day per band, band trip counts equal to the mean held-out day, origins from the training origin field (sigma=1.0), destinations from the full model; cross-cell distances only",
+  "kmeans": "six paper features, log1p trips, median fill, z-score; 20 seeds per k, k-means++; silhouette on 10k (all runs) and 40k (representative); pairwise ARI on all users",
+  "return_share": "same cell = o==d on the 0.005-degree grid; origin revisit = 11_q1_extra.py's feature; destination revisit = destination equals an earlier origin that day"
+ },
+ "checks": {
+  "1_numbers_traceable": true,
+  "2_old_data_unchanged": true,
+  "3_readonly_untouched": true,
+  "4_new_results_in_T005": true,
+  "5_change_list": true,
+  "6_failures_explicit": true,
+  "7_magnitude": true,
+  "8_boundary_conditions": true,
+  "9_untested_branches": true,
+  "10_caliber_unchanged": true
+ },
+ "checks_reasons": {
+  "1": "every number comes from data/runs/T005/*.json; this builder only rearranges those keys",
+  "2": "data/ excluding data/runs against the T001 start fingerprint: 0 changed, 0 added, 0 removed",
+  "3": "paper tree against the T001 start fingerprint: 0 changed, 0 added, 0 removed; no T005 script writes under 审查与规划/ or review/",
+  "4": "all new artifacts are under data/runs/T005 (figure included)",
+  "5": "code_changes lists every new script and generated cache file",
+  "6": "the old distance column is marked invalid; fig 3a's simplified procedure and 0.30 km substitute are recorded; the quarter is shown to be origin revisit; the day/random level difference is reported; k stability is reported per k rather than assumed",
+  "7": "all nlp in [3.0, 8.7], uniform = ln(5263) = 8.568; top-5 in [0,1]; beta in [2.0,2.6]; KS and ARI in range",
+  "8": "train/test dates are disjoint; test size 555,675; the morning full beta reproduces 2.0144205638 to 1e-9; same-cell trips are excluded from distance comparisons on both sides",
+  "9": "see notes",
+  "10": "q1_params.json and q1_validation.csv hashes unchanged; lib.py unchanged; no Q2-Q5 rerun; paper tree unchanged"
+ },
+ "paper_integrity": {
+  "paper": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 57,
+   "unchanged": true
+  },
+  "data_excluding_runs": {
+   "changed": [],
+   "added": [],
+   "removed": [],
+   "n_files": 29,
+   "unchanged": true
+  },
+  "q1_params_sha_now": "58fc4065928193d19df284cb1122d34fd662ce7db465810f110aa4543e69d6f4",
+  "q1_params_sha_t001": "58fc4065928193d19df284cb1122d34fd662ce7db465810f110aa4543e69d6f4",
+  "q1_params_unchanged": true,
+  "q1_validation_sha_now": "e4b864512554c8df1c3312c453cbc5601fc8e399655bbac14d01c7282bdc298e",
+  "q1_validation_sha_t001": "e4b864512554c8df1c3312c453cbc5601fc8e399655bbac14d01c7282bdc298e",
+  "q1_validation_unchanged": true,
+  "lib_py_sha_now": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_sha_t001": "546f231a55832294d306071385c65f719064cb1874c2e035943c1d385de90d18",
+  "lib_py_unchanged": true,
+  "sim_cell_py_changed_by_T004_not_T005": true
+ },
+ "code_integrity": {
+  "baseline": "data/runs/T001/fingerprint_end.json (code tree)",
+  "changed": [
+   "code/__pycache__/sim_cell.cpython-311.pyc",
+   "code/audit/t001_delivery.py",
+   "code/audit/t003_numbers.py",
+   "code/sim_cell.py"
+  ],
+  "added_count": 32,
+  "removed": [],
+  "t005_new": [
+   "code/t005_common.py",
+   "code/t005_delivery.py",
+   "code/t005_dest_validation.py",
+   "code/t005_fig3.py",
+   "code/t005_k_stability.py",
+   "code/t005_probe.py",
+   "code/t005_probe2.py",
+   "code/t005_return_share.py",
+   "code/t005_validate.py"
+  ],
+  "unexpected_changes": []
+ },
+ "code_changes": [
+  {
+   "file": "code/t005_common.py",
+   "status": "new",
+   "what": "shared reproduction of the Q1 model: bands, cells, distance matrix, A smoothing, beta MLE (paper choice set and full choice set), four model scoring, tie-aware top-5, haversine",
+   "why": "the validation must use the paper's exact model, not a variant"
+  },
+  {
+   "file": "code/t005_probe.py",
+   "status": "new",
+   "what": "timing and numeral probe for one band",
+   "why": "establish runtime and confirm the common module reproduces q1_validation.csv before the full run"
+  },
+  {
+   "file": "code/t005_probe2.py",
+   "status": "new",
+   "what": "choice-set and top-5 tie-convention probe",
+   "why": "choose the primary convention and quantify the alternative"
+  },
+  {
+   "file": "code/t005_dest_validation.py",
+   "status": "new",
+   "what": "four models x five bands, day split plus random-trip-split control, bootstrap intervals, distance-only own MLE",
+   "why": "the task's core out-of-sample comparison"
+  },
+  {
+   "file": "code/t005_fig3.py",
+   "status": "new",
+   "what": "full-model synthetic day, cross-cell KS, same-cell accounting, redrawn panels (a)-(d) including the difference plot for (c)",
+   "why": "the published fig 3a used A=1 and a fabricated 0.30 km intra-cell distance; fig 3c used a log axis"
+  },
+  {
+   "file": "code/t005_k_stability.py",
+   "status": "new",
+   "what": "k=3-6, 20 random initialisations each, pairwise ARI, silhouette on 10k and 40k samples, cross-k ARI, comparison with published labels",
+   "why": "the paper claims stability without an ARI computation"
+  },
+  {
+   "file": "code/t005_return_share.py",
+   "status": "new",
+   "what": "same-cell (o==d), origin-revisit and destination-revisit shares overall, by band, by date and by segment",
+   "why": "the paper's quarter is not the task's return_share definition"
+  },
+  {
+   "file": "code/t005_delivery.py",
+   "status": "new",
+   "what": "this delivery builder",
+   "why": "assemble and hash the evidence"
+  },
+  {
+   "file": "code/t005_validate.py",
+   "status": "new",
+   "what": "delivery validator",
+   "why": "self-checks 1-10"
+  },
+  {
+   "file": "code/__pycache__/t005_common.cpython-311.pyc",
+   "status": "generated",
+   "what": "Python bytecode cache",
+   "why": "import cache; not source"
+  },
+  {
+   "file": "code/__pycache__/lib.cpython-311.pyc",
+   "status": "pre-existing/generated",
+   "what": "bytecode cache touched by importing lib",
+   "why": "not source; lib.py itself is unchanged"
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T005_delivery.json",
+  "dest_validation_json": "data/runs/T005/dest_validation.json",
+  "dest_validation_csv": "data/runs/T005/dest_validation.csv",
+  "fig3_json": "data/runs/T005/fig3_redraw.json",
+  "fig3_pdf": "data/runs/T005/t005_fig3_redraw.pdf",
+  "fig3_png": "data/runs/T005/t005_fig3_redraw.png",
+  "k_stability_json": "data/runs/T005/k_stability.json",
+  "k_labels": "data/runs/T005/k_stability_labels.npz",
+  "return_share_json": "data/runs/T005/return_share.json",
+  "return_share_csv": "data/runs/T005/return_share_segments.csv"
+ },
+ "notes": [
+  "The old q1_validation.csv distance column used the full model's beta (10_q1_model.py:136). Refitting the distance model's own MLE lowers its nlp by only 0.0006-0.0014 nats and leaves the argpartition top-5 un-changed at six decimals; the old values are invalid as an optimum but the published conclusion is numerically unaffected.",
+  "Choice-set convention: the paper's MLE normalises over destinations with a non-zero training count. Using the full 5,263-cell choice set shifts the full beta by <=0.0015 and moves nlp by <=0.0001; the largest shift is the night distance-only beta (+0.051), where the distance baseline improves by 0.0031 nats. The paper convention is retained for the main table so the published model is reproduced exactly.",
+  "The day split and the random-trip control differ materially in absolute level (0.037 nats, 1.35 pp) but not in the full-vs-distance contrast (0.0001 nats, 0.0018 pp). The two held-out days are easier than a random trip sample; the comparison is robust, the absolute level is not.",
+  "Fig 3a: same-cell trips are 9.5% of held-out observed trips (9.0% over the full ten-day sample). They are excluded from the distance comparison because the cell model has no intra-cell geometry; no 0.30 km substitute is used. The model implies 12.4% same-cell trips (synthetic 12.5%), so the model over-represents them by about 3 pp; excluding them is a scope limit and the over-prediction is reported separately.",
+  "The old KS 0.196 is reproduced (0.1957) by the published procedure (morning only, A=1, 0.30 km same-cell). The new cell-centre cross-cell KS is 0.098; comparing the same synthetic distances with observed GPS distances inflates it back to 0.187, so most of the old KS was the cell-centre-vs-GPS geometry plus the fabricated intra-cell distance, not a failure of the full model.",
+  "Untested branches: beta stability by individual day (only five time bands are estimated); A smoothing bandwidth sigma sensitivity (sigma=1.2 is fixed); alternative decay forms (power, combined power-exponential); intra-cell distance distributions (uniform-within-cell or GPS-based); random-split seeds beyond three; day-split partitions other than the published 5/2; bootstrap that clusters by day (the reported CIs treat trips as independent and are therefore too narrow for the day split).",
+  "k-means: silhouette across 20 initialisations is computed on a 10k sample; the 40k representative value is the one comparable to the paper's 0.256/0.239/0.237. Pairwise ARIs use the full 329,249 users.",
+  "The paper's 'stable across random initialisations' (sec4:163) is not supported: k=5 has pairwise ARI mean 0.665 and minimum 0.306 over 20 seeds. The published labels are one good local optimum (ARI 0.994 against our representative run), not a stable partition. k=6 has a slightly higher best-run silhouette (0.263 vs 0.256) but a slightly lower mean (0.246 vs 0.251), and the two partitions overlap strongly (ARI 0.823); T012 must either rewrite the selection/stability sentence or justify k=5 on interpretability rather than silhouette uniqueness.",
+  "return_share: the paper's own feature description (sec4:160) calls it 'share of trips that return to the origin cell', but 11_q1_extra.py:49-52 computes a repeated-origin indicator, not o==d. For the heavy short-trip segment the feature is 0.257, trip-weighted origin revisit 0.264, and same-cell 0.165. The table's 'share' column is weekend share.",
+  "Adjacent finding outside T005's acceptance: tab:seg's 'Trips per day' column holds total trips over the ten-day sample (13.98 for the heavy segment), not trips per day. Those users appear on 5.53 days on average, so the per-active-day rate is 2.47, and even over all ten days it is 1.40. The sentence 'rides 14 times a day' is not supported by this definition.",
+  "No paper text, q1_params.json, q1_validation.csv or official fitting script was changed. All numbers are read from data/runs/T005/*.json."
+ ]
+}

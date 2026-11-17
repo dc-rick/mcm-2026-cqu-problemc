@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目进度解读 · 2026-11-17</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15.5px/1.8 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 80px}
+h1{font-size:25px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:19px;margin:34px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:9px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:13px 17px;margin:13px 0}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.box.hi{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:7px 0}
+li{margin:4px 0}
+.tag{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;border:1px solid var(--line);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.wait{color:var(--warn);border-color:var(--warn)}
+.tag.bad{color:var(--hi);border-color:var(--hi)}
+.big{font-size:17px;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+
+<h1>项目进度解读（2026-11-17 晚）</h1>
+<p class="meta">给作者本人看的说明书：现在做到哪、每个代号是什么意思、下一步要你决定什么。</p>
+
+<div class="box">
+<p class="big">一句话：论文已经是一篇 27 页、结构完整的稿子；这几天我们做的事，是把它从“看起来完整”修到“每个数字都站得住”。输入端的账已经查完，接下来是把五个问题的模型真正串起来——但这一步需要你拍两个板。</p>
+</div>
+
+<h2>一、先看懂这套工作怎么运转</h2>
+<p>我们用的是“双会话”：一个会话出题、验收（我，负责 <code>审查与规划/</code>），另一个会话做题、交作业（<code>交付/</code>）。每件事都有固定流程：</p>
+<ol>
+<li>我写一份<strong>任务单</strong>（编号 <code>T001</code>、<code>T002</code>……），写清做什么、不做什么、怎样算合格；</li>
+<li>执行方做完，交一份<strong>交付 JSON</strong>（机器可读的“作业+证据”）；</li>
+<li>我<strong>独立复算</strong>关键数字，对不上就退回（<code>R1</code> = 第一次退回修改），对得上才通过。</li>
+</ol>
+<p>为什么要这么麻烦：美赛评委不会跑你的代码，但会一眼看出前后矛盾。一个数字错，整篇的可信度都会被拖下水；而“我自己复算过”是唯一能保证不带着错数字往下走的办法。</p>
+
+<h3>代号对照表</h3>
+<div class="tw"><table>
+<thead><tr><th>代号</th><th>含义</th><th>你可以怎么理解</th></tr></thead>
+<tbody>
+<tr><td><code>T001</code>–<code>T014</code></td><td>任务单编号</td><td>“第几件活儿”</td></tr>
+<tr><td><code>R1</code></td><td>第一次退回修改</td><td>作业被打回重做一次</td></tr>
+<tr><td><code>B1</code>–<code>B7</code></td><td>需要你拍板的决定</td><td>“选择题”，我不替你选</td></tr>
+<tr><td><code>H</code> / <code>M</code> / <code>L</code></td><td>问题严重度：高 / 中 / 低</td><td>H 不改会直接影响评分</td></tr>
+<tr><td><code>M1</code>–<code>M4</code></td><td>里程碑（Milestone）</td><td>四个大关卡</td></tr>
+<tr><td><code>P0</code> / <code>P1</code></td><td>优先级：必须做 / 有余力再做</td><td>P0 是保命项</td></tr>
+<tr><td><code>Q1</code>–<code>Q5</code></td><td>赛题的五问</td><td>见下文第二节</td></tr>
+<tr><td><code>p</code></td><td>抽样率</td><td>手里的订单是真实世界的一部分，不是全部</td></tr>
+<tr><td><code>OD</code></td><td>起点—终点流量表</td><td>“从哪个格子到哪个格子、多少人”</td></tr>
+<tr><td><code>LP</code></td><td>线性规划</td><td>在约束下算最省钱的方案</td></tr>
+<tr><td><code>KS</code></td><td>两条分布曲线的最大差距</td><td>0 = 完全一样，1 = 完全不像</td></tr>
+<tr><td><code>ARI</code></td><td>两次分组结果的一致度</td><td>1 = 完全一致，0 = 跟随机差不多</td></tr>
+<tr><td><code>CI</code></td><td>置信区间</td><td>“真值大概率落在这个范围”</td></tr>
+</tbody></table></div>
+
+<h2>二、这篇论文在做什么（一句话版）</h2>
+<div class="tw"><table>
+<thead><tr><th>问题</th><th>要回答什么</th><th>用的方法</th></tr></thead>
+<tbody>
+<tr><td><strong>Q1</strong></td><td>人为什么从 A 骑到 B？</td><td>重力模型：距离越远越不想去，目的地越“热闹”越想去</td></tr>
+<tr><td><strong>Q2</strong></td><td>卡车怎么搬车最省钱？</td><td>时间—空间网络 + 线性规划（Gurobi 求解）</td></tr>
+<tr><td><strong>Q3</strong></td><td>用小红包引导用户自己把车骑到缺车点，能省多少？</td><td>Logit 选择模型 + 预算优化</td></tr>
+<tr><td><strong>Q4</strong></td><td>停车围栏设在哪，覆盖最多？</td><td>最大覆盖选址</td></tr>
+<tr><td><strong>Q5</strong></td><td>两家平台竞争时，服务会怎样？</td><td>格子级仿真</td></tr>
+</tbody></table></div>
+
+<h2>三、已经完成的六件事（按故事讲）</h2>
+
+<h3>1. 车队到底有多少辆？（T001 / T001-R2）<span class="tag ok">已通过</span></h3>
+<p>原论文写 <strong>343,638 辆</strong>。查下来，这是“5 月 16 日这一天看到的不同单车数”，不是车队规模。把 14 天合起来，光出现过的不同单车就有 <strong>484,754 辆</strong>——车队不可能比这更少。</p>
+<p>按“封闭车队”（这 14 天是同一批车，不新投也不撤走）重新估计，中心值约 <strong>495,540 辆</strong>，区间 <strong>484,754–506,635</strong>。这个数会影响每车成本、初始投放量、Q2 的优化结果，所以必须先定。</p>
+
+<h3>2. 手里的订单是全量吗？（T002）<span class="tag ok">已通过</span></h3>
+<p>不是。数据是抽样，原论文假设抽样率 <code>p</code> = 0.128。我们用“相邻格子的订单对”反推，实测约 <strong>0.185</strong>，合理区间 <strong>0.13–0.20</strong>。</p>
+<p>这意味着论文里所有<strong>绝对数量</strong>（多少单、多少车、省多少钱）都可能偏低约 40%，但<strong>比例类结论</strong>（节省率、覆盖率）基本不受影响。这就是下面 B7 要你选的事。</p>
+
+<h3>3. 论文里 738 个数字，逐个查账（T003）<span class="tag ok">已通过</span></h3>
+<p>给每个数字找“它是哪个脚本、哪一行、从哪个结果文件算出来的”。结果：<strong>94.9% 能对上</strong>，22 个找不到代码，6 处前后矛盾。这份账本会在最后改稿（T012）时逐条销账。</p>
+
+<h3>4. 城市切成小方块后，到底缺不缺车？（T004）<span class="tag ok">已通过</span></h3>
+<p>原来的格子仿真里，“走到隔壁格子找车”的步行半径设成 300 米，可格子之间最近也有 426 米——等于这条机制<strong>从来没生效过</strong>。修好后又发现一个更严重的 bug：借走一辆车后没有还回去，每天凭空蒸发约 24 万辆车。修完后重跑：</p>
+<ul>
+<li>摘要那句“<strong>任何分辨率下都不缺车</strong>”是假的，已作废；</li>
+<li>450 米步行半径下，约 <strong>5.84%</strong> 的出行找不到车（按老车队 343,638 算；按新车队 495,540 算是 <strong>3.51%</strong>）；</li>
+<li>论文里“172 个格子干涸”和“13.4% 未满足”属于另外两个口径，最后改稿时要统一说法，不能三处互相打架。</li>
+</ul>
+
+<h3>5. Q1 的模型到底准不准？（T005）<span class="tag ok">已通过</span></h3>
+<p>原来那张“模型 vs 实际”的图，画的其实是一个<strong>简化模型</strong>（吸引力项被代码设成了 1），距离基准也没有单独拟合。重做后：</p>
+<ul>
+<li>完整模型的分布差距 <code>KS</code> = <strong>0.098</strong>（旧图 0.196），改善明显；</li>
+<li>距离一项就解释了绝大部分，吸引力项只多贡献 <strong>0.07 nats / 3.3 个百分点</strong>——论文说“距离解释大部分”，数据支持；</li>
+<li>用户分成 5 类这件事<strong>不稳定</strong>：换随机种子重跑，两次分组的一致度平均只有 0.665，最差 0.306。论文里“稳定”的说法不成立，最后改稿要改写法（不是改 k）。</li>
+</ul>
+
+<h3>6. AI 使用报告与引用合规（T013）<span class="tag ok">已通过</span></h3>
+<p>COMAP 现在要求：用了 AI 就要写清工具、版本、日期、用它做了什么，并给示例。原稿只写了“Claude Code (Anthropic)”一个名字。现在补全了版本与日期、正文引用、参考文献条目、两组真实对话记录，标题也改成政策要求的写法。</p>
+<p>另外，原来假设 A7 写“2017 年 5 月没人收到过奖励”——这与事实相反，摩拜当年 3 月就在推红包车。已改成“数据里没有奖励记录，但当时平台已在推红包车”，并引了两条新闻。参考文献从 23 条补到 32 条，每条 DOI 都核过，32 个引用没有一个是空的。</p>
+<p>这一项我退回改过一次（R1），因为 AI 报告漏写了 343,638 还硬编码在四个计算脚本里——它不只是画图用的常数，而是 Q2/Q5 的输入。现在写全了。</p>
+
+<h2>四、还没做的：把五个问题串成一条链</h2>
+<p>现在 Q1 到 Q5 各自能跑，但<strong>Q1 的结果没有被 Q2 用起来</strong>。评委最忌讳“五个模型各说各话”，所以下一步是让 Q1 算出的 OD 表真正驱动 Q2 的调度方案。之后依次是：</p>
+<div class="tw"><table>
+<thead><tr><th>任务</th><th>做什么</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td><code>T006</code></td><td>把 Q1 生成的需求接进 Q2/Q4，与观测数据并列比较</td><td><span class="tag wait">等 B4</span></td></tr>
+<tr><td><code>T007</code></td><td>Q2 调度模型加固：加“卡车晚上回哪个区”“夜间成本”等约束后重解</td><td><span class="tag wait">等 B2</span></td></tr>
+<tr><td><code>T008</code></td><td>Q3 激励方案重做：定向推送为主，公开推送作下界</td><td><span class="tag wait">等 B3</span></td></tr>
+<tr><td><code>T009</code></td><td>Q4 围栏选址复核</td><td><span class="tag wait">等 B5</span></td></tr>
+<tr><td><code>T010</code></td><td>Q5 双平台仿真复核</td><td><span class="tag wait">排队</span></td></tr>
+<tr><td><code>T011</code></td><td>不确定性拆源：哪些来自识别参数、哪些来自假设、哪些来自文献值</td><td><span class="tag wait">排队</span></td></tr>
+<tr><td><code>T012</code></td><td>全文重提数字、统一口径、改写有问题的句子（最重的一件）</td><td><span class="tag wait">排队</span></td></tr>
+<tr><td><code>T014</code></td><td>终检：七条标准自评、编译、页数、合规</td><td><span class="tag wait">排队</span></td></tr>
+</tbody></table></div>
+
+<h2>五、要你拍板的七件事（B1–B7）</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>问题</th><th>说人话</th><th>我的建议</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td><code>B1</code></td><td>只做 P0 还是 P0+P1？</td><td>时间只够修“必须修”的，还是连“锦上添花”的一起做？</td><td>先把 P0 跑完，T009 后再看余量</td><td><span class="tag wait">待定</span></td></tr>
+<tr><td><code>B2</code></td><td>Q2 是否加回家/夜间约束后重解？</td><td>现在的方案允许卡车把车扔在任意地方、晚上不收工，成本被低估了</td><td>重解</td><td><span class="tag wait">待定</span></td></tr>
+<tr><td><code>B3</code></td><td>Q3 主方案选哪个？</td><td>红包只发给“顺路能骑到缺车点”的人，还是公开撒？公开撒的话节省率只剩约 2%</td><td>定向推送为主，公开推送作下界</td><td><span class="tag wait">待定</span></td></tr>
+<tr><td><code>B4</code></td><td>Q1 的 OD 是否作 Q2 主输入？</td><td>要不要让第一问算出的“从哪到哪”真正驱动第二问的卡车调度</td><td><strong>要</strong>，否则第一问是孤岛</td><td><span class="tag wait">待定</span></td></tr>
+<tr><td><code>B5</code></td><td>Q4 的 450 米阈值维持吗？</td><td>步行到围栏的距离上限，是否就用现状值</td><td>维持 450 米，文中说明是现状阈值</td><td><span class="tag wait">待定</span></td></tr>
+<tr><td><code>B6</code></td><td>车队口径：封闭还是开放？</td><td>14 天当同一批车，还是允许每天新投车</td><td>封闭（已定）</td><td><span class="tag ok">已定</span></td></tr>
+<tr><td><code>B7</code></td><td>抽样率主值用 0.128 还是 0.185？</td><td>用旧假设（绝对量标成上界），还是用实测值（Q2–Q5 绝对数全部重跑）</td><td>沿用 0.128、标注上界；0.185 进灵敏度</td><td><span class="tag wait">待定</span></td></tr>
+</tbody></table></div>
+<p><strong>只有 B4 和 B7 挡着下一步。</strong>其余四项可以等 T006 跑起来再定。</p>
+
+<h2>六、质量账本：12 个高严重度问题现在什么状态</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>问题</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td><code>H1</code></td><td>Q1 建模成果没被后四问使用</td><td><span class="tag wait">等 T006（B4）</span></td></tr>
+<tr><td><code>H2</code></td><td>车队规模偏小，连锁影响成本与容量</td><td><span class="tag ok">已关闭（T001-R2）</span></td></tr>
+<tr><td><code>H3</code></td><td>Q3 摘要里的 34.9% 节省率站不住</td><td><span class="tag wait">等 T008（B3）</span></td></tr>
+<tr><td><code>H4</code></td><td>“任何分辨率都不缺车”是伪结论</td><td><span class="tag ok">已关闭（T004）</span></td></tr>
+<tr><td><code>H5</code></td><td>Q2 诊断口径可能把结论方向写反</td><td><span class="tag wait">等 T007</span></td></tr>
+<tr><td><code>H6</code></td><td>夜间作业说法没有约束支撑、成本低估</td><td><span class="tag wait">等 T007（B2）</span></td></tr>
+<tr><td><code>H7</code></td><td>假设 A7 与红包车史实冲突</td><td><span class="tag ok">已关闭（T013）</span></td></tr>
+<tr><td><code>H8</code></td><td>数字与代码对不上（6 处矛盾）</td><td><span class="tag wait">部分（T003），改写靠 T012</span></td></tr>
+<tr><td><code>H9</code></td><td>AI 使用报告不符合 COMAP 政策</td><td><span class="tag ok">已关闭（T013）</span></td></tr>
+<tr><td><code>H10</code></td><td>表 5“每天单量”实际是十天总量，夸大约 10 倍</td><td><span class="tag wait">等 T012 改字</span></td></tr>
+<tr><td><code>H11</code></td><td>“172 个格子干涸”与自己声明的口径不符</td><td><span class="tag wait">等 T012 统一</span></td></tr>
+<tr><td><code>H12</code></td><td>“四分之一出行回到同一格”是另一口径的数</td><td><span class="tag wait">等 T012 改写</span></td></tr>
+</tbody></table></div>
+<p>另有 8 个中等问题、8 个低严重度问题，都已登记在 <code>审查与规划/台账/问题台账.csv</code>，不会丢。</p>
+
+<h2>七、接下来会发生什么</h2>
+<ol>
+<li><strong>你定 B4、B7</strong>（其余四项可稍后）；</li>
+<li>我下 <code>T006</code>，执行方把 Q1 的需求接进 Q2，约 1 天；</li>
+<li><code>T007</code>/<code>T008</code> 各约 1 天（需要 B2、B3）；<code>T009</code>/<code>T010</code> 各半天到一天；</li>
+<li><code>T011</code> 不确定性拆源，约 1 天；</li>
+<li><code>T012</code> 全文重提数字与改写，最重，约 2 天；</li>
+<li><code>T014</code> 终检半天。</li>
+</ol>
+<p>按 P0 算，剩余约 3–4 天；全做约 6–7 天。</p>
+
+<div class="box warn">
+<p><strong>三个提前告知的风险：</strong></p>
+<ul>
+<li><strong>页数卡在 25 页。</strong>现在正文正好 25 页，参考文献已经被缩成小字号来压页。T012 如果加内容，必须同时删减，否则超页。</li>
+<li><strong>k=5 不稳定。</strong>如果评委追问“为什么分 5 类”，我们要改的是论证方式（按预测任务与可解释性选），不是偷偷换 k——换 k 会让 Q3/Q5 全部重跑。</li>
+<li><strong>绝对数字有两套口径。</strong>车队换成 495,540 后，所有绝对量都会变；B7 决定是否连抽样率也一起换。这两件事必须在 T012 一次性改完，不能留一半。</li>
+</ul>
+</div>
+
+<h2>八、你现在只需要回一句话</h2>
+<div class="box hi">
+<p class="big">「B4 要，B7 沿用 0.128」——回了这句，T006 今晚就能下达。</p>
+<p class="meta">如果你更想用实测抽样率，就回「B4 要，B7 改 0.185」，代价是 Q2–Q5 的绝对数全部重跑，时间多约 1 天。</p>
+</div>
+
+</main>
+</body>
+</html>
