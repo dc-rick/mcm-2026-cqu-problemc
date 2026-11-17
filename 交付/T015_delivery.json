@@ -1,0 +1,259 @@
+{
+ "task": "T015",
+ "title": "Repository cleanup and portability",
+ "date": "2026-11-18",
+ "status": "delivered",
+ "checks": {
+  "1_absolute_paths_zero": true,
+  "2_prepare_help_ok": true,
+  "3_prepare_refuses_overwrite": true,
+  "4_prepare_run_rows_and_schema": true,
+  "5_dist_matrix_rebuilt": true,
+  "6_dist_matrix_reference_untouched": true,
+  "7_run_all_dry_run": true,
+  "8_run_all_stops_on_failure": true,
+  "9_readonly_trees_unchanged": true,
+  "10_scope_limited": true
+ },
+ "absolute_path_audit": {
+  "markers": [
+   "C:\\\\Users",
+   "D:\\\\code"
+  ],
+  "files_scanned": 63,
+  "hits": [],
+  "note": "grep-equivalent scan of every file under code/, __pycache__ excluded."
+ },
+ "portability_changes": [
+  {
+   "file": "code/00_prepare.py",
+   "old": "hard-coded raw CSV path and output path",
+   "new": "--raw (default data/raw/*.csv) and --out (default data/trips.parquet), --force to overwrite",
+   "evidence": "code/00_prepare.py:20-21,51-81"
+  },
+  {
+   "file": "code/01_recon.py",
+   "old": "absolute trips path",
+   "new": "os.path.join(DATA, 'trips.parquet')",
+   "evidence": "code/01_recon.py:4-6"
+  },
+  {
+   "file": "code/02_recon_spatial.py",
+   "old": "absolute trips path",
+   "new": "os.path.join(DATA, 'trips.parquet')",
+   "evidence": "code/02_recon_spatial.py:4-8"
+  },
+  {
+   "file": "code/03_diag.py",
+   "old": "absolute trips and figure paths",
+   "new": "os.path.join(DATA, 'trips.parquet') and os.path.join(FIG, 'diag_maps.png')",
+   "evidence": "code/03_diag.py:6-8,42-43"
+  },
+  {
+   "file": "code/04_behaviour.py",
+   "old": "absolute trips and user-features paths; unconditional write",
+   "new": "os.path.join(DATA, ...); write only with --force",
+   "evidence": "code/04_behaviour.py:5-13,71-75"
+  }
+ ],
+ "prepare": {
+  "help_exit": 0,
+  "help_stdout_head": [
+   "usage: 00_prepare.py [-h] [--raw RAW] [--out OUT] [--force]",
+   "",
+   "Decode the raw Mobike order CSV into a parquet table."
+  ],
+  "overwrite_guard_exit": 1,
+  "overwrite_guard_stderr": "<repo>\\data\\trips.parquet exists; use --out for a new file or --force to overwrite",
+  "run_command": "python -I code/00_prepare.py --raw <raw csv> --out data/runs/T015/trips_check.parquet",
+  "rows_written": 3214096,
+  "columns_written": 15,
+  "columns_match_reference": true,
+  "reference_rows": 3214096,
+  "reference_sha256": "5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb",
+  "reference_unchanged": true,
+  "log": "data/runs/T015/00_prepare_run.log"
+ },
+ "dist_matrix": {
+  "cells": 5263,
+  "output": "data/runs/T015/dist_matrix.npy",
+  "reference": "data/dist_matrix.npy",
+  "shape": [
+   5263,
+   5263
+  ],
+  "dtype": "float32",
+  "sha256_output_file": "4e3259f0a1faa173ee4f1b4b6743d2cc1973440dc9678197c7ccbeb572bceb97",
+  "sha256_output_array": "b2f26b283f2d0b1facb9b1e7a83ea50ae749da75612d7c3222bc320d69e18e22",
+  "reference_exists": true,
+  "reference_shape": [
+   5263,
+   5263
+  ],
+  "reference_dtype": "float32",
+  "same_shape": true,
+  "same_dtype": true,
+  "max_abs_diff": 0.0,
+  "bitwise_equal": true,
+  "sha256_reference_file": "4e3259f0a1faa173ee4f1b4b6743d2cc1973440dc9678197c7ccbeb572bceb97",
+  "sha256_reference_array": "b2f26b283f2d0b1facb9b1e7a83ea50ae749da75612d7c3222bc320d69e18e22",
+  "reference_sha256_unchanged": true
+ },
+ "run_all": {
+  "steps": [
+   "10_q1_model.py",
+   "11_q1_extra.py",
+   "20_q2_diag.py",
+   "21_q2_opt.py",
+   "22_q2_sim.py",
+   "23_q2_saveplan.py",
+   "24_cell_curve.py",
+   "30_q3_incentive.py",
+   "40_q4_efence.py",
+   "50_q5_platform.py",
+   "60_sensitivity.py",
+   "90_figs.py",
+   "95_numbers.py"
+  ],
+  "dry_run_exit": 0,
+  "dry_run_log": "data/runs/T015/run_all_dry_run.log",
+  "failure_test_exit": 3,
+  "failure_test_output": [
+   "[1/2] <repo>\\data\\runs\\T015\\run_all_fail_probe.py",
+   "run_all failure probe: exiting 3",
+   "FAILED: run_all_fail_probe.py exited 3; stopping"
+  ],
+  "failure_test_log": "data/runs/T015/run_all_fail_test.log",
+  "failure_probe": "data/runs/T015/run_all_fail_probe.py",
+  "full_run_executed": false
+ },
+ "integrity": {
+  "baseline": "data/runs/T015/fingerprint_start.json",
+  "data_excluding_runs": {
+   "baseline_files": 29,
+   "changed": [],
+   "missing": [],
+   "added": []
+  },
+  "paper": {
+   "baseline_files": 57,
+   "changed": [],
+   "missing": [],
+   "added": []
+  },
+  "review": {
+   "baseline_files": 6,
+   "changed": [],
+   "missing": [],
+   "added": []
+  },
+  "root_files": {
+   "baseline_files": 4,
+   "changed": [],
+   "missing": [],
+   "added": []
+  },
+  "code": {
+   "baseline_files": 59,
+   "modified": [
+    "code/00_prepare.py",
+    "code/01_recon.py",
+    "code/02_recon_spatial.py",
+    "code/03_diag.py",
+    "code/04_behaviour.py"
+   ],
+   "added": [
+    "code/build_dist_matrix.py",
+    "code/run_all.py",
+    "code/t015_delivery.py",
+    "code/t015_validate.py"
+   ],
+   "missing": []
+  }
+ },
+ "code_changes": [
+  {
+   "file": "code/00_prepare.py",
+   "status": "modified",
+   "what": "argparse --raw/--out/--force; raw glob resolution; refuse to overwrite without --force; DATA from lib",
+   "why": "remove the hard-coded desktop input path and the hard-coded output path without changing decoding."
+  },
+  {
+   "file": "code/01_recon.py",
+   "status": "modified",
+   "what": "read trips via DATA",
+   "why": "absolute path removal."
+  },
+  {
+   "file": "code/02_recon_spatial.py",
+   "status": "modified",
+   "what": "read trips via DATA",
+   "why": "absolute path removal."
+  },
+  {
+   "file": "code/03_diag.py",
+   "status": "modified",
+   "what": "read trips via DATA; write figure via FIG",
+   "why": "absolute path removal."
+  },
+  {
+   "file": "code/04_behaviour.py",
+   "status": "modified",
+   "what": "read trips via DATA; write user features via DATA; skip an existing output unless --force",
+   "why": "fix the stale output directory and protect existing data."
+  },
+  {
+   "file": "code/build_dist_matrix.py",
+   "status": "new",
+   "what": "rebuild the 5263x5263 matrix from cells.parquet, write data/runs/T015/dist_matrix.npy, compare shape, dtype, max abs diff, bitwise equality and SHA-256",
+   "why": "the generator was missing from code/."
+  },
+  {
+   "file": "code/run_all.py",
+   "status": "new",
+   "what": "ordered 10->95 runner with --dry-run, stop on first non-zero exit, optional --scripts override",
+   "why": "document and enforce the stage order."
+  },
+  {
+   "file": "code/t015_delivery.py",
+   "status": "new",
+   "what": "this delivery builder",
+   "why": "assemble T015 evidence."
+  },
+  {
+   "file": "code/t015_validate.py",
+   "status": "new",
+   "what": "independent T015 delivery validator",
+   "why": "recompute the self-checks before delivery."
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T015_delivery.json",
+  "start_fingerprint": "data/runs/T015/fingerprint_start.json",
+  "rebuilt_trips": "data/runs/T015/trips_check.parquet",
+  "rebuilt_dist_matrix": "data/runs/T015/dist_matrix.npy",
+  "dist_matrix_check": "data/runs/T015/dist_matrix_check.json",
+  "logs": [
+   "data/runs/T015/00_prepare_help.log",
+   "data/runs/T015/00_prepare_overwrite_guard.log",
+   "data/runs/T015/00_prepare_run.log",
+   "data/runs/T015/01_recon_run.log",
+   "data/runs/T015/02_recon_spatial_run.log",
+   "data/runs/T015/04_behaviour_noforce.log",
+   "data/runs/T015/run_all_dry_run.log",
+   "data/runs/T015/run_all_fail_test.log"
+  ]
+ },
+ "notes": [
+  "data/dist_matrix.npy is reproduced by Euclidean distances in the projected km frame with the diagonal set to 0.35/sqrt(2), exactly as 10_q1_model.py:34-35 generated it. It is not a haversine matrix: haversine on the cell centres differs on the diagonal by 0.2475 km. The task sheet's word 'spherical' therefore describes a different construction; build_dist_matrix.py follows the actual generator so the rebuild is bit-identical.",
+  "data/raw/ does not exist in this workspace, so the default --raw glob was exercised only through --help. The verification run passed the existing raw CSV with an explicit --raw value; that path is not stored in code or in this delivery.",
+  "The --force overwrite paths of 00_prepare.py and 04_behaviour.py were deliberately not executed, to protect the existing data. Only the refusal path was tested.",
+  "03_diag.py's FIG-joined save path was changed but not executed, to avoid overwriting an existing figure; its syntax and the DATA read path were checked separately.",
+  "run_all.py was not run end-to-end, because that would rerun Q1-Q5. Only the dry-run order and the stop-on-failure probe were executed.",
+  "Portability is still Windows-first. lib.py and several later scripts concatenate paths with backslashes (for example DATA + r'\\trips.parquet' or FIG + backslash), which works on Windows but not on POSIX. T015's scope was the absolute-path removal in 00-04; a full os.path.join sweep is a separate change.",
+  "trips_check.parquet matches data/trips.parquet in row count and column names, not byte-for-byte; parquet metadata and compression can differ between pyarrow versions.",
+  "README.md and DATA.md still mention the old script names; the reviewer owns their wording, and they were not edited.",
+  "No git command was run; .git/, .gitignore, .gitattributes, README.md and DATA.md were not modified.",
+  "The code/ audit files were included in the absolute-path scan; they contain no matches."
+ ]
+}

@@ -33,7 +33,7 @@ data/         不随仓库提供（见 DATA.md）：清洗后订单、距离矩�
 
 每个任务的状态与验收结论见 [`审查与规划/台账/任务台账.csv`](审查与规划/台账/任务台账.csv)；每条已知缺陷见 [`审查与规划/台账/问题台账.csv`](审查与规划/台账/问题台账.csv)；需要用户拍板的事项见 [`审查与规划/台账/决策台账.csv`](审查与规划/台账/决策台账.csv)。
 
-## 当前进度（2026-11-17）
+## 当前进度（2026-11-18）
 
 已完成并通过：
 
@@ -43,6 +43,7 @@ data/         不随仓库提供（见 DATA.md）：清洗后订单、距离矩�
 - `T004` 空间分辨率：300 m 步行半径小于 426 m 格距，旧机制从未生效；修复仿真器“借车不还”bug 后，450 m 下未满足出行 5.84%（旧车队）/ 3.51%（新车队）。
 - `T005` Q1 验证：完整模型 KS 0.098（旧 0.196）；距离解释大部分，吸引项增益 0.07 nats / 3.3 pp；k=5 聚类不稳定（ARI 0.665，最小 0.306）。
 - `T013` 合规：AI 使用报告五要素齐全、A7 改写、参考文献 23→32、32/32 引用完整。
+- `T015` 仓库可移植性：`code/` 绝对路径清零；新增 `build_dist_matrix.py`（重建矩阵与原文件逐位相同）与 `run_all.py`。
 
 待用户决定后才能继续：
 
@@ -54,7 +55,7 @@ data/         不随仓库提供（见 DATA.md）：清洗后订单、距离矩�
 
 1. **数据**：按 [DATA.md](DATA.md) 取得 2017 年 5 月订单文件，放入 `data/raw/`。
 2. **环境**：Python 3.11（numpy / pandas / scipy / scikit-learn / pyarrow / matplotlib），Gurobi 13，XeLaTeX（TeX Live 2026）。
-3. **运行顺序**：在项目根目录依次运行 `code/00_prepare.py` → `04_*` → `10_q1_model.py` → `11_q1_extra.py` → `20_q2_diag.py` → `21_q2_opt.py` → … → `95_numbers.py`。后面的脚本读取前面的输出（`q1_params.json`、`q2_state.npz` 等）；`lib.py` 以自身位置解析 `data/` 与 `figs/`，不依赖当前目录。
+3. **运行顺序**：先跑 `code/00_prepare.py --raw data/raw/<orders>.csv`（可用 `01`–`04` 做诊断），再用 `python code/run_all.py` 按 10 → 95 顺序执行；`run_all.py --dry-run` 只打印顺序。后面的脚本读取前面的输出（`q1_params.json`、`q2_state.npz` 等）；`lib.py` 以自身位置解析 `data/` 与 `figs/`，不依赖当前目录。
 4. **论文**：`cd paper && xelatex main.tex` 两遍。
 
 ## 已知限制

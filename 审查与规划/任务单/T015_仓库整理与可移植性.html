@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T015 仓库整理与可移植性</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code,pre{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace}
+code{padding:1px 4px;word-break:break-all}
+pre{padding:10px 12px;overflow-x:auto;line-height:1.5}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T015 · 仓库整理与可移植性</h1>
+<p class="meta">下达：2026-11-17　·　前置：无（与 B 阶段并行）　·　预计 0.3 天　·　为 GitHub 发布做准备</p>
+
+<h2>背景</h2>
+<p>要把工作区发布到 GitHub，先要能“从零重建”。现在有四处硬伤：</p>
+<ol>
+<li><code>code/00_prepare.py:9</code> 读 <code>C:\Users\Administrator\Desktop\…\2026_CQU_MCM_Problem_C_DATA.csv</code>，换台机器就断；<code>01</code>–<code>04</code> 也各有一到两处绝对路径。</li>
+<li><code>data/dist_matrix.npy</code>（106 MB）在仓库里被引用，但生成它的脚本不在 <code>code/</code> 内——别人无法重建。</li>
+<li><code>code/04_behaviour.py:62</code> 把结果写到旧的绝对路径 <code>D:\code\mcm\2026CQU_C\data\…</code>，在本机也会写错地方。</li>
+<li><code>README.md</code> / <code>DATA.md</code> 里声称的复现步骤与脚本实际名字对不上（<code>01_geo.py</code>、<code>02_cells.py</code> 并不存在）。</li>
+</ol>
+
+<h2>要解决的问题</h2>
+<p>在一台只有本仓库和原始 CSV 的机器上，能否只改一个路径变量就重建全部派生文件？</p>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li><strong>去绝对路径</strong>：<code>00</code>–<code>04</code> 全部改用 <code>code/lib.py</code> 的 <code>DATA</code>/<code>FIG</code>；<code>00_prepare.py</code> 增加 <code>--raw</code> 参数（默认 <code>data/raw/*.csv</code>）和 <code>--out</code> 参数。</li>
+<li><strong>补 dist_matrix 构建脚本</strong>：新建 <code>code/build_dist_matrix.py</code>，从 <code>cells.parquet</code> 的格子中心算球面距离，写 <code>data/runs/T015/dist_matrix.npy</code>；与现有 <code>data/dist_matrix.npy</code> 比较 shape、dtype、最大绝对差、是否逐位相同。</li>
+<li><strong>修 04 的输出路径</strong>：改到 <code>DATA</code>，并且只在 <code>--force</code> 时覆盖已有文件。</li>
+<li><strong>补一个 <code>code/run_all.py</code></strong>（可选但推荐）：按编号顺序调用 10→95，任一失败即停并打印失败脚本名；不自动运行 00–04（数据准备另行）。</li>
+<li><strong>保持结果不变</strong>：只改路径与新增脚本，不改任何计算逻辑；用现有 <code>data/</code> 只读校验，不覆盖 <code>trips.parquet</code>、<code>dist_matrix.npy</code>。</li>
+</ol>
+</td><td>
+<ol>
+<li>不重跑 Q1–Q5，不改任何模型参数或结果数字。</li>
+<li>不覆盖 <code>data/</code> 现有文件；新产物只写 <code>data/runs/T015/</code>。</li>
+<li>不碰 <code>paper/</code>、<code>审查与规划/</code>、<code>review/</code>。README/DATA 的最终措辞由指导方改。</li>
+<li>不处理 <code>data/</code> 的入库问题（已决定排除）。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>验收标准</h2>
+<ol>
+<li><code>grep -rn "C:\\\\Users\|D:\\\\code" code/</code> 结果为 0（不含 <code>__pycache__</code>）。</li>
+<li><code>python -I code/00_prepare.py --help</code> 可用；用 <code>--out data/runs/T015/trips_check.parquet</code> 跑一次，行数 3,214,096、列名与现有表一致；不触碰 <code>data/trips.parquet</code>。</li>
+<li><code>build_dist_matrix.py</code> 的输出与现有矩阵：shape (5263, 5263)、dtype float32、max abs diff 给出；若逐位相同，给 SHA-256。</li>
+<li><code>run_all.py</code> 的 dry-run（只打印将执行的顺序）与失败即停逻辑给出；不实际全跑。</li>
+<li>现有 <code>data/</code>、<code>paper/</code> 哈希与 T013 结束时一致（除 <code>data/runs/T015/</code>）。</li>
+<li>自检 1–10 全过；<code>notes</code> 写未测分支（例如 Windows 以外的路径、CSV 编码）。</li>
+</ol>
+
+<h2>只读区与交付</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果写 <code>data/runs/T015/</code>。交付 <code>交付/T015_delivery.json</code>，完成后 SendMessage 首行：<code>T015 已交付：交付/T015_delivery.json</code>。</p>
+
+<div class="box warn">
+<p><strong>为什么现在做：</strong>仓库一公开，<code>00_prepare.py</code> 里的桌面路径就会跟着公开，而且任何人克隆后都无法复现。这个任务不依赖 B4，可以在等决定时先做。</p>
+</div>
+
+</main>
+</body>
+</html>

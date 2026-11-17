@@ -1,8 +1,11 @@
 """Step 2: spatial/temporal structure -> choose zoning, check sampling, fleet estimate."""
+import os
 import numpy as np, pandas as pd
+from lib import DATA
+
 pd.set_option("display.width", 220)
 
-df = pd.read_parquet(r"D:\code\mcm\2026CQU_C\data\trips.parquet")
+df = pd.read_parquet(os.path.join(DATA, "trips.parquet"))
 df = df[(df.start_lat > 35) & (df.start_lon > 110) &
         (df.end_lat > 35) & (df.end_lon > 110)].copy()
 print("after dropping out-of-city records:", len(df))

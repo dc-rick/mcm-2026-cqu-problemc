@@ -26,18 +26,18 @@
 | 文件 | 生成方式 | 说明 |
 |---|---|---|
 | `cells.parquet` | 空间重建脚本 | 5,263 个 0.005° 格子的索引与中心坐标 |
-| `dist_matrix.npy` | **构建脚本未入库**（历史产物） | 格子中心距离矩阵，106 MB |
+| `dist_matrix.npy` | `code/build_dist_matrix.py` | 格子中心距离矩阵，106 MB；投影 km 坐标下的欧氏距离，对角线为 0.35/√2 km |
 | `q1_params.json` | `code/10_q1_model.py` | Q1 五带 β 与对数似然 |
 | `q2_state.npz` / `q2_solution.npz` | `code/20_q2_diag.py` / `code/21_q2_opt.py` | Q2 初值与 LP 解 |
 | `user_features.parquet` / `user_seg.parquet` | `code/11_q1_extra.py` | 用户特征与 k=5 分段 |
 | `runs/T00x/` | 各任务脚本 | 每个任务的中间结果与复算证据 |
 
-已知缺口（已登记为问题 L9）：`dist_matrix.npy` 的构建脚本不在 `code/` 内，`00_prepare.py` 与 `01`–`04` 仍读取本机绝对路径。这两点在 `T015`（仓库整理）中修复，修复前“从原始数据一键重建”尚不成立。
+说明：`dist_matrix.npy` 由 `code/build_dist_matrix.py` 重建，2026-11-18 已核对与仓库外原文件逐位相同（SHA-256 `4e3259f0…bceb97`）。`00_prepare.py` 与 `01`–`04` 已去除本机绝对路径（T015）。
 
 ## 重建顺序
 
 ```bash
-python -I code/00_prepare.py      # 原始 CSV -> data/trips.parquet
+python -I code/00_prepare.py --raw data/raw/<orders>.csv   # -> data/trips.parquet
 python -I code/10_q1_model.py     # -> q1_params.json
 python -I code/11_q1_extra.py     # -> user_features.parquet, user_seg.parquet
 python -I code/20_q2_diag.py      # -> q2_state.npz

@@ -1,13 +1,24 @@
 """Step 0: load the raw Mobike CSV, decode geohash -> lat/lon, cache as parquet.
 
 Raw file: 2026_CQU_MCM_Problem_C_DATA.csv (3.21 M trips, 2017-05-10..2017-05-24, Beijing)
+
+Usage:
+    python code/00_prepare.py --raw data/raw/*.csv --out data/trips.parquet
 """
+import argparse
+import glob
+import os
+import sys
+
 import numpy as np
 import pandas as pd
-import os
 
-RAW = r"C:\Users\Administrator\Desktop\2026年重庆大学数学建模秋季赛题目\2026_CQU_MCM_Problem_C_DATA.csv"
-OUT = r"D:\code\mcm\2026CQU_C\data\trips.parquet"
+# Make ``python -I code/00_prepare.py`` work: -I drops the script directory.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from lib import DATA
+
+DEFAULT_RAW = os.path.join(DATA, "raw", "*.csv")
+DEFAULT_OUT = os.path.join(DATA, "trips.parquet")
 
 _B32 = "0123456789bcdefghjkmnpqrstuvwxyz"
 _MAP = {c: i for i, c in enumerate(_B32)}
@@ -37,10 +48,43 @@ def decode_geohash_np(gh_in: np.ndarray):
     return lat, lon, lat_err, lon_err
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Decode the raw Mobike order CSV into a parquet table.")
+    parser.add_argument(
+        "--raw", default=DEFAULT_RAW,
+        help="raw CSV file or glob (default: %(default)s)")
+    parser.add_argument(
+        "--out", default=DEFAULT_OUT,
+        help="output parquet (default: %(default)s)")
+    parser.add_argument(
+        "--force", action="store_true",
+        help="overwrite an existing output file")
+    return parser.parse_args()
+
+
+def resolve_raw(pattern):
+    matches = sorted(glob.glob(pattern))
+    if not matches:
+        raise SystemExit("no CSV matched --raw %r" % pattern)
+    if len(matches) > 1:
+        raise SystemExit("--raw matched several files; pass one explicitly:\n  "
+                         + "\n  ".join(matches))
+    return matches[0]
+
+
 def main():
+    args = parse_args()
+    out = os.path.abspath(args.out)
+    if os.path.exists(out) and not args.force:
+        raise SystemExit("%s exists; use --out for a new file or --force to "
+                         "overwrite" % out)
+    raw = resolve_raw(args.raw)
+    print("raw:", raw)
+    print("out:", out)
     print("reading csv ...")
     df = pd.read_csv(
-        RAW,
+        raw,
         dtype={"orderid": "int64", "userid": "int64", "bikeid": "int64",
                "biketype": "int8", "geohashed_start_loc": "str",
                "geohashed_end_loc": "str"},
@@ -59,9 +103,9 @@ def main():
         df[f"{tag}_lat_err"] = lae.astype("float32")
         df[f"{tag}_lon_err"] = loe.astype("float32")
 
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    df.to_parquet(OUT, index=False)
-    print("wrote", OUT, df.shape)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    df.to_parquet(out, index=False)
+    print("wrote", out, df.shape)
     print(df[["start_lat", "start_lon", "end_lat", "end_lon"]].describe())
 
 

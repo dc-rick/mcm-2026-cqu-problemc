@@ -1,9 +1,11 @@
 """Step 3: quick diagnostic maps (density, morning/evening net flow) to guide zoning."""
+import os
 import numpy as np, pandas as pd, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from lib import DATA, FIG
 
-df = pd.read_parquet(r"D:\code\mcm\2026CQU_C\data\trips.parquet")
+df = pd.read_parquet(os.path.join(DATA, "trips.parquet"))
 df = df[(df.start_lat > 39.4) & (df.start_lon > 115.8) & (df.start_lat < 40.4) & (df.start_lon < 117.0)]
 df["hour"] = df.starttime.dt.hour
 df["date"] = df.starttime.dt.normalize()
@@ -36,7 +38,9 @@ for a, hrs, t in [(ax[1], (7, 8, 9), "morning 7-9"), (ax[2], (17, 18, 19), "even
                   extent=[LON0, LON1, LAT0, LAT1])
     plt.colorbar(im, ax=a); a.set_title(f"net arrivals - starts, {t}")
     a.set_xlabel("lon"); a.set_ylabel("lat")
-plt.tight_layout(); plt.savefig(r"D:\code\mcm\2026CQU_C\figs\diag_maps.png", dpi=110)
+plt.tight_layout()
+os.makedirs(FIG, exist_ok=True)
+plt.savefig(os.path.join(FIG, "diag_maps.png"), dpi=110)
 print("saved fig")
 
 s = core[core.hour.isin((7, 8, 9))]

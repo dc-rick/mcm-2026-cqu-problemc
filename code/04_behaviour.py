@@ -1,7 +1,16 @@
 """Step 4: behavioural structure - bike continuity, gaps, distance-by-hour, user segments."""
+import argparse
+import os
 import numpy as np, pandas as pd
+from lib import DATA
+
+parser = argparse.ArgumentParser(description="Behavioural diagnostics and user features.")
+parser.add_argument("--force", action="store_true",
+                    help="overwrite an existing data/user_features.parquet")
+args = parser.parse_args()
+
 pd.set_option("display.width", 220)
-df = pd.read_parquet(r"D:\code\mcm\2026CQU_C\data\trips.parquet")
+df = pd.read_parquet(os.path.join(DATA, "trips.parquet"))
 df = df[(df.start_lat > 39.4) & (df.start_lon > 115.8) & (df.start_lat < 40.4) & (df.start_lon < 117.0)].copy()
 df["hour"] = df.starttime.dt.hour
 df["date"] = df.starttime.dt.normalize()
@@ -59,5 +68,10 @@ feat = pd.DataFrame({
     "n_days": g.date.nunique(),
 })
 print(feat.describe().round(3).to_string())
-feat.to_parquet(r"D:\code\mcm\2026CQU_C\data\user_features.parquet")
+out = os.path.join(DATA, "user_features.parquet")
+if os.path.exists(out) and not args.force:
+    print("exists, not overwriting:", out, "(use --force to overwrite)")
+else:
+    feat.to_parquet(out)
+    print("wrote", out)
 print("\ncorrelation matrix:\n", feat.corr().round(2).to_string())

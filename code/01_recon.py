@@ -1,7 +1,9 @@
 """Step 1: exploratory facts about the dataset (all numbers used in the paper come from here)."""
+import os
 import numpy as np, pandas as pd
+from lib import DATA
 
-df = pd.read_parquet(r"D:\code\mcm\2026CQU_C\data\trips.parquet")
+df = pd.read_parquet(os.path.join(DATA, "trips.parquet"))
 pd.set_option("display.width", 200)
 
 df["date"] = df.starttime.dt.date
