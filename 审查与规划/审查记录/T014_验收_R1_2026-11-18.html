@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T014 验收：打回 R1（仅记号消歧一句；其余全过）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T014 验收：打回 R1（只改记号消歧那一句；其余全部通过）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T014_delivery.json</code>（commit 487cfb9，本地）　·　结论：<strong>打回 R1</strong>，唯一问题是一句记号说明与论文自身用法不符</p>
+
+<div class="box ok">
+<p><strong>其余九项全部独立复核通过。</strong></p>
+<ul>
+<li><strong>L1（字体）</strong>：<code>main.tex</code> 已改 <code>TeX Gyre Termes</code>，数学字体未动。我独立重编译两遍：30 页、正文 24（3–26）、undefined 0、overfull 0；PDF 文本层 <strong>U+037E = 0</strong>、分号 129、<code>??</code> 0；PDF 字体确为 Termes（Regular/Bold/Italic/Math）。</li>
+<li><strong>L4（目录）</strong>：目录现为 “10 Evaluation and Conclusions 24 / References 27 / Report on Use of AI Tools 29”，References 条目页号与正文实际页码一致。</li>
+<li><strong>L5（编号）</strong>：Team Control Number 仍为空白 <code>\rule{3.2cm}{0.4pt}</code>，未填任何编号；待用户确认 13648。</li>
+<li><strong>L11（改名）</strong>：<code>git mv 2026CQU_MCM_ProblemC.pdf paper_snapshot_2026-11-11.pdf</code>（R100，内容未变）；DATA.md 已改为新名并写 “原题不随仓库分发”。仓库内旧名只剩交付脚本与计划文档中的核对文本，正文与 DATA.md 无残留。</li>
+<li><strong>L10（路径）</strong>：路径拼接形态 <code>(DATA|FIG|ROOT) + r"</code> = 0；11 个文件 40 处改为 <code>os.path.join</code>，全部 <code>import os</code> 齐全，<code>py_compile</code> 11/11 通过；逐段读 diff，全部是路径表达式，未动任何计算。残留 36 行字面 <code>r"\"</code> 我逐文件核过：27 行在 <code>audit/t003_numbers.py</code>、3 行 <code>t013_refs.py</code>、各 1 行 <code>t013_delivery/validate</code>、4 行 <code>t014_delivery.py</code>，全是把 LaTeX 命令当正则的模式，与路径无关，<strong>不需要改</strong>；另 3 处 <code>+ "\\</code> 是换行拼接与一个 deliberately 的等值断言，也不是路径。</li>
+<li><strong>数字不动</strong>：959fe36→487cfb9 的 tex 数字 token 多重集比较，<code>main.tex</code>、<code>references.tex</code> 完全相同；<code>sec2</code> 只新增 Q1/Q2/Q3/Q5/§3（记号句），没有任何数据值被改。</li>
+<li><strong>编译与页码</strong>：独立复现 30 页 / 24 正文 / undefined 0 / overfull 0；仓库 <code>paper/main.pdf</code> 文本层与字体确认是 T014 版本。</li>
+<li><strong>记账</strong>：<code>交付/T012_delivery.json</code> 的 status 已改 <code>accepted_r1</code>。</li>
+<li><strong>范围</strong>：改动只有 paper 三个 tex + main.pdf、DATA.md、11 个脚本 + 生成器、根 PDF 改名、两份交付 JSON；<code>data/</code> 既有文件零改动（runs/T014 被 gitignore），<code>审查与规划/</code> 零改动。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><strong>R1｜唯一问题：sec2 的记号消歧句与论文自身用法不符。</strong>现文写的是 “$d$ is a distance in Q1 and hourly departures in Q2”。但 Q2 的目标函数里 <code>d_{ij}</code> 就是弧长（<code>sec5_q2.tex</code> 式 (q2obj) 的 <code>c_km Σ d_{ij} m_{ijt}</code>），与 <code>d_{zt}</code> 的出发量同节并存；这句话会让读者以为 $d$ 在 Q2 只表示出发量，恰好是 L2 要消除的那种歧义。</p>
+<p><strong>改为（任务单里已给出的精确版）：</strong>“Symbols are local: $d_{ij}$ and $d_{jc}$ are distances, while $d_{zt}$ is an hourly departure; $w$ is the Q2 service penalty, $w_e$ the Q3 incremental acceptance weight and $w_c$ a parking capacity; $n$ is a platform count in Q5, a sample size in <code>\S\ref{sec:data}</code> and an observed OD count in <code>\S\ref{sec:q1}</code>.”</p>
+<p>只改这一句；不改任何公式、表格、数字、图注；不新增符号表行。</p>
+</div>
+
+<h2>R1 验收标准</h2>
+<ol>
+<li>sec2 记号段只替换上述一句；其余文件不动。</li>
+<li>xelatex 两遍：总页 30、正文 24（3–26）、undefined 0、overfull 0、U+037E 0；目录 References 仍在第 27 页。</li>
+<li>重交 <code>交付/T014_delivery.json</code>：<code>status</code> 写 “T014 R1 已交付”；<code>checks.3_l2_notation_disambiguation</code> 的说明里引用新句；单独 commit，不 push。</li>
+</ol>
+
+<div class="box">
+<p><strong>裁定与说明。</strong>这不是措辞偏好：L2 的验收标准是“重号在文中可辨”，而现句把 <code>d_{ij}</code>（Q2 弧长）漏掉了，等于在消歧段里制造了新歧义。改完后 T014 即接受，随即推送最终版并关闭 T014。</p>
+</div>
+
+</main>
+</body>
+</html>
