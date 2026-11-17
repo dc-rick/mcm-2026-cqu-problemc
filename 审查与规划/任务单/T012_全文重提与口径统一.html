@@ -51,9 +51,9 @@ li{margin:3px 0}
 <tr><td><code>data/runs/T002/</code></td><td>p 实测 0.185（0.13–0.20）、重采样偏差表</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T004/</code></td><td>R=450 未满足 5.84%/3.51%、R=600 2.35%/1.28%、更细网格 2.07%</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T005/</code></td><td>四模型样本外对比、KS 0.098、k 稳定性、return_share</td><td><span class="tag ok">已冻结</span></td></tr>
-<tr><td><code>data/runs/T006/</code>–<code>T010/</code></td><td>Q1→Q2 接口、Q2 重解（T007 已扩围：H13 到达守恒、H14 贪心运力、H15 夜间占比）、Q3 主方案（H16 候选池）、Q4、Q5 的新数字</td><td><span class="tag wait">未产生</span></td></tr>
-<tr><td><code>data/runs/T011/</code></td><td>按来源分解的不确定性区间（识别参数 / 假设负荷 / 文献值）</td><td><span class="tag wait">未产生</span></td></tr>
-<tr><td>用户决定 B7</td><td>p 主值取 0.128（绝对量标上界）还是 0.185（全部重算）</td><td><span class="tag bad">待定</span></td></tr>
+<tr><td><code>data/runs/T006/</code>–<code>T009/</code></td><td>T006 Q1→Q2/Q4 接口、T007 Q2 守恒重解（H13/H14/H15）、T009 Q4 非零库存（M4/M8）；T008 Q3 池在跑</td><td><span class="tag ok">T006/T007/T009 已通过</span></td></tr>
+<tr><td><code>T010</code> / <code>T011</code></td><td>Q5 压力情景、按来源分解的不确定性</td><td><span class="tag bad">4 天窗口砍掉/并入本文</span></td></tr>
+<tr><td>用户决定 B7</td><td>p 主值 0.128（绝对量标上界），0.185 与 0.13–0.20 写进 §3.3</td><td><span class="tag ok">已决定</span></td></tr>
 </tbody></table></div>
 
 <h2>2. 必须销掉的账（现有清单）</h2>
@@ -130,12 +130,44 @@ li{margin:3px 0}
 <h2>3. 新增内容（T006–T011 落地后补写）</h2>
 <ul>
 <li><strong>T006</strong>：§5 增加“Q1 生成 OD 驱动”的主结果与观测 OD 对照，说明两者差异；摘要同步一句。</li>
-<li><strong>T007</strong>：§5.4 增加回家/夜间约束后的成本与方案对比；H5/H6 的措辞一并修正。</li>
+<li><strong>T007</strong>：§5.4 改为“到达守恒 + u≤dep”的重解结果、贪心运力修正与夜间占比；明确未加逐区回家约束与夜间成本（4 天窗口砍掉），不得暗示已优化夜间。</li>
 <li><strong>T008</strong>：§6 重写主方案与下界情景，摘要的节省率换成新值。</li>
 <li><strong>T009</strong>：§7 与 §9 的覆盖数字同源；450 m 阈值说明是现状值（B5）。</li>
 <li><strong>T010</strong>：§8 双平台结论与新仿真一致。</li>
 <li><strong>T011</strong>：新增“不确定性按来源分解”小节或表：识别参数 / 假设负荷 / 文献值三类分别给区间；图 4d 与灵敏度图同步。</li>
 </ul>
+
+<div class="box">
+<p><strong>已锁定的新数字（2026-11-18，T006/T007/T009 验收后）：</strong>下表是本次重提的唯一数字源。论文里任何与此表不一致的数一律以表为准；表里标“待 T008”的，T008 交付前不得动 §6 的数字。</p>
+</div>
+<div class="tw"><table>
+<thead><tr><th style="width:26%">量</th><th>新值</th><th style="width:18%">来源</th></tr></thead>
+<tbody>
+<tr><td>车队</td><td>495,540，区间 [484,754, 506,635]；343,638 降为 5/16 单日占用估计</td><td>T001R2</td></tr>
+<tr><td>抽样率 p</td><td>0.128 作保守上界；0.185（0.13–0.20）写进 §3.3；绝对量标上界</td><td>T002、B7</td></tr>
+<tr><td>Q1 OD 日流量</td><td>采样 274,357.43；全尺度 2,143,417.41（×1/0.128）</td><td>T006 <code>q1_vs_obs.json</code></td></tr>
+<tr><td>Q1 top-5</td><td>加权 0.4254933；五带 0.4755 / 0.3986 / 0.4575 / 0.4083 / 0.4547</td><td>T006</td></tr>
+<tr><td>Q1 同格</td><td>模型 12.83% vs 观测 8.89%（+3.94 pp）——写“高估”，不写“吻合”；旧的 9.5%/12.4% 作废，全文统一到这组</td><td>T006</td></tr>
+<tr><td>Q1 距离 KS</td><td>完整模型 0.098；旧 0.196 是简化模型口径</td><td>T005</td></tr>
+<tr><td>Q2 主结果（Q1，α=1，K=60）</td><td>moved 24,679.28；truck-km 5,529.85；unmet 0；dev 225.36；obj 82,194.80（含固定 36,000）</td><td>T007</td></tr>
+<tr><td>Q2 观测基线（α=1，K=60）</td><td>23,959.15 / 5,440.94 / 0 / 900.00 / 83,325.24</td><td>T007</td></tr>
+<tr><td>Q2 K 曲线</td><td>K=20：9,600 / 27,468.79 / 109,718.76；K=40：19,200 / 8,268.79 / 82,932.50；K=80：24,752.70 / 176.41 / 93,427.95</td><td>T007</td></tr>
+<tr><td>Q2 α&lt;1（K=80）</td><td>α=0.8：42,183.82 / unmet 447.52 / dev 269.14 / obj 130,499.69；α=0.6：42,884.48 / 59,517.66 / 17,274.56 / 540,716.34；全网格未跑，不得引用其他点</td><td>T007</td></tr>
+<tr><td>Q2 守恒</td><td>全城逐时残差 ≤3.23e-9；区级 ≤3.97e-10；u−dep 0</td><td>T007</td></tr>
+<tr><td>Q2 贪心</td><td>峰值 623.17 辆/h（上限 2,400）；来源比 ≤40；零违规</td><td>T007</td></tr>
+<tr><td>Q2 夜间</td><td>21:00–06:00 占搬运 39.34%、卡车公里 37.12%；“白天几乎不动/night shift”作废</td><td>T007</td></tr>
+<tr><td>Q3</td><td><strong>待 T008</strong>；旧 34.9%、r*=1.20、q=115,385 全部作废；TRUCK_UNIT 主 3.3305、下界 1.8718（旧 3.478 作废）</td><td>T008</td></tr>
+<tr><td>Q4 膝点（主方案）</td><td>705 围栏 / 覆盖 76.86% / 容量 491,692（meas343）/ 621,004（fleet495）</td><td>T009</td></tr>
+<tr><td>Q4 626 点</td><td>626 / 72.67% / 458,516 / 582,977——只作前沿点，不再作主方案</td><td>T009</td></tr>
+<tr><td>Q4 全格覆盖（诊断）</td><td>Q1 2,364 / 100% / 734,345 / 884,585；obs 2,423 / 747,816 / 905,308</td><td>T009</td></tr>
+<tr><td>Q4 obs 膝点</td><td>687 / 78.43% / 532,727 / 680,209</td><td>T009</td></tr>
+<tr><td>Q4 重叠</td><td>Q1 选中 2,020/44/0、多重度 1.0213、重复容量 2.80%；obs 1,965/45/0、3.09%；旧 1,799/37/0、1.03 是更小布局</td><td>T009</td></tr>
+<tr><td>Q4 留出验证</td><td>格相关 0.804；L1 0.423；top-100 重合 32/100（要如实写）</td><td>T009</td></tr>
+<tr><td>Q4 目标函数</td><td>容量 + λ×围栏数，λ=150 是换汇率不是造价；λ=0 给 501/64.5%，λ=300 仍 705</td><td>T009、L12</td></tr>
+<tr><td>Q5</td><td>24 次全 0 失单只能作条件陈述；不得写“可用性中性”</td><td>M9、T010 砍</td></tr>
+<tr><td>Q2 仿真</td><td>三策略全 0 失单；不得写“LP 降低失单”，只能按成本/卡车公里/日末偏差比较</td><td>M10</td></tr>
+<tr><td>Q1 时长</td><td>11.5 km/h、1.35 绕行、+1 分钟是假设；删 “matches observed”</td><td>H17</td></tr>
+</tbody></table></div>
 
 <h2>4. 验收标准</h2>
 <ol>
@@ -156,7 +188,7 @@ li{margin:3px 0}
 </ul>
 
 <div class="box warn">
-<p><strong>下达条件：</strong>T006–T011 全部通过、B7 已决定。此前本清单可继续增补，但不动 <code>paper/</code>，避免半新半旧。</p>
+<p><strong>下达条件：</strong>T006/T007/T009 已通过，B7 已决定；T008 交付后即可下达（T010/T011 砍掉）。T008 未交前不动 <code>paper/</code>，避免半新半旧。</p>
 </div>
 
 </main>
