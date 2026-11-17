@@ -191,10 +191,13 @@ def solve(alpha=1.0, K=60, time_limit=300, integer=False, verbose=False,
     res["I"] = np.array([[I[z_, t].X for t in range(T)] for z_ in range(NZ)])
     res["U"] = np.array([[u[z_, t].X for t in range(T)] for z_ in range(NZ)])
     XM = np.zeros((T, NZ, NZ))
+    MK = np.zeros((T, NZ, NZ))
     for (i, j) in ARCS:
         for t in range(T):
             XM[t, i, j] = x[i, j, t].X
+            MK[t, i, j] = mt[i, j, t].X
     res["XM"] = XM
+    res["MK"] = MK
     return res
 
 
@@ -223,7 +226,8 @@ def main():
     if not r:
         return 1
     if args.out or args.plan_out:
-        arrays = {k: r.pop(k) for k in ("X", "M", "I", "U", "XM") if k in r}
+        arrays = {k: r.pop(k) for k in ("X", "M", "I", "U", "XM", "MK")
+                  if k in r}
         if args.out:
             os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
             with open(args.out, "w", encoding="utf-8") as handle:
