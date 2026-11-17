@@ -1,0 +1,784 @@
+{
+ "task": "T008",
+ "title": "Q3 executable relocation pool, q(r), r* and savings",
+ "date": "2026-11-18",
+ "status": "delivered",
+ "checks": {
+  "1_pool_arrays_and_edges": true,
+  "2_same_cell_and_target_hour": true,
+  "3_duplicate_1_09_and_2_93": true,
+  "4_q_curve_and_optimum": true,
+  "5_feasibility_at_r_star": true,
+  "6_targeted_saving_and_interval": true,
+  "7_public_push_and_free_rider": true,
+  "8_truck_units_and_text_code": true,
+  "9_parameter_sensitivity": true,
+  "10_readonly_scope_outputs_no_abs": true
+ },
+ "settings": {
+  "demand": "observed typical days (7 weekdays), full scale 1/0.128",
+  "R_m": 0.45,
+  "need_definition": "Delta_c = max_t max(0, dep[c,t]-arr[c,t]); h_c = argmax_t (dep-arr); N=sum Delta_c",
+  "pool_index": "(target cell c, target deficit hour h_c)",
+  "source_cap": "A[j,h_c] = full-scale arrivals at j in h_c",
+  "acceptance": {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "incremental": true
+  },
+  "truck_unit_main": 3.3305185482504633,
+  "truck_unit_lower": 1.871804950736993,
+  "truck_unit_source": "T007 q1 alpha=1 K=60: main 82,194.7968 / 24,679.2791; lower 46,194.7968 / 24,679.2791 (fixed 600*60 removed). Old 3.478 is obsolete.",
+  "provisional": []
+ },
+ "pool": {
+  "naive_pair_units": 334147.3214285714,
+  "distinct_units": 307187.5000000014,
+  "duplicate_ratio": 1.087763406481611,
+  "same_cell_excluded_units": 113977.67857142858,
+  "same_cell_share": 0.2543434947200638,
+  "n_edges": 8163
+ },
+ "pool_audit": {
+  "R_m": 0.45,
+  "n_cells": 5263,
+  "n_targets": 5188,
+  "need_total": 216343.75,
+  "n_edges": 8163,
+  "same_cell_excluded_units": 113977.67857142858,
+  "same_cell_share_of_naive_pair": 0.34110008149741483,
+  "same_cell_share_of_naive_plus_same": 0.2543434947200638,
+  "old_34_105_reproduced": true,
+  "naive_pair_units": 334147.3214285714,
+  "distinct_units": 307187.5000000014,
+  "duplicate_ratio": 1.087763406481611,
+  "old_1_09_reproduced": true,
+  "old_2_93_reproduced": true,
+  "naive_over_old_113936": 2.9327633182538566,
+  "duplicate_source": "a trip group (j,h) can be within R of several target cells; the naive pair pool counts it once per target.",
+  "duplicate_resolution": "the LP constrains sum_c x[j,c,h] <= A[j,h], so each source-hour trip group is used at most once; q(r) is therefore <= distinct_units.",
+  "old_2_93_note": "the old 2.93 ratio compared the pair pool with 113,936 trips counted under each source's own deficit hour; the corrected target-hour pool has 307,187.5 distinct units and a 1.0878 pair ratio.",
+  "tstar_counts": [
+   6,
+   8,
+   4,
+   3,
+   3,
+   55,
+   431,
+   1323,
+   702,
+   144,
+   70,
+   237,
+   178,
+   99,
+   56,
+   70,
+   142,
+   582,
+   490,
+   222,
+   153,
+   129,
+   62,
+   19
+  ],
+  "audit_at_r_star": {
+   "r": 1.76,
+   "q": 95565.81547068349,
+   "q_over_distinct": 0.31109929756478716,
+   "max_source_usage_ratio": 1.0000000000000002,
+   "max_target_usage_ratio": 1.0000000000000002,
+   "max_hourly_offer_sum": 59380.05531104347,
+   "one_reroute_per_trip": true
+  },
+  "feasibility": {
+   "q_le_distinct": true,
+   "source_usage_le_arrivals": true,
+   "target_usage_le_need": true,
+   "same_cell_edges": 0
+  },
+  "lp_status_full_curve": {
+   "optimal": 13800,
+   "other": 0
+  }
+ },
+ "targeted": {
+  "r_star": 1.76,
+  "q_star": 95565.81547068334,
+  "share_of_need": 0.4417313440794261,
+  "bill": 168195.8352284027,
+  "free_rider_bill": 0.0,
+  "truck_residual": 402253.15116926923,
+  "total": 570448.986397672,
+  "all_truck": 720536.8721730611,
+  "saving": 0.20830007675074336,
+  "marginal_cost_at_star": 3.3462806025869742,
+  "unit": 3.3305185482504633
+ },
+ "public_push": {
+  "r_star": 0.0,
+  "q_star": 0.0,
+  "share_of_need": 0.0,
+  "bill": 0.0,
+  "free_rider_bill": 0.0,
+  "truck_residual": 720536.8721730611,
+  "total": 720536.8721730611,
+  "all_truck": 720536.8721730611,
+  "saving": 0.0,
+  "marginal_cost_at_star": null,
+  "unit": 3.3305185482504633
+ },
+ "public_push_positive_reward": {
+  "r_star": 0.01,
+  "q_star": 167.0215218021638,
+  "share_of_need": 0.0007720191676540866,
+  "bill": 1.6702152180216379,
+  "free_rider_bill": 1000.4129464285714,
+  "truck_residual": 719980.603896742,
+  "total": 720982.6870583886,
+  "all_truck": 720536.8721730611,
+  "saving": -0.0006187259841163861,
+  "unit": 3.3305185482504633
+ },
+ "public_push_at_r_1_2": {
+  "r": 1.2,
+  "q": 55600.29448529397,
+  "bill": 66720.35338235275,
+  "free_rider_bill": 120049.55357142857,
+  "truck_residual": 535359.0601016016,
+  "total": 722128.967055383,
+  "saving": -0.0022095952945757613,
+  "unit": 3.3305185482504633
+ },
+ "public_push_old_unit_3_478": {
+  "note": "B3's historical ~2.1% used c_truck=3.478 and a non-flow pool; with the corrected pool but the old unit the public-push saving is shown here.",
+  "r_star": 1.3,
+  "q_star": 63083.77369165745,
+  "share_of_need": 0.29159046051322235,
+  "bill": 82008.90579915469,
+  "free_rider_bill": 130053.68303571429,
+  "truck_residual": 533038.1976004153,
+  "total": 745100.7864352843,
+  "all_truck": 752443.5625,
+  "saving": 0.009758573839503959,
+  "marginal_cost_at_star": 2.1519772917984774,
+  "unit": 3.478
+ },
+ "free_rider": {
+  "units": 100041.29464285714,
+  "definition": "existing non-same-cell arrivals into target cells in their deficit hours (arx[h_c,c]); these riders would be paid under a public push without changing their destination.",
+  "bill_at_public_optimum": 0.0,
+  "bill_at_positive_reward": 1000.4129464285714,
+  "bill_at_old_unit_optimum": 130053.68303571429,
+  "targeted_free_rider_bill": 0.0
+ },
+ "interval": {
+  "targeted_saving_min": 0.029674422897884578,
+  "targeted_saving_max": 0.3021631757454738,
+  "public_saving_min": 0.0,
+  "public_saving_max": 0.12302246701874742,
+  "r_star_min": 0.95,
+  "r_star_max": 2.15,
+  "q_star_min": 16648.20327763346,
+  "q_star_max": 112777.83874950674,
+  "sources": "7 acceptance parameter sets x {main, lower} truck unit"
+ },
+ "parameter_sensitivity": [
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 1.75,
+    "q_star": 94953.07691156931,
+    "share_of_need": 0.4388990988256851,
+    "bill": 166167.8845952463,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404293.88830562675,
+    "total": 570461.7729008731,
+    "all_truck": 720536.8721730611,
+    "saving": 0.20828233095077808,
+    "marginal_cost_at_star": 3.3823210604626754,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 720536.8721730611,
+    "total": 720536.8721730611,
+    "all_truck": 720536.8721730611,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.15,
+    "q_star": 51909.13932208843,
+    "share_of_need": 0.2399382432914675,
+    "bill": 59695.51022040169,
+    "free_rider_bill": 0.0,
+    "truck_residual": 307789.5183394249,
+    "total": 367485.0285598266,
+    "all_truck": 404953.3023110063,
+    "saving": 0.09252492457118888,
+    "marginal_cost_at_star": 1.9031557470075091,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 1.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 2.1,
+    "q_star": 44680.69261778025,
+    "share_of_need": 0.20652638505979606,
+    "bill": 93829.45449733853,
+    "free_rider_bill": 0.0,
+    "truck_residual": 571726.9966608665,
+    "total": 665556.451158205,
+    "all_truck": 720536.8721730611,
+    "saving": 0.07630479873853102,
+    "marginal_cost_at_star": 3.4105903415013916,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 720536.8721730611,
+    "total": 720536.8721730611,
+    "all_truck": 720536.8721730611,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 1.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.15,
+    "q_star": 16648.20327763346,
+    "share_of_need": 0.07695255017828553,
+    "bill": 19145.433769278476,
+    "free_rider_bill": 0.0,
+    "truck_residual": 373791.11299505614,
+    "total": 392936.5467643346,
+    "all_truck": 404953.3023110063,
+    "saving": 0.029674422897884578,
+    "marginal_cost_at_star": 1.9275106300197336,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 3.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 1.4,
+    "q_star": 112777.83874950674,
+    "share_of_need": 0.5212900245535484,
+    "bill": 157888.97424930942,
+    "free_rider_bill": 0.0,
+    "truck_residual": 344928.1883862291,
+    "total": 502817.1626355385,
+    "all_truck": 720536.8721730611,
+    "saving": 0.3021631757454738,
+    "marginal_cost_at_star": 3.4263402660904294,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 1.2,
+    "q_star": 97953.51339959168,
+    "share_of_need": 0.452767937135192,
+    "bill": 117544.21607951002,
+    "free_rider_bill": 120049.55357142857,
+    "truck_residual": 394300.8789294208,
+    "total": 631894.6485803593,
+    "all_truck": 720536.8721730611,
+    "saving": 0.12302246701874742,
+    "marginal_cost_at_star": 2.407300425501207,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 3.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.05,
+    "q_star": 83346.17838759554,
+    "share_of_need": 0.38524883842309077,
+    "bill": 87513.48730697532,
+    "free_rider_bill": 0.0,
+    "truck_residual": 248945.51298009642,
+    "total": 336459.00028707174,
+    "all_truck": 404953.3023110063,
+    "saving": 0.16914123587348984,
+    "marginal_cost_at_star": 1.9089165255912957,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.2,
+   "c0": 0.8,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 1.4,
+    "q_star": 102110.4048214864,
+    "share_of_need": 0.4719822265329431,
+    "bill": 142954.56675008096,
+    "free_rider_bill": 0.0,
+    "truck_residual": 380456.27494573715,
+    "total": 523410.8416958181,
+    "all_truck": 720536.8721730611,
+    "saving": 0.2735821553208405,
+    "marginal_cost_at_star": 3.4566103625227877,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 1.0,
+    "q_star": 75701.37722713179,
+    "share_of_need": 0.3499124759884757,
+    "bill": 75701.37722713179,
+    "free_rider_bill": 100041.29464285714,
+    "truck_residual": 468412.0311899935,
+    "total": 644154.7030599824,
+    "all_truck": 720536.8721730611,
+    "saving": 0.10600730103196299,
+    "marginal_cost_at_star": 2.035480569873933,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.2,
+   "c0": 0.8,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 0.95,
+    "q_star": 71766.51796350267,
+    "share_of_need": 0.33172447996996757,
+    "bill": 68178.19206532753,
+    "free_rider_bill": 0.0,
+    "truck_residual": 270620.3786897667,
+    "total": 338798.57075509423,
+    "all_truck": 404953.3023110063,
+    "saving": 0.16336385251923413,
+    "marginal_cost_at_star": 1.9119324625769805,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.5,
+   "c0": 0.8,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 2.15,
+    "q_star": 84996.01588640086,
+    "share_of_need": 0.39287483870646067,
+    "bill": 182741.43415576182,
+    "free_rider_bill": 0.0,
+    "truck_residual": 437456.0647360121,
+    "total": 620197.4988917739,
+    "all_truck": 720536.8721730611,
+    "saving": 0.1392564033241971,
+    "marginal_cost_at_star": 3.464895634200944,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 720536.8721730611,
+    "total": 720536.8721730611,
+    "all_truck": 720536.8721730611,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.5,
+   "c0": 0.8,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.3,
+    "q_star": 28528.011712818356,
+    "share_of_need": 0.13186427485341431,
+    "bill": 37086.41522666386,
+    "free_rider_bill": 0.0,
+    "truck_residual": 351554.42875227,
+    "total": 388640.8439789339,
+    "all_truck": 404953.3023110063,
+    "saving": 0.04028231956371198,
+    "marginal_cost_at_star": 1.887880788387945,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.4,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 1.65,
+    "q_star": 99332.18149560387,
+    "share_of_need": 0.45914051825210517,
+    "bill": 163898.0994677464,
+    "free_rider_bill": 0.0,
+    "truck_residual": 389709.199263771,
+    "total": 553607.2987315174,
+    "all_truck": 720536.8721730611,
+    "saving": 0.2316738808079345,
+    "marginal_cost_at_star": 3.4898056303802654,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 1.2,
+    "q_star": 68319.38638681544,
+    "share_of_need": 0.3157908947534442,
+    "bill": 81983.26366417854,
+    "free_rider_bill": 120049.55357142857,
+    "truck_residual": 492997.88860668207,
+    "total": 695030.7058422891,
+    "all_truck": 720536.8721730611,
+    "saving": 0.035398835667976525,
+    "marginal_cost_at_star": 2.1446780333271445,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.4,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.1,
+    "q_star": 60595.41196405435,
+    "share_of_need": 0.280088571840205,
+    "bill": 66654.95316045979,
+    "free_rider_bill": 0.0,
+    "truck_residual": 291530.5102047418,
+    "total": 358185.4633652016,
+    "all_truck": 404953.3023110063,
+    "saving": 0.11548946181919695,
+    "marginal_cost_at_star": 1.934495702047141,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 1.2,
+   "unit": "main",
+   "unit_value": 3.3305185482504633,
+   "targeted": {
+    "r_star": 1.9,
+    "q_star": 92948.40420947548,
+    "share_of_need": 0.42963295315661065,
+    "bill": 176601.9679980034,
+    "free_rider_bill": 0.0,
+    "truck_residual": 410970.48792312166,
+    "total": 587572.4559211251,
+    "all_truck": 720536.8721730611,
+    "saving": 0.18453520060802675,
+    "marginal_cost_at_star": 3.4499655270648524,
+    "unit": 3.3305185482504633
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 720536.8721730611,
+    "total": 720536.8721730611,
+    "all_truck": 720536.8721730611,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 3.3305185482504633
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  },
+  {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 1.2,
+   "unit": "lower",
+   "unit_value": 1.871804950736993,
+   "targeted": {
+    "r_star": 1.2,
+    "q_star": 43319.063288500314,
+    "share_of_need": 0.20023256178419904,
+    "bill": 51982.87594620037,
+    "free_rider_bill": 0.0,
+    "truck_residual": 323868.4651863023,
+    "total": 375851.3411325027,
+    "all_truck": 404953.3023110063,
+    "saving": 0.07186498051114332,
+    "marginal_cost_at_star": 1.8868596917663352,
+    "unit": 1.871804950736993
+   },
+   "public": {
+    "r_star": 0.0,
+    "q_star": 0.0,
+    "share_of_need": 0.0,
+    "bill": 0.0,
+    "free_rider_bill": 0.0,
+    "truck_residual": 404953.3023110063,
+    "total": 404953.3023110063,
+    "all_truck": 404953.3023110063,
+    "saving": 0.0,
+    "marginal_cost_at_star": null,
+    "unit": 1.871804950736993
+   },
+   "lp_status": {
+    "optimal": 2760,
+    "other": 0
+   }
+  }
+ ],
+ "qr_summary": {
+  "R_m": 0.45,
+  "r_star": 1.76,
+  "q_star": 95565.81547068334,
+  "marginal_cost_at_star": 3.3462806025869742,
+  "need_total": 216343.75,
+  "distinct_candidate_trips": 307187.5000000014,
+  "acceptance": {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "form": "incremental pi(r)-pi(0), logit"
+  },
+  "solver": "scipy.optimize.linprog(method='highs'), one LP per hour",
+  "status_counts": {
+   "optimal": 13800,
+   "other": 0
+  }
+ },
+ "text_code_consistency": {
+  "status": "code changed to match the section text",
+  "old": "each source cell's own deficit hour supplied the candidate count (H16 wrong-hour path)",
+  "new": "candidate arrivals are counted in the target cell's deficit hour h_c for both the target and its sources"
+ },
+ "code_changes": [
+  {
+   "file": "code/t008_q3_pool.py",
+   "status": "new",
+   "what": "rebuild the (c,h_c) candidate pool, solve the hourly assignment LPs, compute q(r), r*, targeted/public savings and the feasibility audit.",
+   "why": "remove the same-cell, wrong-hour and duplicate-counting paths behind the old 34.9% saving."
+  },
+  {
+   "file": "code/t008_delivery.py",
+   "status": "new",
+   "what": "this delivery builder",
+   "why": "assemble T008 evidence."
+  },
+  {
+   "file": "code/t008_validate.py",
+   "status": "new",
+   "what": "independent validator",
+   "why": "recompute pool, q(r), audit and savings before delivery."
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T008_delivery.json",
+  "run_dir": "data/runs/T008/",
+  "required": [
+   "q3_pool.npz",
+   "q3_qr.json",
+   "q3_results.json",
+   "q3_pool_audit.json"
+  ]
+ },
+ "notes": [
+  "Pool index is (target cell c, target deficit hour h_c); candidate trips end at j!=c within 450 m and are counted in the arrivals at j in h_c. Same-cell redirections are excluded (0 edges). The removed same-cell units are 34.110% of the naive pair pool, which reproduces the old 34.105% path as an audit figure, not a result.",
+  "One reroute per trip is enforced by sum_c x[j,c,h] <= A[j,h]. The naive pair pool is 334,147.32 units vs 307,187.50 distinct source-hour units (ratio 1.0878, the M8 1.09); the LP resolves it, so q(r*) = 95,565.82 <= distinct.",
+  "The old 2.93 ratio is reproduced as 334,147.32/113,936 = 2.9328; the difference comes from the old source-own-deficit-hour count, not from the new target-hour pool.",
+  "Targeted push: r*=1.76 CNY, q*=95,565.82 (44.17% of N), bill 168,195.84, truck residual 402,253.15, total 570,448.99 vs 720,536.87 all-truck, saving 20.83% at TRUCK_UNIT=3.3305. The 14-row interval spans 2.97%-30.22% over kappa/rho/c0 and the two truck units; no provisional rows remain.",
+  "Public push with the corrected unit is not profitable: the optimum is r=0 (saving 0). At r=1.2 it loses 0.22% while paying 120,049.55 to free riders; with the historical unit 3.478 it saves 0.98%, not the old 2.1% (that figure used a non-flow pool). All three are reported so T012 can state the lower bound honestly.",
+  "The free-rider count is 100,041.29 existing non-same-cell arrivals into target cells in their deficit hours; targeted push pays zero free riders by construction.",
+  "Acceptance parameters are not identified from May 2017 (no reward was offered); the 7-set x 2-unit sweep is the interval. TRUCK_UNIT is final from T007: 3.3305 main, 1.8718 lower; the old 3.478 is obsolete except as a historical comparison.",
+  "Text-code consistency: the section's 'in c's deficit hour' is now what the code does; the old source-own-hour path is gone.",
+  "No paper/review/data file outside data/runs/T008 is written."
+ ],
+ "integrity": {
+  "baseline": {
+   "data_paper": "data/runs/T015/fingerprint_start.json",
+   "review": "data/runs/T001/fingerprint_start.json",
+   "scope_commit": "7a3c71b"
+  },
+  "paper_untouched": true,
+  "data_excluding_runs_untouched": true,
+  "review_untouched": true
+ }
+}
