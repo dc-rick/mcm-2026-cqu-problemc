@@ -55,6 +55,9 @@ I0 = init_share * FLEET
 
 net = a_hr - d_hr
 cum = np.cumsum(net, axis=1)
+# NOTE: net/cum/req inherit the demand scale (sampled day), while I0 below is
+# full-scale (FLEET).  They are diagnostics at different scales; multiply req
+# by 1/0.128 before using it with I0 or any full-scale Q2 result.
 IQ = I0[:, None] + cum
 print("\nfleet", FLEET, " sum I0", I0.sum().round(0))
 print("bikes per zone: min %.0f median %.0f max %.0f" % (I0.min(), np.median(I0), I0.max()))

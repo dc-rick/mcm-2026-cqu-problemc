@@ -140,7 +140,12 @@ def main():
     q2_ok = (q2["q1"]["status"] == 2 and q2["obs"]["status"] == 2
              and q2["q1"]["alpha"] == 1.0 and q2["obs"]["alpha"] == 1.0
              and q2["q1"]["K"] == 60 and q2["obs"]["K"] == 60
+             and q2["q1"]["fixed_K_cost"] == 600.0
+             and q2["obs"]["fixed_K_cost"] == 600.0
              and q2["q1"]["unmet"] <= 1e-6 and q2["obs"]["unmet"] <= 1e-6)
+    expected_trips = 2143417.4
+    q2_ok &= all(abs(q2[s]["trips"] - expected_trips) / expected_trips < 1e-6
+                 for s in ("q1", "obs"))
     d = q2["difference"]["q1_minus_obs"]
     q2_diff_ok = all(
         abs(d[k] - (q2["q1"][k] - q2["obs"][k]))
@@ -196,16 +201,21 @@ def main():
                    and not review_cmp["changed"] and not review_cmp["missing"]
                    and not root_dirty)
 
-    modified = sorted(line[3:] for line in status_lines
-                      if line.startswith(" M "))
+    # Scope is measured against the last pre-T006 commit, so the check is
+    # stable both before and after the delivery commit itself.
+    base_commit = "6c130aa"
+    diff_proc = subprocess.run(["git", "diff", "--name-only", base_commit,
+                                "--", "code"], cwd=ROOT, capture_output=True,
+                               text=True, encoding="utf-8", errors="replace")
+    modified = sorted(p for p in diff_proc.stdout.splitlines() if p)
     untracked = sorted(line[3:] for line in status_lines
                        if line.startswith("?? ")
-                       and line[3:] != "交付/T006_delivery.json")
-    expected_modified = {"code/20_q2_diag.py", "code/21_q2_opt.py",
-                         "code/22_q2_sim.py", "code/40_q4_efence.py"}
-    expected_untracked = {"code/12_q1_od.py", "code/t006_delivery.py",
-                          "code/t006_validate.py"}
-    scope_ok = set(modified) == expected_modified and set(untracked) == expected_untracked
+                       and "T006_delivery.json" not in line)
+    expected_t006 = {"code/12_q1_od.py", "code/20_q2_diag.py",
+                     "code/21_q2_opt.py", "code/22_q2_sim.py",
+                     "code/40_q4_efence.py", "code/t006_delivery.py",
+                     "code/t006_validate.py"}
+    scope_ok = (set(modified) | set(untracked)) == expected_t006
 
     abs_hits = []
     for rel in sorted(T006_FILES):
@@ -261,6 +271,7 @@ def main():
         "title": "Wire the Q1 travel-behaviour model into Q2/Q4",
         "date": "2026-11-18",
         "status": "delivered",
+        "revision": "R1",
         "checks": checks,
         "q1_model": {
             "bands": q1v["top5"]["per_band"],
@@ -327,8 +338,11 @@ def main():
              "why": "input switch without touching the tracked q2_state.npz."},
             {"file": "code/21_q2_opt.py", "status": "modified",
              "what": "argparse --od q1|obs (q1 default), --conserve ready for "
-                     "T007; load_demand() reads the selected OD surface",
-             "why": "input switch; equations untouched for T006."},
+                     "T007; load_demand() reads the selected OD surface and "
+                     "multiplies dep/arr by SCALE=1/0.128 (PZ stays "
+                     "row-normalised)",
+             "why": "input switch at the full 343,638-bike scale; equations "
+                    "untouched for T006."},
             {"file": "code/22_q2_sim.py", "status": "modified",
              "what": "argparse --od q1|obs (q1 default); od_hr from q1_od.npz "
                      "or typical_day.npz",
@@ -370,7 +384,10 @@ def main():
             "the common initial state, not a demand input.",
             "20_q2_diag.py was run with --od q1 and wrote "
             "data/runs/T006/q2_state_q1.npz; the tracked data/q2_state.npz "
-            "was not touched.",
+            "was not touched. Its net/cum/req arrays inherit the sampled "
+            "demand scale, while I0 is full-scale (343,638); they are "
+            "diagnostics at different scales, so multiply req by 1/0.128 "
+            "before using it with I0 or any full-scale Q2 result.",
             "22_q2_sim.py was compiled and its --od switch was checked in the "
             "source, but not executed: it still writes data/q2_sim.json and "
             "reads data/q2_plan.npz, both tracked. T007 runs it with the new "
@@ -384,8 +401,19 @@ def main():
             "coverage 76.4% vs 75.3%, but total 95th-percentile capacity "
             "281,941 vs 344,463 slots (-18.2%). This is a sanity run only; "
             "T009 owns the Q4 capacity fix.",
-            "The 1/p expansion is deliberately left downstream: 21 and 22 "
-            "multiply by SCALE=1/0.128, and 40 multiplies by the same SCALE.",
+            "The 1/p expansion is applied downstream in one place per script: "
+            "21_q2_opt.py multiplies dep/arr by SCALE=1/0.128 inside "
+            "load_demand (PZ stays row-normalised), 22_q2_sim.py multiplies "
+            "od_hr by SCALE, and 40_q4_efence.py multiplies by the same "
+            "SCALE. All three therefore work at the full 343,638-bike scale.",
+            "R1 fix: the first T006 submission refactored 21_q2_opt.py "
+            "without restoring the SCALE multiplication, so the LP served "
+            "sampled demand with a full-scale fleet (trips=274,357). With "
+            "SCALE applied inside load_demand, the observed-surface run at "
+            "alpha=1, K=60, fixed_K_cost=600 reproduces the pre-refactor row: "
+            "moved 23,959.15, truck-km 5,440.94, dev 900.00, obj 83,325.24, "
+            "trips 2,143,417. The Q1-surface run is now full-scale too: moved "
+            "24,679.28, truck-km 5,529.85, dev 225.36, obj 82,194.80.",
             "No file under paper/, review/ or 审查与规划/ was written. data/ "
             "was only extended under data/runs/T006/.",
         ],

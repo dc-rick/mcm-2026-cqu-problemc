@@ -34,11 +34,13 @@ T = 24
 
 
 def load_demand(kind):
-    """Return dep[z,t], arr[z,t] and P[t,z,z'] at the sampled scale.
+    """Return dep[z,t], arr[z,t] and P[t,z,z'] at the full scale.
 
     q1 reads data/runs/T006/q1_od.npz (T006); obs reads data/typical_day.npz.
-    Both are daily averages over lib.TYP_DAYS.  The 1/p expansion stays a
-    downstream SCALE multiplication applied by the caller.
+    Both files are daily averages at the sampled scale, so dep/arr are
+    multiplied by SCALE=1/0.128 here; PZ stays row-normalised and therefore
+    scale-free.  I0 is already full-scale (343,638), so this keeps the LP in
+    one unit system.
     """
     if kind == "q1":
         z = np.load(os.path.join(DATA, "runs", "T006", "q1_od.npz"))
@@ -56,7 +58,7 @@ def load_demand(kind):
     row = od.sum(2)
     Pz = np.divide(od, row[:, :, None],
                    out=np.zeros_like(od), where=row[:, :, None] > 0)
-    return dep, arr, Pz, cent
+    return dep * SCALE, arr * SCALE, Pz, cent
 
 
 def load_network(cent):

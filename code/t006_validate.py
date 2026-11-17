@@ -137,7 +137,10 @@ def main():
     q2_ok = (q2["q1"]["status"] == 2 and q2["obs"]["status"] == 2
              and q2["q1"]["alpha"] == q2["obs"]["alpha"] == 1.0
              and q2["q1"]["K"] == q2["obs"]["K"] == 60
+             and q2["q1"]["fixed_K_cost"] == q2["obs"]["fixed_K_cost"] == 600.0
              and q2["q1"]["unmet"] <= 1e-6 and q2["obs"]["unmet"] <= 1e-6)
+    q2_ok &= all(abs(q2[s]["trips"] - 2143417.4) / 2143417.4 < 1e-6
+                 for s in ("q1", "obs"))
     d = q2["difference"]["q1_minus_obs"]
     q2_ok &= all(abs(d[k] - (q2["q1"][k] - q2["obs"][k]))
                  <= 1e-9 * max(1.0, abs(d[k]))
@@ -188,15 +191,19 @@ def main():
     ro_ok &= not [line for line in status_lines if line[3:] in root_paths]
     check("9 data/paper/review and root docs unchanged", ro_ok)
 
-    modified = sorted(line[3:] for line in status_lines if line.startswith(" M "))
+    base_commit = "6c130aa"
+    diff_proc = subprocess.run(["git", "diff", "--name-only", base_commit,
+                                "--", "code"], cwd=ROOT, capture_output=True,
+                               text=True, encoding="utf-8", errors="replace")
+    modified = sorted(p for p in diff_proc.stdout.splitlines() if p)
     untracked = sorted(line[3:] for line in status_lines
                        if line.startswith("?? ")
-                       and line[3:] != "交付/T006_delivery.json")
-    scope_ok = (set(modified) == {"code/20_q2_diag.py", "code/21_q2_opt.py",
-                                  "code/22_q2_sim.py", "code/40_q4_efence.py"}
-                and set(untracked) == {"code/12_q1_od.py",
-                                       "code/t006_delivery.py",
-                                       "code/t006_validate.py"})
+                       and "T006_delivery.json" not in line)
+    expected_t006 = {"code/12_q1_od.py", "code/20_q2_diag.py",
+                     "code/21_q2_opt.py", "code/22_q2_sim.py",
+                     "code/40_q4_efence.py", "code/t006_delivery.py",
+                     "code/t006_validate.py"}
+    scope_ok = (set(modified) | set(untracked)) == expected_t006
     abs_hits = []
     for rel in sorted(set(modified) | set(untracked)):
         for lineno, line in enumerate(read(os.path.join(ROOT, rel)).splitlines(), 1):

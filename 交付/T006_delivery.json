@@ -3,6 +3,7 @@
  "title": "Wire the Q1 travel-behaviour model into Q2/Q4",
  "date": "2026-11-18",
  "status": "delivered",
+ "revision": "R1",
  "checks": {
   "1_npz_structure": true,
   "2_npz_nonnegative": true,
@@ -112,58 +113,65 @@
   "settings": {
    "alpha": 1.0,
    "K": 60,
+   "fixed_k_cost": 600.0,
    "od_default": "q1",
    "conserve": false,
-   "note": "T006 only switches the demand input; LP equations unchanged (conservation is T007)."
+   "scale": 7.8125,
+   "note": "Full-scale run: 21_q2_opt.py multiplies dep/arr by SCALE=1/0.128 inside load_demand(). LP equations unchanged (conservation is T007)."
   },
   "q1": {
    "alpha": 1.0,
    "K": 60,
    "od": "q1",
    "conserve": false,
-   "obj": 4353.316866697545,
+   "fixed_K_cost": 600.0,
+   "obj": 82194.79678884153,
+   "obj_variable": 46194.79678884153,
    "status": 2,
-   "bound": 4353.316866697545,
+   "bound": 82194.79678884153,
    "gap": 0.0,
    "unmet": 0.0,
-   "truck_km": 450.4679881482774,
-   "moved": 3169.282630291967,
-   "trucks_used": 93.10710670713709,
-   "dev": 21.955874220631813,
-   "trips": 274357.42842521804
+   "truck_km": 5529.847267365884,
+   "moved": 24679.279143807915,
+   "trucks_used": 1133.4578909712402,
+   "dev": 225.35787091405996,
+   "trips": 2143417.409572016
   },
   "obs": {
    "alpha": 1.0,
    "K": 60,
    "od": "obs",
    "conserve": false,
-   "obj": 4488.287350862704,
+   "fixed_K_cost": 600.0,
+   "obj": 83325.24044527416,
+   "obj_variable": 47325.24044527416,
    "status": 2,
-   "bound": 4488.287350862704,
+   "bound": 83325.24044527416,
    "gap": 0.0,
    "unmet": 0.0,
-   "truck_km": 449.2621759498256,
-   "moved": 3124.2857004106045,
-   "trucks_used": 91.37857099771499,
-   "dev": 76.8571483194828,
-   "trips": 274357.42896452546
+   "truck_km": 5440.944115457213,
+   "moved": 23959.151820081745,
+   "trucks_used": 1107.6674121071117,
+   "dev": 899.9999474966871,
+   "trips": 2143417.413785355
   },
   "difference": {
    "q1_minus_obs": {
-    "moved": 44.996929881362576,
-    "truck_km": 1.205812198451838,
+    "moved": 720.1273237261703,
+    "truck_km": 88.90315190867113,
     "unmet": 0.0,
-    "dev": -54.90127409885099,
-    "obj": -134.97048416515918,
-    "trucks_used": 1.728535709422104,
-    "trips": -0.0005393074243329465
+    "dev": -674.6420765826272,
+    "obj": -1130.4436564326315,
+    "obj_variable": -1130.4436564326315,
+    "trucks_used": 25.790478864128545,
+    "trips": -0.0042133391834795475
    },
    "relative_q1_vs_obs": {
-    "moved": 0.014402309582458776,
-    "truck_km": 0.0026839833464780824,
+    "moved": 0.030056461478013764,
+    "truck_km": 0.01633965540210303,
     "unmet": null,
-    "dev": -0.7143287943840334,
-    "obj": -0.030071711905704117
+    "dev": -0.7496023510435933,
+    "obj": -0.013566641396913548
    }
   },
   "plans": [
@@ -262,12 +270,8 @@
   "git_status_porcelain": [
    " M code/20_q2_diag.py",
    " M code/21_q2_opt.py",
-   " M code/22_q2_sim.py",
-   " M code/40_q4_efence.py",
-   "?? code/12_q1_od.py",
-   "?? code/t006_delivery.py",
-   "?? code/t006_validate.py",
-   "?? 交付/T006_delivery.json"
+   " M code/t006_delivery.py",
+   " M code/t006_validate.py"
   ]
  },
  "code_changes": [
@@ -286,8 +290,8 @@
   {
    "file": "code/21_q2_opt.py",
    "status": "modified",
-   "what": "argparse --od q1|obs (q1 default), --conserve ready for T007; load_demand() reads the selected OD surface",
-   "why": "input switch; equations untouched for T006."
+   "what": "argparse --od q1|obs (q1 default), --conserve ready for T007; load_demand() reads the selected OD surface and multiplies dep/arr by SCALE=1/0.128 (PZ stays row-normalised)",
+   "why": "input switch at the full 343,638-bike scale; equations untouched for T006."
   },
   {
    "file": "code/22_q2_sim.py",
@@ -346,11 +350,12 @@
   "The distance KS is 0.0524 with 0.5 km bins; the model and the observed histogram use the same 7 typical days.",
   "Q2 smoke runs use conserve=False: T006 was forbidden to change the LP equations, so these smoke numbers are not the final conservation result. H13 is T007.",
   "21_q2_opt.py still takes I0 from data/q2_state.npz, i.e. the observed last-end distribution, for both OD surfaces. That is the common initial state, not a demand input.",
-  "20_q2_diag.py was run with --od q1 and wrote data/runs/T006/q2_state_q1.npz; the tracked data/q2_state.npz was not touched.",
+  "20_q2_diag.py was run with --od q1 and wrote data/runs/T006/q2_state_q1.npz; the tracked data/q2_state.npz was not touched. Its net/cum/req arrays inherit the sampled demand scale, while I0 is full-scale (343,638); they are diagnostics at different scales, so multiply req by 1/0.128 before using it with I0 or any full-scale Q2 result.",
   "22_q2_sim.py was compiled and its --od switch was checked in the source, but not executed: it still writes data/q2_sim.json and reads data/q2_plan.npz, both tracked. T007 runs it with the new plan and conservation fix.",
   "Q4 splits each Q1 hourly total into four equal 15-min slots (divide by 4). An earlier version repeated the hourly total four times and produced 4x the observed daily arrivals (8,573,670 vs 2,143,417); that run was discarded and the corrected runs agree to 1.4e-10 relative.",
   "Q4 Q1 demand is more diffuse than observed: 696 fences vs 626, coverage 76.4% vs 75.3%, but total 95th-percentile capacity 281,941 vs 344,463 slots (-18.2%). This is a sanity run only; T009 owns the Q4 capacity fix.",
-  "The 1/p expansion is deliberately left downstream: 21 and 22 multiply by SCALE=1/0.128, and 40 multiplies by the same SCALE.",
+  "The 1/p expansion is applied downstream in one place per script: 21_q2_opt.py multiplies dep/arr by SCALE=1/0.128 inside load_demand (PZ stays row-normalised), 22_q2_sim.py multiplies od_hr by SCALE, and 40_q4_efence.py multiplies by the same SCALE. All three therefore work at the full 343,638-bike scale.",
+  "R1 fix: the first T006 submission refactored 21_q2_opt.py without restoring the SCALE multiplication, so the LP served sampled demand with a full-scale fleet (trips=274,357). With SCALE applied inside load_demand, the observed-surface run at alpha=1, K=60, fixed_K_cost=600 reproduces the pre-refactor row: moved 23,959.15, truck-km 5,440.94, dev 900.00, obj 83,325.24, trips 2,143,417. The Q1-surface run is now full-scale too: moved 24,679.28, truck-km 5,529.85, dev 225.36, obj 82,194.80.",
   "No file under paper/, review/ or 审查与规划/ was written. data/ was only extended under data/runs/T006/."
  ]
 }
