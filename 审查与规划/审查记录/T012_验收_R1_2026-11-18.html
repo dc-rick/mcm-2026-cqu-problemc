@@ -95,7 +95,7 @@ li{margin:3px 0}
 
 <h2>R1 验收标准</h2>
 <ol>
-<li>上表 34 条逐条落实；<strong>不允许改动任何数字、表值、图注数值</strong>；不重编号。</li>
+<li>上表 35 条逐条落实（另加符号表 <code>R</code> 单位一条，共 36 条）；<strong>不允许改动任何数字、表值、图注数值</strong>；不重编号。</li>
 <li>门禁 grep（在 <code>paper/</code>）：<code>grep -nE "T0[0-9][0-9]" *.tex</code> 只允许命中代码文件名（如 <code>20\_q2\_diag.py</code>），不得再命中任务编号；<code>grep -niE "old (claim|value|estimate|version)|earlier version|is withdrawn|obsolete|first implementation|corrected plan" *.tex</code> 零命中（“retained for comparison” 允许）。</li>
 <li>重编译：<code>xelatex</code> 两遍，<strong>总页 30、正文 24（3–26 页）、undefined 0、overfull 0</strong>；页数不变则证明只动了文字。</li>
 <li>重交 <code>交付/T012_delivery.json</code>：首行 <code>T012 R1 已交付</code>；<code>affected</code> 中 sec5 的“removed; 172 survives…”改为“172 不再出现在正文”；notes 增加一条“正文不含内部任务编号与改稿语言”。</li>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T014 终检与编译（清单）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:32px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--warn)}
+.box.hi{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.tag{display:inline-block;border-radius:999px;padding:0 8px;font-size:11.5px;border:1px solid var(--line);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.wait{color:var(--warn);border-color:var(--warn)}
+.tag.bad{color:var(--hi);border-color:var(--hi)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T014 · 终检与编译</h1>
+<p class="meta">状态：<strong>待下达</strong>（前置：T012、T013 通过；T012 若 R1 通过即解除）　·　最后更新 2026-11-18　·　本清单是唯一改稿依据</p>
+
+<div class="box">
+<p><strong>任务目标：</strong>把论文从“内容正确”推到“交付形态正确”：一处格式错误都不带进最终 PDF。全部条目都是<strong>小改</strong>，数字与章节结构不动；任何需要改动数字的发现，停下来报告，不自行改。</p>
+</div>
+
+<h2>1. 已查明的关键事实（指导方已复验，不必重查）</h2>
+<div class="box warn">
+<p><strong>L1 的根因是字体，不是正文。</strong>当前 <code>main.tex</code> 用 <code>\setmainfont{Times New Roman}</code>。我做了对照实验：同一份最小文档，Times New Roman 的正文分号在 PDF 文本层被提取为 U+037E（130 处）；换成 <code>TeX Gyre Termes</code> 后同一实验为 0 处、分号正常。<strong>正文 .tex 没有任何 U+037E</strong>，逐字符扫描为 0。所以 L1 的修法是换字体，不是替换字符。</p>
+<p><strong>L4 现状：</strong>当前目录有 “Report on Use of AI Tools 29”，<strong>没有 References</strong>（正文第 27 页起）。<code>references.tex</code> 用 <code>thebibliography</code>，未加 <code>\addcontentsline</code>。</p>
+<p><strong>L2 现状：</strong>已知三处重号：① <code>d</code>：Q1 距离 <code>d_{ij}</code> vs Q2 出发量 <code>d_{zt}</code>（同一节内并存）；② <code>w</code>：Q2 服务罚 <code>w=6</code> vs Q3 增量接受概率 <code>w_e</code>（符号表另有 <code>w_c</code> 停车容量）；③ <code>n</code>：Q5 平台数 vs §3 捕获样本 <code>n_1,n_2</code>、Q1 <code>n_{ij}</code>。符号表 <code>R</code> 的单位已在 T012 R1 中由 km 改为 m。</p>
+</div>
+
+<h2>2. 修改条目</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:8%">编号</th><th style="width:34%">改什么</th><th style="width:32%">怎么改</th><th style="width:26%">验收</th></tr></thead>
+<tbody>
+<tr><td>L1</td><td>正文分号在文本层是 U+037E</td><td><code>main.tex</code>：<code>\setmainfont{Times New Roman}[Ligatures=TeX]</code> → <code>\setmainfont{TeX Gyre Termes}[Ligatures=TeX]</code>。数学字体 <code>TeX Gyre Termes Math</code> 不动。这是 Times 的度量兼容克隆，版式不变。</td><td>抽取文本 U+037E = 0；正文分号计数 &gt; 0；页数 30（±1 允许，正文 ≤25）；人工看一页确认字形。</td></tr>
+<tr><td>L4</td><td>目录缺 References</td><td><code>references.tex</code> 的 <code>\begin{thebibliography}{99}</code> 之后加 <code>\addcontentsline{toc}{section}{References}</code>。</td><td>目录出现 “References” 且页码 = 参考文献首页。</td></tr>
+<tr><td>L2</td><td>记号重名</td><td>在 §2 记号段加一句：“Symbols are local to each section: $d$ is a distance in Q1 and hourly departures in Q2, $w$ is the Q2 service penalty while $w_e$ is the Q3 incremental acceptance weight, and $n$ is the number of platforms in Q5 and a sample size in \S\ref{sec:data}. The subscript disambiguates.”（按实际措辞微调，意思不变）；不改任何公式。</td><td>三处重号在文中可辨；不新增符号表行。</td></tr>
+<tr><td>L5</td><td>Team Control Number 空白</td><td><strong>保持空白</strong>，不得自行填任何编号。用户确认 13648 后才填；未确认就空白交付，并在 T014 交付里写明“按用户未确认处理”。</td><td>表头要么空白、要么等于用户确认值。</td></tr>
+<tr><td>L11</td><td>根目录 <code>2026CQU_MCM_ProblemC.pdf</code> 是 11-11 的论文副本，文件名会误导</td><td>重命名为 <code>paper_snapshot_2026-11-11.pdf</code>（<code>git mv</code>）；<code>DATA.md</code> 加一行：原始赛题不随仓库分发，复现者需自备（2 页）。</td><td>根目录无“像赛题”的文件；DATA.md 有该说明。</td></tr>
+<tr><td>L10</td><td><code>lib.py</code> 与部分脚本用反斜杠拼路径</td><td>统一改 <code>os.path.join</code> / <code>pathlib</code>；只改路径拼接，不改任何计算。若有条件，在 WSL/Linux 跑一遍 <code>10_q1_model.py</code>；没有环境就做静态检查并列出改动文件。</td><td><code>grep -rn 'r"\\\\' code/</code> 0 命中；改动文件清单在交付里；数值输出与改动前逐位一致（至少 10_q1_model 的参数文件哈希）。</td></tr>
+<tr><td>终编</td><td>最终 PDF</td><td>xelatex 两遍（换字体后必须重跑两遍，等 TOC 稳定），输出到 <code>paper/</code>。</td><td>总页 30±1、正文 24–25 页、undefined 0、overfull 0、U+037E 0、无 “??”；PDF 生成时间晚于所有 tex 修改时间。</td></tr>
+<tr><td>数字抽查</td><td>最终 PDF 与结果文件一致</td><td>从最终 PDF 抽 10 个数（20.83 / 6.83 / 32,777 / 95,566 / 491,692 / 705 / 76.86 / 24,679 / 495,540 / 4.33）与 <code>data/runs/T012_numbers.log</code> 对照。</td><td>10/10 一致；不一致就停下报告。</td></tr>
+<tr><td>只读区</td><td>完整性</td><td><code>data/</code> 不动；<code>审查与规划/</code> 不动；不覆盖 <code>data/</code> 已有文件。</td><td><code>git status</code> 中 data/ 无改动。</td></tr>
+</tbody></table></div>
+
+<h2>3. 交付</h2>
+<ol>
+<li><code>交付/T014_delivery.json</code>：<code>checks</code> 覆盖上表每条；<code>compile</code> 含 engine/passes/total_pages/body_pages/undefined/overfull/u037e；<code>affected</code> 列出每个改动文件与行；<code>notes</code> 写 L5 处理方式、L10 的验证方式。</li>
+<li>首行 <code>"status": "T014 已交付"</code>；最终 PDF 在 <code>paper/main.pdf</code>，并把最终 commit 交给指导方推送。</li>
+<li>若 L1 换字体后页数变化超过 1 页，或任何数字抽查不一致：停止，报告，不自行压缩版面。</li>
+</ol>
+
+<div class="box">
+<p><strong>关闭映射：</strong>L1→字体；L2→一句话；L4→目录项；L10→路径；L11→改名。L5 不关闭（待用户确认），在交付里注明。T014 通过后，问题台账只剩 L5 一项待用户输入。</p>
+</div>
+
+</main>
+</body>
+</html>
