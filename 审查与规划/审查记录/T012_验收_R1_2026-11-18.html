@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T012 验收：打回 R1（数字全部通过；正文仍像“改稿说明”）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.old{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T012 验收：打回 R1（数字全部通过；正文仍是“改稿说明”口吻）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T012_delivery.json</code>（commit 1babe8a，仅本地）　·　结论：<strong>打回 R1</strong>，数字层全部通过，仅改文字</p>
+
+<div class="box ok">
+<p><strong>数字与编译：全部独立复算通过，一处不改。</strong>我不读你的脚本，直接重算结果文件并逐表核对：</p>
+<ul>
+<li><strong>Q1</strong>：β = 2.096/2.014/2.517/2.130/2.364；各时段 full/dist/attr/top-5 与表 2 逐位一致（<code>T012_numbers.log</code> 第 33–36 行）；分段 132,984 人、9.18 单/10 天一致。</li>
+<li><strong>Q2</strong>：K=20/40/60/80 与 α=0.8/0.6、obs 七行全部与 <code>q2_results_q1.json</code> 一致；K=80 比 K=60 多 73.42 辆，与你写的 “73 more” 一致（不是 74，精确值是 73.4165）。</li>
+<li><strong>Q3</strong>：r 表 7 行 × 2 个口径与 <code>q3_qr.json</code> / <code>q3_qr_conservative.json</code> 逐位一致；20.83%/6.825836%、168,196/402,253/570,449、7.4643%/4,332.1059/327.83、8.65%/2,837/2,316 全部复算一致。</li>
+<li><strong>Q4</strong>：前沿 501/64.51%/396,317、705/76.86%/597,442、300→703,192；626 行 458,516/582,977；knee 491,692/621,004、站立 236,433、缓冲 255,259/254,142；full 734,345/884,585；重叠 2,020/44/0（覆盖 2,064、未覆盖 3,199）、multiplicity 1.0213、重复 2.80%、obs 1,965/45/0 → 1.0224/3.09%；hold-out 0.804/0.423/32、库存相关 0.687/L1 0.922 —— 全部与 <code>q4_results.json</code>、<code>q4_overlap.json</code>、<code>q4_fences.csv</code> 一致。knee 围栏容量中位数我重算 582.719（不是缓冲列），最大 2,946.51，fleet 侧 754.53/4,622.19，与你写的一致。</li>
+<li><strong>数据</strong>：p=0.12828/0.1772/0.1997；截断 54.53%/63.11%/13 个整点；CV 8.246；495,540 ± SE 131；4.33 次/日 —— 与日志一致。</li>
+<li><strong>编译</strong>：我在临时目录独立跑两遍 xelatex：<strong>30 页、正文 3–26 页共 24 页、undefined 0、overfull 0</strong>，与交付一致。</li>
+<li><strong>图</strong>：fig3–fig6 的 PDF 文字层抽查：KS 0.098、12.83/8.89、K=60、720,537/570,449/671,354、7.46%/8.65%、705-fence、8.2/15.7/14.1 —— 旧标注（9.5/12.4、34.9、115,385、626 主方案、417、4,827）全部消失。</li>
+<li><strong>范围</strong>：1babe8a 未动 <code>data/</code>（0 个文件）、未动 <code>审查与规划/</code>；工作树干净。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><strong>R1｜唯一但系统性的问题：正文在向评委解释“我改了什么”。</strong>全文有 15 处把内部改稿过程写进了论文：出现内部任务编号（T004/T005/T007/T009/T010/T011），以及 “the old … is withdrawn”“earlier version”“obsolete unit”“corrected plan”“relative to the first implementation” 这类句子。评委手里没有“上一稿”，读到这些只会困惑：他拿到的是正式论文，还是某个我们没给他看的文档的修订说明。MCM 论文必须是“第一次提交”的口吻。另外 <code>sec6_q3.tex</code> 第 42–43 行有一处断句错误（句号后接小写 “and she accepts”），以及 π 与增量 w 的口径需要一句话说明。全部改动<strong>不涉及任何一个数字</strong>，按下表逐条替换即可。</p>
+</div>
+
+<h2>R1 修改清单（逐条替换，数字不动）</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:26%">位置</th><th style="width:37%">现文（要点）</th><th style="width:37%">改为</th></tr></thead>
+<tbody>
+<tr><td><code>sec2_assumptions.tex:65–67</code></td><td class="old">“…was swept from 3 to 12 CNY in an earlier run on the observed-OD surface; that run predates the T007 corrections and was not repeated…”</td><td>“The truck-kilometre price is not swept on the final OD surface, so no price-sensitivity numbers are quoted; the qualitative argument is given in Section~\ref{sec:sens}. All costs are linear in the other parameters.”</td></tr>
+<tr><td><code>sec3_data.tex:75–79</code></td><td class="old">“The statement that resampling … is false and is withdrawn: at a 5% rate, 64.5% of 200 draws …”</td><td>“Finite-sample resampling is a different matter from the algebraic invariance: at a 5\% rate, 64.5\% of 200 draws deviate by more than 4\% from the full-sample value, and the maximum deviation is 17.9\%; only at the 50\% rate does the maximum fall below 4\% (3.67\%). What holds at every rate is the invariance of the estimator, not small finite-sample scatter.”</td></tr>
+<tr><td><code>sec3_data.tex:99–101</code></td><td class="old">“The old value 343,638 is not a fleet estimate…”</td><td>“The 5/16 00:00 drop-off snapshot gives 343,638 bicycles, which is not a fleet estimate; it is used only as the measured initial inventory in Q2, Q4 and Q5.”</td></tr>
+<tr><td><code>sec3_data.tex:104–105</code></td><td class="old">“The fleet is worked less hard than the old estimate implied, and it is idle in the particular…”</td><td>删去 “than the old estimate implied”，改为：“The fleet is idle in the particular even when it is abundant in the aggregate; that is the tension the rest of the paper quantifies.”</td></tr>
+<tr><td><code>sec4_q1.tex:131–133</code></td><td class="old">“…they were not swept, because the four-day window that would have carried that sensitivity study was cut (T011).”</td><td>“…they were not swept, and any duration-dependent statement in this paper inherits that limitation.”</td></tr>
+<tr><td><code>sec4_q1.tex:145–148</code></td><td class="old">“The old 0.196 figure came from a simplified comparison (…); it is not the statistic of the model used here.”</td><td>整句删除。保留前句 “KS = 0.098 …” 与后句 “At full sample the model produces 12.83% …”。</td></tr>
+<tr><td><code>sec5_q2.tex:19</code></td><td class="old">“At cell resolution T004 finds simulated unserved shares of…”</td><td>“At cell resolution the simulation finds unserved shares of…”</td></tr>
+<tr><td><code>sec5_q2.tex:22–25</code></td><td class="old">“The old ‘172 dry cells’ figure is not used: it survives only under a path that advances cell inventory hourly…”</td><td>“No count of dry cells is reported: the Q2 LP is a 50-zone model that cannot produce one, and the cell-level statement is the simulated unserved share above.”</td></tr>
+<tr><td><code>sec5_q2.tex:82–85</code></td><td class="old">“…through its Python interface, with two corrections relative to the first implementation. A served departure is credited…”</td><td>“…through its Python interface. Two timing conventions matter. A served departure is credited to its destination in the same hour (no cross-hour lag), and unserved departures are bounded…”</td></tr>
+<tr><td><code>sec5_q2.tex:134–136</code></td><td class="old">“The old claim that the mass of the schedule sits at night … is not supported by the corrected plan.”</td><td>整句删除（前句 “The model contains no night cost…” 已把话说清）。</td></tr>
+<tr><td><code>sec5_q2.tex:141–143</code></td><td class="old">“…than K=40, so the old statement that K=40 is cheaper is wrong.”</td><td>删去 “so the old statement that K=40 is cheaper is wrong”，句号收在 “(deviation 225) than K=40.”</td></tr>
+<tr><td><code>sec5_q2.tex:154–160</code></td><td class="old">“The T007 task cut the full α grid.” + “The old claim that shrinking to 80% lowers daily cost from 427k to 390k CNY … is withdrawn.”</td><td>首句改为 “Only two reduced-fleet points were solved, both at $K=80$: …”；末端旧句整句删除；“in this run” 删去。保留 “What the evidence supports is narrower: …”。</td></tr>
+<tr><td><code>sec5_q2.tex:167</code></td><td class="old">caption “Q2: net flow and the corrected plan”</td><td>“Q2: net flow and the relocation plan”</td></tr>
+<tr><td><code>sec6_q3.tex:42–43</code></td><td class="old">“…$\tau(0.45)=8.325$ minutes.<br>and she accepts with the logit probability”</td><td>“…$\tau(0.45)=8.325$ minutes, and she accepts with the logit probability”（句号改逗号、小写接续）。</td></tr>
+<tr><td><code>sec6_q3.tex:54–57</code></td><td class="old">“At the upper-bound optimum … the acceptance probability is 0.92 … 0.78 … 0.45.”</td><td>句末补一句：“These are levels of $\pi$; the assignment program below prices the \emph{increment} over the no-reward choice, $w_e=\pi(d,r)-\pi(d,0)$.”（避免读者把 0.45 当成进入 LP 的量。）</td></tr>
+<tr><td><code>sec6_q3.tex:61–64</code></td><td class="old">“The old version of this section integrated a logit curve over six detour bands … We replace it with an explicit flow program…”</td><td>“Integrating the logit curve over detour bands and capping each cell at its deficit would double-count source bicycles: the same trip could be offered to several target cells, and a source cell with no hourly surplus could donate bicycles it did not have. We therefore use an explicit flow program, indexed by (target cell $c$, target deficit hour $h_c$).”</td></tr>
+<tr><td><code>sec6_q3.tex:98</code></td><td class="old">“…the object that produces $q(r)$; the earlier non-flow pool is obsolete.”</td><td>“…the object that produces $q(r)$.”（删后半句）</td></tr>
+<tr><td><code>sec6_q3.tex:134–135</code></td><td class="old">“The old catchment percentages came from the non-flow ring pool and are withdrawn.”</td><td>整句删除。</td></tr>
+<tr><td><code>sec6_q3.tex:199</code></td><td class="old">表行 “Obsolete unit 3.478”；正文 “the obsolete 3.478 unit gives…”</td><td>表行改 “Higher unit 3.478”；正文改 “even at the higher 3.478 CNY unit it gives 745,101 …”。同段 “The earlier public-push estimate came from a non-flow pool and is withdrawn.” 整句删除。</td></tr>
+<tr><td><code>sec7_q4.tex:9–13</code></td><td class="old">“An earlier version of this section started every fence at zero occupancy and cleared it nightly. That is wrong on both counts:…”</td><td>“Starting every fence at zero occupancy and clearing it nightly would be wrong on both counts: the measured 5/16 00:00 snapshot contains 343,638 bicycles, and Q2 shows that the plan is a reset, not an evacuation. The simulation below therefore starts each fence at its measured standing inventory and sizes the peak of the resulting path.”</td></tr>
+<tr><td><code>sec7_q4.tex:60–61</code></td><td class="old">“The 626-fence plan used in the earlier version is not a knee; it is only a point on the frontier and is retained solely for comparison.”</td><td>“The 626-fence plan is not a knee; it is only a point on the frontier, retained for comparison.”</td></tr>
+<tr><td><code>sec7_q4.tex:113–114</code></td><td class="old">“inside a plausible measured range of 600,000–750,000 … inside the fleet range 780,000–900,000”</td><td>“inside an a-priori sanity band of 600,000–750,000 … inside the corresponding a-priori band of 780,000–900,000”。并把这两条带写进 AI 报告的“typed constants”清单（见下）。</td></tr>
+<tr><td><code>sec7_q4.tex:145</code></td><td class="old">“the two T005 test days (12 and 19 May)”</td><td>“the two held-out test days (12 and 19 May)”</td></tr>
+<tr><td><code>sec8_q5.tex:38–40</code></td><td class="old">“The Monte-Carlo quantification was computed on the 626-fence layout that T009 has since superseded, and T010, which would have re-run it on the 705-fence knee, was cut; we therefore do not quote a duplication percentage.”</td><td>“The Monte-Carlo quantification was computed on the 626-fence layout rather than the 705-fence knee; we therefore do not quote a duplication percentage.”</td></tr>
+<tr><td><code>sec9_sensitivity.tex:7–9</code></td><td class="old">“…not a variance decomposition: T010 and T011, which would have separated the contributions of the sources, were cut…”</td><td>“…not a variance decomposition: the contributions of the sources are not separated here, and the intervals below must not be read as a global uncertainty budget.”</td></tr>
+<tr><td><code>sec9_sensitivity.tex:30–31</code></td><td class="old">“The old claim that resampling at 5%–50% reproduces the fleet within 4% is withdrawn.”</td><td>整句删除（前两句已给出 64.5%/17.9%/3.67%）。</td></tr>
+<tr><td><code>sec9_sensitivity.tex:76–79</code></td><td class="old">“The earlier version of this section reported a re-solve at c_km ∈ {3,6,12} … That run predates the T007 conservation corrections … and it was not re-run…”</td><td>“A re-solve at $c_{\text{km}}\in\{3,6,12\}$ was not carried out on the final OD surface, so no price-sensitivity numbers are quoted here.”（后接原有结构性论证）</td></tr>
+<tr><td><code>sec9_sensitivity.tex:92–94</code></td><td class="old">“The old 13.4% figure is a different object: it is the R=300 m, no-neighbour-cell convention…”</td><td>“The 13.4\% of the narrower R=300 m, no-neighbour-cell convention is a different object and should not be compared with the 5.84\%/3.51\% pair.”</td></tr>
+<tr><td><code>summary.tex:54</code></td><td class="old">“…0.98% only under the obsolete 3.478 unit.”</td><td>“…0.98\% only under the higher 3.478 CNY unit.”</td></tr>
+<tr><td><code>summary.tex:37</code></td><td class="old">“Five latent user types explain the hourly profile.”</td><td>“Five latent user types describe the hourly profile.”（k=5 不是轮廓准则选出的，用 explain 过强）</td></tr>
+<tr><td><code>sec10_evaluation.tex:105–107</code></td><td class="old">“…the constants that are typed rather than computed are listed in the reproducibility record…”</td><td>“…are listed in the Report on Use of AI Tools, and the pipeline is run in order as documented there.”（“reproducibility record” 不是论文里的章节，属悬空引用）</td></tr>
+<tr><td><code>ai_report.tex:33–34</code></td><td class="old">“\path{data/runs/T005/dest_validation.json} and \path{data/runs/T005/k_stability.json}”</td><td>“archived with the code as <code>dest_validation.json</code> and <code>k_stability.json</code>”（去掉内部任务目录 T005）</td></tr>
+<tr><td><code>ai_report.tex:82–84</code></td><td class="old">“This revision keeps 343,638 only as …”</td><td>“The paper keeps 343{,}638 only as the measured initial inventory, and does not use it as a fleet estimate.”</td></tr>
+<tr><td><code>ai_report.tex:8–9</code></td><td class="old">“used from 11 to 17 November 2026 … for this revision”</td><td>“used from 11 to 18 November 2026 … for the final pass”（today is 18 Nov; 报告日期要覆盖到 T012 当天）</td></tr>
+<tr><td><code>ai_report.tex</code> typed-constants 清单</td><td class="old">只列了 343,638 的四处硬编码</td><td>补一条：“The two full-coverage slot bands 600,000–750,000 and 780,000–900,000 in <code>t009_q4.py</code> are typed planning bands, used only as sanity checks.”</td></tr>
+</tbody></table></div>
+
+<h2>R1 验收标准</h2>
+<ol>
+<li>上表 34 条逐条落实；<strong>不允许改动任何数字、表值、图注数值</strong>；不重编号。</li>
+<li>门禁 grep（在 <code>paper/</code>）：<code>grep -nE "T0[0-9][0-9]" *.tex</code> 只允许命中代码文件名（如 <code>20\_q2\_diag.py</code>），不得再命中任务编号；<code>grep -niE "old (claim|value|estimate|version)|earlier version|is withdrawn|obsolete|first implementation|corrected plan" *.tex</code> 零命中（“retained for comparison” 允许）。</li>
+<li>重编译：<code>xelatex</code> 两遍，<strong>总页 30、正文 24（3–26 页）、undefined 0、overfull 0</strong>；页数不变则证明只动了文字。</li>
+<li>重交 <code>交付/T012_delivery.json</code>：首行 <code>T012 R1 已交付</code>；<code>affected</code> 中 sec5 的“removed; 172 survives…”改为“172 不再出现在正文”；notes 增加一条“正文不含内部任务编号与改稿语言”。</li>
+<li>只读区、<code>data/</code>、<code>审查与规划/</code> 不动；新 commit 单独提交。</li>
+</ol>
+
+<div class="box">
+<p><strong>关于推送。</strong>1babe8a 目前只在本地（你的会话里 push 被权限分类器拦下）。R1 通过后我会把最终 commit 推到 <code>dc-rick/mcm-2026-cqu-problemc</code> 的 main（用户已有常设授权），你不需要再尝试 push。</p>
+</div>
+
+<div class="box">
+<p><strong>已确认关闭的问题台账条目（R1 后一并更新）：</strong>H10（表头 “Trips per user (10 days)”、1.64/2.47 单/活跃日）、H11（不再报 172，改口径说明）、H12（16.5% 同格 vs 25.7% 同日重访来源格）、H17（明确为假设、无观测时长）、M10（Q5 条件化、全 24 次 0 失单）。以上五项 R1 通过即关闭。</p>
+</div>
+
+</main>
+</body>
+</html>
