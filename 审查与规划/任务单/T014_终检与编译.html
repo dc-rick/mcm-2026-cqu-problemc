@@ -35,7 +35,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T014 · 终检与编译</h1>
-<p class="meta">状态：<strong>待下达</strong>（前置：T012、T013 通过；T012 若 R1 通过即解除）　·　最后更新 2026-11-18　·　本清单是唯一改稿依据</p>
+<p class="meta">状态：<strong>已下达 2026-11-18</strong>（前置 T012（R1 后，88dbc0d）、T013 均已通过）　·　最后更新 2026-11-18　·　本清单是唯一改稿依据</p>
 
 <div class="box">
 <p><strong>任务目标：</strong>把论文从“内容正确”推到“交付形态正确”：一处格式错误都不带进最终 PDF。全部条目都是<strong>小改</strong>，数字与章节结构不动；任何需要改动数字的发现，停下来报告，不自行改。</p>
@@ -67,6 +67,7 @@ li{margin:3px 0}
 <ol>
 <li><code>交付/T014_delivery.json</code>：<code>checks</code> 覆盖上表每条；<code>compile</code> 含 engine/passes/total_pages/body_pages/undefined/overfull/u037e；<code>affected</code> 列出每个改动文件与行；<code>notes</code> 写 L5 处理方式、L10 的验证方式。</li>
 <li>首行 <code>"status": "T014 已交付"</code>；最终 PDF 在 <code>paper/main.pdf</code>，并把最终 commit 交给指导方推送。</li>
+<li>顺手记账：把 <code>交付/T012_delivery.json</code> 的 <code>"status": "delivered"</code> 改为 <code>"accepted_r1"</code>（T012 R1 已验收，见 <code>审查记录/T012_验收_R1_2026-11-18.html</code> 的复核框）。</li>
 <li>若 L1 换字体后页数变化超过 1 页，或任何数字抽查不一致：停止，报告，不自行压缩版面。</li>
 </ol>
 

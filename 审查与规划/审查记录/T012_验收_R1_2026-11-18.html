@@ -102,8 +102,14 @@ li{margin:3px 0}
 <li>只读区、<code>data/</code>、<code>审查与规划/</code> 不动；新 commit 单独提交。</li>
 </ol>
 
+<div class="box ok">
+<p><strong>R1 复核：通过（2026-11-18，commit 9b302e8 + 88dbc0d）。</strong>我逐条核对了 diff：36 条全部落实。数字层做了机器比对——把 R0 与 R1 全部 tex 的<strong>数字 token 多重集</strong>相减：没有任何一个数值被改动；消失的 token 只属于被删的修订句（0.196/0.30、172、427/390、5%–50%、4% 等）与 T0xx 编号；新增的只有日期 11→18、两条 a-priori 带 600,000–750,000 / 780,000–900,000、以及 π(d,0) 里的 0。grep 两道门零命中；额外扫 previously/formerly/revised 等只剩 sec8 “revised with the shared data” 一处实义用法。独立重编译：<strong>30 页、正文 24 页（3–26）、undefined 0、overfull 0</strong>（underfull 4 处，均在 references）。仓库内 <code>paper/main.pdf</code> 文本层抽查确认是 R1 版本（“relocation plan”“sanity band”“No count of dry cells”“Higher unit 3.478”“Q2, Q4 and Q5”“11 to 18 November 2026”均在，“obsolete / earlier version”为 0）。范围：仅 <code>paper/</code>、<code>code/t012_delivery.py</code>、<code>交付/T012_delivery.json</code>；<code>data/</code> 与 <code>审查与规划/</code> 零改动。</p>
+<p><strong>Q5 口径裁定：保留 “Q2, Q4 and Q5”。</strong>我核了 <code>code/50_q5_platform.py:15–16</code>：Q5 模拟读 <code>data/q2_state.npz</code> 的 <code>I0</code>，即 343,638 的同一初值，Q5 确实在该初值的输入侧；与 AI 报告 “input to the Q2/Q5 runs” 一致。不改回。</p>
+<p><strong>一处记账缺口（不阻塞）：</strong>交付 JSON 的 <code>"status"</code> 仍是 <code>"delivered"</code>，未按 R1 要求写 “T012 R1 已交付”；内容层（checks/compile/affected/notes）已按 R1 更新。本次按内容接受，请在 T014 交付时顺手把 T012 的 status 改为 <code>accepted_r1</code>，避免台账与 JSON 不一致。</p>
+</div>
+
 <div class="box">
-<p><strong>关于推送。</strong>1babe8a 目前只在本地（你的会话里 push 被权限分类器拦下）。R1 通过后我会把最终 commit 推到 <code>dc-rick/mcm-2026-cqu-problemc</code> 的 main（用户已有常设授权），你不需要再尝试 push。</p>
+<p><strong>推送已完成。</strong><code>9b302e8</code> 与 <code>88dbc0d</code>（连同 <code>1babe8a</code>）已按用户常设授权推到 <code>dc-rick/mcm-2026-cqu-problemc</code> 的 main。T012 接受；H10/H11/H12/H17/M10 关闭，T014 随本记录下达。</p>
 </div>
 
 <div class="box">
