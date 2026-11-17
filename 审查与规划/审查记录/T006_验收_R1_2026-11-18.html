@@ -31,7 +31,11 @@ li{margin:3px 0}
 <main>
 
 <h1>T006 验收：R1（一项阻断）</h1>
-<p class="meta">验收：2026-11-18　·　交付：<code>交付/T006_delivery.json</code>（commit 975c75d）　·　结论：<strong>R1 退回</strong></p>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T006_delivery.json</code>（commit 975c75d → 修复 1b563da）　·　结论：<strong>R1 退回 → 修复后通过</strong></p>
+
+<div class="box ok">
+<p><strong>R1 复核（commit 1b563da）：通过。</strong>我在修复后直接调用 <code>solve()</code> 复跑：obs α=1、K=60、fixed=600 得 moved 23,959.1518 / truck-km 5,440.9441 / dev 899.9999 / obj 83,325.2404，与旧行逐位一致；q1 得 moved 24,679.2791 / truck-km 5,529.8473 / dev 225.3579 / obj 82,194.7968，与交付 JSON 逐位一致；两份计划 <code>XM</code> 形状 (24,50,50)，和分别等于 moved。T006 关闭。</p>
+</div>
 
 <div class="box ok">
 <p><strong>通过的部分：<code>q1_od.npz</code> 本体。</strong>我用独立代码复算，不采信交付 JSON 的自检：结构/无负值通过；od 行和 vs dep 区合计 3.2e-8；逐时到达=出发 1.7e-7；总流量 274,357.44 与 typical_day 一致；top-5 五带逐项与 <code>q1_validation.csv</code> 差 ≤1.3e-8（加权 0.4254933）；模型同格 12.83%、观测 8.89% 复算逐位一致；β、band、训练日、σ 与 <code>q1_params.json</code> 完全一致。该数组可作 T007/T009 输入。</p>
