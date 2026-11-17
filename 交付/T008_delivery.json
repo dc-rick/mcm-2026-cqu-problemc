@@ -9,18 +9,24 @@
   "3_duplicate_1_09_and_2_93": true,
   "4_q_curve_and_optimum": true,
   "5_feasibility_at_r_star": true,
-  "6_targeted_saving_and_interval": true,
-  "7_public_push_and_free_rider": true,
-  "8_truck_units_and_text_code": true,
-  "9_parameter_sensitivity": true,
-  "10_readonly_scope_outputs_no_abs": true
+  "6_conservative_surplus_bound": true,
+  "7_zone_decomposition": true,
+  "8_targeted_saving_and_interval": true,
+  "9_public_push_and_free_rider": true,
+  "10_truck_units_labels_and_text_code": true,
+  "11_parameter_sensitivity": true,
+  "12_readonly_scope_outputs_no_abs": true
  },
  "settings": {
   "demand": "observed typical days (7 weekdays), full scale 1/0.128",
   "R_m": 0.45,
   "need_definition": "Delta_c = max_t max(0, dep[c,t]-arr[c,t]); h_c = argmax_t (dep-arr); N=sum Delta_c",
   "pool_index": "(target cell c, target deficit hour h_c)",
-  "source_cap": "A[j,h_c] = full-scale arrivals at j in h_c",
+  "source_cap": {
+   "upper_no_source_deficit": "A[j,h_c] (full-scale arrivals)",
+   "hourly_surplus_sources": "max(0, A[j,h_c]-D[j,h_c])",
+   "conservative_rationale": "a reroute removes a trip that would otherwise have arrived at j; if D[j,h] >= A[j,h] the cell already sends out at least as many bikes as it receives, so giving one away creates a new deficit."
+  },
   "acceptance": {
    "kappa": 2.0,
    "rho": 0.35,
@@ -92,7 +98,18 @@
    "max_source_usage_ratio": 1.0000000000000002,
    "max_target_usage_ratio": 1.0000000000000002,
    "max_hourly_offer_sum": 59380.05531104347,
-   "one_reroute_per_trip": true
+   "one_reroute_per_trip": true,
+   "source_cap": "arrivals"
+  },
+  "audit_at_r_star_conservative": {
+   "r": 1.83,
+   "q": 32777.11212887445,
+   "q_over_distinct": 0.10670067020589802,
+   "max_source_usage_ratio": 1.0,
+   "max_target_usage_ratio": 1.0,
+   "max_hourly_offer_sum": 22215.860463214725,
+   "one_reroute_per_trip": true,
+   "source_cap": "max(0,arr-dep)"
   },
   "feasibility": {
    "q_le_distinct": true,
@@ -100,7 +117,17 @@
    "target_usage_le_need": true,
    "same_cell_edges": 0
   },
+  "feasibility_conservative": {
+   "q_le_distinct": true,
+   "q_le_upper_q": true,
+   "source_usage_le_surplus": true,
+   "target_usage_le_need": true
+  },
   "lp_status_full_curve": {
+   "optimal": 13800,
+   "other": 0
+  },
+  "lp_status_conservative_curve": {
    "optimal": 13800,
    "other": 0
   }
@@ -116,7 +143,54 @@
   "all_truck": 720536.8721730611,
   "saving": 0.20830007675074336,
   "marginal_cost_at_star": 3.3462806025869742,
-  "unit": 3.3305185482504633
+  "unit": 3.3305185482504633,
+  "bound": "upper_no_source_deficit",
+  "bound_note": "source capacity is the full arrival count A[j,h_c]; a source may supply bikes even when it has no hourly surplus, so this is an upper bound on reroutable volume and saving."
+ },
+ "targeted_conservative": {
+  "r_star": 1.83,
+  "q_star": 32777.11212887443,
+  "share_of_need": 0.15150477944879126,
+  "bill": 59982.11519584021,
+  "free_rider_bill": 0.0,
+  "truck_residual": 611372.0922697596,
+  "total": 671354.2074655999,
+  "all_truck": 720536.8721730611,
+  "saving": 0.06825835929691104,
+  "marginal_cost_at_star": 3.3323223466794873,
+  "unit": 3.3305185482504633,
+  "bound": "hourly_surplus_sources",
+  "bound_note": "source capacity is max(0, A[j,h_c]-D[j,h_c]); each reroute removes a trip that would otherwise have arrived, so only a source whose arrivals exceed departures in that hour has a bike to give."
+ },
+ "zone_decomposition": {
+  "definition": "Per hour, each edge j->c moves E[y]=w*x trips out of source cell j's zone and into target cell c's zone. cross_zone_volume is the expected volume with zid[j] != zid[c]; share divides by q(r*). net_zone_hour_positive_sum is sum_{h,z} max(0, net[z,h]); max_abs_zone_hour is max_{h,z} |net[z,h]|; zones_changed counts zones whose hourly balance arr-dep+reroute_change changes sign at any hour; zones_with_reroute_net counts zones with any non-zero reroute change, which is a weaker condition.",
+  "zone_count": 50,
+  "targeted": {
+   "r": 1.76,
+   "q": 95565.8154706835,
+   "cross_zone_volume": 7133.353523437425,
+   "cross_zone_share": 0.07464335953503903,
+   "net_zone_hour_positive_sum": 4332.1059422301505,
+   "max_abs_zone_hour": 327.82857400280824,
+   "zones_changed": 19,
+   "zones_with_reroute_net": 49,
+   "zones_changed_definition": "zone whose hourly balance arr-dep+reroute_change changes sign at any hour (deficit<->surplus crossing)",
+   "zone_count": 50,
+   "source_cap": "arrivals"
+  },
+  "targeted_conservative": {
+   "r": 1.83,
+   "q": 32777.11212887445,
+   "cross_zone_volume": 2836.5735833855697,
+   "cross_zone_share": 0.08654129052714006,
+   "net_zone_hour_positive_sum": 2315.6991568250032,
+   "max_abs_zone_hour": 273.44779544403156,
+   "zones_changed": 10,
+   "zones_with_reroute_net": 47,
+   "zones_changed_definition": "zone whose hourly balance arr-dep+reroute_change changes sign at any hour (deficit<->surplus crossing)",
+   "zone_count": 50,
+   "source_cap": "surplus"
+  }
  },
  "public_push": {
   "r_star": 0.0,
@@ -184,7 +258,8 @@
   "r_star_max": 2.15,
   "q_star_min": 16648.20327763346,
   "q_star_max": 112777.83874950674,
-  "sources": "7 acceptance parameter sets x {main, lower} truck unit"
+  "sources": "7 acceptance parameter sets x {main, lower} truck unit",
+  "does_not_cover": "source-cap assumption (upper arrivals vs hourly surplus); see targeted_conservative"
  },
  "parameter_sensitivity": [
   {
@@ -708,9 +783,32 @@
  ],
  "qr_summary": {
   "R_m": 0.45,
+  "bound": "upper_no_source_deficit",
+  "source_cap": "A[j,h_c] (full arrivals)",
   "r_star": 1.76,
   "q_star": 95565.81547068334,
   "marginal_cost_at_star": 3.3462806025869742,
+  "need_total": 216343.75,
+  "distinct_candidate_trips": 307187.5000000014,
+  "acceptance": {
+   "kappa": 2.0,
+   "rho": 0.35,
+   "c0": 0.8,
+   "form": "incremental pi(r)-pi(0), logit"
+  },
+  "solver": "scipy.optimize.linprog(method='highs'), one LP per hour",
+  "status_counts": {
+   "optimal": 13800,
+   "other": 0
+  }
+ },
+ "qr_conservative_summary": {
+  "R_m": 0.45,
+  "bound": "hourly_surplus_sources",
+  "source_cap": "max(0, A[j,h_c] - D[j,h_c])",
+  "r_star": 1.83,
+  "q_star": 32777.11212887443,
+  "marginal_cost_at_star": 3.3323223466794873,
   "need_total": 216343.75,
   "distinct_candidate_trips": 307187.5000000014,
   "acceptance": {
@@ -734,8 +832,8 @@
   {
    "file": "code/t008_q3_pool.py",
    "status": "new",
-   "what": "rebuild the (c,h_c) candidate pool, solve the hourly assignment LPs, compute q(r), r*, targeted/public savings and the feasibility audit.",
-   "why": "remove the same-cell, wrong-hour and duplicate-counting paths behind the old 34.9% saving."
+   "what": "rebuild the (c,h_c) candidate pool, solve the hourly assignment LPs, compute q(r), r*, targeted/public savings and the feasibility audit. R1 adds the source_cap=surplus mode, the conservative curve, targeted_conservative and the zone decomposition.",
+   "why": "remove the same-cell, wrong-hour and duplicate-counting paths behind the old 34.9% saving; the surplus mode prevents a source with no hourly surplus from donating a bike and creating a new deficit."
   },
   {
    "file": "code/t008_delivery.py",
@@ -747,7 +845,7 @@
    "file": "code/t008_validate.py",
    "status": "new",
    "what": "independent validator",
-   "why": "recompute pool, q(r), audit and savings before delivery."
+   "why": "recompute pool, q(r), audit and savings before delivery; R1 adds independent surplus-source, conservative-optimum and zone-decomposition recomputation."
   }
  ],
  "outputs": {
@@ -756,6 +854,7 @@
   "required": [
    "q3_pool.npz",
    "q3_qr.json",
+   "q3_qr_conservative.json",
    "q3_results.json",
    "q3_pool_audit.json"
   ]
@@ -764,7 +863,10 @@
   "Pool index is (target cell c, target deficit hour h_c); candidate trips end at j!=c within 450 m and are counted in the arrivals at j in h_c. Same-cell redirections are excluded (0 edges). The removed same-cell units are 34.110% of the naive pair pool, which reproduces the old 34.105% path as an audit figure, not a result.",
   "One reroute per trip is enforced by sum_c x[j,c,h] <= A[j,h]. The naive pair pool is 334,147.32 units vs 307,187.50 distinct source-hour units (ratio 1.0878, the M8 1.09); the LP resolves it, so q(r*) = 95,565.82 <= distinct.",
   "The old 2.93 ratio is reproduced as 334,147.32/113,936 = 2.9328; the difference comes from the old source-own-deficit-hour count, not from the new target-hour pool.",
-  "Targeted push: r*=1.76 CNY, q*=95,565.82 (44.17% of N), bill 168,195.84, truck residual 402,253.15, total 570,448.99 vs 720,536.87 all-truck, saving 20.83% at TRUCK_UNIT=3.3305. The 14-row interval spans 2.97%-30.22% over kappa/rho/c0 and the two truck units; no provisional rows remain.",
+  "Targeted upper bound (bound=upper_no_source_deficit, source capacity = full arrivals A[j,h_c]): r*=1.76 CNY, q*=95,565.82 (44.17% of N), bill 168,195.84, truck residual 402,253.15, total 570,448.99 vs 720,536.87 all-truck, saving 20.83% at TRUCK_UNIT=3.3305. This is an upper bound because a source with no hourly surplus is allowed to donate a bike.",
+  "Conservative bound (bound=hourly_surplus_sources, source capacity = max(0, arr-dep)): r*=1.83 CNY, q*=32,777.11 (15.15% of N), bill 59,982.12, truck residual 611,372.09, total 671,354.21 vs 720,536.87, saving 6.826%. It matches the R1 reference r*=1.83, q*=32,777.11 and 6.826% within 1e-4. Every source hour has enough surplus to cover the reroutes it supplies.",
+  "Zone decomposition at each bound's own r*: targeted cross-zone 7,133.35 (7.464% of q), positive zone-hour sum 4,332.11, max |zone-hour| 327.83, 19 zones flip between deficit and surplus; conservative cross-zone 2,836.57 (8.654%), positive sum 2,315.70, max 273.45, 10 zones flip.",
+  "The 14-row interval (7 kappa/rho/c0 sets x 2 truck units) covers acceptance and truck-cost uncertainty only. It does not cover the source-cap assumption, so the upper and conservative bounds are separate scenarios, not two ends of that interval.",
   "Public push with the corrected unit is not profitable: the optimum is r=0 (saving 0). At r=1.2 it loses 0.22% while paying 120,049.55 to free riders; with the historical unit 3.478 it saves 0.98%, not the old 2.1% (that figure used a non-flow pool). All three are reported so T012 can state the lower bound honestly.",
   "The free-rider count is 100,041.29 existing non-same-cell arrivals into target cells in their deficit hours; targeted push pays zero free riders by construction.",
   "Acceptance parameters are not identified from May 2017 (no reward was offered); the 7-set x 2-unit sweep is the interval. TRUCK_UNIT is final from T007: 3.3305 main, 1.8718 lower; the old 3.478 is obsolete except as a historical comparison.",

@@ -102,8 +102,48 @@ def acceptance(r, d, kappa=KAPPA, rho=RHO, c0=C0):
     return 1.0 / (1.0 + np.exp(-(kappa * r - rho * tau_min(d) - c0)))
 
 
-def q_curve(rs, cache, arr, need, params):
+def source_caps(h, src, arr, dep=None, source_cap="arrivals"):
+    """Per-source-hour capacity.
+
+    "arrivals" (upper bound): A[j,h], every arrival may be rerouted.
+    "surplus"  (conservative): max(0, A[j,h] - D[j,h]), only the net inflow
+               that would otherwise leave the cell is available.  A source
+               with arrivals <= departures has zero spare bikes and cannot
+               supply a reroute without creating a new deficit there.
+    """
+    caps = arr[h, src].astype(np.float64)
+    if source_cap == "surplus":
+        if dep is None:
+            raise ValueError("surplus source cap needs departures")
+        caps = np.maximum(0.0, caps - dep[h, src])
+    elif source_cap != "arrivals":
+        raise ValueError("unknown source_cap %r" % (source_cap,))
+    return caps
+
+
+def _hour_lp(r, e, h, arr, dep, need, params, source_cap):
+    """Build and solve one hourly LP; returns (w, x, si, src, tg) or None."""
     kappa, rho, c0 = params
+    src, tg, si, ti, d = e
+    w = acceptance(r, d, kappa, rho, c0) \
+        - acceptance(0.0, d, kappa, rho, c0)
+    keep = w > 1e-12
+    if not keep.any():
+        return None
+    si, ti, w = si[keep], ti[keep], w[keep]
+    ne = len(w)
+    A = coo_matrix((np.r_[np.ones(ne), w],
+                    (np.r_[si, len(src) + ti],
+                     np.r_[np.arange(ne), np.arange(ne)])),
+                   shape=(len(src) + len(tg), ne)).tocsr()
+    caps = source_caps(h, src, arr, dep, source_cap)
+    b = np.r_[caps, need[tg]]
+    res = linprog(-w, A_ub=A, b_ub=b, bounds=(0, None), method="highs")
+    return w, res, si, src, tg, caps, ti
+
+
+def q_curve(rs, cache, arr, need, params, dep=None,
+            source_cap="arrivals"):
     out = np.zeros(len(rs))
     statuses = {"optimal": 0, "other": 0}
     for idx, r in enumerate(rs):
@@ -111,22 +151,10 @@ def q_curve(rs, cache, arr, need, params):
         for h, e in cache.items():
             if e is None:
                 continue
-            src, tg, si, ti, d = e
-            w = acceptance(r, d, kappa, rho, c0) \
-                - acceptance(0.0, d, kappa, rho, c0)
-            keep = w > 1e-12
-            if not keep.any():
+            got = _hour_lp(r, e, h, arr, dep, need, params, source_cap)
+            if got is None:
                 continue
-            si, ti, w = si[keep], ti[keep], w[keep]
-            ne = len(w)
-            rows = np.r_[si, len(src) + ti]
-            cols = np.r_[np.arange(ne), np.arange(ne)]
-            vals = np.r_[np.ones(ne), w]
-            A = coo_matrix((vals, (rows, cols)),
-                           shape=(len(src) + len(tg), ne)).tocsr()
-            b = np.r_[arr[h, src], need[tg]]
-            res = linprog(-w, A_ub=A, b_ub=b, bounds=(0, None),
-                          method="highs")
+            w, res = got[0], got[1]
             if res.status == 0:
                 statuses["optimal"] += 1
                 total += -float(res.fun)
@@ -136,8 +164,8 @@ def q_curve(rs, cache, arr, need, params):
     return out, statuses
 
 
-def solve_audit(r, cache, arr, need, params):
-    kappa, rho, c0 = params
+def solve_audit(r, cache, arr, need, params, dep=None,
+                source_cap="arrivals"):
     max_src = 0.0
     max_tgt = 0.0
     max_offer = 0.0
@@ -145,27 +173,17 @@ def solve_audit(r, cache, arr, need, params):
     for h, e in cache.items():
         if e is None:
             continue
-        src, tg, si, ti, d = e
-        w = acceptance(r, d, kappa, rho, c0) \
-            - acceptance(0.0, d, kappa, rho, c0)
-        keep = w > 1e-12
-        if not keep.any():
+        got = _hour_lp(r, e, h, arr, dep, need, params, source_cap)
+        if got is None:
             continue
-        si, ti, w = si[keep], ti[keep], w[keep]
-        ne = len(w)
-        A = coo_matrix((np.r_[np.ones(ne), w],
-                        (np.r_[si, len(src) + ti],
-                         np.r_[np.arange(ne), np.arange(ne)])),
-                       shape=(len(src) + len(tg), ne)).tocsr()
-        b = np.r_[arr[h, src], need[tg]]
-        res = linprog(-w, A_ub=A, b_ub=b, bounds=(0, None), method="highs")
+        w, res, si, src, tg, caps, ti = got
         if res.status != 0:
             continue
         x = res.x
         q += float(w @ x)
         src_use = np.bincount(si, weights=x, minlength=len(src))
         max_src = max(max_src, float(np.max(src_use / np.maximum(
-            arr[h, src], 1e-12))))
+            caps, 1e-12))))
         tgt_use = np.bincount(ti, weights=w * x, minlength=len(tg))
         max_tgt = max(max_tgt, float(np.max(tgt_use / np.maximum(
             need[tg], 1e-12))))
@@ -173,6 +191,68 @@ def solve_audit(r, cache, arr, need, params):
     return {"q": q, "max_source_usage_ratio": max_src,
             "max_target_usage_ratio": max_tgt,
             "max_hourly_offer_sum": max_offer}
+
+
+def zone_flows(r, cache, arr, dep, need, zid, n_zones, params,
+               source_cap="arrivals"):
+    """Zone-level expected flows of the assignment LP at reward r.
+
+    Each accepted candidate edge e=(j->c,h) moves E[y_e]=w_e*x_e trips from
+    source cell j to target cell c.  The cell net change is -y at j and +y
+    at c; summing by zone gives an hourly zone-by-zone net change matrix.
+    A zone is "changed" when its hourly balance (baseline arrivals minus
+    departures plus the reroute change) flips sign, i.e. the zone crosses
+    between deficit and surplus at some hour.  This is the count the task
+    sheet asks for; zones that merely see a non-zero flow but never flip
+    are reported separately as zones_with_reroute_net.
+    """
+    net = np.zeros((24, n_zones))
+    base = np.zeros((24, n_zones))
+    for h in range(24):
+        base[h] = np.bincount(zid, weights=arr[h] - dep[h],
+                              minlength=n_zones)
+    cross = 0.0
+    q = 0.0
+    for h, e in cache.items():
+        if e is None:
+            continue
+        got = _hour_lp(r, e, h, arr, dep, need, params, source_cap)
+        if got is None:
+            continue
+        w, res, si, src, tg, caps, ti = got
+        if res.status != 0:
+            continue
+        x = res.x
+        y = w * x
+        q += float(y.sum())
+        src_cells = src[si]
+        dst_cells = tg[ti]
+        cross += float(y[zid[src_cells] != zid[dst_cells]].sum())
+        cell_net = (np.bincount(dst_cells, weights=y, minlength=len(zid))
+                    - np.bincount(src_cells, weights=y, minlength=len(zid)))
+        net[h] = np.bincount(zid, weights=cell_net, minlength=n_zones)
+    pos = float(np.maximum(net, 0.0).sum())
+    total = base + net
+    sgn_base = np.sign(np.where(np.abs(base) < 1e-9, 0.0, base))
+    sgn_total = np.sign(np.where(np.abs(total) < 1e-9, 0.0, total))
+    flips = sgn_base != sgn_total
+    zones_changed = int(np.count_nonzero(flips.any(0)))
+    return {
+        "r": float(r),
+        "q": q,
+        "cross_zone_volume": cross,
+        "cross_zone_share": float(cross / q) if q > 0 else None,
+        "net_zone_hour_positive_sum": pos,
+        "max_abs_zone_hour": float(np.abs(net).max()),
+        "zones_changed": zones_changed,
+        "zones_with_reroute_net": int(
+            np.count_nonzero(np.abs(net).sum(0) > 1e-6)),
+        "zones_changed_definition": (
+            "zone whose hourly balance arr-dep+reroute_change changes sign "
+            "at any hour (deficit<->surplus crossing)"),
+        "zone_count": int(n_zones),
+        "source_cap": source_cap,
+    }
 
 
 def main():
@@ -245,6 +325,22 @@ def main():
         }
 
     targeted = pack_opt(rs_dense, q_dense, TRUCK_MAIN)
+    targeted["bound"] = "upper_no_source_deficit"
+    targeted["bound_note"] = (
+        "source capacity is the full arrival count A[j,h_c]; a source may "
+        "supply bikes even when it has no hourly surplus, so this is an "
+        "upper bound on reroutable volume and saving.")
+
+    # Conservative source cap: only the hourly surplus max(0, arr-dep) at a
+    # source can be rerouted without creating a new deficit there.
+    q_cons, status_cons = q_curve(rs_dense, cache, arr, need, PARAMS[0],
+                                  dep=dep, source_cap="surplus")
+    targeted_cons = pack_opt(rs_dense, q_cons, TRUCK_MAIN)
+    targeted_cons["bound"] = "hourly_surplus_sources"
+    targeted_cons["bound_note"] = (
+        "source capacity is max(0, A[j,h_c]-D[j,h_c]); each reroute removes "
+        "a trip that would otherwise have arrived, so only a source whose "
+        "arrivals exceed departures in that hour has a bike to give.")
     free_units = float(arx[tstar[targets], targets].sum())
     public = pack_opt(rs_dense, q_dense, TRUCK_MAIN, free=free_units)
     TRUCK_OLD = 3.478
@@ -279,6 +375,29 @@ def main():
         "unit": float(TRUCK_MAIN),
     }
 
+    # Zone decomposition of both bounds at their own optima.  The counts are
+    # expected (LP-weighted) trips, not realised reroutes.
+    zid = cells["zone"].to_numpy().astype(np.int64)
+    n_zones = int(zid.max()) + 1
+    zone_dec = {
+        "definition": (
+            "Per hour, each edge j->c moves E[y]=w*x trips out of source cell "
+            "j's zone and into target cell c's zone. cross_zone_volume is the "
+            "expected volume with zid[j] != zid[c]; share divides by q(r*). "
+            "net_zone_hour_positive_sum is sum_{h,z} max(0, net[z,h]); "
+            "max_abs_zone_hour is max_{h,z} |net[z,h]|; zones_changed counts "
+            "zones whose hourly balance arr-dep+reroute_change changes sign "
+            "at any hour; zones_with_reroute_net counts zones with any "
+            "non-zero reroute change, which is a weaker condition."),
+        "zone_count": n_zones,
+        "targeted": zone_flows(targeted["r_star"], cache, arr, dep, need,
+                               zid, n_zones, PARAMS[0],
+                               source_cap="arrivals"),
+        "targeted_conservative": zone_flows(
+            targeted_cons["r_star"], cache, arr, dep, need, zid, n_zones,
+            PARAMS[0], source_cap="surplus"),
+    }
+
     # parameter / truck-unit sensitivity, coarser reward grid
     rs_coarse = np.round(np.arange(0.0, 6.0001, 0.05), 4)
     rows = []
@@ -305,9 +424,13 @@ def main():
         "q_star_min": float(min(row["targeted"]["q_star"] for row in rows)),
         "q_star_max": float(max(row["targeted"]["q_star"] for row in rows)),
         "sources": "7 acceptance parameter sets x {main, lower} truck unit",
+        "does_not_cover": "source-cap assumption (upper arrivals vs hourly "
+                          "surplus); see targeted_conservative",
     }
 
     audit = solve_audit(targeted["r_star"], cache, arr, need, PARAMS[0])
+    audit_cons = solve_audit(targeted_cons["r_star"], cache, arr, need,
+                             PARAMS[0], dep=dep, source_cap="surplus")
     q3_audit = {
         "R_m": R,
         "n_cells": int(C),
@@ -348,6 +471,20 @@ def main():
             "max_target_usage_ratio": float(audit["max_target_usage_ratio"]),
             "max_hourly_offer_sum": float(audit["max_hourly_offer_sum"]),
             "one_reroute_per_trip": True,
+            "source_cap": "arrivals",
+        },
+        "audit_at_r_star_conservative": {
+            "r": targeted_cons["r_star"],
+            "q": float(audit_cons["q"]),
+            "q_over_distinct": float(audit_cons["q"] / distinct_units),
+            "max_source_usage_ratio": float(
+                audit_cons["max_source_usage_ratio"]),
+            "max_target_usage_ratio": float(
+                audit_cons["max_target_usage_ratio"]),
+            "max_hourly_offer_sum": float(
+                audit_cons["max_hourly_offer_sum"]),
+            "one_reroute_per_trip": True,
+            "source_cap": "max(0,arr-dep)",
         },
         "feasibility": {
             "q_le_distinct": bool(audit["q"] <= distinct_units * (1 + 1e-9)),
@@ -357,11 +494,23 @@ def main():
                 audit["max_target_usage_ratio"] <= 1 + 1e-6),
             "same_cell_edges": 0,
         },
+        "feasibility_conservative": {
+            "q_le_distinct": bool(
+                audit_cons["q"] <= distinct_units * (1 + 1e-9)),
+            "q_le_upper_q": bool(audit_cons["q"] <= audit["q"] * (1 + 1e-9)),
+            "source_usage_le_surplus": bool(
+                audit_cons["max_source_usage_ratio"] <= 1 + 1e-6),
+            "target_usage_le_need": bool(
+                audit_cons["max_target_usage_ratio"] <= 1 + 1e-6),
+        },
         "lp_status_full_curve": status,
+        "lp_status_conservative_curve": status_cons,
     }
 
     qr = {
         "R_m": R,
+        "bound": "upper_no_source_deficit",
+        "source_cap": "A[j,h_c] (full arrivals)",
         "r_grid": [float(v) for v in rs_dense],
         "q": [float(v) for v in q_dense],
         "bill": [float(r * q) for r, q in zip(rs_dense, q_dense)],
@@ -380,6 +529,28 @@ def main():
         "solver": "scipy.optimize.linprog(method='highs'), one LP per hour",
         "status_counts": status,
     }
+    qr_cons = {
+        "R_m": R,
+        "bound": "hourly_surplus_sources",
+        "source_cap": "max(0, A[j,h_c] - D[j,h_c])",
+        "r_grid": [float(v) for v in rs_dense],
+        "q": [float(v) for v in q_cons],
+        "bill": [float(r * q) for r, q in zip(rs_dense, q_cons)],
+        "marginal_cost": [
+            None if i == 0 or q_cons[i] <= q_cons[i - 1] else
+            float((rs_dense[i] * q_cons[i] - rs_dense[i - 1] * q_cons[i - 1])
+                  / (q_cons[i] - q_cons[i - 1]))
+            for i in range(len(rs_dense))],
+        "r_star": targeted_cons["r_star"],
+        "q_star": targeted_cons["q_star"],
+        "marginal_cost_at_star": targeted_cons["marginal_cost_at_star"],
+        "need_total": N,
+        "distinct_candidate_trips": distinct_units,
+        "acceptance": {"kappa": KAPPA, "rho": RHO, "c0": C0,
+                       "form": "incremental pi(r)-pi(0), logit"},
+        "solver": "scipy.optimize.linprog(method='highs'), one LP per hour",
+        "status_counts": status_cons,
+    }
 
     results = {
         "settings": {
@@ -388,7 +559,14 @@ def main():
             "need_definition": "Delta_c = max_t max(0, dep[c,t]-arr[c,t]); "
                                "h_c = argmax_t (dep-arr); N=sum Delta_c",
             "pool_index": "(target cell c, target deficit hour h_c)",
-            "source_cap": "A[j,h_c] = full-scale arrivals at j in h_c",
+            "source_cap": {
+                "upper_no_source_deficit": "A[j,h_c] (full-scale arrivals)",
+                "hourly_surplus_sources": "max(0, A[j,h_c]-D[j,h_c])",
+                "conservative_rationale": "a reroute removes a trip that "
+                    "would otherwise have arrived at j; if D[j,h] >= A[j,h] "
+                    "the cell already sends out at least as many bikes as it "
+                    "receives, so giving one away creates a new deficit.",
+            },
             "acceptance": {"kappa": KAPPA, "rho": RHO, "c0": C0,
                            "incremental": True},
             "truck_unit_main": float(TRUCK_MAIN),
@@ -400,6 +578,8 @@ def main():
             "provisional": [],
         },
         "targeted": targeted,
+        "targeted_conservative": targeted_cons,
+        "zone_decomposition": zone_dec,
         "public_push": public,
         "public_push_positive_reward": public_positive,
         "public_push_at_r_1_2": public_at_12,
@@ -457,11 +637,27 @@ def main():
             "Acceptance parameters are not identified from May 2017 (no "
             "reward was offered); the interval row sweeps kappa/rho/c0 and "
             "the two truck units.",
+            "Ticket r* and bill are the same LP that produced q(r); the two "
+            "bounds differ only in the source-capacity row.",
+            "The conservative bound uses max(0, A[j,h_c]-D[j,h_c]) at each "
+            "source. It is the physically admissible reroute volume: a "
+            "source with no hourly surplus cannot give a bike without "
+            "becoming a new deficit cell.",
+            "The 14-row interval (7 kappa/rho/c0 sets x 2 truck units) covers "
+            "acceptance-parameter and truck-cost uncertainty only. It does "
+            "not cover the source-cap assumption; that is why the upper and "
+            "conservative bounds are reported as two scenarios, not as ends "
+            "of the same interval.",
+            "Zone decomposition is an expected-flow decomposition at each "
+            "bound's own r*: cross-zone volume, its share of q(r*), the sum "
+            "of positive hourly zone net changes, the largest absolute "
+            "zone-hour change and the count of zones changed.",
             "No paper/review/data file outside data/runs/T008 is written.",
         ],
         "outputs": {
             "pool": "data/runs/T008/q3_pool.npz",
             "qr": "data/runs/T008/q3_qr.json",
+            "qr_conservative": "data/runs/T008/q3_qr_conservative.json",
             "results": "data/runs/T008/q3_results.json",
             "audit": "data/runs/T008/q3_pool_audit.json",
         },
@@ -469,6 +665,9 @@ def main():
 
     with open(os.path.join(RUN, "q3_qr.json"), "w", encoding="utf-8") as fh:
         json.dump(qr, fh, ensure_ascii=False, indent=1)
+    with open(os.path.join(RUN, "q3_qr_conservative.json"), "w",
+              encoding="utf-8") as fh:
+        json.dump(qr_cons, fh, ensure_ascii=False, indent=1)
     with open(os.path.join(RUN, "q3_results.json"), "w",
               encoding="utf-8") as fh:
         json.dump(results, fh, ensure_ascii=False, indent=1)
@@ -481,6 +680,8 @@ def main():
         "distinct": distinct_units, "dup": naive_units / distinct_units,
         "same": same_units,
         "targeted": targeted, "public": public,
+        "targeted_conservative": targeted_cons,
+        "zone_decomposition": zone_dec,
         "interval": interval,
         "audit": q3_audit["audit_at_r_star"],
     }, ensure_ascii=False, indent=1))

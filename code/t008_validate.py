@@ -127,7 +127,17 @@ def pi(r, d, kappa=KAPPA, rho=RHO, c0=C0):
     return 1.0 / (1.0 + np.exp(-(kappa * r - rho * tau(d) - c0)))
 
 
-def q_at(r, cache, arr, need, params=(KAPPA, RHO, C0), want_x=False):
+def source_caps(h, src, arr, dep, source_cap):
+    caps = arr[h, src].astype(np.float64)
+    if source_cap == "surplus":
+        caps = np.maximum(0.0, caps - dep[h, src])
+    elif source_cap != "arrivals":
+        raise ValueError("unknown source_cap %r" % (source_cap,))
+    return caps
+
+
+def q_at(r, cache, arr, need, params=(KAPPA, RHO, C0), dep=None,
+         source_cap="arrivals", want_x=False):
     kappa, rho, c0 = params
     total = 0.0
     max_src = 0.0
@@ -148,7 +158,8 @@ def q_at(r, cache, arr, need, params=(KAPPA, RHO, C0), want_x=False):
                         (np.r_[si, len(src) + ti],
                          np.r_[np.arange(ne), np.arange(ne)])),
                        shape=(len(src) + len(tg), ne)).tocsr()
-        b = np.r_[arr[h, src], need[tg]]
+        caps = source_caps(h, src, arr, dep, source_cap)
+        b = np.r_[caps, need[tg]]
         res = linprog(-w, A_ub=A, b_ub=b, bounds=(0, None), method="highs")
         statuses.append(int(res.status))
         if res.status != 0:
@@ -157,7 +168,7 @@ def q_at(r, cache, arr, need, params=(KAPPA, RHO, C0), want_x=False):
         total += float(w @ x)
         use = np.bincount(si, weights=x, minlength=len(src))
         max_src = max(max_src, float(np.max(use / np.maximum(
-            arr[h, src], 1e-12))))
+            caps, 1e-12))))
         tu = np.bincount(ti, weights=w * x, minlength=len(tg))
         max_tgt = max(max_tgt, float(np.max(tu / np.maximum(
             need[tg], 1e-12))))
@@ -166,6 +177,57 @@ def q_at(r, cache, arr, need, params=(KAPPA, RHO, C0), want_x=False):
             "max_target_usage_ratio": max_tgt,
             "max_hourly_offer_sum": max_offer,
             "statuses": statuses}
+
+
+def zone_at(r, cache, arr, dep, need, zid, n_zones,
+            params=(KAPPA, RHO, C0), source_cap="arrivals"):
+    """Independent recomputation of the zone decomposition."""
+    kappa, rho, c0 = params
+    net = np.zeros((24, n_zones))
+    base = np.zeros((24, n_zones))
+    for h in range(24):
+        base[h] = np.bincount(zid, weights=arr[h] - dep[h],
+                              minlength=n_zones)
+    cross = 0.0
+    total_q = 0.0
+    for h, e in cache.items():
+        if e is None:
+            continue
+        src, tg, si, ti, d = e
+        w = pi(r, d, kappa, rho, c0) - pi(0.0, d, kappa, rho, c0)
+        keep = w > 1e-12
+        if not keep.any():
+            continue
+        si, ti, w = si[keep], ti[keep], w[keep]
+        ne = len(w)
+        A = coo_matrix((np.r_[np.ones(ne), w],
+                        (np.r_[si, len(src) + ti],
+                         np.r_[np.arange(ne), np.arange(ne)])),
+                       shape=(len(src) + len(tg), ne)).tocsr()
+        caps = source_caps(h, src, arr, dep, source_cap)
+        res = linprog(-w, A_ub=A, b_ub=np.r_[caps, need[tg]],
+                      bounds=(0, None), method="highs")
+        if res.status != 0:
+            continue
+        y = w * res.x
+        total_q += float(y.sum())
+        sc, dc = src[si], tg[ti]
+        cross += float(y[zid[sc] != zid[dc]].sum())
+        cn = (np.bincount(dc, weights=y, minlength=len(zid))
+              - np.bincount(sc, weights=y, minlength=len(zid)))
+        net[h] = np.bincount(zid, weights=cn, minlength=n_zones)
+    tot = base + net
+    sb = np.sign(np.where(np.abs(base) < 1e-9, 0.0, base))
+    st = np.sign(np.where(np.abs(tot) < 1e-9, 0.0, tot))
+    changed = int(np.count_nonzero((sb != st).any(0)))
+    return {
+        "q": total_q,
+        "cross_zone_volume": cross,
+        "cross_zone_share": cross / total_q if total_q > 0 else None,
+        "net_zone_hour_positive_sum": float(np.maximum(net, 0).sum()),
+        "max_abs_zone_hour": float(np.abs(net).max()),
+        "zones_changed": changed,
+    }
 
 
 def pack(r, q, unit, free=0.0, N=216343.75):
@@ -288,7 +350,66 @@ def main():
           f"q={au['q']:,.1f} <= distinct {distinct:,.1f}; "
           f"source max {au['max_source_usage_ratio']:.12f}")
 
-    # 6 --- targeted savings and interval ----------------------------------
+    # 6 --- conservative hourly-surplus bound ------------------------------
+    qr_c = json.load(io.open(os.path.join(RUN, "q3_qr_conservative.json"),
+                             encoding="utf-8"))
+    rsc = np.array(qr_c["r_grid"])
+    qsc = np.array(qr_c["q"])
+    cons_ok = len(rsc) == len(qsc) and np.all(np.diff(rsc) > 0)
+    cons_ok &= np.all(np.diff(qsc) >= -1e-9)
+    cons_ok &= np.all(qsc <= qs + 1e-9)
+    for r in (0.0, 0.5, 1.0, float(qr_c["r_star"]), 2.0, 3.0):
+        got = q_at(r, cache, arr, need, dep=dep,
+                   source_cap="surplus")["q"]
+        cons_ok &= close(got, float(np.interp(r, rsc, qsc)), 1e-6)
+    cons_total = rsc * qsc + TRUCK_MAIN * (N - qsc)
+    ic = int(np.argmin(cons_total))
+    cons_ok &= close(rsc[ic], res["targeted_conservative"]["r_star"], 1e-12)
+    cons_ok &= close(qsc[ic], res["targeted_conservative"]["q_star"], 1e-9)
+    cons_ok &= close(rsc[ic], 1.83, 1e-12)
+    cons_ok &= abs(qsc[ic] - 32777.11) <= 1e-2
+    cons_save = 1.0 - cons_total[ic] / (TRUCK_MAIN * N)
+    cons_ok &= abs(cons_save - 0.06826) <= 1e-4
+    cons_ok &= close(cons_save,
+                     res["targeted_conservative"]["saving"], 1e-9)
+    cons_ok &= (res["targeted_conservative"]["bound"]
+                == "hourly_surplus_sources")
+    cons_ok &= (res["targeted"]["bound"] == "upper_no_source_deficit")
+    check("6 conservative surplus-source bound", cons_ok,
+          f"r*={rsc[ic]:.2f}, q*={qsc[ic]:,.2f}, "
+          f"saving {100*cons_save:.4f}%")
+
+    # 7 --- zone decomposition --------------------------------------------
+    zid = cells["zone"].to_numpy().astype(np.int64)
+    n_zones = int(zid.max()) + 1
+    zd = res["zone_decomposition"]
+    z_ok = True
+    for name, source_cap in (("targeted", "arrivals"),
+                             ("targeted_conservative", "surplus")):
+        got = zone_at(float(res[name]["r_star"]), cache, arr, dep, need,
+                      zid, n_zones, source_cap=source_cap)
+        want = zd[name]
+        z_ok &= close(got["q"], want["q"], 1e-9)
+        z_ok &= close(got["cross_zone_volume"],
+                      want["cross_zone_volume"], 1e-9)
+        z_ok &= close(got["cross_zone_share"],
+                      want["cross_zone_share"], 1e-9)
+        z_ok &= close(got["net_zone_hour_positive_sum"],
+                      want["net_zone_hour_positive_sum"], 1e-9)
+        z_ok &= close(got["max_abs_zone_hour"],
+                      want["max_abs_zone_hour"], 1e-9)
+        z_ok &= got["zones_changed"] == want["zones_changed"]
+    zt = zd["targeted"]
+    z_ok &= abs(zt["cross_zone_volume"] - 7133.35) <= 0.01
+    z_ok &= abs(zt["cross_zone_share"] - 0.0746) <= 1e-4
+    z_ok &= abs(zt["net_zone_hour_positive_sum"] - 4332.11) <= 0.01
+    z_ok &= abs(zt["max_abs_zone_hour"] - 327.83) <= 0.01
+    z_ok &= zt["zones_changed"] == 19
+    check("7 zone decomposition targeted and conservative", z_ok,
+          f"cross {zt['cross_zone_volume']:,.2f}, share "
+          f"{zt['cross_zone_share']:.4f}, zones {zt['zones_changed']}")
+
+    # 8 --- targeted savings and interval ----------------------------------
     t = res["targeted"]
     sav_ok = close(t["all_truck"], TRUCK_MAIN * N, 1e-9)
     sav_ok &= close(t["bill"], t["r_star"] * t["q_star"], 1e-9)
@@ -307,12 +428,12 @@ def main():
                     min(row["targeted"]["saving"] for row in rows), 1e-9)
     sav_ok &= close(res["interval"]["targeted_saving_max"],
                     max(row["targeted"]["saving"] for row in rows), 1e-9)
-    check("6 targeted saving and interval", sav_ok,
+    check("8 targeted saving and interval", sav_ok,
           f"saving {100*t['saving']:.2f}%, interval "
           f"[{100*res['interval']['targeted_saving_min']:.2f}, "
           f"{100*res['interval']['targeted_saving_max']:.2f}]%")
 
-    # 7 --- public push and free-rider cost --------------------------------
+    # 9 --- public push and free-rider cost --------------------------------
     free = float(arx[tstar[pos], np.where(pos)[0]].sum())
     pub = res["public_push"]
     pub_ok = close(res["free_rider"]["units"], free, 1e-9)
@@ -329,11 +450,11 @@ def main():
     pub_ok &= close(old["saving"],
                     1.0 - old["total"] / (3.478 * N), 1e-9)
     pub_ok &= free > 0 and res["free_rider"]["targeted_free_rider_bill"] == 0
-    check("7 public push and free-rider bill", pub_ok,
+    check("9 public push and free-rider bill", pub_ok,
           f"free riders {free:,.2f}; public new-unit saving "
           f"{100*pub['saving']:.2f}%, old-unit {100*old['saving']:.2f}%")
 
-    # 8 --- truck units and text-code consistency -------------------------
+    # 10 --- truck units, labels and text-code consistency ----------------
     unit_ok = close(TRUCK_MAIN, 3.3305185482504633, 1e-12)
     unit_ok &= close(TRUCK_LOW, 1.871804950736993, 1e-12)
     unit_ok &= close(res["settings"]["truck_unit_main"], TRUCK_MAIN, 1e-9)
@@ -341,10 +462,14 @@ def main():
     unit_ok &= "3.478" in res["settings"]["truck_unit_source"]
     unit_ok &= res["text_code_consistency"]["status"].startswith("code changed")
     unit_ok &= "target cell" in res["text_code_consistency"]["new"]
-    check("8 truck units and text-code consistency", unit_ok,
+    unit_ok &= bool(res["settings"]["source_cap"]["upper_no_source_deficit"])
+    unit_ok &= bool(res["settings"]["source_cap"]["hourly_surplus_sources"])
+    unit_ok &= "does_not_cover" in res["interval"]
+    unit_ok &= "source-cap" in res["interval"]["does_not_cover"]
+    check("10 truck units, labels and interval caveat", unit_ok,
           f"main {TRUCK_MAIN:.4f}, lower {TRUCK_LOW:.4f}")
 
-    # 9 --- parameter sensitivity and monotonicity ------------------------
+    # 11 --- parameter sensitivity and monotonicity -----------------------
     ps_ok = True
     for row in rows:
         ps_ok &= row["public"]["saving"] <= row["targeted"]["saving"] + 1e-9
@@ -353,10 +478,10 @@ def main():
     ps_ok &= res["interval"]["r_star_min"] <= res["interval"]["r_star_max"]
     ps_ok &= res["interval"]["q_star_min"] <= res["interval"]["q_star_max"]
     ps_ok &= res["interval"]["public_saving_min"] <= res["interval"]["public_saving_max"]
-    check("9 parameter sensitivity consistency", ps_ok,
+    check("11 parameter sensitivity consistency", ps_ok,
           f"{len(rows)} rows")
 
-    # 10 --- read-only, scope, outputs, delivery, no abs paths ------------
+    # 12 --- read-only, scope, outputs, delivery, no abs paths ------------
     fp15 = json.load(io.open(T015_FP, encoding="utf-8"))["trees"]
     fp1 = json.load(io.open(T001_FP, encoding="utf-8"))["trees"]["review"]
     ro = True
@@ -384,16 +509,16 @@ def main():
             if any(m in line for m in ABS_MARKERS):
                 abs_hits.append({"file": rel, "line": lineno,
                                  "text": line.strip()})
-    required = ["q3_pool.npz", "q3_qr.json", "q3_results.json",
-                "q3_pool_audit.json"]
+    required = ["q3_pool.npz", "q3_qr.json", "q3_qr_conservative.json",
+                "q3_results.json", "q3_pool_audit.json"]
     missing = [p for p in required if not os.path.exists(os.path.join(RUN, p))]
     dpath = os.path.join(DELIV, "T008_delivery.json")
     delivery_ok = os.path.exists(dpath)
     if delivery_ok:
         delivery = json.load(io.open(dpath, encoding="utf-8"))
-        delivery_ok = (len(delivery["checks"]) == 10
+        delivery_ok = (len(delivery["checks"]) == 12
                        and all(delivery["checks"].values()))
-    check("10 readonly, scope, outputs, delivery, no abs paths",
+    check("12 readonly, scope, outputs, delivery, no abs paths",
           ro and scope and not abs_hits and not missing and delivery_ok,
           f"modified {len(modified)}, untracked {len(untracked)}")
 
