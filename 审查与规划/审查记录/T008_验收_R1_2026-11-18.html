@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T008 验收：打回 R1</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T008 验收：打回 R1（池与 q(r) 通过；节省率补两处口径）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T008_delivery.json</code>（commit d8bfcd7）　·　结论：<strong>打回 R1</strong>，池与 q(r) 部分已通过</p>
+
+<div class="box ok">
+<p><strong>已通过独立复核的部分。</strong>我从 <code>lib.TYP_DAYS</code> 重建全部输入，不用你的脚本：N=216,343.75、5,188 个目标格、8,163 条边；naive 334,147.3214 / distinct 307,187.5000 / same 113,977.6786 / 重复比 1.087763，逐位一致。我在 r*=1.76 重解 24 个小时级 LP，得 q=95,565.815471、边际 3.346281，与交付逐位一致；公开推送 r=0、r=1.2（−0.2210%）、旧单位 3.478（0.9759%）三行也逐位复现。14 行灵敏度区间 2.9674%–30.2163% 我全部重跑，与你一致（min 在 κ=1 + lower，max 在 κ=3 + main）。</p>
+</div>
+
+<h2>复核数字</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>我复算</th><th>交付</th></tr></thead>
+<tbody>
+<tr><td>目标格 / 边 / 同格边</td><td>5,188 / 8,163 / 0</td><td>同</td></tr>
+<tr><td>naive / distinct / same</td><td>334,147.3214 / 307,187.5000 / 113,977.6786</td><td>同</td></tr>
+<tr><td>q(1.76) / 边际</td><td>95,565.815471 / 3.346281</td><td>95,565.81547068334 / 3.3462806026</td></tr>
+<tr><td>定向账单 + 卡车残值</td><td>168,195.84 + 402,253.15 = 570,448.99</td><td>同</td></tr>
+<tr><td>全卡车 / 节省</td><td>720,536.87 / 20.8300%</td><td>同</td></tr>
+<tr><td>公开推送 r=0 / 1.2 / 旧 3.478</td><td>0 / −0.2210% / 0.9759%</td><td>同</td></tr>
+<tr><td>搭便车单位</td><td>100,041.2946</td><td>同</td></tr>
+<tr><td>区间（7 参数 × 2 单位）</td><td>2.9674%–30.2163%</td><td>同</td></tr>
+</tbody></table></div>
+
+<div class="box warn">
+<p><strong>R1-1｜节省率漏了来源格的二次缺口（必须补）。</strong>LP 的来源容量是“该小时到达数”<code>A[j,h]</code>，不是“该小时盈余”<code>max(0, arr-dep)</code>。在 r* 处，<strong>44.4% 的改道量来自当小时零盈余的来源格，55.5% 的改道量超出该小时盈余，5,105 个来源用到 100% 到达</strong>。改道把车从 j 挪到 c：c 少一辆卡车需求，j 多一辆——只有当 j 该小时有盈余时才净省一辆。把这条件加进 LP（来源容量改为小时盈余）重解，得 <strong>r*=1.83、q*=32,777.11、节省 6.826%</strong>，不是 20.83%。20.83% 只能叫<strong>上界</strong>。任务单“改道扣除来源格失去的到达”这一条，你的实现只扣了“每条行程只用一次”，没扣来源格自己的亏空。</p>
+<p>对照：在未加约束的解上做事后记账，按 Q2 的逐小时口径，来源格新增缺口 53,061，节省变 −3.70%；按“格最缺小时”口径新增 22,426，节省 10.46%。这些是诊断，不是要你报的主值；主值是重新求解后的 6.83%。</p>
+</div>
+
+<div class="box warn">
+<p><strong>R1-2｜节省率是格级的，不是 Q2 卡车计划的节省（必须分解）。</strong>Q2 的卡车在 50 区上作业；450 m 的改道绝大多数不出区。我在 r* 处按 <code>cells.zone</code> 分解：<strong>同区 92.54%，跨区仅 7.46%（7,133.35 辆）</strong>；全区逐小时净变化的正部合计只有 <strong>4,332.11</strong>，最大单区小时 327.83，19/50 个区有变化。也就是说，把 20.83%（或 6.83%）当成“替掉 Q2 卡车工作”的说法不成立：按卡车单位 3.3305，4,332 个净位置最多值 14,428 元，而账单是 168,196 元。格级节省只能对标“假想的逐格卡车服务”，正文必须写明这一点；与 Q2 同口径的系统级效果，是跨区的那 7.46%。</p>
+</div>
+
+<h2>R1 要求（只改 Q3 的记账，不重做池）</h2>
+<ol>
+<li><strong>conservative 版本</strong>：<code>t008_q3_pool.py</code> 加一个来源容量开关 <code>source_cap=surplus</code>（<code>max(0, arr[h,j]-dep[h,j])</code>），同一 r 网格重解，输出 <code>targeted_conservative</code>：<code>r_star</code>、<code>q_star</code>、<code>bill</code>、<code>truck_residual</code>、<code>saving</code>；曲线存入 <code>q3_qr.json</code>（或 <code>q3_qr_conservative.json</code>）。验收：我复算的 6.826%（r*=1.83，q*=32,777）与你的差 ≤1e-4。</li>
+<li><strong>区间重标注</strong>：现有 14 行区间只覆盖 κ/ρ/c0 × 卡车单位，<strong>不含来源盈余假设</strong>；字段名或 notes 里写清楚，别让 T012 把它当总区间。</li>
+<li><strong>区级分解</strong>：在 <code>q3_results.json</code> 加 <code>zone_decomposition</code>：<code>cross_zone_volume</code>、<code>cross_zone_share</code>、<code>net_zone_hour_positive_sum</code>、<code>max_abs_zone_hour</code>、<code>zones_changed</code>（对 <code>targeted</code> 与 <code>targeted_conservative</code> 各一组，若便宜）。我的值：7,133.35 / 0.0746 / 4,332.11 / 327.83 / 19。</li>
+<li><strong>标签与 notes</strong>：<code>targeted</code> 加 <code>"bound": "upper_no_source_deficit"</code>，conservative 加 <code>"bound": "hourly_surplus_sources"</code>；notes 写明 20.83% 是格级上界、6.83% 是保守值、92.5% 同区。</li>
+<li>池、q(r)、公开推送、搭便车、只读区全部不动；重交 <code>交付/T008_delivery.json</code>，首行 <code>T008 R1 已交付</code>。</li>
+</ol>
+
+<div class="box">
+<p><strong>裁决｜T012 公开推送下界的写法。</strong>三行并列，不要合并成一个数：①现行单位 3.3305：最优 r=0，节省 0；②r=1.2：付搭便车 120,049.55，总成本 722,128.97，亏损 0.22%；③旧单位 3.478：节省 0.98%。正文写“公开推送在现行单位下无正节省；即便按已作废的 3.478 也只有 0.98%；旧 2.1% 来自非流池，作废”。<strong>不得再出现“约 2%”</strong>。</p>
+</div>
+
+<div class="box">
+<p><strong>裁决｜T012 的 Q3 主表述。</strong>摘要与 §6 不再写单一的“20.8% 节省”。写法：格级、定向推送、r*=1.76、q*=95,566、账单 168,196；对标“逐格卡车等价服务”的节省是 <strong>6.83%（来源限小时盈余）到 20.83%（不限，上界）</strong>；并给出“92.5% 改道同区、净区级位置仅 4,332”的事实，说明这不是对 Q2 区间卡车计划的替代。接受概率用增量 π(r)−π(0)；我复核过全 π 版本给 21.57%，只差 0.7 个百分点，增量口径是保守的，正文写清楚即可。</p>
+</div>
+
+<h2>给 T012 的其它数字</h2>
+<ul>
+<li>需求格数改为 <strong>5,188</strong>（旧 5,192 来自 15 分钟桶）；分布：median 18.97、p90 98.21、p99 323.71、max 1,089.3（旧 17.9/98.2/323.3 是 15 分钟桶的）。</li>
+<li>旧 §6 的“r=1.20、接受率 78%/54%/21%、q=115,385、100,959 辆卡车残值、489,578 vs 752,404、34.9%”全部作废，不得残留。</li>
+<li>公开推送的搭便车单位 100,041.29 要单列；定向推送的搭便车账单为 0（定义使然）。</li>
+</ul>
+
+<p><strong>下一步：</strong>R1 重交后我复核 conservative 与 zone 两组数；通过即更新任务台账与 T012 数字表，T012 随即可下达。</p>
+
+</main>
+</body>
+</html>

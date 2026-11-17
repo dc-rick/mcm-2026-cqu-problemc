@@ -51,7 +51,7 @@ li{margin:3px 0}
 <tr><td><code>data/runs/T002/</code></td><td>p 实测 0.185（0.13–0.20）、重采样偏差表</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T004/</code></td><td>R=450 未满足 5.84%/3.51%、R=600 2.35%/1.28%、更细网格 2.07%</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T005/</code></td><td>四模型样本外对比、KS 0.098、k 稳定性、return_share</td><td><span class="tag ok">已冻结</span></td></tr>
-<tr><td><code>data/runs/T006/</code>–<code>T009/</code></td><td>T006 Q1→Q2/Q4 接口、T007 Q2 守恒重解（H13/H14/H15）、T009 Q4 非零库存（M4/M8）；T008 Q3 池在跑</td><td><span class="tag ok">T006/T007/T009 已通过</span></td></tr>
+<tr><td><code>data/runs/T006/</code>–<code>T009/</code></td><td>T006 Q1→Q2/Q4 接口、T007 Q2 守恒重解（H13/H14/H15）、T009 Q4 非零库存（M4/M8）；T008 Q3 池已交付、R1 中（来源盈余与区级分解）</td><td><span class="tag ok">T006/T007/T009 已通过</span></td></tr>
 <tr><td><code>T010</code> / <code>T011</code></td><td>Q5 压力情景、按来源分解的不确定性</td><td><span class="tag bad">4 天窗口砍掉/并入本文</span></td></tr>
 <tr><td>用户决定 B7</td><td>p 主值 0.128（绝对量标上界），0.185 与 0.13–0.20 写进 §3.3</td><td><span class="tag ok">已决定</span></td></tr>
 </tbody></table></div>
@@ -97,7 +97,7 @@ li{margin:3px 0}
 <tbody>
 <tr><td><code>sec5_q2.tex:20</code></td><td>“172 of 5,263 cells do run dry”（H11）</td><td>与 T004 的新值并列，写明各自来自 5 分钟 LP 还是随机模拟；不能只留一个</td><td>T006/T007、T004</td></tr>
 <tr><td>§5 全部绝对量与 α</td><td>基于 343,638 与 B7 未定</td><td>T006/T007 重算后替换；α 标签与车队同源</td><td>T006、T007、B7</td></tr>
-<tr><td><code>sec6_q3.tex</code> 摘要 34.9%</td><td>公开推送下约 2%，34.9% 站不住（H3）</td><td>按 B3 定向推送为主；公开推送作下界并给出约 2%</td><td>T008、B3</td></tr>
+<tr><td><code>sec6_q3.tex</code> 摘要 34.9%</td><td>公开推送下约 2%，34.9% 站不住（H3）</td><td>按 B3 定向推送为主；公开推送作下界，三档并列：现行单位 3.3305 下最优 r=0、节省 0；r=1.2 亏损 0.22%；旧单位 3.478 下 0.98%。<strong>不得写“约 2%”</strong>，旧 2.1% 来自非流池，作废</td><td>T008、B3</td></tr>
 <tr><td><code>sec8_q5.tex:45</code> 表 8</td><td>“Median fence (slots)” 417/460/516（L8，实为总槽位）</td><td>行标签改 “Total slots per fence location” 或加表注</td><td>T010</td></tr>
 <tr><td><code>sec9_sensitivity.tex:106-108</code></td><td>13.4% 未满足（无步行下界）</td><td>R=450 的 5.84%/3.51%，并说明 13.4% 是 R=300 且无邻格的口径</td><td>T004</td></tr>
 </tbody></table></div>
@@ -156,7 +156,7 @@ li{margin:3px 0}
 <tr><td>Q2 守恒</td><td>全城逐时残差 ≤3.23e-9；区级 ≤3.97e-10；u−dep 0</td><td>T007</td></tr>
 <tr><td>Q2 贪心</td><td>峰值 623.17 辆/h（上限 2,400）；来源比 ≤40；零违规</td><td>T007</td></tr>
 <tr><td>Q2 夜间</td><td>21:00–06:00 占搬运 39.34%、卡车公里 37.12%；“白天几乎不动/night shift”作废</td><td>T007</td></tr>
-<tr><td>Q3</td><td><strong>待 T008</strong>；旧 34.9%、r*=1.20、q=115,385 全部作废；TRUCK_UNIT 主 3.3305、下界 1.8718（旧 3.478 作废）</td><td>T008</td></tr>
+<tr><td>Q3</td><td><span class="tag bad">待 T008 R1 收口</span> 旧 34.9%、r*=1.20、q=115,385、100,959、489,578、752,404、5,192 格、median 17.9 全部作废。已复核：q(1.76)=95,565.82；格级上界 20.83%、来源限小时盈余的保守值 6.83%；公开推送 0%（现行单位）；92.54% 改道同区、跨区 7.46%、净区级位置 4,332；需求格 5,188，median 18.97 / p90 98.21 / p99 323.71；TRUCK_UNIT 主 3.3305、下界 1.8718（旧 3.478 仅作历史对照）</td><td>T008 R1</td></tr>
 <tr><td>Q4 膝点（主方案）</td><td>705 围栏 / 覆盖 76.86% / 容量 491,692（meas343）/ 621,004（fleet495）</td><td>T009</td></tr>
 <tr><td>Q4 626 点</td><td>626 / 72.67% / 458,516 / 582,977——只作前沿点，不再作主方案</td><td>T009</td></tr>
 <tr><td>Q4 全格覆盖（诊断）</td><td>Q1 2,364 / 100% / 734,345 / 884,585；obs 2,423 / 747,816 / 905,308</td><td>T009</td></tr>
@@ -188,7 +188,7 @@ li{margin:3px 0}
 </ul>
 
 <div class="box warn">
-<p><strong>下达条件：</strong>T006/T007/T009 已通过，B7 已决定；T008 交付后即可下达（T010/T011 砍掉）。T008 未交前不动 <code>paper/</code>，避免半新半旧。</p>
+<p><strong>下达条件：</strong>T006/T007/T009 已通过，B7 已决定；<strong>T008 R1 通过后</strong>即可下达（T010/T011 砍掉）。T008 R1 未通过前不动 <code>paper/</code>，避免半新半旧。</p>
 </div>
 
 </main>
