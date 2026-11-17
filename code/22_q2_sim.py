@@ -1,15 +1,31 @@
-"""Q2 evaluation: stochastic simulation of the LP schedule against baselines."""
+"""Q2 evaluation: stochastic simulation of the LP schedule against baselines.
+
+--od q1 (default) takes the demand surface from data/runs/T006/q1_od.npz;
+--od obs takes the observed typical day.  The simulation equations are unchanged.
+"""
+import argparse
 import json
+import os
 import numpy as np
 import lib
 from lib import DATA
 import sim
 
+ap = argparse.ArgumentParser(description="Q2 stochastic evaluation")
+ap.add_argument("--od", choices=("q1", "obs"), default="q1")
+args = ap.parse_args()
+
 SCALE = 1.0 / 0.128
-z = np.load(DATA + r"\typical_day.npz", allow_pickle=True)
-od_hr = z["od_z"] * SCALE                 # (24,Z,Z) true-scale hourly OD
+if args.od == "q1":
+    z = np.load(os.path.join(DATA, "runs", "T006", "q1_od.npz"))
+    od_hr = z["od_q1"].astype(np.float64) * SCALE   # (24,Z,Z) true-scale hourly OD
+    cent = np.load(os.path.join(DATA, "typical_day.npz"),
+                   allow_pickle=True)["cent"]
+else:
+    z = np.load(os.path.join(DATA, "typical_day.npz"), allow_pickle=True)
+    od_hr = z["od_z"] * SCALE                 # (24,Z,Z) true-scale hourly OD
+    cent = z["cent"]
 dep_hr = od_hr.sum(2)
-cent = z["cent"]
 NZ = dep_hr.shape[1]
 
 st = np.load(DATA + r"\q2_state.npz", allow_pickle=True)

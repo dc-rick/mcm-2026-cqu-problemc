@@ -1,10 +1,38 @@
-"""Q2 step 0: how large is the imbalance? fluid diagnostic before building the optimiser."""
+"""Q2 step 0: how large is the imbalance? fluid diagnostic before building the optimiser.
+
+--od q1 (default) takes the demand surface from data/runs/T006/q1_od.npz;
+--od obs takes the observed typical day.  --out defaults to
+data/runs/T006/q2_state_q1.npz for q1 and data/q2_state.npz for obs, so the
+tracked state file stays read-only under the default new input.
+"""
+import argparse
+import os
+
 import numpy as np, pandas as pd, lib
 from lib import DATA
 
-z = np.load(DATA + r"\typical_day.npz", allow_pickle=True)
-d_hr, a_hr, zid, cent = z["d_hour"], z["a_hour"], z["zid"], z["cent"]
+ap = argparse.ArgumentParser(description="Q2 imbalance diagnostic")
+ap.add_argument("--od", choices=("q1", "obs"), default="q1")
+ap.add_argument("--out", default=None)
+args = ap.parse_args()
+
+if args.od == "q1":
+    z = np.load(os.path.join(DATA, "runs", "T006", "q1_od.npz"))
+    od = z["od_q1"].astype(np.float64)
+    d_hr = od.sum(2).T
+    a_hr = od.sum(1).T
+    zid = np.load(os.path.join(DATA, "typical_day.npz"),
+                  allow_pickle=True)["zid"]
+    cent = np.load(os.path.join(DATA, "typical_day.npz"),
+                   allow_pickle=True)["cent"]
+    out = args.out or os.path.join(DATA, "runs", "T006", "q2_state_q1.npz")
+else:
+    z = np.load(os.path.join(DATA, "typical_day.npz"), allow_pickle=True)
+    d_hr, a_hr, zid, cent = z["d_hour"], z["a_hour"], z["zid"], z["cent"]
+    out = args.out or os.path.join(DATA, "q2_state.npz")
 NZ = d_hr.shape[0]
+os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+print("demand source:", args.od)
 
 # --- scale of the sampled system -> full system
 P_SAMPLE = 0.128            # estimated order sampling rate (bike-continuity test)
@@ -52,4 +80,5 @@ print("\ntop-8 zones by required buffer (x km, y km, demand/day, buffer, I0):")
 for i in order[:8]:
     print(f"  z{i:2d} ({cent[i,0]:5.1f},{cent[i,1]:5.2f})  d={d_hr[i].sum():8.0f}  "
           f"req={req[i]:6.0f}  I0={I0[i]:6.0f}  ratio={req[i]/I0[i]:.2f}")
-np.savez(DATA + r"\q2_state.npz", I0=I0, net=net, cum=cum, req=req, init_share=init_share)
+np.savez(out, I0=I0, net=net, cum=cum, req=req, init_share=init_share)
+print("wrote", out)
