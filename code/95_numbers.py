@@ -220,5 +220,5 @@ print("selected covered arrivals:",
 
 # ------------------------------------------------------------------ Q5
 head("Q5")
-q5 = json.load(open(DATA + r"\q5_summary.json"))
+q5 = json.load(open(os.path.join(DATA, "q5_summary.json")))
 print(json.dumps(q5, indent=1))

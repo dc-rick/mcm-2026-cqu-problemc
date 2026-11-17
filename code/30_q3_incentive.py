@@ -7,6 +7,7 @@ run short, and pays them to finish there.
 
 Outputs: absorption potential, logit acceptance curve, cost curve, optimal mix.
 """
+import os
 import json
 import numpy as np
 import lib
@@ -161,7 +162,7 @@ json.dump(dict(need_total=float(need.sum()), truck_unit=float(TRUCK_UNIT),
                pot={f"{int(R*1000)}": float(np.minimum(near_pools[k], need).sum())
                     for k, R in enumerate(Rs)},
                supply=[[float(a), float(b), float(c)] for a, b, c in supply]),
-          open(DATA + r"\q3_summary.json", "w"), indent=1)
-np.savez(DATA + r"\q3_cell.npz", need=need, Dday=Dday, Dstar=Dstar,
+          open(os.path.join(DATA, "q3_summary.json"), "w"), indent=1)
+np.savez(os.path.join(DATA, "q3_cell.npz"), need=need, Dday=Dday, Dstar=Dstar,
          pot450=near_pools[0], pot600=near_pools[1], pot850=near_pools[2],
          radii=radii, curve=curve)

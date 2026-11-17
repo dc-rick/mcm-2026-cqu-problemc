@@ -22,7 +22,7 @@ ALL_DAYS = ["2017-05-%02d" % d for d in range(10, 20)]
 
 
 def load_trips(days=None):
-    df = pd.read_parquet(DATA + r"\trips.parquet")
+    df = pd.read_parquet(os.path.join(DATA, "trips.parquet"))
     df = df[(df.start_lat > 39.4) & (df.start_lon > 115.8) &
             (df.start_lat < 40.4) & (df.start_lon < 117.0)].copy()
     df["date"] = df.starttime.dt.normalize().astype(str).str[:10]
@@ -124,15 +124,15 @@ COL = {"blue": "#2C6FBB", "orange": "#E07B39", "green": "#3C8D5A",
 
 
 def save(fig, name):
-    fig.savefig(f"{FIG}\\{name}.pdf", bbox_inches="tight", pad_inches=0.02)
-    fig.savefig(f"{FIG}\\{name}.png", dpi=300, bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(os.path.join(FIG, f"{name}.pdf"), bbox_inches="tight", pad_inches=0.02)
+    fig.savefig(os.path.join(FIG, f"{name}.png"), dpi=300, bbox_inches="tight", pad_inches=0.02)
     plt.close(fig)
     print("fig ->", name)
 
 
 def get_cells():
     """The canonical cell table (built once from all 14 days)."""
-    return pd.read_parquet(DATA + r"\cells.parquet")
+    return pd.read_parquet(os.path.join(DATA, "cells.parquet"))
 
 
 def assign_cells(df, cells):

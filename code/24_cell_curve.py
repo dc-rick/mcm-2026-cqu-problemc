@@ -1,5 +1,6 @@
 """Build cell-level inputs (5-min departures, destination kernels) and run the
 fleet-sizing curve at neighbourhood resolution."""
+import os
 import numpy as np
 import lib
 from lib import DATA
@@ -28,7 +29,7 @@ cnt = np.zeros((Z, C))
 np.add.at(cnt, (zid[s.o.values], s.d.values), 1.0)
 Pest = cnt / np.maximum(cnt.sum(1, keepdims=True), 1e-9)
 
-st = np.load(DATA + r"\q2_state.npz", allow_pickle=True)
+st = np.load(os.path.join(DATA, "q2_state.npz"), allow_pickle=True)
 I0c = np.bincount(s.d.values, minlength=C)  # placeholder, replaced below
 dfl = lib.load_trips(lib.ALL_DAYS); dfl = lib.assign_cells(dfl, cells)
 ok2 = dfl.o.notna() & dfl.d.notna()
@@ -36,7 +37,7 @@ lastd = dfl[ok2].sort_values("starttime").groupby("bikeid").tail(1).d.astype(int
 I0c = np.bincount(lastd, minlength=C) / len(lastd) * FLEET
 
 xy = cells[["x", "y"]].to_numpy()
-np.savez(DATA + r"\cell_sim_inputs.npz", dep5=dep5, Pest=Pest, I0c=I0c, zid=zid,
+np.savez(os.path.join(DATA, "cell_sim_inputs.npz"), dep5=dep5, Pest=Pest, I0c=I0c, zid=zid,
          xy=xy, zone_cent=cells.groupby("zone")[["x", "y"]].mean().values)
 
 if __name__ == "__main__":
@@ -50,4 +51,4 @@ if __name__ == "__main__":
         rows.append((a, float(np.mean(r)), float(np.std(r))))
         print(f"alpha {a:4.2f} fleet {FLEET*a:8.0f}  unmet {100*np.mean(r):6.2f}%"
               f" +/- {100*np.std(r):.2f}")
-    np.save(DATA + r"\cell_fleet_curve.npy", np.array(rows))
+    np.save(os.path.join(DATA, "cell_fleet_curve.npy"), np.array(rows))

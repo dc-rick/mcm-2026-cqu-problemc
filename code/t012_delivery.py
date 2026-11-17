@@ -106,7 +106,7 @@ delivery = {
  "task": "T012",
  "title": "全文重提与口径统一",
  "date": "2026-11-18",
- "status": "delivered",
+ "status": "accepted_r1",
  "checks": val["checks"],
  "compile": {"engine": "xelatex", "passes": 2, "undefined": 0,
              "overfull": 0, "total_pages": 30, "body_pages": 24,

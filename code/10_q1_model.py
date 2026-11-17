@@ -8,6 +8,7 @@ with A_j(h) = spatially smoothed arrivals in band h (attractiveness field).
 
 Outputs: params.json, od_model.npz, validation table, figures.
 """
+import os
 import json
 import numpy as np
 import pandas as pd
@@ -164,10 +165,10 @@ for b, name in enumerate(BAND_NAMES):
 out = dict(cells=int(n), daily_trips=float(daily), bands=params,
            band_names=BAND_NAMES, profile96=prof96.tolist(),
            rho=rho, step=lib.STEP, thr=lib.THR)
-json.dump(out, open(DATA + r"\q1_params.json", "w"), indent=1)
+json.dump(out, open(os.path.join(DATA, "q1_params.json"), "w"), indent=1)
 
-pd.DataFrame(res_rows).to_csv(DATA + r"\q1_validation.csv", index=False)
-np.save(DATA + r"\dist_matrix.npy", D.astype(np.float32))
-cells.to_parquet(DATA + r"\cells.parquet")
+pd.DataFrame(res_rows).to_csv(os.path.join(DATA, "q1_validation.csv"), index=False)
+np.save(os.path.join(DATA, "dist_matrix.npy"), D.astype(np.float32))
+cells.to_parquet(os.path.join(DATA, "cells.parquet"))
 print("\nsaved q1_params.json, q1_validation.csv")
 print(pd.DataFrame(res_rows).round(3).to_string(index=False))

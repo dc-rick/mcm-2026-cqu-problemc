@@ -43,7 +43,7 @@ else:
 dep_hr = od_hr.sum(2)
 NZ = dep_hr.shape[1]
 
-st = np.load(DATA + r"\q2_state.npz", allow_pickle=True)
+st = np.load(os.path.join(DATA, "q2_state.npz"), allow_pickle=True)
 I0_base = st["I0"]
 sol = np.load(args.plan)
 

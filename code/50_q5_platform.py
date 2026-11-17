@@ -1,4 +1,5 @@
 """Q5: fragmentation cost of multi-platform competition + external validation with OSM."""
+import os
 import json
 import numpy as np
 import pandas as pd
@@ -7,12 +8,12 @@ from lib import DATA
 import sim
 
 SCALE = 1.0 / 0.128
-z = np.load(DATA + r"\typical_day.npz", allow_pickle=True)
+z = np.load(os.path.join(DATA, "typical_day.npz"), allow_pickle=True)
 od = z["od_z"] * SCALE
 dep = od.sum(2)
 cent = z["cent"]
 NZ = od.shape[1]
-st = np.load(DATA + r"\q2_state.npz", allow_pickle=True)
+st = np.load(os.path.join(DATA, "q2_state.npz"), allow_pickle=True)
 I0 = st["I0"]
 
 # ---------------- fragmentation experiment ---------------------------------
@@ -39,7 +40,7 @@ print("  first order in the density, so service falls roughly linearly in the sh
 
 # ---------------- external validation with OSM subway entrances ------------
 print("\n== OSM cross-check of the identified attractors ==")
-osm = json.load(open(DATA + r"\osm_subway_entrances.json", encoding="utf-8"))
+osm = json.load(open(os.path.join(DATA, "osm_subway_entrances.json"), encoding="utf-8"))
 pts = np.array([[e["lat"], e["lon"]] for e in osm["elements"]])
 xy_osm = np.c_[ (pts[:, 1] - 116.0) * 85.2, (pts[:, 0] - 39.0) * 111.2 ]
 cells = lib.get_cells()
@@ -75,7 +76,7 @@ np.add.at(depc, (q15, df[ok].o.values.astype(int)), 1.0)
 arrc = arrc / len(lib.TYP_DAYS) / 0.128
 depc = depc / len(lib.TYP_DAYS) / 0.128
 distc = np.sqrt(((xy[:, None, :] - xy[None, :, :]) ** 2).sum(-1))
-fr = np.load(DATA + r"\q4_frontier.npz")
+fr = np.load(os.path.join(DATA, "q4_frontier.npz"))
 caps, sites = fr["caps"], fr["sites"]
 
 
@@ -113,4 +114,4 @@ json.dump(dict(split={str(k): v for k, v in res.items()},
                median_dist_top100=float(np.median(d_ent[np.argsort(-Ad)[:100]])),
                median_dist_all=float(np.median(d_ent)),
                capacity_duplication=dup),
-          open(DATA + r"\q5_summary.json", "w"), indent=1)
+          open(os.path.join(DATA, "q5_summary.json"), "w"), indent=1)

@@ -1,4 +1,5 @@
 """Q1 (cont.): user segments, duration model, zone system, typical-day scenario for Q2-Q5."""
+import os
 import gc
 import numpy as np
 import pandas as pd
@@ -77,8 +78,8 @@ seg["share_users"] = seg.users / seg.users.sum()
 seg["share_trips"] = feat.groupby("seg").trips.sum() / feat.trips.sum()
 seg = seg.sort_values("trips")
 print(seg.round(3).to_string())
-seg.to_csv(DATA + r"\q1_segments.csv")
-feat[["seg"]].to_parquet(DATA + r"\user_seg.parquet")
+seg.to_csv(os.path.join(DATA, "q1_segments.csv"))
+feat[["seg"]].to_parquet(os.path.join(DATA, "user_seg.parquet"))
 
 # ------------------------------------------------------- duration / speed
 sub = prob[prob.date.isin(lib.TYP_DAYS)].copy()
@@ -105,7 +106,7 @@ vc = pd.Series(zid).value_counts()
 print("\nzones", vc.size, "cells/zone min", vc.min(), "median", int(vc.median()), "max", vc.max())
 
 cells["zone"] = zid
-cells.to_parquet(DATA + r"\cells.parquet")
+cells.to_parquet(os.path.join(DATA, "cells.parquet"))
 
 Nz = NZ
 d_hour = np.zeros((Nz, 24)); a_hour = np.zeros((Nz, 24))
@@ -119,7 +120,7 @@ d_q = np.zeros((Nz, 96))
 np.add.at(d_q, (zid[sub.o.values], sub.qtr.values), 1.0)
 d_q /= len(lib.TYP_DAYS)
 
-np.savez(DATA + r"\typical_day.npz", d_hour=d_hour, a_hour=a_hour, od_z=od_z,
+np.savez(os.path.join(DATA, "typical_day.npz"), d_hour=d_hour, a_hour=a_hour, od_z=od_z,
          d_q=d_q, zid=zid, cent=cent, weight=w, dur_median=np.median(dur))
 
 net = a_hour.sum(1) - d_hour.sum(1)

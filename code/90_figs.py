@@ -1,4 +1,5 @@
 """All paper figures."""
+import os
 import json
 import numpy as np
 import pandas as pd
@@ -83,7 +84,7 @@ def fig1():
 
 # ===================================================== FIG 2 segments
 def fig2():
-    seg = pd.read_csv(DATA + r"\q1_segments.csv")
+    seg = pd.read_csv(os.path.join(DATA, "q1_segments.csv"))
     names = {4: "weekend / leisure", 1: "low frequency", 2: "commuter",
              0: "regular multi-purpose", 3: "heavy short-trip"}
     short = {4: "weekend", 1: "low-freq.", 2: "commuter",
@@ -121,9 +122,9 @@ def fig2():
 
 # ===================================================== FIG 3 validation
 def fig3():
-    q1 = json.load(open(DATA + r"\q1_params.json", encoding="utf-8"))
-    val = pd.read_csv(DATA + r"\q1_validation.csv")
-    Dm = np.load(DATA + r"\dist_matrix.npy")
+    q1 = json.load(open(os.path.join(DATA, "q1_params.json"), encoding="utf-8"))
+    val = pd.read_csv(os.path.join(DATA, "q1_validation.csv"))
+    Dm = np.load(os.path.join(DATA, "dist_matrix.npy"))
     fig, ax = plt.subplots(2, 2, figsize=(7.2, 4.6), constrained_layout=True)
 
     # (a) end-to-end: draw a synthetic day from the model, compare trip lengths
@@ -199,10 +200,10 @@ def fig3():
 
 # ===================================================== FIG 4 Q2
 def fig4():
-    z = np.load(DATA + r"\typical_day.npz")
+    z = np.load(os.path.join(DATA, "typical_day.npz"))
     cent = z["cent"]; od = z["od_z"] * SCALE
-    plan = np.load(DATA + r"\q2_plan.npz"); XM = plan["XM"]
-    res = pd.DataFrame(json.load(open(DATA + r"\q2_results.json")))
+    plan = np.load(os.path.join(DATA, "q2_plan.npz")); XM = plan["XM"]
+    res = pd.DataFrame(json.load(open(os.path.join(DATA, "q2_results.json"))))
     fig, ax = plt.subplots(2, 2, figsize=(7.2, 5.4), constrained_layout=True)
 
     a = ax[0, 0]
@@ -274,8 +275,8 @@ def fig4():
 
 # ===================================================== FIG 5 Q3
 def fig5():
-    q3 = json.load(open(DATA + r"\q3_summary.json"))
-    cell = np.load(DATA + r"\q3_cell.npz")
+    q3 = json.load(open(os.path.join(DATA, "q3_summary.json")))
+    cell = np.load(os.path.join(DATA, "q3_cell.npz"))
     need = q3["need_total"]
     fig, ax = plt.subplots(2, 2, figsize=(7.2, 4.8), constrained_layout=True)
     V, W, K, RHO, C0 = 10.0, 80.0, 2.0, 0.35, 0.8
@@ -340,12 +341,12 @@ def fig5():
 
 # ===================================================== FIG 6 Q4
 def fig6():
-    q4 = json.load(open(DATA + r"\q4_summary.json"))
-    q5 = json.load(open(DATA + r"\q5_summary.json"))
-    fr = np.load(DATA + r"\q4_frontier.npz")
+    q4 = json.load(open(os.path.join(DATA, "q4_summary.json")))
+    q5 = json.load(open(os.path.join(DATA, "q5_summary.json")))
+    fr = np.load(os.path.join(DATA, "q4_frontier.npz"))
     sites = fr["sites"]; caps = fr["caps"]
     fig, ax = plt.subplots(2, 2, figsize=(7.2, 5.4), constrained_layout=True)
-    d3 = np.load(DATA + r"\q3_cell.npz"); Dday = d3["Dday"]
+    d3 = np.load(os.path.join(DATA, "q3_cell.npz")); Dday = d3["Dday"]
 
     a = ax[0, 0]
     order = np.argsort(-Dday)

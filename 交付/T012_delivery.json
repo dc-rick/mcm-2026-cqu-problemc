@@ -2,7 +2,7 @@
  "task": "T012",
  "title": "全文重提与口径统一",
  "date": "2026-11-18",
- "status": "delivered",
+ "status": "accepted_r1",
  "checks": {
   "1_numbers_log_matches_results": true,
   "2_q3_locked_and_no_obsolete": true,

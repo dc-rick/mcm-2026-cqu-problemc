@@ -3,6 +3,7 @@
 Mirrors code/10_q1_model.py exactly (same cells, days, smoothing, distance
 matrix) so the T005 comparison is against the paper's model, not a variant.
 """
+import os
 import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter
@@ -30,7 +31,7 @@ def load_model_data():
     gt = df[ok].copy()
     gt["o"] = gt.o.astype(int)
     gt["d"] = gt.d.astype(int)
-    D = np.load(lib.DATA + r"\dist_matrix.npy").astype(np.float32)
+    D = np.load(os.path.join(lib.DATA, "dist_matrix.npy")).astype(np.float32)
     return df, gt, cells, D
 
 

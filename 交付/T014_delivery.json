@@ -1,0 +1,178 @@
+{
+ "task": "T014",
+ "title": "终检与编译",
+ "date": "2026-11-18",
+ "status": "T014 已交付",
+ "checks": {
+  "1_l1_font_u037e_zero": true,
+  "2_l4_toc_references": true,
+  "3_l2_notation_disambiguation": true,
+  "4_l5_team_number_blank": true,
+  "5_l11_snapshot_renamed": true,
+  "6_l10_no_backslash_path_joins": true,
+  "7_compile_and_pages": true,
+  "8_ten_numbers_match_log": true,
+  "9_scope_clean": true,
+  "10_t012_status_accepted_r1": true
+ },
+ "compile": {
+  "engine": "xelatex",
+  "passes": 3,
+  "total_pages": 30,
+  "body_pages": 24,
+  "body_range": "sections 1-10, pages 3-26",
+  "undefined": 0,
+  "overfull": 0,
+  "u037e": 0,
+  "semicolons_in_pdf": 129,
+  "double_question_marks": 0,
+  "references_page": 27
+ },
+ "numbers_spot_check": [
+  {
+   "shown": "20.83",
+   "log_value": "0.20830007675074336",
+   "formatted": "20.83",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "6.83",
+   "log_value": "0.06825835929691104",
+   "formatted": "6.83",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "32,777",
+   "log_value": "32777.11212887443",
+   "formatted": "32,777",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "95,566",
+   "log_value": "95565.81547068334",
+   "formatted": "95,566",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "491,692",
+   "log_value": "491691.9370767786",
+   "formatted": "491,692",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "705",
+   "log_value": "705",
+   "formatted": "705",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "76.86",
+   "log_value": "0.7685847656798482",
+   "formatted": "76.86",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "24,679",
+   "log_value": "24679.28",
+   "formatted": "24,679",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "495,540",
+   "log_value": "495539.98812757694",
+   "formatted": "495,540",
+   "in_pdf": true,
+   "in_log": true
+  },
+  {
+   "shown": "4.33",
+   "log_value": "4.325410892870622",
+   "formatted": "4.33",
+   "in_pdf": true,
+   "in_log": true
+  }
+ ],
+ "affected": [
+  {
+   "file": "paper/main.tex",
+   "old": "\\setmainfont{Times New Roman}[Ligatures=TeX]",
+   "new": "\\setmainfont{TeX Gyre Termes}[Ligatures=TeX]",
+   "reason": "L1: Times New Roman maps text semicolons to U+037E in the PDF text layer; Termes is the metric-compatible Times clone and extracts ';'"
+  },
+  {
+   "file": "paper/references.tex",
+   "old": "\\begin{thebibliography}{99} (no TOC entry)",
+   "new": "\\addcontentsline{toc}{section}{References} added after the environment opens",
+   "reason": "L4: the contents list carried the AI report but not References"
+  },
+  {
+   "file": "paper/sec2_assumptions.tex",
+   "old": "notation paragraph ended at the daily-rhythm sentence",
+   "new": "one disambiguation sentence for d, w/n and w_e; no formula touched",
+   "reason": "L2"
+  },
+  {
+   "file": "paper/summary.tex",
+   "old": "unchanged",
+   "new": "unchanged",
+   "reason": "L5: team control number left blank; no number filled"
+  },
+  {
+   "file": "paper_snapshot_2026-11-11.pdf",
+   "old": "2026CQU_MCM_ProblemC.pdf (root)",
+   "new": "paper_snapshot_2026-11-11.pdf (git mv)",
+   "reason": "L11: the root file is a paper snapshot, not the problem statement"
+  },
+  {
+   "file": "DATA.md",
+   "old": "root 2026CQU_MCM_ProblemC.pdf described as a paper copy",
+   "new": "root paper_snapshot_2026-11-11.pdf; explicit '原题不随仓库分发'",
+   "reason": "L11"
+  },
+  {
+   "file": "code/ (11 files)",
+   "old": "DATA + r\"\\name\" and f\"{FIG}\\\\{name}.pdf\"",
+   "new": "os.path.join(DATA, \"name\") and os.path.join(FIG, f\"{name}.pdf\")",
+   "reason": "L10: path joins only; no numeric expression touched"
+  }
+ ],
+ "l10_files": [
+  "code/10_q1_model.py",
+  "code/11_q1_extra.py",
+  "code/22_q2_sim.py",
+  "code/24_cell_curve.py",
+  "code/30_q3_incentive.py",
+  "code/50_q5_platform.py",
+  "code/60_sensitivity.py",
+  "code/90_figs.py",
+  "code/95_numbers.py",
+  "code/lib.py",
+  "code/t005_common.py"
+ ],
+ "notes": [
+  "L5 仍未关闭：Team Control Number 保持空白，未自填任何编号；用户确认 13648 后由后续任务填写。",
+  "L10 验证方式：替换 40 处路径拼接（11 个文件），全部为 DATA/FIG 与文件名的 join；grep -rn 'DATA + r\"' code/ = 0；改动行逐行为 os.path.join/import os；os.path.join 与旧拼接字符串在 Windows 上逐字符相等。未重跑任何计算，数值输出文件未改动。",
+  "L1 的 U+037E 计数在最终 PDF 文本层为 0，分号 129 个，双问号 0；页数 30、正文 24（3-26）与 T012 R1 一致，说明 Termes 与 Times 度量兼容。",
+  "L4 的目录条目页号与参考文献标题实际页号一致（第 27 页）。",
+  "T012 交付 JSON 的 status 已改为 accepted_r1（记账项，不单开 commit）。",
+  "未发现必须改数字的情况；若验收要求改数字，按任务单要求停止并报告。"
+ ],
+ "outputs": [
+  "paper/main.pdf",
+  "paper/main.tex",
+  "paper/references.tex",
+  "paper/sec2_assumptions.tex",
+  "paper_snapshot_2026-11-11.pdf",
+  "DATA.md",
+  "code/*.py (11 files)",
+  "交付/T014_delivery.json"
+ ]
+}

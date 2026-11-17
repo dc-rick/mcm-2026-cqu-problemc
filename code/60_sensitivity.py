@@ -5,6 +5,7 @@
 2. Q3: one-at-a-time sweep of the three logit parameters.
 3. Q2: the price of a truck-kilometre, re-solving the LP at three values.
 """
+import os
 import json
 import importlib
 import numpy as np
@@ -48,8 +49,8 @@ out["sampling_invariance"] = inv
 # ------------------------------------------------------------ Q3 parameters
 print("\n== Q3 logit parameters ==")
 cells = lib.get_cells()
-need = np.load(DATA + r"\q3_cell.npz")["need"]
-Dstar = np.load(DATA + r"\q3_cell.npz")["Dstar"]
+need = np.load(os.path.join(DATA, "q3_cell.npz"))["need"]
+Dstar = np.load(os.path.join(DATA, "q3_cell.npz"))["Dstar"]
 xy = cells[["x", "y"]].to_numpy()
 dist = np.sqrt(((xy[:, None, :] - xy[None, :, :]) ** 2).sum(-1))
 EDGES = np.array([0.0, 0.05, 0.10, 0.15, 0.20, 0.30, 0.45])
@@ -96,5 +97,5 @@ for ck in (3.0, 6.0, 12.0):
               f" obj={r['obj']:9.0f}")
 out["q2_cost_km"] = q2
 
-json.dump(out, open(DATA + r"\sensitivity.json", "w"), indent=1)
-print("\nwritten", DATA + r"\sensitivity.json")
+json.dump(out, open(os.path.join(DATA, "sensitivity.json"), "w"), indent=1)
+print("\nwritten", os.path.join(DATA, "sensitivity.json"))
