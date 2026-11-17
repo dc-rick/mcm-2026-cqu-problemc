@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T006 验收 R1</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T006 验收：R1（一项阻断）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T006_delivery.json</code>（commit 975c75d）　·　结论：<strong>R1 退回</strong></p>
+
+<div class="box ok">
+<p><strong>通过的部分：<code>q1_od.npz</code> 本体。</strong>我用独立代码复算，不采信交付 JSON 的自检：结构/无负值通过；od 行和 vs dep 区合计 3.2e-8；逐时到达=出发 1.7e-7；总流量 274,357.44 与 typical_day 一致；top-5 五带逐项与 <code>q1_validation.csv</code> 差 ≤1.3e-8（加权 0.4254933）；模型同格 12.83%、观测 8.89% 复算逐位一致；β、band、训练日、σ 与 <code>q1_params.json</code> 完全一致。该数组可作 T007/T009 输入。</p>
+</div>
+
+<div class="box warn">
+<p><strong>阻断项：Q2 smoke 少了 1/p 放大，解的是“343,638 辆车服务 274,357 次/日”的过供系统。</strong></p>
+</div>
+
+<h2>证据</h2>
+<ul>
+<li>旧 <code>q2_results.json</code> 的 α=1、K=60 行：<code>trips</code> 2,143,417（全尺度），moved 23,959.15，truck-km 5,440.94，dev 900.00，obj 83,325.24（含 600×60 固定成本）。</li>
+<li>新旧 diff：旧 <code>21_q2_opt.py</code> 有 <code>dep = dep / nd * SCALE; arr = arr / nd * SCALE</code>；T006 重构后 <code>load_demand()</code> 返回采样尺度，<code>main()</code> 再没乘 SCALE，但 docstring 与交付 notes 都写“由调用方乘”。</li>
+<li>交付的 Q2 smoke：<code>trips</code> 274,357，moved q1 3,169.28 / obs 3,124.29——比旧值低 7.6 倍。</li>
+<li>我直接调用当前 <code>solve()</code> 复跑（只读，不写文件）：</li>
+</ul>
+<div class="tw"><table>
+<thead><tr><th>obs、α=1、K=60、fixed=600</th><th>moved</th><th>truck-km</th><th>dev</th><th>obj</th><th>trips</th></tr></thead>
+<tbody>
+<tr><td>当前代码（未乘 SCALE）</td><td>3,169.28</td><td>450.47</td><td>21.96</td><td>40,353.32</td><td>274,357</td></tr>
+<tr><td>我补乘 SCALE=1/0.128</td><td><strong>23,959.15</strong></td><td><strong>5,440.94</strong></td><td><strong>900.00</strong></td><td><strong>83,325.24</strong></td><td>2,143,417</td></tr>
+<tr><td>旧 <code>q2_results.json</code></td><td>23,959.15</td><td>5,440.94</td><td>900.00</td><td>83,325.24</td><td>2,143,417</td></tr>
+</tbody></table></div>
+<p>补乘后与旧行逐位相同，证明这不是“新输入导致的变化”，而是重构丢了一行缩放。</p>
+
+<h2>整改要求（R1）</h2>
+<ol>
+<li><code>21_q2_opt.py</code>：<code>load_demand()</code> 之后对 <code>DEP</code>、<code>ARR</code> 乘 <code>SCALE</code>（两条 <code>--od</code> 路径都要）；<code>PZ</code> 保持行归一化，不受影响；<code>--conserve</code> 的 <code>PZ</code> 同口径。</li>
+<li>用 <code>--fixed-k-cost 600</code> 重跑两个 smoke（旧表的设置），JSON 里记录 <code>fixed_k_cost</code> 与 <code>trips</code>。</li>
+<li>验收：obs smoke 必须与旧 α=1、K=60 行逐位一致（moved 23,959.15、truck-km 5,440.94、dev 900.00、obj 83,325.24、unmet 0）；q1 smoke 的 <code>trips</code> 为 2,143,417。二者都以全尺度输出。</li>
+<li>更正交付 notes 第 10 条：现在写“21 和 22 都乘 SCALE”与代码不符；修好后保留，修好前不得这样写。</li>
+<li>（非阻断，记录）<code>20_q2_diag.py --od q1</code> 的 <code>net/cum/req</code> 是采样尺度，而 <code>I0</code> 是全尺度；21 只读 <code>I0</code>，暂不影响，但要在 notes 写明，若下游用 <code>req</code> 必须先乘 <code>SCALE</code>。</li>
+<li>（非阻断）Q4 smoke 通过：obs 面 626 围栏、容量 344,462.65 与旧 344,463 一致；两面日到达均为 2,143,417，4× 重复已修好。</li>
+</ol>
+
+<h2>复核方式</h2>
+<p>重交后我直接调用 <code>solve()</code> 复跑 obs 的 α=1、K=60，与上表逐位比对；同时重算 q1 smoke 的 <code>trips</code> 与 <code>moved/trips</code> 比例。T007 只接受修好后的全尺度计划。</p>
+
+</main>
+</body>
+</html>
