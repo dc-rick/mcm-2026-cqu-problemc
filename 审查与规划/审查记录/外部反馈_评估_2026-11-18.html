@@ -43,6 +43,7 @@ li{margin:3px 0}
 <div class="box hi">
 <p><strong>一句话结论：技术核心成立，但它审的是旧版。</strong>我用仓库里的代码和结果独立复现了它最重的五个数，全部精确对上：Q3 本格占池 <strong>34.105%</strong>、Q4 重复归属 <strong>37 格</strong>、贪心高峰 <strong>5,314 辆/小时</strong>（运力只有 2,400）、夜间搬运占比 <strong>40.37%</strong>、Q2 失单与日末偏差逐行相等。它审的是 11-17 的 21 份脚本、25 页 PDF、<code>revised</code>/<code>feedback</code> 目录，所以合规、页数、AI 报告几条已过时。</p>
 <p><strong>最重要的边界：</strong>论文 Q2 的主结果（α=1、K=60：搬 23,959 辆、5,441 卡车公里、83,325 元、失单 0）<strong>不受守恒 bug 影响</strong>，因为该行 u=0、日末库存合计仍等于车队。受影响的是 α&lt;1 的缩车曲线和 Q3 的 34.9%——恰好是摘要里的两个政策结论。</p>
+<p><strong>原题已核：</strong>第 2 问要求 <em>“Based on the travel behavior model built above”</em>，第 4 问要求 <em>“Using the travel behaviour model from Question (1) to predict parking demand”</em>。H1 不是“整合叙事不够漂亮”，而是未满足题面要求；B4 应从“建议”改为“必须”。</p>
 </div>
 
 <h2>1. 它审的是哪个版本</h2>
@@ -54,7 +55,7 @@ li{margin:3px 0}
 <tr><td>AI 报告</td><td>1 页，缺五要素</td><td>T013 已补齐：工具/版本/日期、行内引用、文献条目、两组 Query/Output，343,638 的六处硬编码逐条列出</td><td>H9/M7 已关闭</td></tr>
 <tr><td>队号</td><td>13648</td><td><code>summary.tex:6</code> 为空白横线，仓库里从未写入 13648</td><td>需用户确认后由 T014 填（L5）</td></tr>
 <tr><td>目录结构</td><td><code>original</code>/<code>revised</code>/<code>feedback</code></td><td>本仓库没有这三个目录</td><td>按路径引用的结论无法逐文件核对</td></tr>
-<tr><td>根目录 PDF</td><td>名为 <code>2026CQU_MCM_ProblemC.pdf</code> 的其实是论文副本</td><td>同样是论文副本（25 页，首页是 Summary），不是原题</td><td>原题不在仓库，见 L11</td></tr>
+<tr><td>根目录 PDF</td><td>名为 <code>2026CQU_MCM_ProblemC.pdf</code> 的其实是论文副本</td><td>同样是论文副本（25 页，首页是 Summary），不是原题</td><td>原题已由用户提供（桌面路径，2 页）；仓库不复制，见 L11</td></tr>
 </tbody></table></div>
 
 <h2>2. 我复核后成立的条目</h2>
@@ -86,7 +87,7 @@ li{margin:3px 0}
 <div class="tw"><table>
 <thead><tr><th style="width:24%">条目</th><th style="width:10%">判定</th><th>说明</th></tr></thead>
 <tbody>
-<tr><td>“原题明确要求 Q2/Q4 承接 Q1”</td><td><span class="tag grey">无法核</span></td><td>仓库里没有原题；根目录 <code>2026CQU_MCM_ProblemC.pdf</code> 是 25 页论文副本（首页是 Summary），不是赛题。H1 仍按“模型链没有闭合”处理，但论文里不要引用“原题明确要求”这句话，除非拿到原文。</td></tr>
+<tr><td>“原题明确要求 Q2/Q4 承接 Q1”</td><td><span class="tag ok">成立（已核原文）</span></td><td>用户 2026-11-18 提供的原题 PDF（2 页）第 2 问写 <em>“Based on the travel behavior model built above, propose an optimal bicycle rebalancing and scheduling plan…”</em>，第 4 问写 <em>“Using the travel behaviour model from Question (1) to predict parking demand at different locations…”</em>。这不是一般性建议，是题面要求；H1 从“模型链未闭合”升级为“未满足题面要求”。根目录的 <code>2026CQU_MCM_ProblemC.pdf</code> 仍是论文副本，原题需另行保管（L11）。</td></tr>
 <tr><td>“队号填 13648”</td><td><span class="tag wait">待用户确认</span></td><td>本仓库 <code>summary.tex:6</code> 是空白横线，从未写过队号。13648 来自这份反馈文件；填入前需用户确认（L5，T014）。</td></tr>
 <tr><td>AI 报告应写“未记录”，不要猜型号</td><td><span class="tag grey">不采纳这条改法</span></td><td>T013 写的是“runtime reported the model identifier <code>deepseek-flash[1m]</code>”，这是运行环境报告的事实，不是猜测；改成“未记录”反而丢失信息。Codex 是否用过需执行方确认：若用过，应在 AI 报告中补一条工具、用途与日期。</td></tr>
 <tr><td>“21 份脚本、25 页、24+1 页”</td><td><span class="tag grey">已过时</span></td><td>当前 37 份脚本、27 页（正文 25 + AI 2）。T013 后 AI 报告为 2 页。</td></tr>
@@ -104,7 +105,7 @@ li{margin:3px 0}
 <tr><td>H16</td><td>Q3 候选池：本格、错时、重复来源</td><td>高</td><td>34.1% 本格、池为不同到达的 2.93 倍、安置量超过候选数；重建为 (目标格,小时) 的指派/流模型。</td><td>T008</td></tr>
 <tr><td>H17</td><td>Q1 时长“与观测吻合”无观测</td><td>中高</td><td>原始订单无结束时间；改写成显式假设并给敏感性，删“observed”。</td><td>T012</td></tr>
 <tr><td>M9</td><td>Q5 的零失单结果信息量低</td><td>中</td><td>同一模拟器 α=0.6 无卡车也几乎零失单；结论降为条件陈述或换能产生失单的机制。</td><td>T010</td></tr>
-<tr><td>L11</td><td>根目录 PDF 是论文副本，原题缺失</td><td>低</td><td>重命名/移入 <code>paper/</code>，原题另存 <code>original/</code>；避免复现者误认。</td><td>T014</td></tr>
+<tr><td>L11</td><td>根目录 PDF 是论文副本，原题缺失</td><td>低</td><td>重命名/移入 <code>paper/</code>；原题不随仓库分发，在 DATA.md 注明路径与字段。</td><td>T014</td></tr>
 </tbody></table></div>
 
 <h2>5. 对论文数字的判决</h2>
@@ -131,7 +132,7 @@ li{margin:3px 0}
 <li><strong>T009 保留 450 m，但把容量改成“规划上限”。</strong>零初始库存、37 格重复归属和 p 的不确定性都要在文字里说明；不要再把 344,463≈343,638 当校验。</li>
 <li><strong>T010 把 Q5 的零失单降为条件陈述。</strong>或者换一个能产生失单的库存/需求情景；否则“竞争不降低可用性”只是“这个模拟器太深，压不出缺口”。</li>
 <li><strong>T012 等 T006–T011 齐全后再动 <code>paper/</code>。</strong>现在已知要加的条目：夜间段、K=40/K=60、时长假设、Q3 口径、Q4 初始库存；摘要的“缩车五分之一”和“34.9%”必须等新结果。</li>
-<li><strong>用户仍需拍板：B4（T006 前提）、B2（T007 是否重解）、B3（T008 定向/公开推送）、B7（p 主值）。</strong>这份反馈实际上把 B2/B3 从“可选”变成了“不改就不能保留现有结论”。</li>
+<li><strong>用户仍需拍板：B4（T006 前提）、B2（T007 是否重解）、B3（T008 定向/公开推送）、B7（p 主值）。</strong>原题第 2、4 问明确要求使用第 1 问的行为模型，B4 已不是偏好问题，而是题面强制；这份反馈又把 B2/B3 从“可选”变成了“不改就不能保留现有结论”。</li>
 </ol>
 
 <div class="box warn">
