@@ -2,7 +2,7 @@
  "task": "T014",
  "title": "终检与编译",
  "date": "2026-11-18",
- "status": "T014 R1 已交付",
+ "status": "T014 已通过（R1 后）",
  "checks": {
   "1_l1_font_u037e_zero": true,
   "2_l4_toc_references": true,
