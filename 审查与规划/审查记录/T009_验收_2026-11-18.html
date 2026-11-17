@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T009 验收：通过</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T009 验收：通过（附容量口径裁决）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T009_delivery.json</code>（commit 7a3c71b）　·　结论：<strong>通过</strong></p>
+
+<div class="box ok">
+<p><strong>独立复核通过。</strong>我从 <code>q4_fences.csv</code> 复算：705 个围栏，容量合计 491,691.94 = 站立 236,432.58 + 缓冲 255,259.35，逐行 capacity = standing + buffer；覆盖到达 1,647,398/2,143,417 = 76.86%。我从围栏坐标与格子坐标重算 450 m 多重度：0/1/2/3+ = 3,199/2,020/44/0，多重度 1.021318，与交付逐位一致。前沿 2,364 点连续、覆盖与容量单调不减；626 位置 72.67%/458,516、膝点 705 为 76.86%/491,692。</p>
+</div>
+
+<h2>裁决：膝点容量不必落进 600–750k 区间</h2>
+<p>那个区间是<strong>全格覆盖诊断</strong>的口径，不是选中方案的口径。膝点只覆盖 76.86% 的到达，未覆盖格的站立车辆不进围栏，所以容量自然低于全城口径。<strong>保留膝点规则（λ=150）为主方案，不需要为凑区间另定围栏数规则。</strong></p>
+<div class="tw"><table>
+<thead><tr><th>口径</th><th>围栏</th><th>覆盖到达</th><th>容量（meas343）</th><th>容量（fleet495）</th></tr></thead>
+<tbody>
+<tr><td>626 点</td><td>626</td><td>72.67%</td><td>458,516</td><td>582,977</td></tr>
+<tr><td>膝点（主方案）</td><td>705</td><td>76.86%</td><td>491,692</td><td>621,004</td></tr>
+<tr><td>全格覆盖（诊断）</td><td>2,364</td><td>100%</td><td>734,345</td><td>884,585</td></tr>
+</tbody></table></div>
+<p>T012 写 §7 时必须把“围栏数、覆盖率、容量”三件一起给；不能拿 491,692 单独去和 343,638 的车队比。<strong>obs 档 fleet495 全格 905,308 比 900k 高 0.59%</strong>：站立合计恰为 495,540、每格只归一个围栏，已核非重复计数；作为敏感性接受，正文备注。</p>
+
+<h2>其它核验</h2>
+<ul>
+<li><strong>库存预算</strong>：meas343 初始合计 343,638；fleet495 合计 495,540（最小可行形状归一，原始和 478,104.70，只用形状）；全格覆盖的 standing 合计恰等于两档总数。</li>
+<li><strong>容量规则</strong>：每围栏 95 分位的 15 分钟峰值占用，先加站立库存再取峰；求和是保守定容约定，交付已写明“不是全城同时 95% 保证”。</li>
+<li><strong>归属</strong>：独占指派，每格至多一个围栏；几何重叠另报（选中 2.80% 重复容量，obs 3.09%）；旧 1,799/37/0 与 1.03 是更小布局，不能与 626 并列。</li>
+<li><strong>留出验证</strong>：cell 相关 0.804、L1 0.423、top-100 重合 32/100；top-100 偏低，T012 要如实写，不能只报相关系数。</li>
+</ul>
+
+<div class="box warn">
+<p><strong>新问题 L12（转 T012）：</strong>λ=150 是“一个围栏折 150 个格位”的规划换汇率，不是造价估计。正文必须写明它不是成本，并给 λ=0（501 围栏/64.5%）与 λ=300（同为 705）两端，说明膝点选择对 λ 的敏感性有限。</p>
+</div>
+
+<h2>给 T012 的注意事项</h2>
+<ol>
+<li>删掉 <code>sec7_q4.tex:88-89</code> 的 0.2% 自检（344,463 vs 343,638 已过时）；替换为留出日/实测占用对比，并如实报 top-100 = 32。</li>
+<li>容量表按上表三行给，注明 meas343/fleet495 与覆盖率；不再出现“626 个围栏、容量 344,463”的旧组合。</li>
+<li>Q1 与 obs 的差异：Q1 膝点 705/76.86%/491,692；obs 687/78.43%/532,727。Q1 需求更分散，围栏更多但覆盖率略低——按此写，不要只说“更多围栏”。</li>
+<li>夜间 39.34% 已由 T007 给出；零初始与“夜间归零”的说法全部删除。</li>
+</ol>
+
+</main>
+</body>
+</html>
