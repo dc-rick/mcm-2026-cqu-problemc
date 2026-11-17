@@ -30,7 +30,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T006 · Q1 模型接入 Q2/Q4</h1>
-<p class="meta">下达：2026-11-18　·　前置：T005 已通过；B4 由原题强制为“是”　·　预计 0.5–1 天　·　优先级 P0（DDL 2026-11-22）</p>
+<p class="meta">下达：2026-11-18　·　前置：T005 已通过；B4 由原题强制为“是”　·　增量交付　·　优先级 P0（DDL 2026-11-22，日期只作上限）</p>
 
 <div class="box warn">
 <p><strong>为什么必须做：</strong>原题第 2 问写 <em>“Based on the travel behavior model built above”</em>，第 4 问写 <em>“Using the travel behaviour model from Question (1) to predict parking demand”</em>。现在 <code>20_q2_diag.py:5</code> 直接读观测 OD，<code>q1_params.json</code> 只被画图和提数脚本引用——这是未满足题面要求，不是风格问题。</p>
@@ -86,7 +86,7 @@ li{margin:3px 0}
 <p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T006/</code>。完成后 SendMessage 首行：<code>T006 已交付：交付/T006_delivery.json</code>。</p>
 
 <div class="box warn">
-<p><strong>时间：</strong>今天是 11-18，DDL 11-22。T006 今晚必须出 <code>q1_od.npz</code>，T007 才能开始；不要把 Q2 全网格跑完再交，先交数组与 smoke。</p>
+<p><strong>节奏：</strong>不按日排期，能跑多快跑多快。先交 <code>q1_od.npz</code> 与 Q1/obs 两个 smoke，全套验证随后补；<strong>不得为了赶时间跳过行和、负值、top-5 校验，也不得用估算值填空</strong>。跑完就交，不必等所有分支。</p>
 </div>
 
 </main>

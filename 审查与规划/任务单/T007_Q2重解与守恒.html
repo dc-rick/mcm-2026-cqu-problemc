@@ -30,7 +30,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T007 · Q2 重解：到达守恒、贪心运力、夜间口径</h1>
-<p class="meta">下达：2026-11-18　·　前置：T006 的 <code>q1_od.npz</code>　·　预计 1–1.5 天　·　优先级 P0（DDL 2026-11-22）</p>
+<p class="meta">下达：2026-11-18　·　前置：T006 的 <code>q1_od.npz</code>　·　增量交付　·　优先级 P0（DDL 2026-11-22，日期只作上限）</p>
 
 <div class="box warn">
 <p><strong>三件事必须一起改：</strong>H13（固定到达、只扣已服务出发，失单会造车）、H14（贪心基线把“辆单车”容量扣成“辆卡车”，高峰 5,314 辆/h 超过 2,400）、H15（夜间只占 40.37%，原文说“白天几乎不动”）。<strong>4 天窗口内不做逐区回家约束与夜间成本</strong>；夜间说法按实测改写，不建新成本模型。</p>
@@ -72,7 +72,7 @@ li{margin:3px 0}
 <p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T007/</code>。完成后 SendMessage 首行：<code>T007 已交付：交付/T007_delivery.json</code>。</p>
 
 <div class="box warn">
-<p><strong>止损线：</strong>如果 <code>u≤dep</code> 与到达守恒让 LP 变慢或不可行，先交 α=1、K=60 与 K=40 两个点，保留 <code>x</code> 的可行性检查；不要为了跑全网格拖到 11-20。T012 只用你交出的情景。</p>
+<p><strong>止损线：</strong>如果 <code>u≤dep</code> 与到达守恒让 LP 变慢或不可行，先交 α=1、K=60 与 K=40 两个点，保留 <code>x</code> 的可行性检查；不要为了跑全网格拖时间。T012 只用你交出的情景。<strong>质量优先于覆盖：宁可标“未重跑”，不凑数、不沿用旧值。</strong></p>
 </div>
 
 </main>
