@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T006 Q1 接入 Q2/Q4</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T006 · Q1 模型接入 Q2/Q4</h1>
+<p class="meta">下达：2026-11-18　·　前置：T005 已通过；B4 由原题强制为“是”　·　预计 0.5–1 天　·　优先级 P0（DDL 2026-11-22）</p>
+
+<div class="box warn">
+<p><strong>为什么必须做：</strong>原题第 2 问写 <em>“Based on the travel behavior model built above”</em>，第 4 问写 <em>“Using the travel behaviour model from Question (1) to predict parking demand”</em>。现在 <code>20_q2_diag.py:5</code> 直接读观测 OD，<code>q1_params.json</code> 只被画图和提数脚本引用——这是未满足题面要求，不是风格问题。</p>
+</div>
+
+<h2>目标</h2>
+<p>用 Q1 的完整模型（NHPP × 距离衰减 × 吸引项，五时段 β）生成典型日 OD，保存为 T007/T009 可直接读取的数组；给 Q2、Q4 加输入开关，主输入改为 Q1，观测 OD 作比较基线。本任务<strong>不改 LP 方程</strong>（守恒修复在 T007），也不改 Q4 的容量算法（在 T009）。</p>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li>新建 <code>code/12_q1_od.py</code>：读 <code>data/q1_params.json</code> 的五时段 β、<code>data/cells.parquet</code> 的格子与 zone；按 <code>10_q1_model.py</code> 的训练日（2017-05-10/11/15/16/18）重算 <code>D_j(h)</code> 与 <code>A_j(h)=smooth_attraction(D_j,1.2)</code>；构造 <code>P(j|i,h) ∝ A_j(h) exp(-β_h d_ij)</code>，行归一化。</li>
+<li>观测出发量 <code>dep_obs[24,5263]</code> 用 <code>lib.TYP_DAYS</code> 的 7 天、按日平均、采样尺度；<strong>不乘 1/p</strong>（放大留给下游统一做，B7 仍用 0.128 上界口径）。</li>
+<li>生成 <code>arr_q1_cell[24,5263] = Σ_i dep_obs[h,i] P(j|i,h)</code>，并聚合到 50 区得 <code>od_q1[24,50,50]</code>；行和必须等于 <code>dep_obs</code> 的区合计。</li>
+<li>保存 <code>data/runs/T006/q1_od.npz</code>：<code>od_q1</code>(24,50,50)、<code>arr_q1_cell</code>(24,5263)、<code>dep_obs</code>(24,5263)、<code>arr_obs_cell</code>(24,5263)、<code>band</code>(24,)、<code>beta</code>(5,)、<code>train_days</code>、<code>typ_days</code>、<code>sigma</code>。全部 float32（日期/标签除外）。</li>
+<li>给 <code>20_q2_diag.py</code>/<code>21_q2_opt.py</code>/<code>22_q2_sim.py</code> 加 <code>--od q1|obs</code> 开关（默认 q1）：q1 读 <code>q1_od.npz</code>，obs 读 <code>typical_day.npz</code>；只换输入，不改方程。</li>
+<li>给 <code>40_q4_efence.py</code> 加 <code>--arr q1|obs</code>（默认 q1），只换需求面；跑一次 R=450 的 sanity，不重做容量修正。</li>
+<li>验证：用生成的 <code>P</code> 重算 T005 的留出日 top-5 命中率，必须与 <code>data/q1_validation.csv</code> 的完整模型值一致（0.425 左右，容差 0.005）；报告同格占比、距离分布 KS、Q1 vs 观测的差异。</li>
+</ol>
+</td><td>
+<ol>
+<li>不改 <code>10_q1_model.py</code>，不覆盖 <code>q1_params.json</code>、<code>dist_matrix.npy</code>、<code>cells.parquet</code>。</li>
+<li>不改 LP 的守恒方程、不加 <code>u≤dep</code>（T007 做）；不改 Q4 的零初始库存/重复归属（T009 做）。</li>
+<li>不改 <code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>；不覆盖 <code>data/</code> 现有文件。</li>
+<li>不跑 Q3/Q5。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>交付物</h2>
+<ul>
+<li><code>data/runs/T006/q1_od.npz</code>（上述数组）</li>
+<li><code>data/runs/T006/q1_vs_obs.json</code>：行和误差、top-5、同格、KS、Q1/obs 的区级 OD 差异（L1、最大绝对差、总流量）</li>
+<li><code>data/runs/T006/q2_q1_smoke.json</code>：α=1、K=60 下 <code>--od q1</code> 与 <code>--od obs</code> 各跑一次的最小结果（moved/truck-km/unserved/dev/obj）</li>
+<li><code>data/runs/T006/q4_q1_smoke.json</code>：R=450、Q1/obs 两种需求面的覆盖与容量合计</li>
+<li><code>交付/T006_delivery.json</code>：自检 1–10、只读区哈希、affected、notes</li>
+</ul>
+
+<h2>验收标准</h2>
+<ol>
+<li><code>q1_od.npz</code> 的键、形状、dtype 齐全；<code>od_q1</code> 行和与 <code>dep_obs</code> 区合计的最大相对误差 &lt; 1e-6；无负值。</li>
+<li>用生成的 <code>P</code> 重算的留出日 top-5 与 T005 完整模型值差 &lt; 0.005；同格占比、KS 有数。</li>
+<li><code>--od q1</code> 与 <code>--od obs</code> 都能跑通 α=1、K=60；两者差异表给出，且 q1 是默认。</li>
+<li><code>40_q4_efence.py --arr q1</code> 能跑通 R=450；两种需求面的覆盖/容量差异给出。</li>
+<li><code>data/</code>（除 <code>runs/T006/</code>）、<code>paper/</code>、<code>review/</code> 哈希不变。</li>
+<li>自检 1–10 全过；<code>notes</code> 写未测分支（例如 A_j 未保存、只能按训练日重算；1/p 放大留给下游）。</li>
+</ol>
+
+<h2>只读区与交付</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T006/</code>。完成后 SendMessage 首行：<code>T006 已交付：交付/T006_delivery.json</code>。</p>
+
+<div class="box warn">
+<p><strong>时间：</strong>今天是 11-18，DDL 11-22。T006 今晚必须出 <code>q1_od.npz</code>，T007 才能开始；不要把 Q2 全网格跑完再交，先交数组与 smoke。</p>
+</div>
+
+</main>
+</body>
+</html>

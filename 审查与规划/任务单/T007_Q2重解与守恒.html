@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T007 Q2 重解与守恒</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T007 · Q2 重解：到达守恒、贪心运力、夜间口径</h1>
+<p class="meta">下达：2026-11-18　·　前置：T006 的 <code>q1_od.npz</code>　·　预计 1–1.5 天　·　优先级 P0（DDL 2026-11-22）</p>
+
+<div class="box warn">
+<p><strong>三件事必须一起改：</strong>H13（固定到达、只扣已服务出发，失单会造车）、H14（贪心基线把“辆单车”容量扣成“辆卡车”，高峰 5,314 辆/h 超过 2,400）、H15（夜间只占 40.37%，原文说“白天几乎不动”）。<strong>4 天窗口内不做逐区回家约束与夜间成本</strong>；夜间说法按实测改写，不建新成本模型。</p>
+</div>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li><strong>H13 到达守恒</strong>：把 <code>21_q2_opt.py:40-44</code> 的 <code>arr</code> 改成由已服务出发生成：<code>arr_served[z',t] = Σ_z (dep[z,t] - u[z,t]) · P[t,z,z']</code>，<code>P</code> 取 T006 的 <code>od_q1</code> 行归一化（<code>--od obs</code> 时取观测 OD）。加 <code>u[z,t] ≤ dep[z,t]</code>。保留“同小时到达”约定，并在 notes 里写明。</li>
+<li><strong>重解</strong>：至少跑 α=1、K∈{20,40,60,80}；加 α=0.8、K=80 与 α=0.6、K=80。若时间允许再补 α=0.4–1.0 全网格；补不完就在 notes 里标“未重跑”，T012 不得引用旧值。</li>
+<li><strong>H14 贪心</strong>：<code>22_q2_sim.py:36-43</code> 的 <code>cap=Q*trucks_at</code> 与 <code>cap[s]-=amt/Q</code> 单位统一；<code>trucks_at</code> 随调度转移；三种策略共用位置、行驶时间、库存规则。</li>
+<li><strong>H15 夜间</strong>：从新计划算 21:00–06:00 的搬运量占比，写入 <code>data/runs/T007/q2_night.json</code>；不在 LP 里加夜间成本。</li>
+<li>保存 <code>data/runs/T007/</code>：<code>q2_results_q1.json</code>、<code>q2_plan_q1.npz</code>（含 XM/X/M/I/U）、<code>q2_sim_q1.json</code>、<code>q2_conservation.json</code>（逐小时全城库存残差）、<code>q2_night.json</code>、<code>q2_greedy_check.json</code>。</li>
+<li><strong>对比口径</strong>：Q1 OD 为主、观测 OD 为基线；两者都跑 α=1、K=60，给出 moved/truck-km/unserved/dev/obj 差异。</li>
+</ol>
+</td><td>
+<ol>
+<li>不加逐区回家约束、司机班次、夜间成本（4 天窗口砍掉；T012 删“night shift/回家”说法或改成“夜间占比”）。</li>
+<li>不改 Q3、Q4、Q5；不改 <code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>；不覆盖 <code>data/</code> 现有文件。</li>
+<li>不跑 42 个情景的全网格后再交；先交 α=1 的四个 K 与两个 α 点。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>验收标准</h2>
+<ol>
+<li><strong>守恒</strong>：每个情景、每个小时，全城库存合计 <code>Σ_z I[z,t]</code> 的逐时变化等于“到达 − 已服务出发”；日末 <code>Σ_z I[z,23] = Σ_z I[z,0]</code>（在 <code>u=0</code> 时逐区也应精确）。残差给出，必须为 0（浮点容差 1e-6）。</li>
+<li><strong>上界</strong>：所有 <code>u[z,t] ≤ dep[z,t]</code>；不再出现 <code>dev = unmet</code> 的数值指纹（除非有独立解释）。</li>
+<li><strong>主结果</strong>：α=1、K=60 的 Q1 OD 方案给出 moved/truck-km/unserved/dev/obj；与观测 OD 的差异列成表。</li>
+<li><strong>贪心</strong>：任一小时搬运 ≤2,400 辆；任一来源小时 ≤40×该处卡车数；<code>q2_sim_q1.json</code> 三策略可比较。</li>
+<li><strong>夜间</strong>：<code>q2_night.json</code> 给出 21:00–06:00 与白天的搬运量、卡车公里占比；不再出现“白天几乎不动”的未支撑表述。</li>
+<li><strong>只读</strong>：<code>data/</code>（除 <code>runs/T007/</code>）、<code>paper/</code>、<code>review/</code> 哈希不变；自检 1–10 全过；notes 写未重跑的情景。</li>
+</ol>
+
+<h2>只读区与交付</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T007/</code>。完成后 SendMessage 首行：<code>T007 已交付：交付/T007_delivery.json</code>。</p>
+
+<div class="box warn">
+<p><strong>止损线：</strong>如果 <code>u≤dep</code> 与到达守恒让 LP 变慢或不可行，先交 α=1、K=60 与 K=40 两个点，保留 <code>x</code> 的可行性检查；不要为了跑全网格拖到 11-20。T012 只用你交出的情景。</p>
+</div>
+
+</main>
+</body>
+</html>
