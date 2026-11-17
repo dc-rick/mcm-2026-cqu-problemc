@@ -1,0 +1,530 @@
+{
+ "task": "T009",
+ "title": "Q4 electronic-fence layout and capacity with nonzero initial inventory",
+ "date": "2026-11-18",
+ "status": "delivered",
+ "checks": {
+  "1_demand_surfaces_full_scale": true,
+  "2_inventory_levels_and_magnitude": true,
+  "3_capacity_includes_standing": true,
+  "4_mc_capacity_and_initial_before_max": true,
+  "5_exclusive_attribution": true,
+  "6_overlap_counts": true,
+  "7_frontier_knee_and_626": true,
+  "8_holdout_validation": true,
+  "9_zone_comparison_and_q1_minus_obs": true,
+  "10_readonly_scope_outputs_no_abs": true
+ },
+ "settings": {
+  "R_m": 450,
+  "FLEET_measured": 343638.0,
+  "FLEET_closed": 495540.0,
+  "scale": 7.8125,
+  "reps": 300,
+  "capacity_percentile": 95,
+  "demand_primary": "q1",
+  "demand_baseline": "obs",
+  "initial_levels": {
+   "meas343": "2017-05-16 00:00 snapshot: for every bike whose last trip started before the instant, the destination cell of that trip; trip durations are not in the data, so a trip starting before 00:00 is treated as completed by the snapshot. Bikes seen before the snapshot are assumed still in service. Shares are scaled to 343,638, the measured fleet total used since T006.",
+   "fleet495": "Q1 minimum feasible periodic inventory occ0_j = max(0, -min_t cum_j(t)) with cum from full-scale Q1 arrivals (arr_q1_cell/0.128) minus full-scale observed departures (dep_obs/0.128), then normalised to 495,540. The raw sum before normalisation is 478,104.70, so only the shape is used, not the raw total."
+  },
+  "capacity_rule": "Monte Carlo 95th percentile of the peak 15-minute occupancy; the trajectory starts at the fence's standing inventory and the peak includes t=0. Per-fence percentiles are not additive in probability, so their sum is a conservative deterministic sizing convention, not a city-wide simultaneous 95% guarantee.",
+  "departures": "Both demand surfaces use the same full-scale observed departures dep_obs/0.128; the Q1 surface changes arrivals only.",
+  "frontier_cost": "capacity slots + lambda * fences, lambda=150 slot-equivalents (knees also for 0 and 300).",
+  "lambda_note": "lambda=150 is a planning exchange rate (one fence is treated as worth 150 slot-equivalents), not an estimated construction cost; lambda=0 and 300 bracket the selection.",
+  "selected_rule": "primary plan = knee at lambda=150 on the meas343 capacity-coverage curve of each demand surface; 626 is reported only as a point on the frontier.",
+  "night_note": "T007 measured 21:00-06:00 at 39.34% of moved bikes; zero-initial / overnight-empty is not used."
+ },
+ "surfaces": {
+  "q1": {
+   "n_selected": 705,
+   "coverage_selected": 0.7685847656798482,
+   "uncovered_share_selected": 0.23141523432015176,
+   "uncovered_cells_selected": 3199,
+   "total_arrivals_day": 2143417.4110091086,
+   "covered_arrivals_day": 1647397.9685945427,
+   "uncovered_arrivals_day": 496019.44241456594,
+   "n_full_coverage": 2364,
+   "full_coverage": {
+    "n_fences": 2364,
+    "coverage": 0.9999999999999989,
+    "uncovered_cells": 0,
+    "meas343": {
+     "capacity_total": 734345.4669513324,
+     "capacity_median": 185.1535921840309,
+     "capacity_max": 2946.509298071232,
+     "standing_total": 343638.0,
+     "buffer_total": 390707.4669513324
+    },
+    "fleet495": {
+     "capacity_total": 884584.8988183329,
+     "capacity_median": 205.56684633616325,
+     "capacity_max": 4622.1891925251375,
+     "standing_total": 495540.0,
+     "buffer_total": 389044.89881833293
+    }
+   },
+   "meas343": {
+    "capacity_total": 491691.9370767786,
+    "capacity_median": 582.7192609593642,
+    "capacity_max": 2946.509298071232,
+    "standing_total": 236432.5834505046,
+    "buffer_total": 255259.353626274,
+    "capacity_per_covered_arrival": 0.29846579056805533
+   },
+   "fleet495": {
+    "capacity_total": 621003.8479866735,
+    "capacity_median": 754.5263458658799,
+    "capacity_max": 4622.1891925251375,
+    "standing_total": 366861.79479250155,
+    "buffer_total": 254142.05319417192,
+    "capacity_per_covered_arrival": 0.3769604308280623
+   }
+  },
+  "obs": {
+   "n_selected": 687,
+   "coverage_selected": 0.7843136835779323,
+   "uncovered_share_selected": 0.2156863164220677,
+   "uncovered_cells_selected": 3253,
+   "total_arrivals_day": 2143417.4147141166,
+   "covered_arrivals_day": 1681111.6079795174,
+   "uncovered_arrivals_day": 462305.8067345993,
+   "n_full_coverage": 2423,
+   "full_coverage": {
+    "n_fences": 2423,
+    "coverage": 1.0,
+    "uncovered_cells": 1,
+    "meas343": {
+     "capacity_total": 747815.6373629846,
+     "capacity_median": 148.2966790372892,
+     "capacity_max": 6391.560099497766,
+     "standing_total": 343638.0,
+     "buffer_total": 404177.6373629846
+    },
+    "fleet495": {
+     "capacity_total": 905308.400082936,
+     "capacity_median": 144.71644721999633,
+     "capacity_max": 8437.020670280577,
+     "standing_total": 495540.0,
+     "buffer_total": 409768.40008293604
+    }
+   },
+   "meas343": {
+    "capacity_total": 532726.9978067536,
+    "capacity_median": 623.4489711821104,
+    "capacity_max": 6391.560099497766,
+    "standing_total": 243526.57364557916,
+    "buffer_total": 289200.42416117445,
+    "capacity_per_covered_arrival": 0.31688972658217723
+   },
+   "fleet495": {
+    "capacity_total": 680208.5758915883,
+    "capacity_median": 737.5019982867087,
+    "capacity_max": 8437.020670280577,
+    "standing_total": 389124.1321165869,
+    "buffer_total": 291084.44377500145,
+    "capacity_per_covered_arrival": 0.4046183326930403
+   }
+  }
+ },
+ "magnitude_check": {
+  "measured_range_slots": [
+   600000,
+   750000
+  ],
+  "fleet_range_slots": [
+   780000,
+   900000
+  ],
+  "basis": "full_coverage (all 5,263 cells inside some fence); the selected knee plan covers only ~77% of arrivals, so its capacity is not comparable with these fleet-wide ranges.",
+  "selected_capacity_note": "At the knee the selected plan's capacity is lower because the uncovered cells and their standing bikes lie outside the fences.",
+  "measured_ok": {
+   "q1": true,
+   "obs": true
+  },
+  "fleet_ok": {
+   "q1": true,
+   "obs": false
+  },
+  "fleet_within_one_percent": {
+   "q1": true,
+   "obs": true
+  },
+  "obs_fleet_excess": {
+   "slots_above_900k": 5308.400082936045,
+   "percent_above_900k": 0.5898222314373314,
+   "no_double_count_audit": "standing_total equals 495,540 exactly (each bike counted once); the full-coverage plan assigns every cell to one fence, so buffer_total does not count any cell twice. The excess is therefore not double counting; the observed surface has sharper peaks than the Q1 surface."
+  }
+ },
+ "q1_minus_obs": {
+  "n_selected": 18,
+  "coverage_selected": -0.01572891789808406,
+  "capacity_meas343": -41035.060729975,
+  "capacity_fleet495": -59204.72790491488,
+  "capacity_per_covered_arrival_meas343": -0.0184239360141219,
+  "note": "Raw capacity totals are confounded by the different coverage of the two knee plans (Q1 76.86%, observed 78.43%); the per-covered-arrival row is the comparable size difference."
+ },
+ "zone_comparison": {
+  "l1": 53293.16648335103,
+  "l1_normalized": 0.024863643505695383,
+  "max_abs": 3603.9495070672274,
+  "corr": 0.9979755818683618,
+  "q1_total": 2143417.4110091086,
+  "obs_total": 2143417.4147141166
+ },
+ "validation": {
+  "holdout_days": [
+   "2017-05-12",
+   "2017-05-19"
+  ],
+  "cell_corr": 0.8041443151446922,
+  "l1_normalized": 0.42284187470039647,
+  "top100_overlap": 32,
+  "q1_daily_total": 2143417.4110091086,
+  "holdout_daily_total": 2170605.46875,
+  "initial_inventory": {
+   "meas343_sum": 343638.0,
+   "fleet495_sum": 495540.0,
+   "corr": 0.6869135766661537,
+   "l1_normalized": 0.9221520373893349
+  },
+  "note": "Hold-out comparison uses the two T005 test days (2017-05-12/19), excluded from the Q1 training set. The inventory comparison is the measured 5/16 00:00 drop-off snapshot against the minimum-feasible Q1 shape."
+ },
+ "overlap": {
+  "q1": {
+   "selected": {
+    "cells_total": 5263,
+    "cells_0": 3199,
+    "cells_1": 2020,
+    "cells_2": 44,
+    "cells_3plus": 0,
+    "cells_covered": 2064,
+    "coverage_multiplicity": 1.0213178294573644,
+    "duplicate_capacity_slots": 12279.8681497488,
+    "duplicate_capacity_share": 0.027994645196591617,
+    "definition": "multiplicity counts how many selected fence sites lie within R of each cell; duplicate capacity = sum over cells of (I0 + max hourly arrivals) * (multiplicity-1), i.e. the slot count that would be counted twice if catchments were treated as overlapping."
+   },
+   "full_path": {
+    "cells_total": 5263,
+    "cells_0": 0,
+    "cells_1": 4563,
+    "cells_2": 696,
+    "cells_3plus": 4,
+    "cells_covered": 5263,
+    "coverage_multiplicity": 1.1337640129203876,
+    "duplicate_capacity_slots": 80026.41706038888,
+    "duplicate_capacity_share": 0.13126889037319667,
+    "definition": "multiplicity counts how many selected fence sites lie within R of each cell; duplicate capacity = sum over cells of (I0 + max hourly arrivals) * (multiplicity-1), i.e. the slot count that would be counted twice if catchments were treated as overlapping."
+   }
+  },
+  "obs": {
+   "selected": {
+    "cells_total": 5263,
+    "cells_0": 3253,
+    "cells_1": 1965,
+    "cells_2": 45,
+    "cells_3plus": 0,
+    "cells_covered": 2010,
+    "coverage_multiplicity": 1.0223880597014925,
+    "duplicate_capacity_slots": 16367.966794630524,
+    "duplicate_capacity_share": 0.030896761780134088,
+    "definition": "multiplicity counts how many selected fence sites lie within R of each cell; duplicate capacity = sum over cells of (I0 + max hourly arrivals) * (multiplicity-1), i.e. the slot count that would be counted twice if catchments were treated as overlapping."
+   },
+   "full_path": {
+    "cells_total": 5263,
+    "cells_0": 1,
+    "cells_1": 4358,
+    "cells_2": 904,
+    "cells_3plus": 0,
+    "cells_covered": 5262,
+    "coverage_multiplicity": 1.1717977955150134,
+    "duplicate_capacity_slots": 159808.88987470316,
+    "duplicate_capacity_share": 0.22420023682222456,
+    "definition": "multiplicity counts how many selected fence sites lie within R of each cell; duplicate capacity = sum over cells of (I0 + max hourly arrivals) * (multiplicity-1), i.e. the slot count that would be counted twice if catchments were treated as overlapping."
+   }
+  }
+ },
+ "frontier_summary": {
+  "q1": {
+   "knees": {
+    "meas343": {
+     "0": {
+      "n": 501,
+      "cost": 396316.83635189844,
+      "coverage": 0.6450604042205161,
+      "cost_per_covered_arrival": 0.28663906854366233
+     },
+     "150": {
+      "n": 705,
+      "cost": 597441.9370767786,
+      "coverage": 0.7685847656798482,
+      "cost_per_covered_arrival": 0.3626579299393448
+     },
+     "300": {
+      "n": 705,
+      "cost": 703191.9370767786,
+      "coverage": 0.7685847656798482,
+      "cost_per_covered_arrival": 0.42685006931063424
+     }
+    },
+    "fleet495": {
+     "0": {
+      "n": 570,
+      "cost": 551503.1082878291,
+      "coverage": 0.6930290654488794,
+      "cost_per_covered_arrival": 0.3712699171558812
+     },
+     "150": {
+      "n": 698,
+      "cost": 721633.719600809,
+      "coverage": 0.7651447947343667,
+      "cost_per_covered_arrival": 0.4400139404067754
+     },
+     "300": {
+      "n": 698,
+      "cost": 826333.719600809,
+      "coverage": 0.7651447947343667,
+      "cost_per_covered_arrival": 0.5038544432952407
+     }
+    }
+   },
+   "position_626": {
+    "n": 626,
+    "coverage": 0.7266599715124128,
+    "capacity_meas343": 458516.02864556643,
+    "standing_meas343": 220862.87983097357,
+    "buffer_meas343": 237653.14881459286,
+    "capacity_fleet495": 582976.7406947975,
+    "standing_fleet495": 346269.2071168585,
+    "buffer_fleet495": 236707.53357793897
+   },
+   "capacity_bridge": {
+    "n_626": {
+     "n": 626,
+     "coverage": 0.7266599715124128,
+     "capacity_meas343": 458516.02864556643,
+     "standing_meas343": 220862.87983097357,
+     "buffer_meas343": 237653.14881459286,
+     "capacity_fleet495": 582976.7406947975,
+     "standing_fleet495": 346269.2071168585,
+     "buffer_fleet495": 236707.53357793897
+    },
+    "n_selected": {
+     "n": 705,
+     "coverage": 0.7685847656798482,
+     "capacity_meas343": 491691.9370767786,
+     "standing_meas343": 236432.58345050452,
+     "buffer_meas343": 255259.3536262741,
+     "capacity_fleet495": 621003.8479866729,
+     "standing_fleet495": 366861.79479250184,
+     "buffer_fleet495": 254142.05319417105
+    },
+    "n_full": {
+     "n": 2364,
+     "coverage": 0.9999999999999989,
+     "capacity_meas343": 734345.4669513333,
+     "standing_meas343": 343638.0000000021,
+     "buffer_meas343": 390707.46695133124,
+     "capacity_fleet495": 884584.8988183367,
+     "standing_fleet495": 495540.0,
+     "buffer_fleet495": 389044.89881833666
+    }
+   }
+  },
+  "obs": {
+   "knees": {
+    "meas343": {
+     "0": {
+      "n": 617,
+      "cost": 505812.8292294667,
+      "coverage": 0.7504647211968015,
+      "cost_per_covered_arrival": 0.3144508726522092
+     },
+     "150": {
+      "n": 687,
+      "cost": 635776.9978067534,
+      "coverage": 0.7843136835779323,
+      "cost_per_covered_arrival": 0.3781884526815424
+     },
+     "300": {
+      "n": 687,
+      "cost": 738826.9978067534,
+      "coverage": 0.7843136835779323,
+      "cost_per_covered_arrival": 0.4394871787809077
+     }
+    },
+    "fleet495": {
+     "0": {
+      "n": 702,
+      "cost": 685770.0936152502,
+      "coverage": 0.7909869387959036,
+      "cost_per_covered_arrival": 0.4044850499965457
+     },
+     "150": {
+      "n": 727,
+      "cost": 804542.9088452611,
+      "coverage": 0.8016388412817005,
+      "cost_per_covered_arrival": 0.46823481807705813
+     },
+     "300": {
+      "n": 727,
+      "cost": 913592.9088452611,
+      "coverage": 0.8016388412817005,
+      "cost_per_covered_arrival": 0.5317006772002089
+     }
+    }
+   },
+   "position_626": {
+    "n": 626,
+    "coverage": 0.755052584164269,
+    "capacity_meas343": 510016.91448099574,
+    "standing_meas343": 232644.43044771504,
+    "buffer_meas343": 277372.4840332807,
+    "capacity_fleet495": 656549.3422544202,
+    "standing_fleet495": 377042.8713773961,
+    "buffer_fleet495": 279506.47087702405
+   },
+   "capacity_bridge": {
+    "n_626": {
+     "n": 626,
+     "coverage": 0.755052584164269,
+     "capacity_meas343": 510016.91448099574,
+     "standing_meas343": 232644.43044771504,
+     "buffer_meas343": 277372.4840332807,
+     "capacity_fleet495": 656549.3422544202,
+     "standing_fleet495": 377042.8713773961,
+     "buffer_fleet495": 279506.47087702405
+    },
+    "n_selected": {
+     "n": 687,
+     "coverage": 0.7843136835779323,
+     "capacity_meas343": 532726.9978067534,
+     "standing_meas343": 243526.5736455793,
+     "buffer_meas343": 289200.4241611741,
+     "capacity_fleet495": 680208.575891589,
+     "standing_fleet495": 389124.132116587,
+     "buffer_fleet495": 291084.44377500203
+    },
+    "n_full": {
+     "n": 2423,
+     "coverage": 1.0,
+     "capacity_meas343": 747815.6373629867,
+     "standing_meas343": 343638.00000000175,
+     "buffer_meas343": 404177.63736298494,
+     "capacity_fleet495": 905308.4000829454,
+     "standing_fleet495": 495539.9999999999,
+     "buffer_fleet495": 409768.4000829455
+    }
+   }
+  }
+ },
+ "b5": "R=450 m is retained as the current planning threshold, not a 2017 measured walking distance; 2026 OSM is used only as an external geographic check.",
+ "selected_plan": {
+  "q1": {
+   "n_fences": 705,
+   "coverage": 0.7685847656798482,
+   "capacity_meas343": 491691.9370767786,
+   "capacity_fleet495": 621003.8479866735
+  },
+  "obs": {
+   "n_fences": 687,
+   "coverage": 0.7843136835779323,
+   "capacity_meas343": 532726.9978067536,
+   "capacity_fleet495": 680208.5758915883
+  },
+  "rule": "knee at lambda=150 on the meas343 capacity-coverage curve of each demand surface; 626 is only a point."
+ },
+ "full_coverage_decomposition": {
+  "q1": {
+   "n_fences": 2364,
+   "coverage": 0.9999999999999989,
+   "uncovered_cells": 0,
+   "meas343": {
+    "capacity_total": 734345.4669513324,
+    "capacity_median": 185.1535921840309,
+    "capacity_max": 2946.509298071232,
+    "standing_total": 343638.0,
+    "buffer_total": 390707.4669513324
+   },
+   "fleet495": {
+    "capacity_total": 884584.8988183329,
+    "capacity_median": 205.56684633616325,
+    "capacity_max": 4622.1891925251375,
+    "standing_total": 495540.0,
+    "buffer_total": 389044.89881833293
+   }
+  },
+  "obs": {
+   "n_fences": 2423,
+   "coverage": 1.0,
+   "uncovered_cells": 1,
+   "meas343": {
+    "capacity_total": 747815.6373629846,
+    "capacity_median": 148.2966790372892,
+    "capacity_max": 6391.560099497766,
+    "standing_total": 343638.0,
+    "buffer_total": 404177.6373629846
+   },
+   "fleet495": {
+    "capacity_total": 905308.400082936,
+    "capacity_median": 144.71644721999633,
+    "capacity_max": 8437.020670280577,
+    "standing_total": 495540.0,
+    "buffer_total": 409768.40008293604
+   }
+  },
+  "note": "Diagnostic decomposition used for the 600-750k / 780-900k magnitude check: every cell is assigned, so standing totals equal the fleet totals. The selected knee plan covers ~77% of arrivals, so its capacity is lower and is not compared with these fleet-wide ranges."
+ },
+ "code_changes": [
+  {
+   "file": "code/t009_q4.py",
+   "status": "new",
+   "what": "Q4 siting/sizing: two demand surfaces, two initial levels, exclusive greedy partition, Monte-Carlo 95th peak occupancy including standing inventory, cost-coverage frontier and knee selection.",
+   "why": "replace the zero-initial 0.2% self-check and the old frac_stop capacity count with reproducible evidence."
+  },
+  {
+   "file": "code/t009_delivery.py",
+   "status": "new",
+   "what": "this delivery builder",
+   "why": "assemble T009 evidence."
+  },
+  {
+   "file": "code/t009_validate.py",
+   "status": "new",
+   "what": "independent validator",
+   "why": "recompute every T009 check before delivery."
+  }
+ ],
+ "outputs": {
+  "delivery_json": "交付/T009_delivery.json",
+  "run_dir": "data/runs/T009/",
+  "required": [
+   "q4_results.json",
+   "q4_fences.csv",
+   "q4_overlap.json",
+   "q4_frontier.json"
+  ]
+ },
+ "notes": [
+  "Demand surfaces are full scale: arr_q1_cell and arr_obs_cell multiplied by 1/0.128; both sum to 2,143,417.41 arrivals/day. The earlier 4x bug (repeating an hourly total into four slots without dividing) is not present; to15 divides by 4 first.",
+  "meas343 is the 2017-05-16 00:00 snapshot: the destination cell of each bike's last trip starting before the instant, rescaled to 343,638. Trip durations are unavailable, so a trip starting before 00:00 is treated as completed.",
+  "fleet495 is the Q1 minimum-feasible periodic inventory occ0_j=max(0,-min_t cum_j(t)) from full-scale Q1 arrivals minus full-scale observed departures, normalised to 495,540; the raw sum is 478,104.70, so only its shape is used.",
+  "Capacity is the per-fence 95th percentile of the 15-minute occupancy peak, with standing inventory added at the start of the trajectory and included in the peak; it is never max-then-add. Summed per-fence percentiles are a conservative sizing convention, not a simultaneous city-wide 95% guarantee.",
+  "Attribution is exclusive: each picked fence claims only still-unassigned cells within 450 m, so every cell belongs to at most one fence. Geometric overlap is reported separately: Q1 selected 2,020 cells covered by 1 fence / 44 by 2 / 0 by 3+, multiplicity 1.0213, duplicate capacity 12,280 slots (2.80%); observed 1,965 / 45 / 0, multiplicity 1.0224, 3.09%. The old 1,799 / 37 / 0 and multiplicity 1.03 were a smaller overlapping layout; the 13%/22% figures on the full greedy path are not the selected plan.",
+  "The selected plan uses the lambda=150 knee (Q1 705 fences, 76.86% of arrivals; observed 687, 78.43%); 626 is retained only as frontier position (Q1 72.67%, observed 75.51%). The capacity bridge in q4_frontier.json separates standing inventory from buffer at 626, at the knee, and at full coverage; the old zero-initial 344,463 buffer was computed on overlapping catchments, so it is larger than the 237,653 exclusive buffer at 626.",
+  "Full-coverage capacity is 734,345 (Q1, meas343) and 747,816 (observed, meas343), inside the 600-750k check; fleet-level capacity is 884,585 (Q1) and 905,308 (observed, 0.59% above the 900k upper bound). The observed excess is not double counting: standing totals are exactly 495,540 and each cell is assigned once; the observed surface simply has sharper peaks.",
+  "paper/sec7_q4.tex is untouched by T009; the 0.2% self-check at lines 88-89 (344,463 vs 343,638) is obsolete and must be removed/replaced by T012.",
+  "R=450 m is a planning threshold, not a 2017 measured walking distance; 2026 OSM is only an external geographic check.",
+  "Night narrative follows H15: T007 measured 39.34% of moved bikes in 21:00-06:00, so zero initial inventory / an empty overnight is not used."
+ ],
+ "integrity": {
+  "baseline": {
+   "data_paper": "data/runs/T015/fingerprint_start.json",
+   "review": "data/runs/T001/fingerprint_start.json",
+   "scope_commit": "d731585"
+  },
+  "paper_untouched": true,
+  "data_excluding_runs_untouched": true,
+  "review_untouched": true
+ }
+}
