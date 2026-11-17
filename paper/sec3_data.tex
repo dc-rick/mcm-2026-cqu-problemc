@@ -72,11 +72,11 @@ Following decision B7 we retain $p=0.128$ for the absolute flow quantities. This
 the \emph{lower} end of the bracket, so dividing by 0.128 overstates every absolute
 flow by about $0.185/0.128=1.45$ relative to the central estimate. All absolute
 counts in this paper are therefore \textbf{upper bounds}; ratios, shares and the fleet
-estimate (which is invariant to $p$) are unaffected. The statement that resampling at
-5\%--50\% reproduces the fleet within 4\% is false and is withdrawn: at a 5\% rate,
-64.5\% of 200 draws deviate by more than 4\%, and the maximum deviation is 17.9\%;
-only at the 50\% rate does the maximum fall below 4\% (3.67\%). What survives is the
-algebraic invariance of the estimator, not a claim of small finite-sample scatter.
+estimate (which is invariant to $p$) are unaffected. Finite-sample resampling is a
+different matter from the algebraic invariance: at a 5\% rate, 64.5\% of 200 draws
+deviate by more than 4\% from the full-sample value, and the maximum deviation is
+17.9\%; only at the 50\% rate does the maximum fall below 4\% (3.67\%). What holds at
+every rate is the invariance of the estimator, not small finite-sample scatter.
 
 \subsection{Fleet size}
 
@@ -96,14 +96,12 @@ The estimator assumes the two windows sample the same closed population; a bicyc
 retired between them biases the estimate down, and heterogeneity biases it up. As a
 model interval we report the observed 14-day union as a hard lower bound,
 484,754, and the normalised nine-day unseen-share method as an upper reference,
-506,635. The old value 343,638 is not a fleet estimate: it is the 5/16 00:00
-drop-off snapshot, and it is retained only as the measured initial inventory in Q2
-and Q4.
+506,635. The 5/16 00:00 drop-off snapshot gives 343,638 bicycles, which is not a
+fleet estimate; it is used only as the measured initial inventory in Q2 and Q4.
 
 At 495,540 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
-\textbf{4.33 times per day}. The fleet is worked less hard than the old estimate
-implied, and it is idle in the particular even when it is abundant in the aggregate;
-that is the tension the rest of the paper quantifies.
+\textbf{4.33 times per day}. The fleet is idle in the particular even when it is
+abundant in the aggregate; that is the tension the rest of the paper quantifies.
 
 \subsection{Spatial units}
 

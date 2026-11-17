@@ -16,13 +16,12 @@ $1/p$, and $I_{z0}$ is the measured 5/16 00:00 drop-off inventory, rescaled to
 
 Starting from that measured inventory, no zone in the 50-zone path reaches zero. This
 is a statement about the measured midnight snapshot and the zone aggregation, not a
-resolution-free guarantee. At cell resolution T004 finds simulated unserved shares of
+resolution-free guarantee. At cell resolution the simulation finds unserved shares of
 5.84\% at the measured 343,638 inventory and 3.51\% at the closed fleet 495,540
 (R=450 m); the corresponding figures at R=600 m are 2.35\% and 1.28\%, and a finer
-grid gives 2.07\% and 2.39\%. We use those numbers in Section~\ref{sec:sens}. The old
-``172 dry cells'' figure is not used: it survives only under a path that advances cell
-inventory hourly and does not multiply by $1/p$, and the Q2 LP is a 50-zone model that
-cannot produce a cell count at all.
+grid gives 2.07\% and 2.39\%. We use those numbers in Section~\ref{sec:sens}. No count
+of dry cells is reported: the Q2 LP is a 50-zone model that cannot produce one, and
+the cell-level statement is the simulated unserved share above.
 
 What the day does produce is drift: the morning commute empties the residential north
 and fills the office core, and the evening reverses it imperfectly. Rebalancing is
@@ -80,10 +79,10 @@ truck returns home by midnight. \eqnref{eq:q2dev} defines the end-of-day deviati
 which is what makes the plan a reset rather than a one-way transfer.
 
 The program is solved to optimality with Gurobi \cite{gurobi} through its Python
-interface, with two corrections relative to the first implementation. A served
-departure is credited to its destination in the same hour (no cross-hour lag), and
-unserved departures are bounded by departures, $u_{zt}\le d_{zt}$, so the service
-variable cannot manufacture demand. Across the six reported scenarios the worst
+interface. Two timing conventions matter. A served departure is credited to its
+destination in the same hour (no cross-hour lag), and unserved departures are bounded
+by departures, $u_{zt}\le d_{zt}$, so the service variable cannot manufacture demand.
+Across the six reported scenarios the worst
 city-level conservation residual is $3.23\times10^{-9}$ bicycles, the worst zone-level
 residual $3.97\times10^{-10}$, and $u-d$ never exceeds zero. Truck flows are left
 continuous: at the scale of tens of vehicles a fractional truck is a planning artefact
@@ -131,15 +130,13 @@ is the surface the problem requires for Q2 and Q4. Three features deserve commen
 zone and hour. Hours 21:00--06:00 carry 39.34\% of moved bicycles and 37.12\% of
 truck-kilometres; the remaining 59.63\% and 62.88\% are moved during the day. The
 model contains no night cost, so the timing is a consequence of the balance
-constraints, not an optimised night preference. The old claim that the mass of the
-schedule sits at night, with the city moving almost nothing by day, is not supported
-by the corrected plan.
+constraints, not an optimised night preference.
 
 \textbf{Trucks are not the only instrument.} The K=20 row shows what a thin truck
 fleet can do: only 9,600 bicycles moved and an end-of-day deviation of 27,469.
 Doubling to K=40 doubles the moves and cuts the deviation to 8,269 at an objective of
 82,933. K=60 is simultaneously cheaper (82,195) and far better balanced (deviation
-225) than K=40, so the old statement that K=40 is cheaper is wrong. K=80 adds 11,233
+225) than K=40. K=80 adds 11,233
 CNY and moves only 73 more bicycles; the returns are exhausted.
 
 \textbf{Service is not the binding constraint at the measured inventory; balance is.}
@@ -151,20 +148,18 @@ than a general claim that no fleet can ever run dry.
 
 \subsection{Fleet scenarios, not a right-sizing optimum}
 
-The T007 task cut the full $\alpha$ grid. Only two reduced-fleet points were solved,
-both at $K=80$: $\alpha=0.8$ costs 130,500 CNY per day with 448 unserved, and
-$\alpha=0.6$ costs 540,716 with 59,518 unserved. At the same $K$, the full fleet costs
-93,428. These three points do not identify an interior optimum; cutting the fleet
-raises the objective at both reduced levels in this run. The old claim that shrinking
-to 80\% lowers daily cost from 427k to 390k CNY was based on a grid that no longer
-exists and is withdrawn. What the evidence supports is narrower: the measured fleet
-is deep relative to the modelled service requirement, and the cost of cutting it is
-not resolved by the scenarios run here.
+Only two reduced-fleet points were solved, both at $K=80$: $\alpha=0.8$ costs
+130,500 CNY per day with 448 unserved, and $\alpha=0.6$ costs 540,716 with 59,518
+unserved. At the same $K$, the full fleet costs 93,428. These three points do not
+identify an interior optimum; cutting the fleet raises the objective at both reduced
+levels. What the evidence supports is narrower: the measured fleet is deep relative to
+the modelled service requirement, and the cost of cutting it is not resolved by the
+scenarios run here.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{../figs/fig4_q2.pdf}
-\caption[Q2: net flow and the corrected plan]{Q2. (a) Net flow in the morning peak by zone from the Q1 OD surface:
+\caption[Q2: net flow and the relocation plan]{Q2. (a) Net flow in the morning peak by zone from the Q1 OD surface:
 the core gains bicycles, the residential periphery loses them. (b) Optimal relocation
 schedule by zone and hour at $\alpha=1$, $K=60$; night hours carry 39.34\% of moved
 bicycles. (c) Objective and end-of-day deviation against truck fleet at $\alpha=1$;

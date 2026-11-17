@@ -39,8 +39,8 @@ the extra walk,
 \quad\text{minutes},\qquad v=10\ \text{km/h},\ w=80\ \text{m/min},
 \label{eq:tau}
 \end{equation}
-with $d$ in kilometres, so that $\tau(0.45)=8.325$ minutes.
-and she accepts with the logit probability
+with $d$ in kilometres, so that $\tau(0.45)=8.325$ minutes, and she accepts with the
+logit probability
 \begin{equation}
 \pi(d,r) \;=\; \frac{1}{1+\exp\left[-\left(\kappa r-\rho\,\tau(d)-c_0\right)\right]},
 \qquad \kappa=2.0,\ \rho=0.35,\ c_0=0.8 .
@@ -54,15 +54,17 @@ swept in Section~\ref{sec:sens}; what matters is the shape, not the level.
 At the upper-bound optimum derived below ($r=1.76$ CNY) the acceptance probability is
 0.92 for a 50 m detour, 0.78 at 225 m and 0.45 at 450 m. The gradient is the whole
 story: the scheme recruits the riders who were nearly going there anyway, and pays
-more and more for the marginal ones.
+more and more for the marginal ones. These are levels of $\pi$; the assignment
+program below prices the \emph{increment} over the no-reward choice,
+$w_e=\pi(d,r)-\pi(d,0)$.
 
 \subsection{The supply curve as an hourly assignment program}
 
-The old version of this section integrated a logit curve over six detour bands and
-capped each cell at its deficit. That construction double-counted source bicycles: the
-same trip could be offered to several target cells, and a source cell with no hourly
-surplus could donate bicycles it did not have. We replace it with an explicit flow
-program, indexed by \emph{(target cell $c$, target deficit hour $h_c$)}.
+Integrating the logit curve over detour bands and capping each cell at its deficit
+would double-count source bicycles: the same trip could be offered to several target
+cells, and a source cell with no hourly surplus could donate bicycles it did not have.
+We therefore use an explicit flow program, indexed by \emph{(target cell $c$, target
+deficit hour $h_c$)}.
 
 For every candidate edge $e=(j,c)$ at hour $h_c$, with $j\ne c$ and
 $d_{jc}\le450$ m, let the incremental acceptance probability be
@@ -95,7 +97,7 @@ The pool contains 8,163 edges over the 5,188 deficit cells. At 450 m, 113,978 so
 trips are excluded because they are same-cell ($j=c$), and the naive pair count of
 334,147.32 falls to 307,187.50 distinct source-hour units once the one-reroute
 constraint is enforced (ratio 1.0878). The LP, not the pair count, is therefore the
-object that produces $q(r)$; the earlier non-flow pool is obsolete.
+object that produces $q(r)$.
 
 \begin{table}[htbp]
 \centering
@@ -131,8 +133,7 @@ candidate source hours have no surplus to give.
 \textbf{The curve saturates well below $N$.} Even at $r=6$ the upper bound moves
 136,088 placements, 62.9\% of the deficit, and the conservative bound 49,194, 22.7\%.
 The remaining deficit is not a pricing failure: those cells have too few trips ending
-within 450 m in their deficit hour for any reward to reach them. The old catchment
-percentages came from the non-flow ring pool and are withdrawn.
+within 450 m in their deficit hour for any reward to reach them.
 
 \subsection{The optimal mix and its zone-level limit}
 
@@ -190,16 +191,15 @@ the difference between the targeted and the public schemes. At the current truck
 \midrule
 Current unit 3.3305 & 0.00 & 0 & 0 & 720,537 \\
 Current unit, fixed $r=1.2$ & 1.20 & 55,600 & 66,720 & 722,129 \\
-Obsolete unit 3.478 & 1.30 & 63,084 & 82,009 & 745,101 \\
+Higher unit 3.478 & 1.30 & 63,084 & 82,009 & 745,101 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 At $r=1.2$ the public push costs 722,129 CNY against 720,537 all-truck, a loss of
-0.22\%; the obsolete 3.478 unit gives 745,101 against its own 752,444 all-truck
-benchmark, a saving of 0.98\%. The earlier public-push estimate came from a non-flow
-pool and is withdrawn. A public push is therefore reported as a lower bound that does
-not pay for itself, not as a recommended policy.
+0.22\%; even at the higher 3.478 CNY unit it gives 745,101 against its own 752,444
+all-truck benchmark, a saving of 0.98\%. A public push is therefore reported as a
+lower bound that does not pay for itself, not as a recommended policy.
 
 \subsection{Why the ceiling is physical}
 

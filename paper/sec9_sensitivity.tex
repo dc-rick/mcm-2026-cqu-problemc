@@ -4,9 +4,9 @@
 Four quantities are not identified by the data --- the sampling rate, the initial
 inventory, the incentive parameters and the cost parameters --- and one is estimated
 with sampling error, the fleet size. We perturb each and report how far the
-conclusions move. This is a one-at-a-time account, not a variance decomposition: T010
-and T011, which would have separated the contributions of the sources, were cut, and
-the intervals below must not be read as a global uncertainty budget.
+conclusions move. This is a one-at-a-time account, not a variance decomposition: the
+contributions of the sources are not separated here, and the intervals below must not
+be read as a global uncertainty budget.
 
 \subsection{The fleet estimate}
 
@@ -27,8 +27,7 @@ are solved at the measured 5/16 inventory 343,638 and at the closed fleet 495,54
 the difference is reported in both (\S\ref{sec:q2}, \S\ref{sec:q4}). We do not
 resample the orders to test the fleet estimator: at a 5\% rate, 64.5\% of 200 draws
 deviate by more than 4\% from the full-sample value and the maximum deviation is
-17.9\%; only at the 50\% rate does the maximum fall below 4\% (3.67\%). The old claim
-that resampling at 5\%--50\% reproduces the fleet within 4\% is withdrawn.
+17.9\%; only at the 50\% rate does the maximum fall below 4\% (3.67\%).
 
 \subsection{The incentive parameters}
 
@@ -73,11 +72,10 @@ targeted incentives beat trucks --- but the magnitude is a scenario, not a fact.
 
 \subsection{The truck-kilometre price}
 
-The Q2 program is solved with $c_{\text{km}}=6$ CNY per truck-kilometre. The earlier
-version of this section reported a re-solve at $c_{\text{km}}\in\{3,6,12\}$ on the
-observed OD surface. That run predates the T007 conservation corrections and the Q1
-demand interface, and it was not re-run; no price-sensitivity numbers are quoted here.
-What can be said without a re-run is structural: the program's binding constraint is
+The Q2 program is solved with $c_{\text{km}}=6$ CNY per truck-kilometre. A re-solve
+at $c_{\text{km}}\in\{3,6,12\}$ was not carried out on the final OD surface, so no
+price-sensitivity numbers are quoted here. What can be said without a re-run is
+structural: the program's binding constraint is
 the balance requirement, not the budget, because the service penalty $w=6$ CNY per
 unmet departure is comparable to the cost of moving a bicycle. A cheaper truck changes
 how far bicycles travel; it does not remove the need to move them.
@@ -89,9 +87,9 @@ The data record where each bicycle ended its last observed trip, not where it st
 midnight. The 5/16 00:00 snapshot gives 343,638 bicycles at cell resolution; the closed
 fleet implies 495,540. At a 450 m walking radius the simulated unserved share is
 \textbf{5.84\%} at 343,638 and \textbf{3.51\%} at 495,540. Widening the radius to 600 m
-lowers these to 2.35\% and 1.28\%, and a finer grid gives 2.07\% and 2.39\%. The old
-13.4\% figure is a different object: it is the R=300 m, no-neighbour-cell convention,
-and it should not be compared with the 5.84\%/3.51\% pair.
+lowers these to 2.35\% and 1.28\%, and a finer grid gives 2.07\% and 2.39\%. The
+13.4\% of the narrower R=300 m, no-neighbour-cell convention is a different object
+and should not be compared with the 5.84\%/3.51\% pair.
 
 The spread across radius and inventory level is the uncertainty. At the measured
 inventory the cell-level model leaves more riders unserved than the zone-level LP,

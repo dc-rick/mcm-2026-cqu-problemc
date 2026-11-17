@@ -6,11 +6,11 @@
 A dockless bicycle occupies space where its trip ends and stays there until someone
 rides it away. The parking demand of a cell is therefore the arrival process of
 Section~\ref{sec:q1}, but the occupancy it produces is the \emph{integral} of that
-process on top of whatever is already standing there. An earlier version of this
-section started every fence at zero occupancy and cleared it nightly. That is wrong on
-both counts: the measured 5/16 00:00 snapshot contains 343,638 bicycles, and Q2 shows
-that the plan is a reset, not an evacuation. The simulation below therefore starts each
-fence at its measured standing inventory and sizes the peak of the resulting path.
+process on top of whatever is already standing there. Starting every fence at zero
+occupancy and clearing it nightly would be wrong on both counts: the measured 5/16
+00:00 snapshot contains 343,638 bicycles, and Q2 shows that the plan is a reset, not
+an evacuation. The simulation below therefore starts each fence at its measured
+standing inventory and sizes the peak of the resulting path.
 
 For a candidate fence serving a set $S$ of cells, the 15-minute occupancy path is
 \begin{equation}
@@ -57,8 +57,8 @@ becomes a lot. It is a planning judgement, not an estimated construction cost, s
 report the knees at $\lambda=0$ and $\lambda=300$ as well. At $\lambda=0$ the knee is
 501 fences (64.51\% coverage, cost 396,317); at $\lambda=150$ it is \textbf{705 fences}
 (76.86\%, cost 597,442); at $\lambda=300$ it is the same 705 fences (cost 703,192).
-The 626-fence plan used in the earlier version is not a knee; it is only a point on the
-frontier and is retained solely for comparison.
+The 626-fence plan is not a knee; it is only a point on the frontier, retained for
+comparison.
 
 \subsection{The recommended plan and the two inventory scenarios}
 
@@ -110,9 +110,10 @@ slots} at the measured inventory, and all 705 exceed it at the closed fleet.
 
 The full-coverage plan gives the magnitude check. Summed over every cell, the slots
 must be at least the number of bicycles that must stand somewhere. At 343,638 the full
-plan needs 734,345 slots, inside a plausible measured range of 600,000--750,000; at
-495,540 it needs 884,585, inside the fleet range 780,000--900,000. The observed-demand
-surface gives 747,816 and 905,308, the second 0.59\% above the top of the fleet range.
+plan needs 734,345 slots, inside an a-priori sanity band of 600,000--750,000; at
+495,540 it needs 884,585, inside the corresponding a-priori band of 780,000--900,000.
+The observed-demand surface gives 747,816 and 905,308, the second 0.59\% above the top
+of that band.
 These are checks on the accounting, not on the layout: the selected knee covers only
 76.86\% of arrivals, so its 491,692 slots are lower than the fleet-wide figures because
 the uncovered cells and their standing bicycles lie outside any fence.
@@ -142,7 +143,7 @@ they do not contain it.
 
 \subsection{Validation}
 
-\textbf{Held-out days.} Rebuilding the demand surface on the two T005 test days
+\textbf{Held-out days.} Rebuilding the demand surface on the two held-out test days
 (12 and 19 May), excluded from Q1 estimation, and repeating the layout gives a cell
 correlation of \textbf{0.804}, an L1 distance of \textbf{0.423}, and a top-100 overlap
 of \textbf{32}. The geography is stable; the ranking is not exact, which is expected

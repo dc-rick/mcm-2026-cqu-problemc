@@ -62,10 +62,10 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \item \emph{Cost parameters.} A bicycle costs 1.0 CNY per day to own and maintain
   (about 1{,}000 CNY over a three-year life); a truck costs 600 CNY per day to own,
   insure and staff, and 6 CNY per kilometre to run. These are planning assumptions
-  of the right order for 2017 Beijing. The truck-kilometre price was swept from 3 to
-  12 CNY in an earlier run on the observed-OD surface; that run predates the T007
-  corrections and was not repeated, so no price-sensitivity numbers are quoted. All
-  costs are linear in the other parameters.
+  of the right order for 2017 Beijing. The truck-kilometre price is not swept on the
+  final OD surface, so no price-sensitivity numbers are quoted; the qualitative
+  argument is given in Section~\ref{sec:sens}. All costs are linear in the other
+  parameters.
 \end{enumerate}
 
 \subsection{Notation}
@@ -98,7 +98,7 @@ $I_{zt}$ & inventory of zone $z$ at $t$ & $u_{zt}$ & unmet departures \\
 $x_{ijt}$ & bicycles moved $i\to j$ in $t$ & $m_{ijt}$ & trucks moved $i\to j$ in $t$ \\
 $K$ & trucks in service & $\alpha$ & fleet size relative to observed \\
 $q(r)$ & placements bought by reward $r$ & $r$ & reward (CNY) \\
-$R$ & catchment radius (km) & $w_c$ & parking capacity (slots) \\
+$R$ & catchment radius (m) & $w_c$ & parking capacity (slots) \\
 \bottomrule
 \end{tabular}
 \end{table}

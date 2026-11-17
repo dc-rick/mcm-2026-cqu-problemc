@@ -97,8 +97,8 @@
   {
    "location": "sec5_q2.tex (diagnostic)",
    "old": "172 of 5,263 cells run dry",
-   "new": "removed; 172 survives only under the hourly unscaled path (2,306 at 5 min with 1/p; 2,463 stochastic); Q2 LP is 50-zone and cannot produce cell counts; T004 5.84%/3.51% used instead",
-   "basis": "T004; T007"
+   "new": "172 不再出现在正文；Q2 为 50 区模型，不产生 cell 计数，改写为模拟失配份额 5.84%/3.51%",
+   "basis": "T004; T007; R1"
   },
   {
    "location": "sec5_q2.tex (results)",
@@ -173,7 +173,8 @@
   "Q5 is a conditional statement for the single proportional single-homing scenario. The fence-duplication quantification was not re-run after T010 was cut, and no duplication percentage is quoted.",
   "The Q3 parameter sweep used a 0.05-CNY reward grid; the baseline row matches the 0.01-grid optimum of section 6 to grid precision.",
   "13.4% is retained only to say it belongs to the R=300 no-neighbour convention and is not comparable with 5.84%/3.51%.",
-  "The truck-kilometre price sweep predates T007 and was not repeated; no price-sensitivity numbers are quoted."
+  "The truck-kilometre price sweep predates T007 and was not repeated; no price-sensitivity numbers are quoted.",
+  "正文不含内部任务编号与改稿语言：最终稿不出现 T0xx 编号、\"earlier version/obsolete/withdrawn\" 一类修订叙述；R1 仅做文字清理，未改动任何数字、表值与图注数值，未重新编号。"
  ],
  "outputs": [
   "paper/main.pdf",

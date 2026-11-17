@@ -5,8 +5,8 @@
 \subsection*{Tool used}
 
 Claude Code (Anthropic), version 2.1.322, a command-line agentic coding assistant
-based on a large language model, used from 11 to 17 November 2026. The runtime
-reported the model identifier \texttt{deepseek-flash[1m]} for this revision. The tool
+based on a large language model, used from 11 to 18 November 2026. The runtime
+reported the model identifier \texttt{deepseek-flash[1m]} for the final pass. The tool
 operated in a local development environment with file-system access and the ability
 to execute Python and typeset \LaTeX{}.
 
@@ -29,9 +29,8 @@ to execute Python and typeset \LaTeX{}.
 \subsection*{Representative queries and outputs}
 
 The two examples below are from the validation stage and are reproduced from the
-working record; the outputs are archived in
-\path{data/runs/T005/dest_validation.json} and
-\path{data/runs/T005/k_stability.json}.
+working record; the outputs are archived with the code as
+\texttt{dest\_validation.json} and \texttt{k\_stability.json}.
 
 \noindent\textbf{Example 1: held-out comparison of destination models.}
 \begin{quote}
@@ -79,9 +78,11 @@ stable across random initialisations.
   \texttt{30\_q3\_incentive.py} line 16, where it is declared but unused; and
   \texttt{90\_figs.py} lines 256 and 258, the cost curve. It is an input to the
   Q2/Q5 runs, not a display value. The Q5 interpretation text in
-  \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. This revision
+  \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. The paper
   keeps 343{,}638 only as the measured initial inventory, and does not use it as a
-  fleet estimate.
+  fleet estimate. The two full-coverage slot bands 600,000--750,000 and
+  780,000--900,000 in \texttt{t009\_q4.py} are typed planning bands, used only as
+  sanity checks.
 \item \textbf{The computation is reproducible in a fixed order, not by a single
   command.} After the preparation scripts 00--04, the numbered stages are run from
   the project root in the order 10 $\to$ 11 $\to$ 20 $\to$ 21 $\to$ \dots $\to$ 95;
