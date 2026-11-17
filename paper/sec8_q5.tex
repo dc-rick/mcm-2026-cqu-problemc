@@ -4,80 +4,71 @@
 \subsection{The question, made precise}
 
 The five questions above were answered for a single operator holding the whole market.
-Competition changes four things and, less obviously, leaves one thing unchanged. We
-separate them, because the policy conclusions differ sharply between them.
+Competition changes several things, and one of them is often assumed rather than
+tested. We separate what we simulated from what we did not.
 
 Let there be $n$ platforms and let platform $k$ hold a share $s_k$ of both the fleet and
 the demand. This is the single-homing case: a rider installs one application and uses
-it. The alternative, multi-homing, changes the arithmetic and is treated in
+it. The alternative, multi-homing, changes the arithmetic and is discussed in
 \S\ref{sec:multihome}.
 
-\subsection{Availability is neutral under proportional single-homing}
+\subsection{One conditional simulation of availability}
 
 We simulated the zone-level system of Section~\ref{sec:q2} with the fleet and the
 demand both multiplied by $s\in\{1.0,0.7,0.5,0.35\}$, six seeds each, five-minute
 resolution, Poisson departures and multinomial destinations. \textbf{Unserved demand
-was zero in all twenty-four runs.}
+was zero in all twenty-four runs.} This is a conditional statement about this one
+proportional single-homing scenario, at this depth of fleet, with this demand surface.
+It is not a general result that competition is neutral for availability, and we do not
+make that claim.
 
-The result is not a coincidence of the sample. If the fleet and the demand are both
-scaled by $s$, then the inventory process $I_{zt}$ scales by $s$, and the event
-``inventory reaches zero'' is unchanged as long as the stocks are large compared with
-the fluctuations --- which they are, by two orders of magnitude near the core. A
-platform with a third of the market and a third of the bicycles is exactly as reliable
-as the monopolist, because its users and its bicycles shrink together.
-
-This is worth stating because the intuition runs the other way. Fragmentation is usually
-assumed to hurt service through lost density; in a system this deep it does not. The
-damage of competition lies elsewhere, and it is larger.
+The mechanism is nonetheless informative. If the fleet and the demand are both scaled
+by $s$, the inventory process scales by $s$, and the event ``inventory reaches zero''
+is unchanged only while the stocks are large compared with the fluctuations. Near the
+core they are, by two orders of magnitude; in the sparse periphery they may not be, and
+the simulation has no mechanism that would reveal it. The honest reading is that the
+proportional-single-homing experiment did not produce a stockout, not that no
+fragmentation scenario can.
 
 \subsection{The three duplications}\label{sec:duplications}
 
 \textbf{Space.} Fence capacity cannot be shared as easily as bicycles can. Each
 platform must hold, at each location, enough slots for its own peak, and independent
-demand fluctuations do not pool across platforms. We recomputed the Monte-Carlo
-capacity of \S\ref{sec:q4} for $n$ platforms each serving $1/n$ of the arrivals:
-\begin{center}
-\small
-\begin{tabular}{@{}lrrr@{}}
-\toprule
- & \textbf{1 platform} & \textbf{2 platforms} & \textbf{3 platforms} \\
-\midrule
-Median fence (slots) & 417 & 460 (+10.3\%) & 516 (+23.7\%) \\
-Largest fence (slots) & 4{,}827 & 4{,}902 (+1.6\%) & 4{,}968 (+2.9\%) \\
-\bottomrule
-\end{tabular}
-\end{center}
-At a typical fence, three platforms need \textbf{24\% more parking space} than one to
-deliver the same service, purely because each must buffer its own noise. At the largest
-fence the deterministic daily drift dominates the noise, so the penalty is small ---
-duplication hurts the ordinary street corner, not the flagship plaza.
+demand fluctuations do not pool across platforms. The size of this effect depends on
+the layout and the inventory scenario. The Monte-Carlo quantification was computed on
+the 626-fence layout that T009 has since superseded, and T010, which would have
+re-run it on the 705-fence knee, was cut; we therefore do not quote a duplication
+percentage. What survives is the direction: splitting the same arrivals across $n$
+platforms raises the slot requirement at the ordinary street corner, because each
+platform buffers its own noise, while the flagship plaza is dominated by deterministic
+drift and is barely affected.
 
 \textbf{Cost.} The rebalancing plan of Q2 is computed over the whole city. A platform
-with a third of the trips still faces the same 290 arcs, the same nightly window and
-the same fixed cost per truck, but fills each truck with a third as many bicycles. The
-fixed component of the truck fleet --- 600 CNY per truck per day, which is 43\% of the
-daily cost at $K=60$ --- is therefore incurred by every platform separately.
+with a third of the trips still faces the same 290 arcs and the same nightly window,
+but fills each truck with a third as many bicycles. The fixed component of the truck
+fleet --- 600 CNY per truck per day, which is \textbf{43.8\%} of the daily cost at
+$K=60$ (36,000 of 82,195 CNY) --- is therefore incurred by every platform separately.
 
 \textbf{Data.} This is the most serious loss and the least visible. Every model in this
 paper is estimated from the full origin--destination matrix. A platform holding a third
 of the market observes a third of the rows: the attraction $A_j$ of
-\eqnref{eq:gravity} becomes noisier by a factor $\sqrt{3}$, the cell deficit
-$\Delta_c$ of \eqnref{eq:deficit} is estimated with a standard error that grows the same
-way --- for the median cell, whose deficit is 17.9 bicycles, about 4.2 bicycles from the
-full sample and 7.3 from a third of it --- and, decisively, \emph{no platform can compute
-the plans of Q2 and Q4 at all}, because they are defined on a system that no single firm
-can see.
+\eqnref{eq:gravity} becomes noisier by a factor $\sqrt{3}$, and the cell deficit
+$\Delta_c$ of \eqnref{eq:deficit} is estimated with a standard error that grows the
+same way. For the median deficit cell, whose $\Delta_c$ is 18.97 bicycles, that is
+about 4.4 bicycles from the full sample and 7.5 from a third of it. More decisively,
+\emph{no platform can compute the plans of Q2 and Q4 at all}, because both are defined
+on a system that no single firm can see.
 
 \subsection{Multi-homing, and why it does not rescue the situation}\label{sec:multihome}
 
-If riders use several applications, the arithmetic improves for availability: a rider
-who finds no bicycle on one platform may find one on another, so effective density is
-the sum of the platforms' densities and the system behaves as if it were whole. But
-multi-homing shifts the competition to a different margin: platforms compete for the
-same trips, so each must offer the same coverage to be usable, and the fleet that
-results is the sum of $n$ fleets each sized for the whole market rather than $1/n$ of
-it. Multi-homing therefore trades a service benefit for a capital cost, and the
-capital cost is the larger of the two in a market that is already saturated.
+If riders use several applications, availability may improve: a rider who finds no
+bicycle on one platform may find one on another, so effective density is closer to the
+sum of the platforms' densities. But multi-homing shifts the competition to a different
+margin: platforms compete for the same trips, so each must offer the same coverage to
+be usable, and the fleet that results is the sum of $n$ fleets each sized for much of
+the market rather than $1/n$ of it. Multi-homing therefore trades a possible service
+benefit for a capital cost, and the capital cost is the larger of the two in a market
+that is already saturated.
 
 Neither regime escapes the underlying externality: a bicycle that a platform deploys
 occupies public space and adds to the stock that all platforms draw on, but the
@@ -98,25 +89,26 @@ The analysis suggests four measures, in descending order of value.
   and makes every result in this paper computable. This is the single highest-value
   intervention.
 \item \textbf{Share the fences.} Electronic fencing is public infrastructure. If the
-  city builds and allocates fence capacity neutrally, the 24\% duplication of
-  \S\ref{sec:duplications} disappears and the capped layout of \S\ref{sec:q4} becomes
-  enforceable. Fences owned by platforms recreate the fragmentation at the level of
-  concrete.
+  city builds and allocates fence capacity neutrally, the duplication described above
+  is avoided and the capped layout of \S\ref{sec:q4} becomes enforceable. Fences owned
+  by platforms recreate the fragmentation at the level of concrete.
 \item \textbf{Coordinate rebalancing.} A neutral rebalancing operator, or a
   requirement that platforms' trucks serve shared depots, recovers the fixed cost that
   is currently paid three times.
 \item \textbf{Tie fleet caps to measured service.} A cap expressed as bicycles per
-  thousand trips, rather than as a fixed number, keeps the fleet near the $\alpha=0.8$
-  optimum as demand grows and is auditable from the shared data of measure one.
+  thousand trips, rather than as a fixed number, keeps the fleet anchored to the
+  measured service requirement as demand grows and is auditable from the shared data
+  of measure one. The scenarios of \S\ref{sec:q2} do not identify an optimal fleet
+  size, so the cap should be set conservatively and revised with the shared data.
 \end{enumerate}
 
 \subsection{What the external data say about the market}
 
 The OpenStreetMap check of \S\ref{sec:q4} is also evidence about competition. The
-attractors that the model identifies --- the busiest 10\% of cells, which absorb 40\% of
-all trips --- are public places: subway entrances, commercial streets, university
-gates. They are not platform-specific. A single platform's data recovers them, as ours
-does, but only because that platform is large; a market of five equal platforms would
-give each a fifth of the evidence about the same public geography. The city is the
+attractors that the model identifies --- the busiest destination cells --- are public
+places: subway entrances, commercial streets, university gates. They are not
+platform-specific. A single platform's data recovers them, as ours does, but only
+because that platform is large; a market of five equal platforms would give each a
+fifth of the evidence about the same public geography. The city is the
 natural owner of the model, and the argument for data sharing is an argument about who
 can see the city whole.

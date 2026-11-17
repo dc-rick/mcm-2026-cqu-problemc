@@ -15,62 +15,57 @@
 \begin{center}{\large\bfseries Summary}\end{center}
 
 Beijing's dockless bike-share system in May 2017 was not short of bicycles. It was
-short of bicycles \emph{in the right place at the right time}, and it did not know it.
-Using 3.21 million order records from 484,754 bicycles ridden by 349,241 users over
-fourteen days, this paper builds one behavioural model and uses it to answer four
-operational questions on a common footing.
+short of bicycles \emph{in the right place at the right time}. Using 3.21 million orders
+from 484,754 bicycles and 349,241 users over fourteen days, this paper builds one
+behavioural model and uses it to answer four operational questions on a common footing.
 
-\textbf{The central finding is a diagnosis of oversupply.} We estimate the fleet at
-3.4$\times10^5$ bicycles serving 6.2 rides each per day --- a supply level at which
-the daily deficit appears as idle stock rather than unmet demand. At every
-resolution we examine, from 50 traffic zones down to 5,263 neighbourhood cells, no
-zone ever runs out of bicycles. Every subsequent question is therefore posed as a
-question of \emph{cost and placement}, not of shortage.
+\textbf{The central finding is a diagnosis of oversupply.} Capture--recapture on the
+nine complete days and the truncated second window puts the closed fleet at
+\textbf{495,540 bicycles} (model interval 484,754--506,635), serving \textbf{4.33 rides
+each per day}. At the measured midnight inventory of 343,638 bicycles no zone in the
+50-zone program runs out of stock, so the binding problem is \emph{cost and placement},
+not shortage; at cell resolution the simulated unserved share is 5.84\% at 343,638 and
+3.51\% at 495,540. These statements are conditional on the modelled inventory.
 
-\textbf{Behaviour (Q1).} Trips are modelled as a marked spatio-temporal point
-process: a non-homogeneous Poisson arrival stream, a singly-constrained gravity
-destination choice with a time-varying distance-decay parameter, and a
-speed-based duration model. The decay parameter is identified by maximum
-likelihood and ranges from 2.01 (morning, longer commute trips) to 2.52 (midday,
-short errands). On two held-out days the model attains a per-trip log-loss of
-3.24--3.52 against 3.28--3.65 for a distance-only benchmark and 7.9--8.2 for an
-attraction-only one, and it predicts the top-five destinations correctly 40--48\%
-of the time. A latent-class analysis separates five user types whose trip shares
-(51.8\% for the multi-purpose majority, 29.6\% for a heavy short-trip minority)
-explain the shape of the hourly profile.
+\textbf{Behaviour (Q1).} Trips are a marked spatio-temporal point process: a
+non-homogeneous Poisson stream, a singly-constrained gravity destination choice with
+time-varying decay, and a speed-based duration. Decay ranges from 2.01 (morning
+commutes) to 2.52 (midday errands). On two held-out days log-loss is 3.24--3.52
+against 3.28--3.65 for distance-only and 7.9--8.2 for attraction-only; top-five
+destinations are predicted 40--48\% of the time. Same-cell trips are
+\emph{overestimated} (12.83\% modelled against 8.89\% observed, +3.94 percentage
+points), not matched. Five latent user types explain the hourly profile.
 
-\textbf{Rebalancing (Q2).} A time-space network linear program moves bicycles
-between 50 zones with a fleet of trucks. Because no zone is ever dry, the binding
-constraint is not service but the cost of returning the system to a balanced state:
-the optimal plan moves 23,959 bicycles per day (1.12\% of all trips) over 5,441
-truck-kilometres, at 3.48 CNY per bicycle relocated. Because the trucks run at
-night, the plan is best read as an overnight reset. Rebalancing and fleet size are
-substitutes: shrinking the fleet to 80\% of its observed size while adding trucks
-lowers total daily cost from 427k to 390k CNY, an interior optimum.
+\textbf{Rebalancing (Q2).} A time-space network linear program moves bicycles between
+50 zones under arrival conservation and $u\le d$. At $\alpha=1$, $K=60$ it moves
+\textbf{24,679 bicycles per day} (1.15\% of trips) over \textbf{5,530
+truck-kilometres} at 82,195 CNY, or \textbf{3.33 CNY per bicycle}. Hours 21:00--06:00
+carry 39.34\% of moves and 37.12\% of truck-km; the model has no night cost. $K=60$ is
+cheaper and far better balanced than $K=40$ (82,195 against 82,933; deviation 225
+against 8,269); the full grid was not run, so no interior optimum is claimed.
 
-\textbf{Incentives (Q3).} We derive the supply curve of voluntary relocations from
-a logit acceptance model in which users trade a cash reward against a detour. The
-platform should offer a uniform reward of 1.20 CNY, buying 115,385 relocations
-(53.3\% of the peak-hour deficit) for 138k CNY and leaving the rest to trucks --- a
-34.9\% saving over moving every bicycle by truck. The limit is physical, not
-financial: within a 450 m detour only 71.9\% of the deficit has any qualifying
-trip nearby, and reaching 95\% requires a 1,025 m catchment.
+\textbf{Incentives (Q3).} The supply curve of voluntary relocations comes from a logit
+acceptance model and an hourly assignment program with one reroute per trip. This is a
+\emph{cell-level equivalent benchmark}, not a substitute for Q2's zone-level plan. With
+full source arrivals the upper bound is a \textbf{20.83\% saving} at $r^*=1.76$ and
+$q^*=95,566$; with hourly-surplus sources the conservative bound is a \textbf{6.83\%
+saving} at $r^*=1.83$ and $q^*=32,777$. We report \textbf{6.83\%--20.83\%}. Only 7.46\%
+of rerouted volume crosses a zone boundary. A public push is not profitable: $r=0$ with
+zero saving, $-0.22\%$ at $r=1.2$, and 0.98\% only under the obsolete 3.478 unit.
 
-\textbf{E-fences (Q4).} Parking demand is the arrival process, whose peak we
-characterise by Monte Carlo. A greedy maximal-coverage layout of 626 fences at a
-450 m walking radius covers 75.3\% of arrivals; the required capacity is brutally
-skewed, with a median of 417 slots and a maximum of 4,827. Electronic fences
-without enforced caps merely formalise the bicycle mountain.
+\textbf{E-fences (Q4).} Parking demand is the arrival process on top of the standing
+inventory. A greedy maximal-coverage layout on the capacity--coverage frontier has its
+$\lambda=150$ knee at \textbf{705 fences}, covering \textbf{76.86\%} of arrivals with
+\textbf{491,692 slots} at 343,638 and 621,004 at 495,540; 626 fences is only a frontier
+point (72.67\%). Overlap is small (multiplicity 1.0213, duplicate capacity 2.80\%), and
+a hold-out check gives cell correlation 0.804, L1 0.423 and top-100 overlap 32.
 
-\textbf{Competition (Q5).} Splitting the fleet among competing platforms does not
-reduce availability in a saturated system --- we verify this down to a 35\% share ---
-but it multiplies capital, trucks, land and, most damagingly, fragments the data
-needed to run any of the models above.
-
-The paper is explicit about what it cannot identify: the initial inventory of
-bicycles, the order sampling rate, and the true demand of users who never ride. Each
-is bounded rather than assumed away, and the sensitivity analysis reports how far
-the conclusions move when they are perturbed.
+\textbf{Competition (Q5).} In the one proportional single-homing scenario, splitting
+fleet and demand leaves unserved demand at zero in all twenty-four runs; this is
+conditional, not a general availability guarantee. The durable damage of competition is
+duplicated capital, trucks, land and, most damagingly, the data needed to run any model
+above. The initial inventory, sampling rate and unseen demand are bounded rather than
+assumed away.
 
 \vfill
 \noindent\textbf{Keywords:} dockless bike sharing; gravity model; time-space network;

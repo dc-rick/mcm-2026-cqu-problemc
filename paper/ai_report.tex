@@ -30,8 +30,8 @@ to execute Python and typeset \LaTeX{}.
 
 The two examples below are from the validation stage and are reproduced from the
 working record; the outputs are archived in
-\texttt{data/runs/T005/dest\_validation.json} and
-\texttt{data/runs/T005/k\_stability.json}.
+\path{data/runs/T005/dest_validation.json} and
+\path{data/runs/T005/k_stability.json}.
 
 \noindent\textbf{Example 1: held-out comparison of destination models.}
 \begin{quote}
@@ -79,9 +79,9 @@ stable across random initialisations.
   \texttt{30\_q3\_incentive.py} line 16, where it is declared but unused; and
   \texttt{90\_figs.py} lines 256 and 258, the cost curve. It is an input to the
   Q2/Q5 runs, not a display value. The Q5 interpretation text in
-  \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. The next
-  revision will replace the constant with the revised fleet estimate and move
-  that text into the script.
+  \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. This revision
+  keeps 343{,}638 only as the measured initial inventory, and does not use it as a
+  fleet estimate.
 \item \textbf{The computation is reproducible in a fixed order, not by a single
   command.} After the preparation scripts 00--04, the numbered stages are run from
   the project root in the order 10 $\to$ 11 $\to$ 20 $\to$ 21 $\to$ \dots $\to$ 95;

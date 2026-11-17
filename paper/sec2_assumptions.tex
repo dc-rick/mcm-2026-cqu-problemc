@@ -11,21 +11,21 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \item \emph{Stationary weekday regime.} The seven weekdays between 10 and 19 May
   that are fully covered by the sample are exchangeable draws from one daily regime.
   Weather, holidays and price promotions are not modelled. The observed daily volume
-  varies with a coefficient of variation of 8.2\% around its mean (\figref{fig:data}a),
+  varies with a coefficient of variation of 8.25\% around its mean (\figref{fig:data}a),
   so any single-day quantity in this paper carries that order of sampling noise.
 
 \item \emph{Poisson trip generation.} Departures from cell $i$ in time interval
   $t$ are Poisson with rate $\lambda_{it}$, constant on 15-minute intervals. This is
-  the standard assumption for individual trip-making and it is adequate here: within a
-  cell, the variance-to-mean ratio of 15-minute counts has a median of 0.83 across
-  cells, against 1.0 for a Poisson process. Pooled across cells the ratio rises to
-  2.04, which reflects the heterogeneity of the rates, not a failure of the model.
+  the standard assumption for individual trip-making; pooled across cells the counts
+  are over-dispersed relative to Poisson, which reflects heterogeneity in the rates
+  rather than a failure of the conditional model.
 
 \item \emph{Supply-independent destination choice.} A rider chooses a destination
   without regard to whether a bicycle will be available there. This is the usual
-  assumption of trip-distribution modelling, and here it is also empirically safe:
-  the zone-level simulation of Section~\ref{sec:q2} finds no stockout, so censoring
-  is negligible at the scale at which the model is used.
+  assumption of trip-distribution modelling. It is conditional here: the 50-zone LP
+  finds no zone stockout at the measured inventory, but the cell-level simulation
+  finds 5.84\% unserved at 343,638 and 3.51\% at 495,540, so the censoring is small
+  but not zero and is reported rather than assumed away.
 
 \item \emph{Endogenous attraction.} The attraction of a destination is measured by
   the arrivals it actually receives. The model is therefore a description of an
@@ -54,16 +54,18 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   They are therefore treated as behavioural parameters and swept in
   Section~\ref{sec:sens}.
 
-\item \emph{Parking demand equals arrivals.} A parked bicycle occupies space where
-  its trip ended. Parking demand at a location is therefore the arrival process,
-  which is observable; the duration of occupancy does not matter for capacity,
-  because a dockless bicycle stays until someone rides it away.
+\item \emph{Parking demand equals arrivals, on a standing stock.} A parked bicycle
+  occupies space where its trip ended. Parking demand at a location is therefore the
+  arrival process, on top of whatever bicycles already stand there; capacity is the
+  peak of that path, not the peak of arrivals from an empty start.
 
 \item \emph{Cost parameters.} A bicycle costs 1.0 CNY per day to own and maintain
   (about 1{,}000 CNY over a three-year life); a truck costs 600 CNY per day to own,
   insure and staff, and 6 CNY per kilometre to run. These are planning assumptions
-  of the right order for 2017 Beijing; the truck-kilometre price is swept from 3 to
-  12 CNY in Section~\ref{sec:sens}, and all costs are linear in the others.
+  of the right order for 2017 Beijing. The truck-kilometre price was swept from 3 to
+  12 CNY in an earlier run on the observed-OD surface; that run predates the T007
+  corrections and was not repeated, so no price-sensitivity numbers are quoted. All
+  costs are linear in the other parameters.
 \end{enumerate}
 
 \subsection{Notation}

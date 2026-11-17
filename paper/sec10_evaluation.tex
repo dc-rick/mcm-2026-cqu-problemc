@@ -6,22 +6,23 @@
 \textbf{One model, four answers.} The gravity model of Q1 is not a decorative first
 section; it is the demand engine for the rebalancing program, the incentive supply
 curve and the parking forecast. Because the same estimated object is used four times,
-the answers are comparable: the 3.48 CNY that a truck costs per bicycle and the 1.20
-CNY that a rider is paid are prices in the same market, and the recommendation that
-follows --- incentives for the cheap half, trucks for the rest --- is a statement about
-where those two prices cross.
+the answers are comparable: the 3.33 CNY that a truck costs per bicycle moved and the
+1.76--1.83 CNY that a rider is paid are prices in the same market, and the
+recommendation that follows --- incentives where the traffic is dense, trucks where it
+is sparse --- is a statement about where those two prices cross.
 
-\textbf{Identification is treated as part of the modelling.} Three quantities that the
-data do not contain are handled explicitly: the sampling rate is estimated and shown to
-be irrelevant to the fleet size; the initial inventory is bracketed between two
-estimators and the spread is reported rather than hidden; the incentive parameters are
-declared unidentified and swept. A reader can therefore see exactly which conclusions
-rest on data and which rest on assumption.
+\textbf{Identification is treated as part of the modelling.} Four quantities that the
+data do not contain are handled explicitly: the sampling rate is estimated and its
+role as an upper-bound scale factor is stated; the fleet is estimated with
+capture--recapture and a model interval; the initial inventory is carried as two
+scenarios rather than one fact; and the incentive parameters are declared unidentified
+and swept. A reader can therefore see exactly which conclusions rest on data and which
+rest on assumption.
 
 \textbf{Validation is both internal and external.} The behavioural model is tested on
 two held-out days against two nested benchmarks. The spatial structure is tested
 against an independent source --- 1,097 subway entrances from OpenStreetMap --- and the
-attractors the model finds are twice as likely to sit near one as a random cell.
+attractors the model finds are nearly twice as likely to sit near one as a random cell.
 
 \subsection{Weaknesses}
 
@@ -34,10 +35,16 @@ data we do not have.
 
 \textbf{The incentive parameters are assumed.} No reward was offered in May 2017, so
 $\kappa,\rho,c_0$ cannot be estimated from this dataset. We have been explicit about
-this and have shown that the qualitative conclusion survives a factor-of-two error in
-each. But the recommended reward of 1.20 CNY is a prediction of the model, not a
-measurement, and it should be treated as the design of a pilot rather than a settled
-price.
+this and have shown that the qualitative conclusion survives the parameter sweep, with
+savings from 2.97\% to 30.22\%. But the recommended reward of 1.76 or 1.83 CNY is a
+prediction of the model, not a measurement, and it should be treated as the design of a
+pilot rather than a settled price.
+
+\textbf{The cell-level saving is not a system saving.} Q3 moves trips between cells;
+Q2 moves bicycles between zones. Only 7.46\% of the rerouted volume in the upper-bound
+solution crosses a zone boundary, so the 20.83\% cell-level saving cannot be subtracted
+from the zone-level truck bill. The two calculations are complements in method, not
+addends in a budget.
 
 \textbf{The truck fleet is continuous.} Vehicle routing with integer trucks, time
 windows and driver shifts is a harder problem than the one solved here. At the scale of
@@ -56,18 +63,20 @@ and the model has nothing to say about it.
 
 \subsection{What would change the conclusions}
 
-The recommendation to rely on incentives for the first half of the deficit is driven by
-the ratio of the reward to the truck cost. If riders valued a yuan at less than about
-half of what we assume, the optimal reward would fall below 0.6 CNY and the incentive
-would cover less than a third of the deficit; if they valued it twice as much, the
-incentive would cover two-thirds. The truck-based conclusion of Q2 is more robust: a
-four-fold error in the truck price moves the relocation volume by 15\%.
+The recommendation to rely on incentives for the dense part of the deficit is driven by
+the ratio of the reward to the truck cost. The sweep in \S\ref{sec:sens} shows the
+range: at $\kappa=3$ the saving reaches 30.22\%, at $\kappa=1$ under the lower truck
+unit it falls to 2.97\%. The qualitative direction survives; the magnitude does not.
+The Q2 fleet conclusion is narrower: the full $\alpha$--$K$ grid was not run, so the
+three reduced-fleet points at $K=80$ do not identify an interior optimum, and no
+right-sizing claim is made.
 
 The oversupply diagnosis is the one conclusion that would be overturned wholesale if
-the initial inventory were very different from what we estimate. Our defence is that
-the zone-level stocks are large compared with the daily fluctuations (the worst
-cumulative excursion is 349 bicycles against a minimum zone stock of 1,986), so the
-diagnosis survives any plausible redistribution of midnight bicycles among zones.
+the initial inventory were very different from what we estimate. Our defence is
+conditional: at the measured 343,638 the simulated cell-level unserved share is 5.84\%,
+and at the closed 495,540 it is 3.51\% (\S\ref{sec:sens}); both are far below the
+13.4\% figure of the narrower R=300 convention, and neither supports a general claim
+that the system cannot run dry.
 
 \subsection{Conclusions}
 
@@ -79,18 +88,20 @@ put them there. The models in this paper make each of those statements quantitat
 The behavioural model shows that demand is a superposition of five behaviours,
 dominated by short multi-purpose riding, and that distance explains most of where
 riders go with a decay that varies by a quarter over the day. The rebalancing program
-shows that the resulting imbalance can be repaired by moving 24,000 bicycles overnight
---- 1.1\% of daily trips --- and that the fleet itself is about a quarter larger than the
-service requires. The incentive analysis shows that the first half of the repair can be
-bought from riders for 1.2 CNY each, a third of what a truck costs, and that the second
-half cannot be bought at any price because the riders are not there. The fence analysis
-shows that 626 fences would capture three quarters of arrivals but that the capacity
-they need is so concentrated that uncapped fences would simply formalise the pile.
+moves \textbf{24,679 bicycles per day} over 5,530 truck-kilometres at 3.33 CNY each;
+39.34\% of the moves and 37.12\% of the truck-kilometres fall at night, and the model
+does not claim to have optimised that timing. The incentive analysis buys
+\textbf{32,777--95,566 placements} from riders at 1.76--1.83 CNY each, a cell-level
+saving of 6.83\%--20.83\% against an all-truck benchmark, with only 7.46\% of the
+rerouted volume crossing a zone boundary. The fence analysis places \textbf{705
+fences}, covering 76.86\% of arrivals at 491,692 slots for the measured inventory and
+621,004 for the closed fleet.
 
 The unifying finding is that the instruments are complements with different domains:
 incentives where the traffic is dense, trucks where it is sparse, fences where the
 parking must be bounded, and data --- shared, city-wide data --- because none of these
 instruments can be aimed without it.
 
-\emph{Every number quoted in this paper is written to a result file by the script that
-computes it; the whole chain is reproducible from the raw order file.}
+\emph{Most numbers in this paper are printed directly from result files by a single
+script; the constants that are typed rather than computed are listed in the
+reproducibility record, and the pipeline is run in order as documented there.}

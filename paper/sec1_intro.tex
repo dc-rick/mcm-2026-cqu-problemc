@@ -96,19 +96,19 @@ The contributions are four.
 
 \begin{enumerate}[leftmargin=1.6em]
 \item \textbf{A diagnosis.} The Beijing system of May 2017 was oversupplied. We
-  establish this three ways --- a fleet estimate from occupancy, a zone-level
+  establish this three ways --- a capture--recapture fleet estimate, a zone-level
   stockout diagnostic, and a cell-level simulation --- and it reframes Q2 from
   ``prevent shortages'' to ``minimise the cost of restoring balance''.
 \item \textbf{One model, four uses.} A single estimated gravity model feeds the
   rebalancing LP, the incentive supply curve and the parking forecast, so the four
   answers are internally consistent.
 \item \textbf{An incentive supply curve.} Rather than assert an acceptance rate, we
-  derive the cost of voluntary relocation as a function of the reward, integrate it
-  over the observed detour distribution, and solve for the cost-minimising reward and
-  the resulting split between incentives and trucks.
+  derive the cost of voluntary relocation as a function of the reward, solve an hourly
+  assignment program with one reroute per trip, and solve for the cost-minimising
+  reward and the resulting split between incentives and trucks.
 \item \textbf{Explicit uncertainty.} The unidentified quantities are bounded, not
-  assumed: the sampling rate is estimated and shown to be irrelevant to the fleet
-  size, the initial inventory is bracketed by two estimators, and every behavioural
+  assumed: the sampling rate is estimated and its role as an upper-bound scale factor
+  is stated, the initial inventory is carried as two scenarios, and every behavioural
   parameter is swept in Section~\ref{sec:sens}.
 \end{enumerate}
 
@@ -125,10 +125,10 @@ Section~\ref{sec:data}; costs are in 2017 CNY.}
  & \textbf{Question} & \textbf{Model} & \textbf{Answer} \\
 \midrule
 Q1 & Behaviour & NHPP arrivals + singly-constrained gravity + speed-based duration & $\beta$ falls from 2.52 (midday) to 2.01 (morning); top-5 hit rate 0.40--0.48 \\
-Q2 & Rebalancing & Time-space network LP with truck flow conservation & 23{,}959 bikes/day, 5{,}441 truck-km, 3.48 CNY/bike; fleet $\alpha=0.8$ optimal \\
-Q3 & Incentives & Logit acceptance integrated over the detour distribution & Reward 1.20 CNY, 115{,}385 placements, 34.9\% cheaper than all-truck \\
-Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 626 fences at 450 m cover 75.3\%; median capacity 417 slots \\
-Q5 & Competition & Split-fleet simulation + externality accounting & No availability loss; capital, land and data are duplicated \\
+Q2 & Rebalancing & Time-space network LP with truck flow conservation & 24{,}679 bikes/day, 5{,}530 truck-km, 3.33 CNY/bike; $K=60$ dominates $K=40$ \\
+Q3 & Incentives & Logit acceptance + hourly assignment program & 1.76 CNY: 95{,}566 placements, 20.83\% cell-level saving; 1.83 CNY: 32{,}777, 6.83\% \\
+Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 705 fences at 450 m cover 76.86\%; 491{,}692 slots at 343{,}638, 621{,}004 at 495{,}540 \\
+Q5 & Competition & Split-fleet simulation + externality accounting & Zero unmet in the one proportional scenario; capital and data are duplicated \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -20,14 +20,14 @@ For each cell $c$ let $n_{ct}=a_{ct}-d_{ct}$ be the net hourly flow and
 \begin{equation}
 \Delta_c \;=\; \max_t\left(0,\,-n_{ct}\right),
 \qquad
-N \;=\; \sum_c \Delta_c \;=\; 216{,}344 .
+N \;=\; \sum_c \Delta_c \;=\; 216{,}343.75 .
 \label{eq:deficit}
 \end{equation}
 $\Delta_c$ is the number of bicycle-positions cell $c$ must receive during its own worst
 hour to avoid drawing down its stock, and $N$ is the daily workload of a perfect
-incentive scheme that ignored inventory. Of the 5{,}263 cells, 5{,}192 have $\Delta_c>0$;
-the distribution is skewed, with median 17.9, 90th percentile 98.2 and 99th percentile
-323.3 bicycles per hour.
+incentive scheme that ignored inventory. Of the 5,263 cells, \textbf{5,188} have
+$\Delta_c>0$; the distribution is skewed, with median 18.97, 90th percentile 98.21 and
+99th percentile 323.71 bicycles per hour.
 
 \subsection{Will a rider accept?}
 
@@ -39,6 +39,7 @@ the extra walk,
 \quad\text{minutes},\qquad v=10\ \text{km/h},\ w=80\ \text{m/min},
 \label{eq:tau}
 \end{equation}
+with $d$ in kilometres, so that $\tau(0.45)=8.325$ minutes.
 and she accepts with the logit probability
 \begin{equation}
 \pi(d,r) \;=\; \frac{1}{1+\exp\left[-\left(\kappa r-\rho\,\tau(d)-c_0\right)\right]},
@@ -50,114 +51,180 @@ detour at 0.35 units, and carries 0.8 units of inertia against changing her plan
 are not identified from our data --- no reward was offered in May 2017 --- and are
 swept in Section~\ref{sec:sens}; what matters is the shape, not the level.
 
-At the optimal reward derived below ($r=1.20$ CNY) acceptance falls from 78\% for a
-50 m detour, through 54\% at 225 m, to 21\% at 450 m. The gradient is the whole story:
-the scheme recruits the riders who were nearly going there anyway, and pays more and
-more for the marginal ones.
+At the upper-bound optimum derived below ($r=1.76$ CNY) the acceptance probability is
+0.92 for a 50 m detour, 0.78 at 225 m and 0.45 at 450 m. The gradient is the whole
+story: the scheme recruits the riders who were nearly going there anyway, and pays
+more and more for the marginal ones.
 
-\subsection{The supply curve of voluntary relocations}
+\subsection{The supply curve as an hourly assignment program}
 
-Trips end at every distance in $[0,R]$, and the ones that end closest accept most
-readily. We therefore discretise the catchment into six detour bands
-$[0,50),[50,100),\dots,[300,450)$ m, count the trips $n_{cb}$ ending in band $b$
-around cell $c$ during $c$'s deficit hour, and obtain the expected placements at
-reward $r$ as
+The old version of this section integrated a logit curve over six detour bands and
+capped each cell at its deficit. That construction double-counted source bicycles: the
+same trip could be offered to several target cells, and a source cell with no hourly
+surplus could donate bicycles it did not have. We replace it with an explicit flow
+program, indexed by \emph{(target cell $c$, target deficit hour $h_c$)}.
+
+For every candidate edge $e=(j,c)$ at hour $h_c$, with $j\ne c$ and
+$d_{jc}\le450$ m, let the incremental acceptance probability be
 \begin{equation}
-q(r) \;=\; \sum_c \min\left\{\Delta_c,\ \sum_b n_{cb}\,\pi(\bar d_b,r)\right\},
-\label{eq:supply}
+w_e(r) \;=\; \pi(d_{jc},r)-\pi(d_{jc},0).
+\label{eq:incremental}
 \end{equation}
-where $\bar d_b$ is the band midpoint. The minimum enforces that a cell cannot absorb
-more bicycles than it needs; the inner sum is the number of riders who would accept.
-The function $q(r)$ is increasing and concave, and it saturates: no reward, however
-large, can move a rider who is not there.
+For each hour $h$ we solve
+\begin{align}
+\max_{x\ge0}\quad & \sum_{e\in E_h} w_e(r)\,x_e \label{eq:q3lp}\\
+\text{s.t.}\quad
+& \sum_{c:\,(j,c)\in E_h} x_{jc} \;\le\; S_{jh}
+  && \text{(one reroute per source trip)}\\
+& \sum_{j:\,(j,c)\in E_h} w_e(r)\,x_{jc} \;\le\; \Delta_c
+  && \text{(target absorbs at most its deficit)}
+\end{align}
+and define $q(r)=\sum_h \sum_e w_e(r)x_e^*$. The source capacity is the crux. The
+\emph{upper bound} sets $S_{jh}=A_{jh}$, the full arrival count at $j$ in that hour.
+The \emph{conservative bound} sets
+\begin{equation}
+S_{jh} \;=\; \max\left(0,\ A_{jh}-D_{jh}\right),
+\label{eq:surplus}
+\end{equation}
+because a reroute removes a trip that would otherwise have arrived: a source with
+$D_{jh}\ge A_{jh}$ has no hourly surplus, and donating a bicycle there simply creates a
+new deficit. The two bounds differ only in this row; the candidate pool, acceptance
+curve, target capacities and solver are identical.
+
+The pool contains 8,163 edges over the 5,188 deficit cells. At 450 m, 113,978 source
+trips are excluded because they are same-cell ($j=c$), and the naive pair count of
+334,147.32 falls to 307,187.50 distinct source-hour units once the one-reroute
+constraint is enforced (ratio 1.0878). The LP, not the pair count, is therefore the
+object that produces $q(r)$; the earlier non-flow pool is obsolete.
 
 \begin{table}[htbp]
 \centering
-\caption[The supply curve at 450 m]{The supply curve at 450 m. ``Bill'' is $r\,q(r)$; the last column is the
-marginal cost $\Delta(rq)/\Delta q$ over the interval since the previous row, to be
-compared with the truck's 3.48 CNY.}
+\caption[The supply curve at 450 m]{The supply curve at 450 m under the two source-capacity assumptions.
+Shares are of $N=216{,}343.75$. The all-truck benchmark is $3.3305\,N=720{,}537$ CNY.
+The marginal cost at each optimum is reported in the text.}
 \label{tab:supply}
 \small
 \begin{tabular}{@{}rrrrr@{}}
 \toprule
-\textbf{Reward $r$ (CNY)} & \textbf{Placements $q$} & \textbf{Share of $N$} &
-\textbf{Bill (CNY)} & \textbf{Marginal cost} \\
+\textbf{Reward $r$} & \textbf{$q$ upper} & \textbf{Share of $N$} &
+\textbf{$q$ surplus} & \textbf{Share of $N$} \\
 \midrule
-0.2 & 51{,}380  & 23.7\% & 10{,}276  & --- \\
-0.4 & 64{,}938  & 30.0\% & 25{,}975  & 1.16 \\
-0.6 & 78{,}709  & 36.4\% & 47{,}226  & 1.54 \\
-0.8 & 92{,}036  & 42.5\% & 73{,}629  & 1.98 \\
-1.0 & 104{,}409 & 48.3\% & 104{,}409 & 2.49 \\
-1.5 & 128{,}873 & 59.6\% & 193{,}310 & 3.63 \\
-2.0 & 143{,}615 & 66.4\% & 287{,}229 & 6.37 \\
-3.0 & 153{,}654 & 71.0\% & 460{,}961 & 17.31 \\
-3.5 & 154{,}846 & 71.6\% & 541{,}961 & 67.95 \\
+1.0 & 41,197 & 19.0\% & 12,775 & 5.9\% \\
+1.5 & 77,962 & 36.0\% & 24,879 & 11.5\% \\
+\textbf{1.76} & \textbf{95,566} & \textbf{44.2\%} & 31,209 & 14.4\% \\
+1.83 & 99,688 & 46.1\% & \textbf{32,777} & \textbf{15.2\%} \\
+2.0 & 108,477 & 50.1\% & 36,277 & 16.8\% \\
+3.0 & 131,681 & 60.9\% & 46,977 & 21.7\% \\
+6.0 & 136,088 & 62.9\% & 49,194 & 22.7\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\tabref{tab:supply} gives the curve. Two properties drive the recommendation.
+\tabref{tab:supply} gives the curves. Two properties drive the recommendation.
 
-\textbf{The first half is cheap.} The first 100{,}000 relocations cost 104{,}409 CNY,
-an average of 1.0 CNY each, and at that scale the marginal placement still costs 2.5
-CNY --- below the truck's 3.48, because there are enough riders passing within 100 m of
-the deficit cells.
+\textbf{The first quarter is cheap.} In the upper bound the first 41,197 placements at
+$r=1.0$ cost 41,197 CNY, an average of 1.0 CNY each; by $r=1.76$ the marginal
+placement costs 3.35 CNY, essentially the truck unit of 3.3305. In the conservative
+bound the curve is much lower --- 32,777 placements at $r=1.83$ --- because most
+candidate source hours have no surplus to give.
 
-\textbf{The second half is not.} Beyond about 100{,}000 placements the cheap riders are
-exhausted, and because the reward is uniform the platform must raise it for everyone in
-order to recruit the few who are far away. The marginal cost of an extra placement then
-rises faster than the reward itself: 3.63 CNY at $r=1.5$, 6.37 at $r=2.0$, 17.31 at
-$r=3.0$. The curve ends in a wall at 71.6\%, where the pool of qualifying trips is
-exhausted.
+\textbf{The curve saturates well below $N$.} Even at $r=6$ the upper bound moves
+136,088 placements, 62.9\% of the deficit, and the conservative bound 49,194, 22.7\%.
+The remaining deficit is not a pricing failure: those cells have too few trips ending
+within 450 m in their deficit hour for any reward to reach them. The old catchment
+percentages came from the non-flow ring pool and are withdrawn.
 
-\subsection{The optimal mix}
+\subsection{The optimal mix and its zone-level limit}
 
 The platform chooses $r$ to minimise the incentive bill plus the cost of moving the
 residual by truck:
 \begin{equation}
 \min_{r\ge0}\ \ r\,q(r) \;+\; c_{\text{truck}}\left(N-q(r)\right),
-\qquad c_{\text{truck}}=3.48\ \text{CNY}.
+\qquad c_{\text{truck}}=3.3305\ \text{CNY}.
 \label{eq:mix}
 \end{equation}
-The first-order condition is that the marginal cost of an incentive placement equals
-the truck cost; on \tabref{tab:supply} that happens between $r=1.0$ and $r=1.5$. Solving
-numerically gives
-\begin{equation}
-\boxed{\ r^*=1.20\ \text{CNY},\qquad q^*=115{,}385\ \text{placements}\ (53.3\%),\qquad
-\text{bill}=138{,}462\ \text{CNY}\ }
-\end{equation}
-with a marginal cost of 3.46 CNY, within 1\% of the truck. The remaining 100{,}959
-bicycles must be moved by truck for 351{,}116 CNY, so the daily cost is \textbf{489{,}578
-CNY against 752{,}404 for an all-truck policy --- a saving of 34.9\%}
-(\figref{fig:q3}c).
+Solving the hourly programs on a 0.01-CNY grid gives two optima.
 
-The optimum is not a corner solution, which is the useful part. Incentives do not
-replace trucks; they remove the cheapest half of the trucks' work, and the two
-instruments meet where their marginal costs are equal, as they should.
+\textbf{Upper bound (source capacity = full arrivals).}
+\begin{equation}
+\boxed{\ r^*=1.76\ \text{CNY},\quad q^*=95{,}566\ \text{placements}\ (44.2\%),\quad
+\text{bill}=168{,}196\ \text{CNY}\ }
+\end{equation}
+with a marginal cost of 3.346 CNY. The residual 120,778 bicycles cost 402,253 CNY by
+truck, so the daily cost is \textbf{570,449 CNY against 720,537 for an all-truck
+policy --- a saving of 20.83\%}.
+
+\textbf{Conservative bound (source capacity = hourly surplus).}
+\begin{equation}
+\boxed{\ r^*=1.83\ \text{CNY},\quad q^*=32{,}777\ \text{placements}\ (15.2\%),\quad
+\text{bill}=59{,}982\ \text{CNY}\ }
+\end{equation}
+with a marginal cost of 3.332 CNY. The residual 183,567 bicycles cost 611,372 CNY, so
+the daily cost is \textbf{671,354 CNY --- a saving of 6.83\%}.
+
+The defensible headline is therefore the range \textbf{6.83\%--20.83\%}. These are
+\emph{cell-level equivalent benchmarks}, not a substitute for the zone-level truck
+plan of Q2. The Q2 plan moves bicycles between 50 zones; the Q3 program moves trips
+between cells within a 450 m radius. To see how far apart the two are, decompose the
+upper-bound solution at $r^*$: only \textbf{7.4643\%} of the rerouted volume, 7,133
+bicycles, crosses a zone boundary, while 92.54\% stays inside the same zone. The
+stationary zone-hour positive change is 4,332 bicycles, and the largest absolute
+zone-hour change is 327.83. Q2's trucks are zone-level instruments; a cell-level
+saving of 20.83\% therefore does not translate into a system-level truck saving, and
+must not be presented as one. The conservative solution is similarly local:
+8.65\% cross-zone, 2,837 bicycles, positive zone-hour sum 2,316.
+
+\subsection{Public push: the lower bound is not profitable}
+
+A \emph{public} push pays every rider who ends in a target cell, including the
+100,041 riders who were already going there and change nothing. Those free riders are
+the difference between the targeted and the public schemes. At the current truck unit
+3.3305 the public push has three relevant points, all computed on the same flow pool.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Public-push case} & \textbf{Optimal $r$} & \textbf{Placements} &
+\textbf{Reward bill} & \textbf{Total cost} \\
+\midrule
+Current unit 3.3305 & 0.00 & 0 & 0 & 720,537 \\
+Current unit, fixed $r=1.2$ & 1.20 & 55,600 & 66,720 & 722,129 \\
+Obsolete unit 3.478 & 1.30 & 63,084 & 82,009 & 745,101 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At $r=1.2$ the public push costs 722,129 CNY against 720,537 all-truck, a loss of
+0.22\%; the obsolete 3.478 unit gives 745,101 against its own 752,444 all-truck
+benchmark, a saving of 0.98\%. The earlier public-push estimate came from a non-flow
+pool and is withdrawn. A public push is therefore reported as a lower bound that does
+not pay for itself, not as a recommended policy.
 
 \subsection{Why the ceiling is physical}
 
-At $r=3.5$ the scheme buys 71.6\% of the deficit and then stops. The remaining 28\%
-is not a pricing failure: those cells have too few trips ending nearby in their deficit
-hour for any reward to reach them. Widening the catchment helps only slowly
-(\figref{fig:q3}d): 450 m covers 71.9\%, 600 m covers 83.3\%, 850 m covers 92.2\%, and
-95\% requires a 1{,}025 m detour --- a walk of thirteen minutes, which no plausible
-reward makes acceptable.
+At $r=6$ the upper bound buys 62.9\% of the deficit and then stops; the conservative
+bound buys 22.7\%. The remaining share is not a pricing failure: those cells have too
+few trips ending within 450 m in their deficit hour for any reward to reach them.
+Widening the catchment would recruit more riders, but it also lengthens the detour,
+and the logit curve penalises that directly; we did not re-run the radius sweep after
+the flow-pool correction, so no wider-radius number is quoted.
 
 This is the correct division of labour between the instruments. Incentives should be
 targeted at cells whose deficit is small relative to the traffic passing through them
---- the dense core, where a few hundred metres of redirection recruits thousands of
-riders. Sparse peripheral cells, where the deficit is large and the passing traffic
-thin, belong to the trucks.
+--- the dense core, where a few hundred metres of redirection recruits riders. Sparse
+peripheral cells, where the deficit is large and the passing traffic thin, belong to
+the trucks.
 
 \subsection{The scheme}
 
 The mechanism that follows from the analysis has five elements.
 
 \begin{enumerate}[leftmargin=1.6em]
-\item \textbf{A uniform reward of 1.2 CNY}, paid on completion, credited to the
-  account, and about the price of a ride. Uniformity matters: a personalised reward
-  would extract more surplus but is perceived as unfair and invites gaming.
+\item \textbf{A uniform reward of 1.76 CNY} (upper bound) or \textbf{1.83 CNY}
+  (conservative bound), paid on completion and credited to the account. Uniformity
+  matters: a personalised reward would extract more surplus but is perceived as
+  unfair and invites gaming.
 \item \textbf{A target set, not a target point.} The reward is offered for ending
   inside any cell in the current deficit list, recomputed hourly from the demand model
   of Section~\ref{sec:q1}. The list is exactly the set of cells with $\Delta_c$ above a
@@ -167,16 +234,18 @@ The mechanism that follows from the analysis has five elements.
   it, which rules out the trivial strategy of riding in a circle.
 \item \textbf{A daily cap} of three rewarded trips per user, which prevents a small
   number of users from absorbing the budget and keeps the scheme a broad-based nudge.
-\item \textbf{A hard budget} of 140{,}000 CNY per day, which at $r=1.2$ is exactly the
-  volume the analysis recommends; any surplus is carried to the next day.
+\item \textbf{A hard budget of 170,000 CNY per day} for the upper-bound scheme (the
+  conservative scheme spends 60,000), with any surplus carried to the next day.
 \end{enumerate}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{../figs/fig5_q3.pdf}
 \caption[Q3: acceptance, reward and savings]{Q3. (a) Acceptance probability against reward, for three detour distances.
-(b) The supply curve of voluntary relocations; the dashed line is the peak-hour
-deficit and the circle is the optimum. (c) Daily cost of an all-truck policy and of the
-optimal mix. (d) Share of the deficit reachable within a catchment radius.}
+(b) The two supply curves of voluntary relocations at 450 m; the upper bound uses
+full source arrivals, the conservative bound uses hourly surplus. The circle marks the
+optimum of each curve. (c) Daily cost of the all-truck policy and of the two optimal
+mixes. (d) Zone decomposition: cross-zone against same-zone rerouted volume at each
+optimum.}
 \label{fig:q3}
 \end{figure}

@@ -28,12 +28,15 @@ The volume is stable at 225,000--322,000 orders per day from 10 to 19 May, with 
 weekend dip one expects. \textbf{17 May is entirely absent} --- not sparse, absent ---
 so no interpolation is possible and we treat the day as missing.
 
-From 20 May onward the volume falls to 120,000--210,000 and stays there. The drop is
-too abrupt to be behavioural, and the hourly profile of those days is
-indistinguishable from the earlier ones; it is a truncation of the operator's sample,
-not a change in the city. We therefore restrict all estimation to the ten days
-10--19 May, and within them to the seven weekdays that are fully covered, which we
-call \emph{typical days}. Weekends are used only where the text says so.
+From 20 May onward the sample is \emph{truncated}, not merely quieter. The five days
+carry 54.53\% of the typical-day volume and 63.11\% of the typical-day bicycles, and
+13 entire hour blocks are missing (20 May lacks 19:00--22:00; 23 May lacks three
+hours; 24 May lacks six). Within the hours that are present, the hourly profile
+correlates only 0.54--0.72 with a typical day, against 0.98--0.997 among the complete
+weekdays. These are the signatures of a sample cut off, not of behavioural change, so
+we do not use 20--24 May for estimation. All estimation uses the ten days 10--19 May,
+and within them the seven fully covered weekdays, which we call \emph{typical days}.
+Weekends are used only where the text says so.
 
 \begin{figure}[htbp]
 \centering
@@ -57,46 +60,50 @@ They are adjacent in the bicycle's true history exactly when no order between th
 dropped, which for independent retention happens with probability $p$. Adjacency is
 observable: if the two orders are adjacent, the bicycle was not moved in between, so
 the second order must start in the same 153 m geohash cell in which the first ended.
-Conversely, a mismatch proves that at least one order is missing. Across all bicycles
-with two or more orders, \textbf{12.8\% of consecutive pairs satisfy the
-end-equals-next-start test}.
+Conversely, a mismatch proves that at least one order is missing. Across 2,003,318
+consecutive pairs, \textbf{12.83\% satisfy the exact end-equals-next-start test};
+17.72\% are within 160 m and 19.97\% within 250 m. Placebo pairs that skip one or two
+observed trips, and are therefore known to be separated by a missed ride, match at
+only 2.30\% and 1.30\% within 250 m. Correcting the exact-match rate for that false
+match gives $p\approx0.18$--$0.19$; we use the bracket $p\in[0.128,0.200]$ and the
+central value 0.185 in the discussion below.
 
-Two biases act in opposite directions and both are small. A bicycle re-parked within
-the same 153 m cell after an unobserved trip creates a false match, which makes 12.8\%
-an overestimate of the match rate and hence a \emph{lower} bound on $p$; a bicycle
-locked a few metres away but across a cell boundary creates a false mismatch. We adopt
-$p=0.128$ and treat it as an order-of-magnitude estimate. Section~\ref{sec:sens}
-shows that this uncertainty does not propagate into the fleet estimate at all.
+Following decision B7 we retain $p=0.128$ for the absolute flow quantities. This is
+the \emph{lower} end of the bracket, so dividing by 0.128 overstates every absolute
+flow by about $0.185/0.128=1.45$ relative to the central estimate. All absolute
+counts in this paper are therefore \textbf{upper bounds}; ratios, shares and the fleet
+estimate (which is invariant to $p$) are unaffected. The statement that resampling at
+5\%--50\% reproduces the fleet within 4\% is false and is withdrawn: at a 5\% rate,
+64.5\% of 200 draws deviate by more than 4\%, and the maximum deviation is 17.9\%;
+only at the 50\% rate does the maximum fall below 4\% (3.67\%). What survives is the
+algebraic invariance of the estimator, not a claim of small finite-sample scatter.
 
 \subsection{Fleet size}
 
 The file contains no inventory, so the fleet must be inferred from the pattern of use.
-Model each bicycle as being ridden a random number of times per day with mean $\mu$,
-Poisson distributed across bicycles and independent across days. A bicycle appears in
-the data at least once with probability $1-e^{-\mu}$. With $T$ orders and $D$ distinct
-bicycles observed on a day,
+A single day's occupancy estimator is fragile because it is sensitive to the tail of
+the rides-per-bicycle distribution. We therefore estimate the \emph{closed} fleet by
+capture--recapture between the nine complete days and the truncated second window.
+Let $n_1=462{,}893$ bicycles be seen in the complete window, $n_2=331{,}822$ in the
+second window, and $m=309{,}961$ in both. The Chapman estimator is
 \begin{equation}
-\frac{T}{D} \;=\; \frac{\mu}{1-e^{-\mu}},
+\hat F_{\text{closed}} \;=\;
+\frac{(n_1+1)(n_2+1)}{m+1}-1 \;=\; 495{,}540,
 \label{eq:fleet}
 \end{equation}
-which is strictly increasing in $\mu$ and therefore invertible. For the reference
-weekday $T/D=1.478$, giving $\mu=0.840$ and
-\begin{equation}
-\hat F \;=\; \frac{T}{\mu} \;=\; 343{,}638 \ \text{bicycles}.
-\end{equation}
+with a sampling standard error of 131 bicycles (95\% interval 495,283--495,797).
+The estimator assumes the two windows sample the same closed population; a bicycle
+retired between them biases the estimate down, and heterogeneity biases it up. As a
+model interval we report the observed 14-day union as a hard lower bound,
+484,754, and the normalised nine-day unseen-share method as an upper reference,
+506,635. The old value 343,638 is not a fleet estimate: it is the 5/16 00:00
+drop-off snapshot, and it is retained only as the measured initial inventory in Q2
+and Q4.
 
-The estimate is invariant to the sampling rate, which is worth showing because it is
-the reason the unidentified $p$ does no damage. Under retention probability $p$ the
-observed quantities are $T_p=pT$ and $D_p=F(1-e^{-p\mu})$, so
-$T_p/D_p=p\mu/(1-e^{-p\mu})$. Inverting \eqnref{eq:fleet} on the observed ratio
-returns $p\mu$, and $\hat F=T_p/(p\mu)=T/\mu$. Resampling the orders at rates from 5\%
-to 50\% reproduces $\hat F$ within 4\% (Section~\ref{sec:sens}), which confirms the
-algebra numerically.
-
-At 343,638 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
-\textbf{6.2 times per day}. For comparison, a private car is driven three to four times
-per day; the fleet is worked hard in the aggregate and idle in the particular, which
-is the tension the rest of the paper quantifies.
+At 495,540 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
+\textbf{4.33 times per day}. The fleet is worked less hard than the old estimate
+implied, and it is idle in the particular even when it is abundant in the aggregate;
+that is the tension the rest of the paper quantifies.
 
 \subsection{Spatial units}
 
@@ -104,9 +111,9 @@ Two partitions are used, at different resolutions and for different purposes.
 
 \textbf{Cells.} A grid of $0.005^\circ$ (about $555\times426$ m) is laid over the
 city. Keeping only cells with at least 50 sampled trips leaves \textbf{5,263 cells},
-which contain 95.8\% of the typical-day trips. Cells are the unit at which a rider can
-reasonably be asked to change destination (a few hundred metres), so they are used for
-the incentive model (Q3) and the parking model (Q4).
+which contain 95.81\% of the typical-day trips. Cells are the unit at which a rider
+can reasonably be asked to change destination (a few hundred metres), so they are
+used for the incentive model (Q3) and the parking model (Q4).
 
 \textbf{Zones.} Fifty zones are formed by $k$-means on the cell centroids weighted by
 trip volume, and each cell is assigned to its nearest centroid. Zones hold between
@@ -118,7 +125,8 @@ truck moves bicycles. They are used for rebalancing (Q2).
 \begin{table}[htbp]
 \centering
 \caption[Data summary after cleaning]{Data summary after cleaning. Distances are straight-line between decoded
-endpoints.}
+endpoints. The fleet is the closed-population capture--recapture estimate; the
+initial inventory is a different quantity.}
 \label{tab:data}
 \small
 \begin{tabular}{@{}lrl@{}}
@@ -131,13 +139,14 @@ Bicycles & 484,754 & distinct identifiers over 14 days \\
 Dates present & 14 & 17 May absent \\
 Typical days used & 7 & fully covered weekdays \\
 Trips per typical day (sample) & 274,357 & \\
-Trips per typical day (scaled) & $2.14\times10^6$ & $p=0.128$ \\
+Trips per typical day (scaled) & $2.14\times10^6$ & $p=0.128$, upper bound \\
 Median trip distance & 0.70 km & lognormal $\sigma=0.65$ \\
 90th percentile distance & 1.41 km & \\
 Study cells & 5,263 & $\geq50$ trips, $0.005^\circ$ grid \\
 Traffic zones & 50 & weighted $k$-means \\
-Fleet estimate & 343,638 & Eq.~\eqref{eq:fleet} \\
-Rides per bicycle per day & 6.2 & scaled trips / fleet \\
+Closed fleet & 495,540 & Eq.~\eqref{eq:fleet}, interval [484,754, 506,635] \\
+Rides per bicycle per day & 4.33 & scaled trips / fleet \\
+Measured initial inventory & 343,638 & 5/16 00:00 snapshot, used as $I_0$ \\
 \bottomrule
 \end{tabular}
 \end{table}

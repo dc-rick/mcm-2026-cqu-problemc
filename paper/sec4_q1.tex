@@ -84,11 +84,11 @@ $\beta_h=0$.}
 \textbf{Distance} & \textbf{Attraction} & \textbf{Uniform} & \textbf{Top-5 hit} \\
  & & (km$^{-1}$) & \textbf{log-loss} & \textbf{only} & \textbf{only} & & \textbf{gravity / dist.} \\
 \midrule
-00--05 & 18,364 & 2.096 & 3.313 & 3.488 & 7.912 & 8.568 & 0.476 / 0.401 \\
-06--09 & 386,102 & 2.014 & 3.512 & 3.646 & 8.083 & 8.568 & 0.399 / 0.339 \\
-10--15 & 366,212 & 2.517 & 3.239 & 3.279 & 8.091 & 8.568 & 0.458 / 0.441 \\
-16--19 & 428,478 & 2.130 & 3.517 & 3.562 & 8.140 & 8.568 & 0.408 / 0.383 \\
-20--23 & 165,671 & 2.364 & 3.360 & 3.395 & 8.185 & 8.568 & 0.455 / 0.438 \\
+00--05 & 18,364 & 2.096 & 3.313 & 3.487 & 7.912 & 8.568 & 0.476 / 0.402 \\
+06--09 & 386,102 & 2.014 & 3.512 & 3.645 & 8.083 & 8.568 & 0.399 / 0.339 \\
+10--15 & 366,212 & 2.517 & 3.239 & 3.278 & 8.091 & 8.568 & 0.458 / 0.440 \\
+16--19 & 428,478 & 2.130 & 3.517 & 3.561 & 8.140 & 8.568 & 0.408 / 0.383 \\
+20--23 & 165,671 & 2.364 & 3.360 & 3.394 & 8.185 & 8.568 & 0.455 / 0.437 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -102,7 +102,7 @@ arrivals at a cell says little about where any particular rider is going. Distan
 alone already reaches a log-loss of 3.28--3.65.
 
 \textbf{Attraction adds a consistent but modest gain.} Adding $A_j(h)$ improves the
-log-loss by 0.035--0.175 nats and the top-five hit rate by 1.7--7.5 percentage points
+log-loss by 0.034--0.174 nats and the top-five hit rate by 1.7--7.4 percentage points
 in every band and on held-out days. The gain is largest in the small hours, when the
 destination choice is least constrained by commuting routine, and smallest in the late
 evening, when the distance term is already sharp.
@@ -117,18 +117,20 @@ average the commute and the errand and misdescribe both.
 
 \subsection{Duration}
 
-Ride duration is generated from speed rather than modelled directly. A bicycle travels
-the street network, which is about 1.35 times the straight-line distance at the
-distances observed here; the speed of a dockless rider is approximately normal with
-mean 11.5 km/h and standard deviation 2.5, clipped to $[6,20]$ km/h to remove the
-implausible tails. Hence
+Ride duration is generated from speed rather than modelled directly. This is an
+explicit assumption, not an estimated relationship, and the order file contains no
+end time from which a duration could be observed. A bicycle is assumed to travel
+1.35 times the straight-line distance; its speed is approximately normal with mean
+11.5 km/h and standard deviation 2.5, clipped to $[6,20]$ km/h to remove the
+implausible tails; and one minute is added for locking and unlocking. Hence
 \begin{equation}
-\tau_n \;=\; \frac{1.35\,d_n}{v_n}\times 60 + 1 \quad \text{minutes},
+\tau_n \;=\; \frac{1.35\,d_n}{v_n}\times 60 + 1 \quad \text{minutes}.
 \label{eq:dur}
 \end{equation}
-with the additive minute standing for locking and unlocking. The resulting
-distribution has median 5.9 minutes, 10th percentile 3.0 and 90th percentile 11.9,
-which matches the observed distribution of within-day ride durations.
+The three constants (11.5 km/h, 1.35 detour factor, +1 minute) are planning
+assumptions of the right order for 2017 Beijing; they were not swept, because the
+four-day window that would have carried that sensitivity study was cut (T011). Any
+duration-dependent statement in this paper inherits that limitation.
 
 \subsection{Joint validation}
 
@@ -136,18 +138,28 @@ The layers are estimated separately but must be checked together: a model can fi
 margin and still produce impossible trips. We therefore simulate a full typical day
 --- draw each trip's time from the Poisson rates, its destination from
 \eqnref{eq:gravity}, its duration from \eqnref{eq:dur} --- and compare the simulated
-trip-length distribution with the observed one (\figref{fig:q1}a). The two-sample
-Kolmogorov--Smirnov statistic is 0.196, and the discrepancy is confined to the
-shortest trips, exactly where the geohash floor sits. Given that the model reproduces
-the distance distribution, the hourly profile (by construction) and the destination
-choice (by the held-out test), it is adequate as the demand engine for Q2--Q4.
+trip-length distribution with the observed one (\figref{fig:q1}a). Same-cell trips are
+excluded from the distance comparison rather than assigned a fabricated 0.30 km, and
+the comparison is made at cell-centre resolution on both sides. The two-sample
+Kolmogorov--Smirnov statistic on cross-cell trips is \textbf{0.098}, and the
+discrepancy is confined to the shortest trips, where the geohash floor sits. The old
+0.196 figure came from a simplified comparison (attraction set to one, morning band
+only, same-cell trips forced to 0.30 km, GPS distances on the observed side); it is
+not the statistic of the model used here. At full sample the model produces
+\textbf{12.83\% same-cell trips against 8.89\% observed, an overestimate of 3.94
+percentage points}; the agreement elsewhere does not remove that bias. Given that the
+model reproduces the distance distribution, the hourly profile (by construction) and
+the destination choice (by the held-out test), it is adequate as the demand engine for
+Q2--Q4.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{../figs/fig3_q1_validation.pdf}
-\caption[Q1 validation]{Q1 validation. (a) Simulated against observed trip-length distributions.
-(b) Estimated distance decay by time band. (c) Out-of-sample log-loss for three
-model specifications, logarithmic scale. (d) Top-five destination hit rate.}
+\caption[Q1 validation]{Q1 validation. (a) Simulated against observed trip-length distributions,
+cross-cell trips only; same-cell trips are excluded, and at full sample the model
+overestimates them (12.83\% against 8.89\%). (b) Estimated distance decay by time
+band. (c) Out-of-sample log-loss difference from the distance-only model on a linear
+axis, so the difference is not flattened. (d) Top-five destination hit rate.}
 \label{fig:q1}
 \end{figure}
 
@@ -158,9 +170,11 @@ profile is the superposition of distinct behaviours. We characterise each user b
 features computed over the ten usable days: trips per day, mean trip distance, entropy
 of the departure-hour distribution, share of trips in peak hours, share on weekends,
 and share of trips that return to the origin cell. $k$-means \cite{lloyd1982} with the
-silhouette criterion \cite{rousseeuw1987} selects $k=5$ (silhouette 0.256; the
-alternatives $k=3$ and $k=4$ score 0.239 and 0.237), and the resulting classes are
-stable across random initialisations.
+silhouette criterion \cite{rousseeuw1987} gives a \emph{best-run} silhouette of 0.256
+at $k=5$ and 0.263 at $k=6$, so the criterion does not select $k=5$; we choose $k=5$
+for the prediction task and for interpretability, and we do not call the classes
+stable. Across 20 random initialisations the pairwise adjusted Rand index at $k=5$ is
+0.665 with a minimum of 0.306, which is substantial but far from reproducible.
 
 \begin{table}[htbp]
 \centering
@@ -171,8 +185,8 @@ starting in 07--09 or 17--19.}
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
 \textbf{Segment} & \textbf{Users} & \textbf{Share of} & \textbf{Share of} &
-\textbf{Trips} & \textbf{Distance} & \textbf{Weekend} \\
- & & \textbf{users} & \textbf{trips} & \textbf{per day} & \textbf{(km)} & \textbf{share} \\
+\textbf{Trips per} & \textbf{Distance} & \textbf{Weekend} \\
+ & & \textbf{users} & \textbf{trips} & \textbf{user (10 days)} & \textbf{(km)} & \textbf{share} \\
 \midrule
 Regular multi-purpose & 132,984 & 40.4\% & 51.8\% & 9.18 & 0.84 & 0.19 \\
 Heavy short-trip & 49,931 & 15.2\% & 29.6\% & 13.98 & 0.67 & 0.20 \\
@@ -184,14 +198,15 @@ Weekend / leisure & 29,410 & 8.9\% & 2.8\% & 2.25 & 0.92 & 0.79 \\
 \end{table}
 
 \figref{fig:seg} and \tabref{tab:seg} show the structure. Two groups generate
-four-fifths of all trips. The \emph{regular multi-purpose} user rides 9.2 times a day
---- the profile of a short-distance commuter or a rider who uses the bicycle as a
-substitute for walking --- and accounts for 51.8\% of trips. The \emph{heavy
-short-trip} user rides 14 times a day over 0.67 km, with a quarter of trips returning
-to the same cell: this is the courier-like, errand-heavy behaviour that dominates the
-dense core. The \emph{commuter} class rides longer (1.17 km) and concentrates 91\% of
-its trips in peak hours but contributes only 10.6\% of volume. The remaining two
-classes are peripheral.
+four-fifths of all trips. The \emph{regular multi-purpose} user makes 9.18 trips over
+the ten-day window (1.64 per active day) --- the profile of a short-distance commuter
+or a rider who uses the bicycle as a substitute for walking --- and accounts for
+51.8\% of trips. The \emph{heavy short-trip} user makes 13.98 trips over ten days
+(2.47 per active day) over 0.67 km; 16.5\% of their trips end in the same cell they
+started in, and 25.7\% return to an origin cell they had already used that day. This
+is the courier-like, errand-heavy behaviour that dominates the dense core. The
+\emph{commuter} class rides longer (1.17 km) and concentrates its trips in peak hours
+but contributes only 10.6\% of volume. The remaining two classes are peripheral.
 
 This matters operationally rather than descriptively. The peak is made by a minority
 of trips --- commuters, 10.6\% of volume --- while the volume is made by riders whose

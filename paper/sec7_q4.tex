@@ -1,125 +1,174 @@
 % =============================== 7. Q4 ===============================
 \section{Question 4: Siting and Sizing Electronic Fences}\label{sec:q4}
 
-\subsection{Parking demand is the arrival process}
+\subsection{Parking demand is the arrival process, on top of a standing stock}
 
-A dockless bicycle occupies space where its trip ends, and it stays there until someone
-rides it away. The demand for parking at a cell is therefore the arrival process ---
-which the model of Section~\ref{sec:q1} predicts --- and the capacity of a fence is
-the number of bicycles that can be standing inside it at the worst moment of the day.
+A dockless bicycle occupies space where its trip ends and stays there until someone
+rides it away. The parking demand of a cell is therefore the arrival process of
+Section~\ref{sec:q1}, but the occupancy it produces is the \emph{integral} of that
+process on top of whatever is already standing there. An earlier version of this
+section started every fence at zero occupancy and cleared it nightly. That is wrong on
+both counts: the measured 5/16 00:00 snapshot contains 343,638 bicycles, and Q2 shows
+that the plan is a reset, not an evacuation. The simulation below therefore starts each
+fence at its measured standing inventory and sizes the peak of the resulting path.
 
-Capacity is sized by Monte Carlo. For a candidate fence serving a set $S$ of cells we
-draw Poisson arrivals and departures on the 15-minute grid,
+For a candidate fence serving a set $S$ of cells, the 15-minute occupancy path is
 \begin{equation}
 o_{t+1} \;=\; \max\left\{0,\ o_t + A_t - D_t\right\},
-\qquad A_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}a_{ct}\right),
-\quad D_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}d_{ct}\right),
+\qquad
+A_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}a_{ct}\right),
+\quad
+D_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}d_{ct}\right),
+\label{eq:occupancy}
 \end{equation}
-record the peak $\max_t o_t$ over 96 intervals, repeat 300 times, and set the capacity
-to the 95th percentile of the simulated peaks. Two conventions are worth stating. The
-occupancy starts at zero, which is consistent with the nightly reset of
-Section~\ref{sec:q2}: fences are emptied overnight and refilled by the day's arrivals.
-And the arrival rate is the scaled one, $1/p$ times the sample, so the capacities are
-those of the real system rather than of the sample.
+with $o_0=\sum_{c\in S}I_{c0}$ the standing inventory and 96 intervals in the day. We
+draw 300 replicates and take the capacity of the fence to be the 95th percentile of
+$\max_t o_t$, the peak \emph{including} $t=0$. Arrivals and departures are the scaled
+$1/p$ flows, so the capacities describe the real system, not the sample.
+
+Two conventions must be stated because they bound the interpretation. Per-fence
+percentiles are not additive in probability: the sum of 95th percentiles is not the
+city-wide 95th percentile of the sum. The total-slot figures below are therefore a
+\emph{deterministic sizing convention} --- size each fence so that it is adequate 95\%
+of the time on its own --- and not a simultaneous city-wide guarantee. And the
+inventory level is a scenario: we run the measured 343,638 and the closed fleet
+495,540, and never mix the two.
 
 \subsection{Where to put the fences}
 
-Siting is a maximal-coverage problem. A fence at cell $c$ with walking radius $R$
-serves every arrival whose destination lies within $R$ of $c$; the planner chooses a
-set of fences to cover as many arrivals as possible. The problem is NP-hard but its
-objective is submodular, so the greedy algorithm --- repeatedly place the fence that
-covers the most still-uncovered arrivals --- attains at least $(1-1/e)=63.2\%$ of the
-optimum \cite{nemhauser1978}. With 5{,}263 cells and 2{,}500 candidate sites the greedy
-pass runs in seconds and the bound is comfortable.
+Siting is maximal coverage. A fence at cell $c$ with walking radius $R=450$ m serves
+every arrival whose destination lies within $R$ of $c$; the planner chooses a set of
+fences to cover as many arrivals as possible. The objective is monotone and submodular,
+so the greedy algorithm --- repeatedly place the fence that covers the most
+still-uncovered arrivals --- attains at least $(1-1/e)=63.2\%$ of the optimum
+\cite{nemhauser1978}. With 5,263 cells as candidate sites the pass runs in seconds.
+The radius is a planning threshold, not a 2017 measured walking distance; the OSM
+check below is geographic, not behavioural.
+
+The number of fences is chosen on the capacity--coverage frontier by minimising
+\begin{equation}
+\text{cost}(n) \;=\; \text{slots}(n) \;+\; \lambda\,n,
+\qquad \lambda=150\ \text{slot-equivalents per fence},
+\label{eq:fencecost}
+\end{equation}
+where $\lambda$ is an explicit exchange rate: one fence is treated as worth 150 slots
+of structure, roughly the capacity at which a street corner stops being a rack and
+becomes a lot. It is a planning judgement, not an estimated construction cost, so we
+report the knees at $\lambda=0$ and $\lambda=300$ as well. At $\lambda=0$ the knee is
+501 fences (64.51\% coverage, cost 396,317); at $\lambda=150$ it is \textbf{705 fences}
+(76.86\%, cost 597,442); at $\lambda=300$ it is the same 705 fences (cost 703,192).
+The 626-fence plan used in the earlier version is not a knee; it is only a point on the
+frontier and is retained solely for comparison.
+
+\subsection{The recommended plan and the two inventory scenarios}
 
 \begin{table}[htbp]
 \centering
-\caption[Fence plans]{Fence plans. Coverage is the share of daily arrivals inside some fence's
-walking radius; capacity is the Monte-Carlo 95th-percentile peak occupancy.}
+\caption[Fence plans at 450 m]{Fence plans at $R=450$ m on the Q1 demand surface. Slots are the sum of
+per-fence Monte-Carlo 95th-percentile peak occupancies, starting from the standing
+inventory of the plan's covered cells. The knee is the $\lambda=150$ plan; the full
+plan covers every cell and is a diagnostic, not a recommendation.}
 \label{tab:fence}
 \small
-\begin{tabular}{@{}rrrrrr@{}}
+\begin{tabular}{@{}lrrrr@{}}
 \toprule
-\textbf{Radius $R$} & \textbf{Fences} & \textbf{Coverage} &
-\textbf{Total slots} & \textbf{Median slots} & \textbf{Max slots} \\
+\textbf{Plan} & \textbf{Fences} & \textbf{Coverage} &
+\textbf{Slots at 343,638} & \textbf{Slots at 495,540} \\
 \midrule
-250 m & 505 & 39.0\% & 249{,}860 & 397 & 3{,}261 \\
-450 m & 626 & 75.3\% & 344{,}463 & 417 & 4{,}827 \\
-650 m & 537 & 83.0\% & 342{,}606 & 489 & 6{,}038 \\
+Frontier point & 626 & 72.67\% & 458,516 & 582,977 \\
+\textbf{Knee, $\lambda=150$} & \textbf{705} & \textbf{76.86\%} &
+\textbf{491,692} & \textbf{621,004} \\
+Full coverage (diagnostic) & 2,364 & 100\% & 734,345 & 884,585 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\tabref{tab:fence} and \figref{fig:q4} give the result. A walking radius of 450 m ---
-about six minutes, the usual catchment of a transit stop --- covers three-quarters of
-arrivals with 626 fences. Tightening to 250 m covers only 39\% even with 505 fences,
-because the demand is concentrated in a few hundred cells and a small radius cannot
-bridge between them; widening to 650 m covers 83\% with 537 fences, but at a walking
-distance riders will not accept for a 700 m trip.
+\tabref{tab:fence} is the answer. The recommended layout has \textbf{705 fences},
+covers \textbf{76.86\%} of daily arrivals, and requires \textbf{491,692 slots} at the
+measured inventory or \textbf{621,004} at the closed fleet. The 626-fence point covers
+4.19 percentage points less and saves 33,176 slots at the measured inventory; that is
+the trade the frontier makes, and the knee is where the marginal fence stops buying
+coverage cheaply. The full-coverage diagnostic shows what completeness would cost:
+2,364 fences and 734,345 slots, 49.4\% more slots than the knee for the last 23\% of
+arrivals.
 
-The coverage curves in \figref{fig:q4}b show sharply diminishing returns after about
-400 fences. The first 200 fences, placed on the densest cells, cover 39.1\% of
-arrivals; the next 200 add 21 percentage points; the last 200 add 14. There is no
-layout that covers everything: a quarter of all arrivals end in cells more than 450 m
-from every chosen fence, and those cells need either no fence or a shared rack.
+The two inventory columns are not a sensitivity band around one answer; they are two
+different questions. At 495,540 bicycles the system holds 151,902 more bicycles than
+the measured snapshot, and every fence must absorb its share of them. The knee's
+capacity rises by 129,312 slots, close to the 130,429 increase in standing stock
+assigned to its fences, because the buffer over the standing inventory is nearly
+unchanged (255,259 against 254,142). The sizing is therefore driven by the fleet
+scenario, not by a demand model that shifts with it.
+
+\subsection{How large each fence must be}
+
+The aggregate is manageable; the distribution is not. At the measured inventory the
+median knee fence needs \textbf{582.72 slots} and the largest needs \textbf{2,946.51}.
+At the closed fleet the median is 754.53 and the largest 4,622.19. A street corner
+cannot hold 583 bicycles. Of the 705 knee fences, \textbf{704 (99.86\%) exceed 150
+slots} at the measured inventory, and all 705 exceed it at the closed fleet.
+
+The full-coverage plan gives the magnitude check. Summed over every cell, the slots
+must be at least the number of bicycles that must stand somewhere. At 343,638 the full
+plan needs 734,345 slots, inside a plausible measured range of 600,000--750,000; at
+495,540 it needs 884,585, inside the fleet range 780,000--900,000. The observed-demand
+surface gives 747,816 and 905,308, the second 0.59\% above the top of the fleet range.
+These are checks on the accounting, not on the layout: the selected knee covers only
+76.86\% of arrivals, so its 491,692 slots are lower than the fleet-wide figures because
+the uncovered cells and their standing bicycles lie outside any fence.
+
+We therefore recommend a \emph{capped} layout. A corner can plausibly hold 150 slots
+--- about 210 m$^2$, a plot ten by twenty-one metres, the largest a rider crosses in a
+minute --- and the uncapped knee violates that at almost every site. Capping diverts
+the excess to the next fence, and the diversion is exactly the incentive mechanism of
+Section~\ref{sec:q3} with the sign reversed: the same reward that fills a deficit cell
+can empty an overfull fence, paying the rider to end where there is space. The capped
+plan is not solved here as a separate optimisation; it is the operational reading of a
+capacity distribution that no uncapped plan can avoid.
+
+\subsection{Overlap: the selected sites do not double-count}
+
+Maximal coverage can place several fences close enough that their 450 m catchments
+overlap, and if each were sized as if it served the same cells the slots would be
+counted twice. We audit this directly. Of the 5,263 cells, \textbf{2,020 lie within
+exactly one} selected catchment, \textbf{44 within two}, and \textbf{none within three
+or more}; 2,064 cells are covered and 3,199 are not. The coverage multiplicity is
+\textbf{1.0213}, and the capacity that would be double-counted under a naive
+sum-of-catchments rule is 12,280 slots, \textbf{2.80\%} of the total. On the
+observed-demand surface the corresponding counts are 1,965 / 45 / 0, multiplicity
+1.0224 and 3.09\%. Overlap is therefore a second-order correction to the plan, and the
+slot totals of \tabref{tab:fence} are computed per assigned cell, not per catchment, so
+they do not contain it.
+
+\subsection{Validation}
+
+\textbf{Held-out days.} Rebuilding the demand surface on the two T005 test days
+(12 and 19 May), excluded from Q1 estimation, and repeating the layout gives a cell
+correlation of \textbf{0.804}, an L1 distance of \textbf{0.423}, and a top-100 overlap
+of \textbf{32}. The geography is stable; the ranking is not exact, which is expected
+for a demand surface estimated on a different week.
+
+\textbf{Standing inventory.} The measured 5/16 snapshot and the minimum-feasible Q1
+inventory shape correlate at 0.687 with an L1 distance of 0.922. The level is imposed
+in both scenarios; only the shape is compared, and it is similar but not identical.
+
+\textbf{External geography.} We queried the OpenStreetMap Overpass API for all nodes
+tagged \texttt{railway} = \texttt{subway\_entrance} in the study bounding box on
+11 November 2026 and obtained \textbf{1,097 entrances} \cite{osm}. Only 8.2\% of cells lie within 300 m
+of an entrance, but 15.7\% of the 300 busiest destination cells do, and 14.1\% of all
+arrivals end within 300 m of one. The median distance from a top-100 attractor to an
+entrance is \textbf{0.50 km}, against 1.21 km for a cell chosen at random. This
+validates the geography of the demand surface, which is what the layout depends on; it
+cannot validate the magnitudes.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{../figs/fig6_q4.pdf}
-\caption[Q4: the 626-fence layout and capacity]{Q4. (a) The 626-fence layout at $R=450$ m, markers sized and coloured by
-capacity. (b) Coverage against the number of fences for three walking radii. (c)
-Distribution of fence capacity; the dashed line is the 150-slot practical limit. (d)
-External check: share of cells, of the top-300 attractors, and of arrivals within
-300 m of a subway entrance.}
+\caption[Q4: the 705-fence layout]{Q4. (a) The 705-fence knee layout at $R=450$ m, markers sized and coloured
+by capacity at the measured 343,638 inventory. (b) Coverage against the number of
+fences on the Q1 and observed-demand surfaces; the circle marks the $\lambda=150$ knee.
+(c) Distribution of knee-fence capacity at the two inventory scenarios, with the
+150-slot practical limit. (d) OSM cross-check: share of cells, of the top-300
+attractors, and of arrivals within 300 m of a subway entrance.}
 \label{fig:q4}
 \end{figure}
-
-
-\subsection{How large must each fence be}
-
-The capacities in \figref{fig:q4}c are the most uncomfortable result in this paper.
-The median fence needs \textbf{417 slots} and the largest needs \textbf{4{,}827}. At
-1.4 m$^2$ per bicycle --- the footprint of a parked bicycle plus its access aisle ---
-the plan requires 48.2 hectares of land, the equivalent of 67 football pitches, and the
-largest single fence would occupy 0.7 hectares.
-
-The total is not the problem; the distribution is. Every bicycle in the fleet must
-stand somewhere, so a 95th-percentile peak, summed over the city, cannot be far from
-the fleet: 344{,}463 slots against 343{,}638 bicycles is a 0.2\% margin, and the
-agreement is a check on the sizing rather than a coincidence. The
-same accounting makes the totals in \tabref{tab:fence} uninformative about layout: the
-650 m plan needs 342{,}606 slots and the 450 m plan 344{,}463, within 0.6\% of each
-other, because both serve nearly the whole fleet; only the 250 m plan is smaller, and
-only because it leaves 61\% of arrivals outside any fence. But
-a plan that concentrates 5{,}000 slots on one plaza has not solved parking; it has
-formalised the bicycle mountain that electronic fencing was meant to prevent. The
-capacity distribution is heavy-tailed because arrivals are: the busiest 10\% of cells
-receive 40\% of all trips.
-
-We therefore recommend a \emph{capped} layout rather than an uncapped one. A street
-corner can plausibly hold 150 slots --- about 210 m$^2$, a plot ten by twenty-one
-metres, the largest a rider can cross in a minute --- and on the uncapped plan
-\textbf{89.8\% of fences would exceed it}. Capping instead diverts the excess to the
-next fence, and the diversion is exactly the incentive mechanism of
-Section~\ref{sec:q3} with the sign reversed: the same reward that fills a deficit cell
-can empty an overfull fence, paying the rider to end where there is space.
-
-\subsection{External validation with OpenStreetMap}
-
-The layout is only as good as the demand surface it is built on, and the demand surface
-comes from a single operator's data. An independent check is available: if the model's
-attractors are real places, they should sit near public transport.
-
-We queried the OpenStreetMap Overpass API for all nodes tagged
-\texttt{railway=subway\_entrance} in the study bounding box on 11 November 2026 and
-obtained \textbf{1{,}097 entrances} \cite{osm}. The comparison (\figref{fig:q4}d) is
-striking. Only 8.2\% of cells lie within 300 m of an entrance, but 15.7\% of the 300
-busiest destination cells do --- nearly twice the base rate --- and the median distance
-from a top-100 attractor to a subway entrance is \textbf{0.50 km}, against 1.21 km for
-a cell chosen at random. Fourteen percent of all arrivals end within 300 m of an
-entrance.
-
-The model therefore locates demand where the city's transport infrastructure says it
-should be. This does not validate the magnitudes --- an external source cannot do that
---- but it validates the geography, which is what the fence layout depends on.
-
