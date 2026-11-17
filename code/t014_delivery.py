@@ -53,9 +53,15 @@ l4 = l4 and refs_heading_page == ref_page
 
 # ---------- L2 ----------
 sec2 = read(os.path.join(PAPER, "sec2_assumptions.tex"))
-l2 = ("Symbols are local to each section" in sec2
-      and "The subscript disambiguates." in sec2
-      and "\\label{sec:data}" in read(os.path.join(PAPER, "sec3_data.tex")))
+sec2_norm = re.sub(r"\s+", " ", sec2)
+l2_sentence = ("Symbols are local: $d_{ij}$ and $d_{jc}$ are distances, while "
+               "$d_{zt}$ is an hourly departure; $w$ is the Q2 service penalty, "
+               "$w_e$ the Q3 incremental acceptance weight and $w_c$ a parking "
+               "capacity; $n$ is a platform count in Q5, a sample size in "
+               "\\S\\ref{sec:data} and an observed OD count in \\S\\ref{sec:q1}.")
+l2 = (l2_sentence in sec2_norm
+      and "\\label{sec:data}" in read(os.path.join(PAPER, "sec3_data.tex"))
+      and "\\label{sec:q1}" in read(os.path.join(PAPER, "sec4_q1.tex")))
 
 # ---------- L5 ----------
 summary = read(os.path.join(PAPER, "summary.tex"))
@@ -150,7 +156,7 @@ delivery = {
     "task": "T014",
     "title": "终检与编译",
     "date": "2026-11-18",
-    "status": "T014 已交付",
+    "status": "T014 R1 已交付",
     "checks": checks,
     "compile": {"engine": "xelatex", "passes": 3,
                 "total_pages": total_pages, "body_pages": body_pages,
@@ -170,8 +176,8 @@ delivery = {
          "reason": "L4: the contents list carried the AI report but not References"},
         {"file": "paper/sec2_assumptions.tex",
          "old": "notation paragraph ended at the daily-rhythm sentence",
-         "new": "one disambiguation sentence for d, w/n and w_e; no formula touched",
-         "reason": "L2"},
+         "new": "one disambiguation sentence naming the two distance uses ($d_{ij}$, $d_{jc}$) against the hourly departure $d_{zt}$, and the three $w$/$w_c$ and three $n$ uses; no formula touched",
+         "reason": "L2; R1 replaced the first wording, which made d look like a departure in Q2 although the Q2 objective also uses $d_{ij}$ as an arc length"},
         {"file": "paper/summary.tex", "old": "unchanged", "new": "unchanged",
          "reason": "L5: team control number left blank; no number filled"},
         {"file": "paper_snapshot_2026-11-11.pdf",
@@ -189,6 +195,7 @@ delivery = {
     ],
     "l10_files": changed_files,
     "notes": [
+        "R1 只替换 sec2 记号消歧那一句：Q2 目标函数用 $d_{ij}$ 作弧长，原句把 d 说成 Q2 只表示出发量，等于新增歧义；新句同时点名两种距离用法与 $d_{zt}$ 的出发量含义。其余九项未动，公式、表格、数字、图注均未改。",
         "L5 仍未关闭：Team Control Number 保持空白，未自填任何编号；用户确认 13648 后由后续任务填写。",
         "L10 验证方式：替换 40 处路径拼接（11 个文件），全部为 DATA/FIG 与文件名的 join；grep -rn 'DATA + r\"' code/ = 0；改动行逐行为 os.path.join/import os；os.path.join 与旧拼接字符串在 Windows 上逐字符相等。未重跑任何计算，数值输出文件未改动。",
         "L1 的 U+037E 计数在最终 PDF 文本层为 0，分号 129 个，双问号 0；页数 30、正文 24（3-26）与 T012 R1 一致，说明 Termes 与 Times 度量兼容。",
