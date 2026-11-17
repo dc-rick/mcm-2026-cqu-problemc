@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T008 Q3 可执行需求池</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T008 · Q3 可执行需求池重做</h1>
+<p class="meta">下达：2026-11-18（预下达，T006 落地即开工）　·　数值等 T007 的最新 Q2 成本　·　增量交付　·　优先级 P0（DDL 2026-11-22，日期只作上限）</p>
+
+<div class="box warn">
+<p><strong>为什么重做：</strong>34.9% 的节省率建在不可行的池上（H16）：池里 34.105% 是本格到达（<code>dist=0</code>）、用的是来源格自己的缺口小时、池规模是不同可用行程的 2.93 倍（r=3.5 时安置 154,846 &gt; 113,936），且 50–300 m 五个带为空。修正阶梯给出 19.8% → 25.8% → 23.5% → 22.8% → <strong>付搭便车者后 2.1%</strong>（H3）。先把池做成可执行的，再谈节省率。</p>
+</div>
+
+<h2>目标</h2>
+<p>以 <strong>(目标格, 小时)</strong> 为索引重建候选池，用指派/流模型求 <code>q(r)</code> 与 <code>r*</code>，重算节省率并给区间。B3 已定：定向推送为主方案，公开推送（约 2.1%）作下界。池构造可立即开始，节省率的卡车单位成本等 T007 出数后重新抽取，之前一律标 provisional。</p>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li><strong>重建池</strong>：候选 = 小时 <code>h</code> 内原本去别处、可被引导到目标格 <code>c</code> 的行程；索引 <code>(c,h)</code>，<strong>剔除 <code>dist=0</code> 本格</strong>；每条行程至多改道一次；来源格容量 = 其该小时到达数；改道扣除来源格失去的到达。</li>
+<li><strong>q(r)</strong>：用指派/流模型求，不用距离带独立计数；输出 <code>q(r)</code> 曲线、<code>r*</code>、边际收益。</li>
+<li><strong>节省率</strong>：定向推送给值 + 区间；公开推送作下界（约 2.1%）；搭便车成本单列；与 Q2 边际成本同口径（<code>TRUCK_UNIT</code> 从 T007 最新结果重抽，未出前标 provisional）。</li>
+<li><strong>文字—代码一致</strong>：§6 的“在 c 的缺口小时”要么改代码、要么改文字，二选一并在报告写明；不得继续各说各话。</li>
+<li><strong>M8 披露</strong>：候选池重复计数 1.09 的来源、消解方式、修正前后池规模。</li>
+<li>保存 <code>data/runs/T008/</code>：<code>q3_pool.npz</code>（索引与来源容量）、<code>q3_qr.json</code>、<code>q3_results.json</code>、<code>q3_pool_audit.json</code>。</li>
+</ol>
+</td><td>
+<ol>
+<li>不改 Q2/Q4/Q5；不改 <code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>；不覆盖 <code>data/</code> 现有文件。</li>
+<li>不做全城逐格时变优化，不做多日动态。</li>
+<li>不把旧 34.9% 或任何未重算的旧值写进结论。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>交付物</h2>
+<ul>
+<li><code>data/runs/T008/q3_pool.npz</code>：<code>(c,h)</code> 索引、候选行程 id/计数、来源容量、改道扣除量</li>
+<li><code>data/runs/T008/q3_qr.json</code>：<code>q(r)</code> 曲线、<code>r*</code>、边际收益、求解器状态</li>
+<li><code>data/runs/T008/q3_results.json</code>：定向推送节省率 + 区间、公开推送下界、搭便车成本单列、与 Q2 同口径的成本参数</li>
+<li><code>data/runs/T008/q3_pool_audit.json</code>：同格占比（应为 0）、每来源改道次数 ≤1、池规模 vs 不同行程数、1.09 重复的消解</li>
+<li><code>交付/T008_delivery.json</code>：自检 1–10、只读区哈希、affected、notes（含 provisional 标记项）</li>
+</ul>
+
+<h2>验收标准</h2>
+<ol>
+<li><strong>可行性</strong>：任意 <code>r</code>，<code>q(r) ≤</code> 不同候选行程数；来源使用 ≤ 其到达；每条行程至多一次改道；三项都在审计文件里有数。</li>
+<li><strong>剔本格</strong>：<code>dist=0</code> 不进池，34.105% 的路径不复现；目标索引是 <code>(c,h)</code>，错配时段不复现。</li>
+<li><strong>节省率</strong>：定向推送给值 + 区间；公开推送下界；搭便车成本单列；与 Q2 边际成本同口径。</li>
+<li><strong>一致性</strong>：代码与 §6 文字一致；<code>r*</code>、<code>q(r)</code> 可由交付文件复现。</li>
+<li><strong>只读</strong>：<code>data/</code>（除 <code>runs/T008/</code>）、<code>paper/</code>、<code>review/</code> 哈希不变；自检 1–10 全过。</li>
+</ol>
+
+<h2>只读区与交付</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T008/</code>。完成后 SendMessage 首行：<code>T008 已交付：交付/T008_delivery.json</code>。</p>
+
+<div class="box warn">
+<p><strong>止损：</strong>若流模型规模导致跑不动，先交“带可行性审计的分带池”，并把节省率<strong>标为上界</strong>；不得把不可行池当结果，也不得借用旧 34.9%。T012 只引用你交出的数。</p>
+</div>
+
+</main>
+</body>
+</html>

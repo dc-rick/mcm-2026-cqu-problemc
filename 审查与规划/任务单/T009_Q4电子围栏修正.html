@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T009 Q4 电子围栏修正</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:13px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T009 · Q4 电子围栏修正：需求面、初始库存、归属与容量</h1>
+<p class="meta">下达：2026-11-18（预下达，T006 的到达数组可用即开工）　·　B5=保持 450 m　·　增量交付　·　优先级 P0（DDL 2026-11-22，日期只作上限）</p>
+
+<div class="box warn">
+<p><strong>为什么必须改：</strong>论文用“夜间清运”论证零初始占用（<code>sec7_q4.tex:20</code>），但实测夜间搬运占 40.37%（H15）——夜间活动存在，零初值不成立；容量 344,463 未计站立库存（M4）；37 个格子被两个围栏重复覆盖、覆盖倍数 1.03，未披露（M8）；626 这个数没有边际依据（<code>40_q4_efence.py:33</code> 的 <code>cand_top=2500</code>、<code>:48 frac_stop=0.0005</code>）。</p>
+</div>
+
+<h2>目标</h2>
+<p>用 Q1 的到达作需求面（B4 要求 Q4 用第 1 问的模型），修正初始库存、归属与容量，交付“布局 + 规模”的成本–覆盖前沿，而不是一个拍出来的围栏数。需求面默认 <code>--arr q1</code>（T006 的 <code>arr_q1_cell</code>），观测作基线。</p>
+
+<h2>范围</h2>
+<div class="tw"><table>
+<thead><tr><th>做</th><th>不做</th></tr></thead>
+<tbody>
+<tr><td>
+<ol>
+<li><strong>需求面</strong>：默认读 T006 的 <code>arr_q1_cell[24,5263]</code>，聚到 50 区做报告；给 Q1 与观测两种需求面的覆盖/容量差异表。</li>
+<li><strong>初始库存</strong>：取消“零初始”；至少两档初值（实测 5/16 占用、Q1 稳态占用），给敏感性；夜间清运的表述按 H15 实测改写，不得再用“夜间归零”支撑。</li>
+<li><strong>归属</strong>：每格至多归属一个围栏（或明确的重叠计数规则）；报告被 1/2/3+ 个围栏覆盖的格子数（现状 1,799/37/0）与覆盖倍数（现状 1.03）。</li>
+<li><strong>容量</strong>：容量 = 站立库存 + 高峰到达，不再用 <code>frac_stop=0.0005</code> 的拍定值；围栏数从成本–覆盖前沿按边际成本选，626 只是前沿上一点，不是最优。</li>
+<li><strong>自检</strong>：删除 <code>sec7_q4.tex:88-89</code> 的 0.2% 自检，换成可复现的独立校验（留出一天或与实测占用对比），校验方法与结果写进交付。</li>
+<li><strong>B5</strong>：保持 R=450，文中说明是现状阈值不是 2017 年实测；2026 OSM 只作地理外检。</li>
+<li>保存 <code>data/runs/T009/</code>：<code>q4_results.json</code>、<code>q4_fences.csv</code>、<code>q4_overlap.json</code>、<code>q4_frontier.json</code>。</li>
+</ol>
+</td><td>
+<ol>
+<li>不追 2017 历史路网；不改 Q2/Q3/Q5；不改 <code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>；不覆盖 <code>data/</code> 现有文件。</li>
+<li>不做逐格动态调度，不做多日。</li>
+<li>不沿用旧 626/344,463 而不标注其口径变化。</li>
+</ol>
+</td></tr>
+</tbody></table></div>
+
+<h2>交付物</h2>
+<ul>
+<li><code>data/runs/T009/q4_results.json</code>：两档初始库存、Q1/obs 两需求面的覆盖数、容量合计、缺口</li>
+<li><code>data/runs/T009/q4_fences.csv</code>：每围栏位置、覆盖格、归属格、容量</li>
+<li><code>data/runs/T009/q4_overlap.json</code>：1/2/3+ 覆盖格数、覆盖倍数、重复容量</li>
+<li><code>data/runs/T009/q4_frontier.json</code>：成本–覆盖前沿点列、626 的位置、边际选择规则</li>
+<li><code>交付/T009_delivery.json</code>：自检 1–10、只读区哈希、affected、notes</li>
+</ul>
+
+<h2>验收标准</h2>
+<ol>
+<li><strong>覆盖</strong>：1/2/3+ 计数与覆盖倍数给出；每格归属唯一（或重叠明示并量化）；M8 的 3% 重叠有文字说明。</li>
+<li><strong>容量</strong>：计入站立库存；两档初值下容量与缺口给出；Q1 vs obs 差异表给出。</li>
+<li><strong>前沿</strong>：成本–覆盖曲线单调；626 在曲线上的位置标明；边际选择规则写清。</li>
+<li><strong>自检</strong>：0.2% 自检已删除或替换，新校验可复现。</li>
+<li><strong>只读</strong>：<code>data/</code>（除 <code>runs/T009/</code>）、<code>paper/</code>、<code>review/</code> 哈希不变；自检 1–10 全过。</li>
+</ol>
+
+<h2>只读区与交付</h2>
+<p><code>data/</code> 现有文件、<code>paper/</code>、<code>review/</code>、<code>审查与规划/</code>。新结果只写 <code>data/runs/T009/</code>。完成后 SendMessage 首行：<code>T009 已交付：交付/T009_delivery.json</code>。</p>
+
+<div class="box warn">
+<p><strong>止损：</strong>若前沿计算太慢，先交 R=450 的独占归属 + 重叠审计 + 两档初值，围栏数标为“前沿上一点”；不得把 626 当最优写进结论。</p>
+</div>
+
+</main>
+</body>
+</html>
