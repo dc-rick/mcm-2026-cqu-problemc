@@ -7,6 +7,9 @@
 - **来源**：2017 摩拜算法挑战赛（Mobike Cup / 2017 Mobike Algorithm Challenge）公开订单数据，北京，2017-05-10 至 2017-05-24。
 - **获取**：按赛题官方发布渠道下载后，将订单文件放入 `data/raw/`。本仓库不再分发该文件。
 - **规模**：原始记录 3,214,096 条（清洗后），484,754 辆不同单车，349,241 名用户。
+- **注意**：根目录的 `2026CQU_MCM_ProblemC.pdf` 是论文副本（25 页），不是赛题；原题请另存 `original/`。
+
+原始订单没有结束时间，因此骑行速度、绕行系数与时长都是**假设**（11.5 km/h、1.35、+1 分钟），不是观测；同车相邻订单的间隔只能作为时长的上界。相关敏感性见 T011。
 
 ## 清洗后表 `data/trips.parquet`
 
@@ -19,7 +22,7 @@
 | `biketype` | 车型 |
 | `geohashed_start_loc` / `geohashed_end_loc` | 起终点 geohash |
 | `start_lat` / `start_lng` / `end_lat` / `end_lng` | 起终点经纬度 |
-| `starttime` / `endtime` | 起止时间 |
+| `starttime` | 订单开始时间；原始 CSV 只有开始时间，没有结束时间 |
 
 ## 派生文件
 

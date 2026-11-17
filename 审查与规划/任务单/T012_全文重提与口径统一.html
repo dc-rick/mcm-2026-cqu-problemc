@@ -51,7 +51,7 @@ li{margin:3px 0}
 <tr><td><code>data/runs/T002/</code></td><td>p 实测 0.185（0.13–0.20）、重采样偏差表</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T004/</code></td><td>R=450 未满足 5.84%/3.51%、R=600 2.35%/1.28%、更细网格 2.07%</td><td><span class="tag ok">已冻结</span></td></tr>
 <tr><td><code>data/runs/T005/</code></td><td>四模型样本外对比、KS 0.098、k 稳定性、return_share</td><td><span class="tag ok">已冻结</span></td></tr>
-<tr><td><code>data/runs/T006/</code>–<code>T010/</code></td><td>Q1→Q2 接口、Q2 重解、Q3 主方案、Q4、Q5 的新数字</td><td><span class="tag wait">未产生</span></td></tr>
+<tr><td><code>data/runs/T006/</code>–<code>T010/</code></td><td>Q1→Q2 接口、Q2 重解（T007 已扩围：H13 到达守恒、H14 贪心运力、H15 夜间占比）、Q3 主方案（H16 候选池）、Q4、Q5 的新数字</td><td><span class="tag wait">未产生</span></td></tr>
 <tr><td><code>data/runs/T011/</code></td><td>按来源分解的不确定性区间（识别参数 / 假设负荷 / 文献值）</td><td><span class="tag wait">未产生</span></td></tr>
 <tr><td>用户决定 B7</td><td>p 主值取 0.128（绝对量标上界）还是 0.185（全部重算）</td><td><span class="tag bad">待定</span></td></tr>
 </tbody></table></div>
@@ -111,6 +111,20 @@ li{margin:3px 0}
 <tr><td><code>ai_report.tex:82-84</code></td><td>“The next revision will replace …”</td><td>T012 完成后改成既成事实（车队换成了什么、常数清了几处）</td><td>T013 notes</td></tr>
 <tr><td>全文页数</td><td>正文 25 页（卡线）</td><td>新增内容必须等量删减；保持正文 ≤25 页（AI 报告不计）</td><td>COMAP</td></tr>
 <tr><td><code>95_numbers.py</code></td><td>部分数字来自旧结果</td><td>重跑并 diff；论文每一个数都能在它的输出里找到</td><td>标准 5</td></tr>
+</tbody></table></div>
+
+<h3>F. 外部反馈新增项（2026-11-18）</h3>
+<div class="tw"><table>
+<thead><tr><th style="width:20%">位置</th><th>现在写的</th><th>要改成</th><th style="width:12%">依据 / 依赖</th></tr></thead>
+<tbody>
+<tr><td><code>sec5_q2.tex:120-123</code>、图 4 题注</td><td>“mass of the schedule sits between 21:00 and 06:00”“白天几乎不动”“night shift”</td><td>按 <code>q2_plan.npz</code> 实测改写：夜间 40.37%、白天 59.63%；若坚持夜间方案，说明时窗代价</td><td>H15、T007</td></tr>
+<tr><td><code>sec5_q2.tex:116-118</code></td><td>推荐 K=60（83,325 元），但 K=40 只要 82,333 元且失单同为 0</td><td>说明 K=60 是“期末偏差 900 对 7,995”的折中，不能称同目标费用最小；或改推荐 K=40</td><td>H8、T007</td></tr>
+<tr><td><code>sec4_q1.tex:120-131</code></td><td>时长“matches the observed distribution of within-day ride durations”</td><td>改为显式假设（11.5 km/h、1.35 绕行、+1 分钟），删“observed”，并把参数进 T011 敏感性</td><td>H17</td></tr>
+<tr><td><code>sec6_q3.tex:62-63,126-131</code></td><td>34.9% 节省、r*=1.20、q=115,385</td><td>等 T008 用可执行的指派/流模型重算；摘要、图 5 同步，不再保留旧值</td><td>H16、H3、T008</td></tr>
+<tr><td><code>sec7_q4.tex:20,88-89</code></td><td>容量从零库存开始；“344,463 对 343,638 是 sizing 的校验”</td><td>等 T009 重算；改为“规划上限”，说明 37 格重复归属、零初始库存与 p 的不确定性</td><td>M4、T009</td></tr>
+<tr><td><code>sec8_q5.tex:17-19</code></td><td>“Unserved demand was zero in all twenty-four runs”</td><td>降为条件陈述（该深度、按比例缩放的单一情景），或等 T010 换能产生失单的机制</td><td>M9、T010</td></tr>
+<tr><td><code>summary.tex:23-27,48-49</code></td><td>“缩车到 80% 成本从 427k 降到 390k，内部最优”</td><td>等 T007 重算 α&lt;1 曲线后再写；结果出来前不得保留“内部最优/大五分之一”</td><td>H13、T007</td></tr>
+<tr><td><code>DATA.md</code>、根目录 PDF</td><td>字段表列 <code>endtime</code>；<code>2026CQU_MCM_ProblemC.pdf</code> 实为论文副本</td><td>删 <code>endtime</code> 行；PDF 重命名或移入 <code>paper/</code>，原题另存 <code>original/</code></td><td>H17、L11</td></tr>
 </tbody></table></div>
 
 <h2>3. 新增内容（T006–T011 落地后补写）</h2>

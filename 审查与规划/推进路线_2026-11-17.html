@@ -113,14 +113,14 @@ li{margin:3px 0}
 <tr><td>T003</td><td>论文数字溯源表</td><td><span class="tag h">H8</span></td><td>无（只读）</td><td class="n">1 天</td><td><span class="tag ok">通过</span></td></tr>
 <tr><td>T002</td><td>抽样率与放大口径</td><td><span class="tag m">M1</span></td><td>T001</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
 <tr><td>T004</td><td>空间分辨率与步行半径</td><td><span class="tag h">H4</span></td><td>T001、T002</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
-<tr><td>T005</td><td>Q1 验证补齐</td><td><span class="tag m">M2</span></td><td>M1</td><td class="n">0.5 天</td><td><span class="tag run">已下达</span></td></tr>
+<tr><td>T005</td><td>Q1 验证补齐</td><td><span class="tag m">M2</span></td><td>M1</td><td class="n">0.5 天</td><td><span class="tag ok">通过</span></td></tr>
 <tr><td>T006</td><td>Q1 模型接入 Q2/Q4</td><td><span class="tag h">H1</span></td><td>T005</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
-<tr><td>T007</td><td>Q2 LP 硬化与诊断口径</td><td><span class="tag h">H5</span> <span class="tag h">H6</span> <span class="tag m">M3</span></td><td>T006</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
-<tr><td>T008</td><td>Q3 激励方案重做</td><td><span class="tag h">H3</span></td><td>T007</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T007</td><td>Q2 LP 硬化与诊断口径</td><td><span class="tag h">H5</span> <span class="tag h">H6</span> <span class="tag m">M3</span> <span class="tag h">H13</span> <span class="tag h">H14</span> <span class="tag h">H15</span></td><td>T006</td><td class="n">1.5 天</td><td><span class="tag">待下达（11-18 扩围）</span></td></tr>
+<tr><td>T008</td><td>Q3 激励方案重做</td><td><span class="tag h">H3</span> <span class="tag m">M8</span> <span class="tag h">H16</span></td><td>T007</td><td class="n">1.5 天</td><td><span class="tag">待下达（11-18 扩围）</span></td></tr>
 <tr><td>T009</td><td>Q4 电子围栏修正</td><td><span class="tag m">M4</span></td><td>T004</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
-<tr><td>T010</td><td>Q5 分平台模型修正</td><td><span class="tag m">M5</span></td><td>T002</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
+<tr><td>T010</td><td>Q5 分平台模型修正</td><td><span class="tag m">M5</span> <span class="tag m">M9</span></td><td>T002</td><td class="n">1 天</td><td><span class="tag">待下达</span></td></tr>
 <tr><td>T011</td><td>不确定性按来源分解</td><td><span class="tag m">M6</span></td><td>T007–T010</td><td class="n">0.5 天</td><td><span class="tag">待下达</span></td></tr>
-<tr><td>T012</td><td>全文数字重提与口径统一</td><td><span class="tag h">H8</span></td><td>T011</td><td class="n">1.5 天</td><td><span class="tag ok">清单已入库 11-18</span></td></tr>
+<tr><td>T012</td><td>全文数字重提与口径统一</td><td><span class="tag h">H8</span> <span class="tag h">H17</span></td><td>T011</td><td class="n">1.5 天</td><td><span class="tag ok">清单已入库 11-18</span></td></tr>
 <tr><td>T013</td><td>引用、AI 报告与合规</td><td><span class="tag h">H7</span> <span class="tag h">H9</span> <span class="tag m">M7</span></td><td>可与 C 阶段并行</td><td class="n">0.5 天</td><td><span class="tag ok">通过 11-17（R1 后）</span></td></tr>
 <tr><td>T014</td><td>终检与编译</td><td>全部</td><td>T012、T013</td><td class="n">0.5 天</td><td><span class="tag">待下达</span></td></tr>
 <tr><td>T015</td><td>仓库整理与可移植性</td><td><span class="tag">L9</span></td><td>无（并行）</td><td class="n">0.3 天</td><td><span class="tag ok">通过 11-18</span></td></tr>
@@ -145,8 +145,8 @@ li{margin:3px 0}
 <tbody>
 <tr><td><strong>T005</strong> Q1 验证补齐</td><td>图 3a 换完整模型；距离基准单独拟合；k 的选择给出 ARI 证据</td><td>留出日误差在文中给出的阈值内；k 的敏感性表齐全</td></tr>
 <tr><td><strong>T006</strong> Q1 接入 Q2/Q4</td><td>用 NHPP×重力模型的典型日 OD 驱动 LP 与围栏模拟，与观测输入并列</td><td>两条链各自跑通；差异量化；论文不再声称“整合框架”而未接入</td></tr>
-<tr><td><strong>T007</strong> Q2 LP 硬化</td><td>服务约束计入同小时到达；逐区回家约束；司机班次与夜间成本；诊断单位统一；参数扫描</td><td>库存非负、回家残差为 0；诊断数字用缩放单位；扫描表完整</td></tr>
-<tr><td><strong>T008</strong> Q3 重做</td><td>修正 ①–⑤；处理搭便车；目标与 Q2 对齐；用 Q2 边际成本</td><td>节省率给出区间；搭便车成本单列；与 Q2 的成本口径一致</td></tr>
+<tr><td><strong>T007</strong> Q2 LP 硬化</td><td>到达只由已服务行程生成、加 u≤dep、分离停放/在途；服务约束计入同小时到达；逐区回家约束；司机班次与夜间成本；贪心基线运力单位；诊断单位统一；按实测改写夜间占比</td><td>全城库存守恒残差 0；贪心任一小时 ≤2,400 辆；回家残差为 0；诊断数字用缩放单位；扫描表完整</td></tr>
+<tr><td><strong>T008</strong> Q3 重做</td><td>修正 ①–⑤；候选池按 (目标格,小时) 重建并剔除本格；每笔行程至多改道一次；来源容量守恒；扣除来源格失去的到达；目标与 Q2 对齐；用变动成本而非含固定成本的单价</td><td>q(r) ≤ 不同候选行程数；来源使用 ≤ 其到达数；节省率给出区间；搭便车成本单列；与 Q2 的成本口径一致</td></tr>
 <tr><td><strong>T009</strong> Q4 修正</td><td>容量计入站立库存；网格量化；围栏数从边际成本选；2017 年 OSM</td><td>覆盖重叠量化；前沿曲线单调；成本–覆盖散点与结论一致</td></tr>
 <tr><td><strong>T010</strong> Q5 修正</td><td>格子级分平台仿真；卡车重复量化；补标准误代码与史实引用</td><td>SE 可复现；卡车重复与单平台差异分列</td></tr>
 </tbody></table></div>
@@ -238,7 +238,7 @@ li{margin:3px 0}
 <tr><td>M4 可提交</td><td>T013–T014</td><td>终检全绿</td><td><span class="tag">T013、T015 已通过；T014 待 T012</span></td></tr>
 </tbody></table></div>
 
-<div class="box"><p><strong>当前状态（2026-11-17）：</strong>M1 已冻结；T005 与 T013 已通过关闭（T013：AI 报告五要素齐全、343,638 硬编码清单补全、A7 改写、文献 23→32、32/32 引用、27 页/正文 25 页）。<strong>下一步只剩 T006，等用户对 B4 拍板；B7 影响 T012 的绝对数写法。</strong>B1/B2/B3/B5 可在 T006 跑起来后再定。</p></div>
+<div class="box"><p><strong>当前状态（2026-11-18）：</strong>M1 已冻结；T005、T013、T015 已通过关闭（T013：AI 报告五要素齐全、343,638 硬编码清单补全、A7 改写、文献 23→32、32/32 引用、27 页/正文 25 页；T015：绝对路径清零、矩阵可逐位重建）。11-17 的外部反馈已复核：新增 H13（Q2 到达守恒）、H14（贪心运力）、H15（夜间占比）、H16（Q3 候选池）、H17（Q1 时长无观测）、M9（Q5 零失单）、L11（根目录 PDF 非原题），T007/T008/T010/T012 已相应扩围。<strong>下一步仍是 T006，等用户对 B4 拍板；B2/B3 现在从“可选”变成“不改就不能保留现有结论”；B7 影响 T012 的绝对数写法。</strong></p></div>
 <p class="meta">维护：每接受一个任务，指导方更新 <code>台账/任务台账.csv</code> 与本节状态；问题关闭时更新 <code>台账/问题台账.csv</code>；用户做了决定，更新 <code>台账/决策台账.csv</code>。</p>
 
 </main>

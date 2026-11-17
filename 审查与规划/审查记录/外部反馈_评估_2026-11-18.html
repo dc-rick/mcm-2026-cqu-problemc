@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>外部反馈意见评估 · 2026-11-18</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:32px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:15.5px;margin:18px 0 6px}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--warn)}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.tag{display:inline-block;border-radius:999px;padding:0 8px;font-size:11.5px;border:1px solid var(--line);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.wait{color:var(--warn);border-color:var(--warn)}
+.tag.bad{color:var(--hi);border-color:var(--hi)}
+.tag.grey{color:var(--muted);border-color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>外部反馈意见评估 · 2026-11-18</h1>
+<p class="meta">评估对象：<code>反馈意见.md</code>（2026-11-17，队号 13648）　·　评估方：美赛指导Agent　·　方法：逐条对代码与结果文件复核，不采信转述数字</p>
+
+<div class="box hi">
+<p><strong>一句话结论：技术核心成立，但它审的是旧版。</strong>我用仓库里的代码和结果独立复现了它最重的五个数，全部精确对上：Q3 本格占池 <strong>34.105%</strong>、Q4 重复归属 <strong>37 格</strong>、贪心高峰 <strong>5,314 辆/小时</strong>（运力只有 2,400）、夜间搬运占比 <strong>40.37%</strong>、Q2 失单与日末偏差逐行相等。它审的是 11-17 的 21 份脚本、25 页 PDF、<code>revised</code>/<code>feedback</code> 目录，所以合规、页数、AI 报告几条已过时。</p>
+<p><strong>最重要的边界：</strong>论文 Q2 的主结果（α=1、K=60：搬 23,959 辆、5,441 卡车公里、83,325 元、失单 0）<strong>不受守恒 bug 影响</strong>，因为该行 u=0、日末库存合计仍等于车队。受影响的是 α&lt;1 的缩车曲线和 Q3 的 34.9%——恰好是摘要里的两个政策结论。</p>
+</div>
+
+<h2>1. 它审的是哪个版本</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:20%">项目</th><th>反馈描述的旧版</th><th>当前仓库</th><th style="width:24%">影响</th></tr></thead>
+<tbody>
+<tr><td>代码规模</td><td>21 份 Python 脚本</td><td>37 份（T015 后新增 <code>build_dist_matrix.py</code>、<code>run_all.py</code> 与 T005/T013/T015 复算脚本）</td><td>“语法检查通过”一类结论不适用</td></tr>
+<tr><td>PDF 页数</td><td>25 页；原版计入页限 24 页 + AI 说明 1 页</td><td>27 页：正文 25 页（含参考文献）+ AI 报告 2 页（p26–27）</td><td>页数、AI 报告页数结论过时</td></tr>
+<tr><td>AI 报告</td><td>1 页，缺五要素</td><td>T013 已补齐：工具/版本/日期、行内引用、文献条目、两组 Query/Output，343,638 的六处硬编码逐条列出</td><td>H9/M7 已关闭</td></tr>
+<tr><td>队号</td><td>13648</td><td><code>summary.tex:6</code> 为空白横线，仓库里从未写入 13648</td><td>需用户确认后由 T014 填（L5）</td></tr>
+<tr><td>目录结构</td><td><code>original</code>/<code>revised</code>/<code>feedback</code></td><td>本仓库没有这三个目录</td><td>按路径引用的结论无法逐文件核对</td></tr>
+<tr><td>根目录 PDF</td><td>名为 <code>2026CQU_MCM_ProblemC.pdf</code> 的其实是论文副本</td><td>同样是论文副本（25 页，首页是 Summary），不是原题</td><td>原题不在仓库，见 L11</td></tr>
+</tbody></table></div>
+
+<h2>2. 我复核后成立的条目</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:4%">#</th><th style="width:24%">反馈条目</th><th style="width:10%">判定</th><th>我的复核证据</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Q2/Q4 没有承接 Q1，直接从原始订单聚合 OD</td><td><span class="tag ok">成立</span></td><td><code>20_q2_diag.py:5</code> 读 <code>typical_day.npz</code>，不读 <code>q1_params.json</code>；后者只被 <code>90_figs.py:124</code>、<code>95_numbers.py:32</code> 引用。已有 H1。</td></tr>
+<tr><td>2</td><td>Q2 固定全部到达、只扣已服务出发，失单会“造车”</td><td><span class="tag ok">成立</span></td><td><code>21_q2_opt.py:40-44</code> 的 <code>arr</code> 与 <code>u</code> 无关；<code>:83-93</code> 平衡式用 <code>arr-(dep-u)</code>；<code>u</code> 只有下界，没有 <code>u≤dep</code>。数值指纹：<code>q2_results.json</code> 中所有 <code>unmet&gt;0</code> 的非小车队行满足 <code>dev=unmet</code>——α=0.7 K=100 为 10,430/10,430，α=0.6 K=80 为 34,493/34,493，α=0.4 K=150 为 97,809/97,809。每辆失单在日末变成一辆多余车。α=1、K=60 行 u=0，<code>I_end</code> 合计 343,638，主结果不受影响。新 H13。</td></tr>
+<tr><td>3</td><td>Q3 本格原本到达占候选池 34.1%</td><td><span class="tag ok">精确成立</span></td><td><code>30_q3_incentive.py:90-94</code> 的 <code>[0,50)</code> 带包含 <code>dist=0</code> 的本格；<code>counts[0].sum()=113,936</code>，池 <code>334,075</code>，占比 <strong>34.105%</strong>。这些行程已经停在目标格，不需要“被激励改道”。新 H16。</td></tr>
+<tr><td>4</td><td>Q3 来源被多个目标重复招募</td><td><span class="tag ok">成立</span></td><td>450 m 池 <code>334,075</code> 是不同到达 <code>Dstar.sum()=113,936</code> 的 <strong>2.93 倍</strong>；每个来源平均落在 2.63 个目标的 450 m 内。r=3.5 的安置量 154,846 <strong>大于</strong> 113,936 个不同候选——物理上不可能。新 H16。</td></tr>
+<tr><td>5</td><td>Q3 把来源格各自最缺小时的用户拼到目标格同一时刻</td><td><span class="tag ok">成立</span></td><td><code>:39-41</code> 的 <code>Dstar[b]</code> 是来源格 b 自己最缺小时的到达；<code>:93-94</code> 用矩阵乘把它用于目标格 c；论文 <code>sec6_q3.tex:63</code> 却写“during c's deficit hour”。代码与论文自述不一致。新 H16。</td></tr>
+<tr><td>6</td><td>Q3 用 216,344 的任务与 Q2 的 23,959 含固定成本单价比较</td><td><span class="tag ok">成立</span></td><td><code>need.sum()=216,343.75</code>；<code>TRUCK_UNIT=83,325/23,959=3.478</code>，其中固定卡车成本 600×60=36,000 占 43%。按变动成本（6×5,441/23,959）+0.5=<strong>1.86</strong> 重算，最优奖励从 1.20 降到 0.6，节省从 34.4% 降到 24.7%——这还没算候选池修正。已有 H3，证据并入 H16。</td></tr>
+<tr><td>7</td><td>Q4 每站从零库存开始</td><td><span class="tag ok">成立</span></td><td><code>40_q4_efence.py:70-83</code> 的 <code>occ=0.0</code>，且 <code>max(0,·)</code> 把早间缺口截掉；<code>sec7_q4.tex:20</code> 用“夜间清空”解释，但 Q2 的夜间计划只搬 23,959 辆，不可能清空 34 万辆。已有 M4。</td></tr>
+<tr><td>8</td><td>Q4 半径重叠造成 37 格重复容量归属</td><td><span class="tag ok">精确成立</span></td><td>626 个围栏的成员计数合计 1,873，去重后 1,836，差 <strong>37</strong>；这 37 格占采样到达的 2.37%。容量合计 344,463 对旧车队 343,638 的“+0.24% 吻合”因此不是独立校验。已有 M4，补证据。</td></tr>
+<tr><td>9</td><td>Q4 用容量总数接近车队自证</td><td><span class="tag ok">成立</span></td><td>若 p 改为 0.185，容量合计按比例变成 238,331，对新车队 495,540 差一倍；0.2% 吻合只是 p=0.128 与旧车队 343,638 的产物，不能反过来当校验。M4/T009。</td></tr>
+<tr><td>10</td><td>贪心基线把“辆单车”容量扣成“辆卡车”，高峰 5,314 辆/小时</td><td><span class="tag ok">精确成立</span></td><td><code>22_q2_sim.py:36-43</code>：<code>cap=Q*trucks_at</code> 以辆计，却执行 <code>cap[s]-=amt/Q</code>（按卡车数扣）；<code>:44</code> 的 <code>trucks_at</code> 是空操作，车辆不转移。实测 <code>greedy_plan(60)</code> 高峰 <strong>5,314</strong> 辆/小时，超过 60×40=2,400；210 个“来源格×小时”超过 40 辆。新 H14。</td></tr>
+<tr><td>11</td><td>夜间占比 40.37%，原文“白天几乎不动”不成立</td><td><span class="tag ok">精确成立</span></td><td><code>q2_plan.npz</code> 的 XM 按小时汇总：21:00–06:00 为 9,667/23,959=<strong>40.37%</strong>，白天 59.63%。<code>21_q2_opt.py:21</code> 只有一个 <code>COST_KM=6</code>，没有夜间或拥堵折扣。论文 <code>sec5_q2.tex:120-123</code> 与图 4 题注仍写“night shift”。新 H15。</td></tr>
+<tr><td>12</td><td>K=40 成本 82,333 低于 K=60 的 83,325，却推荐 K=60</td><td><span class="tag ok">成立</span></td><td><code>q2_results.json</code>：α=1、K=40 的 obj=82,333、unmet=0、dev=7,995；K=60 的 obj=83,325、dev=900。<code>sec5_q2.tex:116-118</code> 推荐 K=60 而未说明这是“更小期末偏差”的折中。已有 H8/T012。</td></tr>
+<tr><td>13</td><td>原始 CSV 只有开始时间，速度/时长只能是假设</td><td><span class="tag ok">成立</span></td><td><code>00_prepare.py:86-92</code> 只解析 <code>starttime</code>；<code>trips.parquet</code> 的 15 列里没有 <code>endtime</code>；<code>11_q1_extra.py:83-91</code> 的时长由 11.5 km/h 速度假设生成；<code>sec4_q1.tex:131</code> 却写“matches the observed distribution of within-day ride durations”。新 H17。</td></tr>
+<tr><td>14</td><td>图 3a 未乘 A、只模拟早高峰；300 m 无邻格</td><td><span class="tag ok">数据层已关闭</span></td><td>T005 已把完整模型 KS 从 0.196 修到 0.098；T004 已证明 R=300 的邻格数恒为 0。论文仍用旧图旧数，属 T012 的改稿范围（M2、H4）。</td></tr>
+<tr><td>15</td><td>Q5 的“24 次全零失单”只支持该情景</td><td><span class="tag wait">部分成立</span></td><td>同一个模拟器在 α=0.6、无卡车时失单仅 5.2e-5，α=1/0.8 三策略全为 0；零结果的信息量很低。M5 已记，新增 M9。</td></tr>
+<tr><td>16</td><td>OSM 2026 与 2017 相差九年；63.2% 的适用条件；150 槽是假设</td><td><span class="tag ok">成立</span></td><td>OSM 查询日期为 2026-11-11，论文未写九年的解释；63.2% 是固定候选集/固定设施数的次模保证；150 槽是规划假设。均已在 M4/T009 的范围。</td></tr>
+<tr><td>17</td><td>公式：0≤u≤d、完成流决定到达、停放与在途分离</td><td><span class="tag ok">并入 H13</span></td><td>与第 2 条同源，一并修。</td></tr>
+<tr><td>18</td><td>λ 的 15 分钟与每小时口径</td><td><span class="tag wait">成立但小</span></td><td>Q3 先做 15 分钟聚合、再按小时取最大缺口；正文写 hourly。并入 H16 的改稿说明。</td></tr>
+<tr><td>19</td><td>LP 连续松弛不等于整数路线</td><td><span class="tag grey">不构成缺陷</span></td><td>论文已声明卡车流量连续、画图时向上取整；保留说明即可。</td></tr>
+</tbody></table></div>
+
+<h2>3. 不成立、无法核或已过时的条目</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:24%">条目</th><th style="width:10%">判定</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>“原题明确要求 Q2/Q4 承接 Q1”</td><td><span class="tag grey">无法核</span></td><td>仓库里没有原题；根目录 <code>2026CQU_MCM_ProblemC.pdf</code> 是 25 页论文副本（首页是 Summary），不是赛题。H1 仍按“模型链没有闭合”处理，但论文里不要引用“原题明确要求”这句话，除非拿到原文。</td></tr>
+<tr><td>“队号填 13648”</td><td><span class="tag wait">待用户确认</span></td><td>本仓库 <code>summary.tex:6</code> 是空白横线，从未写过队号。13648 来自这份反馈文件；填入前需用户确认（L5，T014）。</td></tr>
+<tr><td>AI 报告应写“未记录”，不要猜型号</td><td><span class="tag grey">不采纳这条改法</span></td><td>T013 写的是“runtime reported the model identifier <code>deepseek-flash[1m]</code>”，这是运行环境报告的事实，不是猜测；改成“未记录”反而丢失信息。Codex 是否用过需执行方确认：若用过，应在 AI 报告中补一条工具、用途与日期。</td></tr>
+<tr><td>“21 份脚本、25 页、24+1 页”</td><td><span class="tag grey">已过时</span></td><td>当前 37 份脚本、27 页（正文 25 + AI 2）。T013 后 AI 报告为 2 页。</td></tr>
+<tr><td>“原版 21 份代码语法检查通过”</td><td><span class="tag grey">不适用</span></td><td>与本仓库当前代码无关；T015 已做过绝对路径与可重建性检查。</td></tr>
+<tr><td>300 m、KS=0.196、图 3a</td><td><span class="tag ok">数据层已关闭</span></td><td>T004/T005 已重算；论文未改是已知的 T012 范围，不是新问题。</td></tr>
+</tbody></table></div>
+
+<h2>4. 新登记的问题（2026-11-18）</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:7%">编号</th><th style="width:26%">标题</th><th style="width:10%">级别</th><th>一句话</th><th style="width:12%">归属</th></tr></thead>
+<tbody>
+<tr><td>H13</td><td>Q2 的 LP 固定全部到达、只扣已服务出发</td><td>高</td><td>失单会造车；α&lt;1 行的 dev=unmet 是数值指纹；加 <code>u≤dep</code>，按已服务行程生成到达，分离停放/在途。</td><td>T007</td></tr>
+<tr><td>H14</td><td>贪心基线运力扣减单位错误</td><td>高</td><td>高峰 5,314 辆/小时 vs 2,400；比较基线不可执行，不能证明主方法优越。</td><td>T007</td></tr>
+<tr><td>H15</td><td>“夜间调度”与计划不符</td><td>中高</td><td>夜间只占 40.37%，且模型无夜间成本；改写叙事或加时窗约束后重解。</td><td>T007/T012</td></tr>
+<tr><td>H16</td><td>Q3 候选池：本格、错时、重复来源</td><td>高</td><td>34.1% 本格、池为不同到达的 2.93 倍、安置量超过候选数；重建为 (目标格,小时) 的指派/流模型。</td><td>T008</td></tr>
+<tr><td>H17</td><td>Q1 时长“与观测吻合”无观测</td><td>中高</td><td>原始订单无结束时间；改写成显式假设并给敏感性，删“observed”。</td><td>T012</td></tr>
+<tr><td>M9</td><td>Q5 的零失单结果信息量低</td><td>中</td><td>同一模拟器 α=0.6 无卡车也几乎零失单；结论降为条件陈述或换能产生失单的机制。</td><td>T010</td></tr>
+<tr><td>L11</td><td>根目录 PDF 是论文副本，原题缺失</td><td>低</td><td>重命名/移入 <code>paper/</code>，原题另存 <code>original/</code>；避免复现者误认。</td><td>T014</td></tr>
+</tbody></table></div>
+
+<h2>5. 对论文数字的判决</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:30%">论文位置与数字</th><th style="width:10%">判决</th><th>依据与处置</th></tr></thead>
+<tbody>
+<tr><td>§5 α=1、K=60：搬 23,959 辆、5,441 卡车公里、83,325 元、失单 0</td><td><span class="tag ok">成立</span></td><td>该行 u=0，<code>I_end</code> 合计仍为 343,638，守恒精确。可作为 Q2 主答案保留。</td></tr>
+<tr><td>§5 no-truck 行“1,276 单不能服务（0.06%）”</td><td><span class="tag bad">需改写</span></td><td>这是 LP 小时聚合的产物：同一随机模拟器在 α=1 无卡车时为 0 失单。应标为模型口径，或删去这个物理解释。</td></tr>
+<tr><td>§5 所有 α&lt;1 的失单/偏差/成本行</td><td><span class="tag bad">失效</span></td><td>dev=unmet，失单造车；T007 重解前不得引用。</td></tr>
+<tr><td>§5 缩车结论：390k 对 427k、内部最优、“大五分之一”</td><td><span class="tag bad">待重算</span></td><td>α=0.6 的 412,379 元里约 75% 是失单罚金 206,958 + 虚假偏差 103,479；左半条曲线不可信。</td></tr>
+<tr><td>§6 34.9%、r*=1.20、q=115,385、all-truck 752,404</td><td><span class="tag bad">待重做</span></td><td>本格 34.1%、重复来源 2.93 倍、固定成本混入单价；T008 重算前摘要不能保留 34.9%。</td></tr>
+<tr><td>§7 344,463 对 343,638 的 0.2%“校验”</td><td><span class="tag bad">不成立</span></td><td>37 格重复归属 + 零初始库存 + p=0.128；p=0.185 时容量对新车队差一倍。T009 改为“规划上限”而非校验。</td></tr>
+<tr><td>§5/图 4“night shift”“白天几乎不动”</td><td><span class="tag bad">不成立</span></td><td>40.37% 夜间、59.63% 白天；模型无夜间成本。T012 改写，或 T007 加时窗后重解。</td></tr>
+<tr><td>§4“时长与观测分布吻合”、11.5 km/h、1.35 绕行系数</td><td><span class="tag bad">不成立</span></td><td>无结束时间，时长是生成的。T012 改为假设 + 来源 + 敏感性；<code>DATA.md</code> 删掉 endtime。</td></tr>
+<tr><td>§4 Q1 的 T005 新数：KS 0.098、nlp 3.418、ARI 0.665 等</td><td><span class="tag ok">成立</span></td><td>T005 已独立复核；T012 把旧数换掉即可。</td></tr>
+<tr><td>§3 车队 495,540 [484,754, 506,635]、p 0.13–0.20</td><td><span class="tag ok">成立</span></td><td>T001R2/T002 已复核；主值 0.128 还是 0.185 待 B7。</td></tr>
+<tr><td>§7 89.8% 围栏超过 150 槽、626 个围栏、75.3% 覆盖</td><td><span class="tag wait">数值可复现，口径待改</span></td><td>89.8%、626、75.3% 均与 <code>q4_summary.json</code> 一致；但容量依赖零初始与重复归属，T009 重算后可能变化。</td></tr>
+</tbody></table></div>
+
+<h2>6. 建议的下一步</h2>
+<ol>
+<li><strong>先让 T006/T007 一起跑。</strong>Q1 接口（B4）与 Q2 守恒（H13）、贪心（H14）、夜间（H15）在同一条 LP/仿真链上，分开做会重复改代码。T007 的任务单需要扩围，不只是原来的 H5/H6/M3。</li>
+<li><strong>T008 按新口径重做 Q3。</strong>目标不是把 34.9% 调成一个更好看的数，而是让 q(r) 成为可执行的指派结果：每笔行程至多改道一次、来源容量守恒、排除本格、按目标小时的到达计数、扣除被改道后来源格少掉的到达。</li>
+<li><strong>T009 保留 450 m，但把容量改成“规划上限”。</strong>零初始库存、37 格重复归属和 p 的不确定性都要在文字里说明；不要再把 344,463≈343,638 当校验。</li>
+<li><strong>T010 把 Q5 的零失单降为条件陈述。</strong>或者换一个能产生失单的库存/需求情景；否则“竞争不降低可用性”只是“这个模拟器太深，压不出缺口”。</li>
+<li><strong>T012 等 T006–T011 齐全后再动 <code>paper/</code>。</strong>现在已知要加的条目：夜间段、K=40/K=60、时长假设、Q3 口径、Q4 初始库存；摘要的“缩车五分之一”和“34.9%”必须等新结果。</li>
+<li><strong>用户仍需拍板：B4（T006 前提）、B2（T007 是否重解）、B3（T008 定向/公开推送）、B7（p 主值）。</strong>这份反馈实际上把 B2/B3 从“可选”变成了“不改就不能保留现有结论”。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>时间上的现实选择：</strong>如果比赛窗口不够重跑 Q2/Q3，可退而求其次——把“缩车五分之一”和“34.9% 节省”从摘要与结论中撤下，改成“在本文情景下、按现行口径”的条件陈述，并把 H13/H16 写进局限。这比保留两个站不住的强结论更安全。这个取舍需要用户决定。</p>
+</div>
+
+<h2>7. 复核方法（可重跑）</h2>
+<ul>
+<li>Q2 守恒：读 <code>data/q2_results.json</code>，筛 <code>unmet&gt;0</code> 的行比较 <code>dev</code> 与 <code>unmet</code>；读 <code>data/q2_plan.npz</code> 的 <code>XM</code> 汇总夜间小时。</li>
+<li>Q3 池：用 <code>lib.get_cells()</code> 的 <code>x,y</code> 重算 5,263×5,263 距离，按 <code>EDGES=[0,0.05,…,0.45]</code> 分带，与 <code>data/q3_cell.npz</code> 的 <code>Dstar</code> 相乘；本格占比 = <code>counts[0].sum()/counts.sum()</code>。</li>
+<li>Q4 重叠：读 <code>data/q4_sites.npy</code>，对每个站点取 <code>dist≤0.45</code> 的成员，比较成员计数之和与并集大小。</li>
+<li>贪心：导入 <code>code/22_q2_sim.py</code> 的 <code>greedy_plan(60)</code>，对 <code>P.sum((1,2))</code> 取最大。</li>
+<li>时长：<code>pyarrow.parquet.ParquetFile('data/trips.parquet').schema_arrow</code>，确认无 <code>endtime</code>；读 <code>code/11_q1_extra.py:83-91</code> 的生成式。</li>
+</ul>
+
+<p class="meta">本记录只评估外部意见，不修改 <code>paper/</code>、<code>code/</code>、<code>data/</code> 或 <code>交付/</code>。新问题已写入 <code>台账/问题台账.csv</code>；T007/T008/T010/T012 的对应关系已同步到任务台账与路线图。</p>
+
+</main>
+</body>
+</html>
