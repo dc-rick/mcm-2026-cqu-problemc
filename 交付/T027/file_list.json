@@ -69,8 +69,8 @@
    },
    {
     "path": "paper/sec2_assumptions.tex",
-    "sha256": "450f15a6fa7b23273f84b1b7a871b02101007dd5460d5c79a8316492bf2f06f0",
-    "bytes": 7869
+    "sha256": "736962b9988d0f541ad759f1508a6084d375ea7e5c8fa7021134e9eebd87eb43",
+    "bytes": 8056
    },
    {
     "path": "paper/sec3_data.tex",
@@ -94,8 +94,8 @@
    },
    {
     "path": "paper/sec7_q4.tex",
-    "sha256": "d8e697f776b8bcfba817d332dc214fe1047dc78e562ce8920276d639d2588aed",
-    "bytes": 14831
+    "sha256": "d6c67cee682decfab2a157e0a940d58f06afad233dd5416903a18de7a88f558b",
+    "bytes": 14948
    },
    {
     "path": "paper/sec8_q5.tex",
@@ -116,8 +116,8 @@
   "paper_pdf": [
    {
     "path": "paper/main.pdf",
-    "sha256": "c0a119102a0af9442e864747d3948828e126af0a92d70eb494ebb90d156d2240",
-    "bytes": 1026092
+    "sha256": "e7bdf1a2137319fee712f7135b6013876fc4c739717408952a3cad8ce4223386",
+    "bytes": 1026325
    }
   ],
   "figures_pdf": [

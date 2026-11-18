@@ -3,8 +3,8 @@
  "title": "终审定稿与提交包 — R1（DeepSeek 第二轮冷读 13 项文字修正）",
  "date": "2026-11-19",
  "status": "delivered",
- "revision": "R1d",
- "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。 R1b（任务单 §8.4，2026-11-19）：sec7_q4.tex 两处纯文字——q4cap 符号句量纲改为 sizing-demand 单位（f/u 不再写作 arrivals，a_i 不改叫 arrivals），tab:q4plan 表注改指 'Arrival coverage' 行；sec7_q4.tex 对 3209636 的数字 token 多重集与 R1 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。R1 复核两项裁决按 ① A10 附加句采纳保留、② pp11–12 公式跨页接受结案。 R1c（任务单 §8.5，2026-11-19）：五处纯文字——摘要补 'in this replay' 与 'an upper estimate of 4.33'，A12 与 §6.4 写明三轮车口径重演限定区内（故卡车层按构造固定）而跨区放置规则用于卡车口径测试，§6.6 第一条限定 'in the truck-caliber test'；token 门与 R1b 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。 R1d（任务单 §8.6，2026-11-19）：两处纯文字——§8 的 σ 补 logistic 定义，§5 空驶句后加“两侧同含、百分比节省不变”一句（回应第四轮 M7；经 code/t024_q2_tier2.py 核对，total_fullload 与 no_tricycle_total 含同一个 truck_obj，空驶两侧同进同出）；token 门与 R1c 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。",
+ "revision": "R1e",
+ "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。 R1b（任务单 §8.4，2026-11-19）：sec7_q4.tex 两处纯文字——q4cap 符号句量纲改为 sizing-demand 单位（f/u 不再写作 arrivals，a_i 不改叫 arrivals），tab:q4plan 表注改指 'Arrival coverage' 行；sec7_q4.tex 对 3209636 的数字 token 多重集与 R1 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。R1 复核两项裁决按 ① A10 附加句采纳保留、② pp11–12 公式跨页接受结案。 R1c（任务单 §8.5，2026-11-19）：五处纯文字——摘要补 'in this replay' 与 'an upper estimate of 4.33'，A12 与 §6.4 写明三轮车口径重演限定区内（故卡车层按构造固定）而跨区放置规则用于卡车口径测试，§6.6 第一条限定 'in the truck-caliber test'；token 门与 R1b 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。 R1d（任务单 §8.6，2026-11-19）：两处纯文字——§8 的 σ 补 logistic 定义，§5 空驶句后加“两侧同含、百分比节省不变”一句（回应第四轮 M7；经 code/t024_q2_tier2.py 核对，total_fullload 与 no_tricycle_total 含同一个 truck_obj，空驶两侧同进同出）；token 门与 R1c 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。 R1e（任务单 §8.7，2026-11-19）：两处纯文字——§7.4 末句把 150-slot capped plan 的容量说法与 §7.1 的 uncapped per-site 95\\% 约定分开（回应第五轮 M8），§2 成本参数句写明 1.0 CNY/day 自行车持有成本对比较各方案是共同成本、不入 Q2/Q3 目标，并把扰动句限定为“The truck and tricycle costs”（回应 m2）；token 门与 R1d 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。",
  "checks": {
   "R1-1_A11_placement": "pass; paper/sec2_assumptions.tex A11（Placement and payment）改写为：改派放在原行程所在小时、目标格取自该小时亏缺表，目标不受源区限制；跨区部分经 zone_delta 进入卡车层，指向 §6 的卡车口径检验；保留 'No cross-hour rearrangement is modelled.'。旧句 'in the same zone / no cross-zone reroute' 已不存在。证据：交付/T027/verify_final.json r1_checks.R1-1_A11_scope=true。",
   "R1-1b_A12_consistency_fix": "pass; 任务单未列的第四处同类口径句（sec2 A10 末句旧文 'Because reroutes do not cross a zone boundary, the truck layer is unchanged.'）同步改为 'The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\\ref{sec:q3}.'。依据与 R1-1 同（t008_q3_pool.py:124、t020_q3_budget.py:502、T008 zone_decomposition targeted 0.0746）；属主动补漏，特此申报。证据：r1_checks.R1-1b_A12_consistency_fix=true。",
@@ -44,7 +44,13 @@
   "R1d-A1_old_new_basis": "pass; 两处在 affected 末尾两条逐条给出 location / old / new / basis。",
   "R1d-A2_token_gate_same_as_R1c": "pass; 对基线 3209636 逐文件比对：sec8_q5.tex removed={} added={} identical=true；sec5_q2.tex removed={} added={'12':1}（R1-5 已授权，与 R1c 相同）；全篇仍仅 sec5_q2.tex +{'12':1}；ai_report.tex 按 §8.3 豁免。证据 verify_final.json token_gate、token_gate_pass=true。",
   "R1d-A3_compile_pages": "pass; xelatex 三遍 'Output written on main.pdf (27 pages).'；计页 25；overfull 0、undefined 0、LaTeX Warning 0、'??' 0、U+037E 0；References 起始 p25、AI 报告起始 p26；TOC 页码与正文一致。证据 verify_final.json pdf 段。",
-  "R1d-A4_scope": "pass; 本轮只改 paper/sec5_q2.tex、paper/sec8_q5.tex 与 paper/main.pdf、交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；code/、data/、审查与规划/ 未写；未重跑任何代码。"
+  "R1d-A4_scope": "pass; 本轮只改 paper/sec5_q2.tex、paper/sec8_q5.tex 与 paper/main.pdf、交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；code/、data/、审查与规划/ 未写；未重跑任何代码。",
+  "R1e-1_uncapped_adequacy_scope": "pass; sec7_q4.tex §7.4 末句 '…a sizing standard of 150 slots per selected cell, adequate 95\\% of the time on its own --- not a count of existing berths.' → '…150 slots per selected cell applied to the assigned demand, while the 95\\% per-fence adequacy is a property of the uncapped sizing --- not a count of existing berths and not a per-site adequacy guarantee under the cap.'（150 与 95 各保留一次）。依据：capped 计划 cap 在 704/705 站点 binding、留 394,553.13 未分配，per-site 95\\% 是 §7.1 的 uncapped sizing 约定。证据 r1e_checks.R1e-1_uncapped_adequacy_scope=true。",
+  "R1e-2_bicycle_cost_not_in_objective": "pass; sec2_assumptions.tex 成本参数句在 '(about 1{,}000 CNY over a three-year life)' 后插入 ', a cost common to every plan compared here, since the bicycle stock is a scenario rather than a decision, and therefore not charged in the Q2 or Q3 objectives'；'They are perturbed one at a time' → 'The truck and tricycle costs are perturbed one at a time'。依据：1.0 CNY/day 自行车持有成本未进入任何目标（code/t023_uncertainty.py 参数表无此键）。证据 r1e_checks.R1e-2_bicycle_cost_not_in_objective=true。",
+  "R1e-A1_old_new_basis": "pass; 两处在 affected 末尾两条逐条给出 location / old / new / basis。",
+  "R1e-A2_token_gate_same_as_R1d": "pass; 对基线 3209636 逐文件比对：sec7_q4.tex 与 sec2_assumptions.tex 均 removed={} added={} identical=true；全篇仍仅 sec5_q2.tex +{'12':1}；ai_report.tex 按 §8.3 豁免。证据 verify_final.json token_gate、token_gate_pass=true。",
+  "R1e-A3_compile_pages": "pass; xelatex 三遍 'Output written on main.pdf (27 pages).'；计页 25；overfull 0、undefined 0、LaTeX Warning 0、'??' 0、U+037E 0；References 起始 p25、AI 报告起始 p26；TOC 页码与正文一致。证据 verify_final.json pdf 段。",
+  "R1e-A4_scope": "pass; 本轮只改 paper/sec7_q4.tex、paper/sec2_assumptions.tex 与 paper/main.pdf、交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；code/、data/、审查与规划/ 未写；未重跑任何代码。"
  },
  "affected": [
   {
@@ -244,6 +250,18 @@
    "old": "…which is not in the objective and is reported separately; repeating the daily plan requires it.",
    "new": "…repeating the daily plan requires it. The truck cost is common to both totals in the comparison, so this deadhead shifts the two sides equally and leaves the percentage saving unchanged.",
    "basis": "code/t024_q2_tier2.py:1050--1066：total_fullload 与 no_tricycle_total 都含同一个 cmp['truck_obj']，空驶两侧同进同出，节省 902,223.20（59.385%）不变；第四轮 M7 的事实前提不成立，采纳“写明同侧”的澄清。"
+  },
+  {
+   "location": "paper/sec7_q4.tex §7.4 末段",
+   "old": "a sizing standard of 150 slots per selected cell, adequate 95\\% of the time on its own --- not a count of existing berths.",
+   "new": "a sizing standard of 150 slots per selected cell applied to the assigned demand, while the 95\\% per-fence adequacy is a property of the uncapped sizing --- not a count of existing berths and not a per-site adequacy guarantee under the cap.",
+   "basis": "capped 计划的 cap 在 704/705 站点 binding、留 394,553.13 未分配，per-site 95\\% 是 §7.1 的 uncapped sizing 约定（第五轮 M8，与 H30 同类）。"
+  },
+  {
+   "location": "paper/sec2_assumptions.tex 成本参数条",
+   "old": "(about 1{,}000 CNY over a three-year life); … They are perturbed one at a time",
+   "new": "(about 1{,}000 CNY over a three-year life), a cost common to every plan compared here, since the bicycle stock is a scenario rather than a decision, and therefore not charged in the Q2 or Q3 objectives; … The truck and tricycle costs are perturbed one at a time",
+   "basis": "1.0 CNY/day 自行车持有成本未进入任何目标（code/t023_uncertainty.py 参数表无此键）；自行车存量是情景而非决策，该成本对比较各方案相同（第五轮 m2）。"
   }
  ],
  "outputs": [
@@ -283,7 +301,11 @@
   "R1d 只动 sec5_q2.tex / sec8_q5.tex 两处文本（零数字 token）；对 3209636 的数字多重集与 R1c 完全相同，页数仍 27 总 / 25 计页，未触发分页变化。",
   "R1d 起因：DeepSeek 第四轮（review/review_r4.json，0 阻塞 / 6 中 / 3 低）新增 M7（主张日终空驶 6,142.58 高估节省）与 minor m2（σ 未定义）。经核 code/t024_q2_tier2.py:1050--1066，空驶在比较两侧同含，M7 前提不成立、主张驳回，但采纳“写明同侧”的澄清；m2 属实，§8 补 logistic 定义。",
   "verify_final.py 追加 r1d_checks（R1d-1/R1d-2 文本断言），revision 改为 R1d；token 门、回归门、PDF 门逻辑未改动。",
-  "file_list.json 已重算：仍 757 个文件；sec5_q2.tex / sec8_q5.tex / main.pdf / verify_final.* 的 SHA-256 已更新。"
+  "file_list.json 已重算：仍 757 个文件；sec5_q2.tex / sec8_q5.tex / main.pdf / verify_final.* 的 SHA-256 已更新。",
+  "R1e 只动 sec7_q4.tex / sec2_assumptions.tex 两处文本（零数字 token，150 与 95 各保留一次）；两文件对 3209636 的数字多重集与 R1d 完全相同，页数仍 27 总 / 25 计页，未触发分页变化。",
+  "R1e 起因：DeepSeek 第五轮（review/review_r5.json，0 阻塞 / 7 中 / 4 低）。M8 （高，§7.4 把 per-site 95% 挂在 capped plan 上）与 m2（低，1.0 CNY/day 自行车成本被扰动句包含却不在任何目标中）属实并修正；M7 维持驳回（R1d-2 已写明两侧同含 truck_obj），M5 驳回（表注与 §7.1 已定义两种覆盖口径）。",
+  "verify_final.py 追加 r1e_checks（R1e-1/R1e-2 文本断言），revision 改为 R1e；token 门、回归门、PDF 门逻辑未改动。",
+  "file_list.json 已重算：仍 757 个文件；sec7_q4.tex / sec2_assumptions.tex / main.pdf / verify_final.* 的 SHA-256 已更新。"
  ],
  "integrity": {
   "readonly_respected": true,
@@ -292,6 +314,6 @@
   "no_push": true,
   "single_commit": true,
   "deleted_files_declared": true,
-  "based_on": "b17cc8b (R1c)"
+  "based_on": "a6da7ad (R1d)"
  }
 }

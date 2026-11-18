@@ -1,6 +1,6 @@
 {
  "task": "T027",
- "revision": "R1d",
+ "revision": "R1e",
  "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
@@ -133,6 +133,10 @@
  "r1d_checks": {
   "R1d-1_sigma_defined": true,
   "R1d-2_deadhead_shared": true
+ },
+ "r1e_checks": {
+  "R1e-1_uncapped_adequacy_scope": true,
+  "R1e-2_bicycle_cost_not_in_objective": true
  },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,

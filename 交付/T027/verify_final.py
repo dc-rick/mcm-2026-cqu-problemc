@@ -1,4 +1,4 @@
-"""T027 R1/R1b/R1c/R1d verification.
+"""T027 R1/R1b/R1c/R1d/R1e verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
   1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
@@ -8,7 +8,8 @@ Checks, with evidence written to 交付/T027/verify_final.json:
   3. Section-6 legacy wording checks (carried from R0), the R1-1..R1-13
      item checks from task sheet section 8.1, the R1b-1/R1b-2 text
      checks from section 8.4, the R1c-1..R1c-5 text checks from section 8.5,
-     and the R1d-1/R1d-2 text checks from section 8.6.
+     and the R1d-1/R1d-2 text checks from section 8.6, and the
+     R1e-1/R1e-2 text checks from section 8.7.
   4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
      from data/runs/T024/schedule_check.json and matched to the paper strings.
   5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
@@ -70,7 +71,7 @@ def norm(text):
 
 
 def main():
-    ev = {"task": "T027", "revision": "R1d", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1e", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
@@ -234,8 +235,30 @@ def main():
                     "this deadhead shifts the two sides equally and leaves the percentage saving unchanged")),
     }
     ev["r1d_checks"] = r1d
+
+    # ---- 3e. R1e item checks (task sheet 8.7) --------------------------
+    r1e = {
+        "R1e-1_uncapped_adequacy_scope": (
+            has("sec7_q4.tex",
+                "150 slots per selected cell applied to the assigned demand")
+            and has("sec7_q4.tex",
+                    "per-fence adequacy is a property of the uncapped sizing")
+            and has("sec7_q4.tex",
+                    "not a per-site adequacy guarantee under the cap")
+            and not has("sec7_q4.tex",
+                        "standard of 150 slots per selected cell, adequate 95\\% of the time on its own")),
+        "R1e-2_bicycle_cost_not_in_objective": (
+            has("sec2_assumptions.tex",
+                "a cost common to every plan compared here, since the bicycle stock is")
+            and has("sec2_assumptions.tex",
+                    "not charged in the Q2 or Q3 objectives")
+            and has("sec2_assumptions.tex",
+                    "The truck and tricycle costs are perturbed one at a time")
+            and not has("sec2_assumptions.tex", "They are perturbed one at a time")),
+    }
+    ev["r1e_checks"] = r1e
     ok = (ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
-          and all(r1c.values()) and all(r1d.values()))
+          and all(r1c.values()) and all(r1d.values()) and all(r1e.values()))
 
     # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
@@ -346,6 +369,7 @@ def main():
                       "r1b_checks_pass": all(r1b.values()),
                       "r1c_checks_pass": all(r1c.values()),
                       "r1d_checks_pass": all(r1d.values()),
+                      "r1e_checks_pass": all(r1e.values()),
                       "section6_pass": all(checks6.values()),
                       "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],
