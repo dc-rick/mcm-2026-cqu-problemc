@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T024-R2 验收：退回（执行版未服务未计整数化损失）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T024-R2 验收：退回（执行版未服务未计整数化损失）</h1>
+<p class="meta">2026-11-18 · 交付 5023cb4（T024_delivery.json R2）· 三条条件的方法全部正确；执行版的未服务仍是 LP 松弛值</p>
+
+<div class="box ok">
+<p><strong>通过的部分：</strong>nmax=60 后 889 辆、零区顶格，上限确实不绑定；扫描 741/802/865/885/889 与顶格 17/7/4/1/0 逐点一致；penalty_scan 已带 zones_at_nmax；缓冲扫描 534→357/347/322/307 说明“拍 10% 缓冲”修不了；逐区不动点闭到 975 辆、50 区 0 趟未分配；里程口径按你的写法分列；执行版盈亏点 1.4612 / 1,234.56 的算式也对。</p>
+</div>
+
+<div class="box hi">
+<p><strong>退回的原因（一项）：</strong>执行版的未服务 38,489.44 取的是 <code>exec_rows</code> 里 <code>unmet = bf["r"]["unmet"]</code>——即<b>提升车队后那次 LP 的未服务</b>，不是整数班表实际送到的量。整数化会丢掉一部分车：<code>schedule_check.json</code> 的城市统计里，整数班表的 bike_km 是 83,451.48，而 LP 的 bike_km = 20×4,213.04 = 84,260.87，<strong>差 809.4 车-公里</strong>；按平均每趟 0.537 km 折算，约 <strong>1,506 辆</strong>没有送到。LP 的流向恰好等于各汇点的缺口（b_eq = resid），少送一辆就是多一辆未服务，所以执行版真实未服务约为 38,489 + 1,506 ≈ <strong>39,995</strong>。</p>
+<p>这不是小数：1,506×6 = <strong>9,036 元/日</strong>，执行版总成本从 608,087 升到约 <strong>617,123</strong>，节省从 911,192 降到约 <strong>902,156（59.4%）</strong>。0 区样例已经自证：LP 6,192.50 辆、整数 6,166 辆、损失 26.50（0.43%）——同一件事放大到 50 个区。</p>
+<p>这和 T018-R0 被判退的小数装车是同一类：指标取自松弛解，而不是可执行解。</p>
+</div>
+
+<h2>1. 指导方复算</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>cap 60 最优</td><td>889 辆 / 40,041.58 / 267,530.20 / 591,587.42 / 927,691.53（61.06%）</td><td>40,041.579×6 + 83,807.744 + 267,530.198 = 591,587.42；节省 927,691.53；份额 61.06%</td><td>✓</td></tr>
+<tr><td>cap 扫描</td><td>741/802/865/885/889，顶格 17/7/4/1/0</td><td>逐点一致；889 时 0 区顶格</td><td>✓</td></tr>
+<tr><td>N*(p)</td><td>203/457/580/731/889/1,340</td><td>逐行一致；p=10 有 3 区顶格，已注明 1,340 为下界</td><td>✓</td></tr>
+<tr><td>城市不可执行</td><td>13,775 趟 / 534 趟 / 15 区</td><td>city 逐区求和一致（889 辆、534 未分配、15 区）</td><td>✓</td></tr>
+<tr><td>缓冲无效</td><td>959/1,003/1,045/1,088 → 357/347/322/307</td><td>buffer_sweep 逐行一致</td><td>✓</td></tr>
+<tr><td>不动点</td><td>975 辆 / 50 区 0 未分配</td><td>exec_rows 求和：n_exec 975、unassigned 0、15 区被抬高、feasible 50/50</td><td>✓</td></tr>
+<tr><td>执行版成本（交付口径）</td><td>524,279.23 / 608,086.97 / 59.98%</td><td>975×300 + 842.61 + 6×38,489.44 = 524,279.23；+83,807.74 = 608,086.97</td><td>算式对，未服务偏低</td></tr>
+<tr><td>执行版实际里程</td><td>9,367.93 km / 1,873.59 元 / 609,117.95 / 59.91%</td><td>7,436.03 + 1,931.90 = 9,367.93；×0.2 = 1,873.59；差额 1,030.98</td><td>✓</td></tr>
+<tr><td>执行版盈亏点</td><td>1.4612 / 1,234.56</td><td>293,342.61/200,755.76 = 1.46119；(6×200,755.76 − 842.61)/975 = 1,234.56</td><td>✓（未服务修正后要重算）</td></tr>
+<tr><td><b>整数化损失</b></td><td>未计</td><td>LP bike-km 84,260.87 vs 整数 83,451.48，差 809.4 km ≈ 1,506 辆；×6 = 9,036 元/日</td><td>✗ 需补</td></tr>
+</tbody></table></div>
+
+<h2>2. 退回的具体要求</h2>
+<ol>
+<li><strong>执行版的未服务必须包含整数化损失。</strong>逐区取 <code>lp_bikes − int_bikes</code> 求和，加到 <code>exec_rows.unmet</code>（或直接用在整数流上重跑一遍 cell 模拟）。LP 的流向等于缺口，所以这个修正是一对一的，不是估计。</li>
+<li><strong>重算执行版的四个数：</strong>层成本、总成本、节省份额、两个盈亏点（1.4612 与 1,234.56 都会变）。指导方按 ~1,506 辆估算：总成本约 617,123、节省约 902,156（59.4%），你的精确值应落在这附近。</li>
+<li><strong>样例也要改：</strong>0 区 24 的 <code>rounding_loss = 26.50</code>，该区执行版未服务应为 2,059.49 + 26.50 = 2,085.99，而不是 2,059.49。</li>
+<li><strong>表里两组数并列：</strong>“LP 松弛未服务”与“整数执行未服务”分开写，后者才是论文数；同时保留 889/61.06% 作为理想上界，注明其 534 趟排不进。</li>
+<li><strong>命名消歧：</strong><code>check.json</code> 的 <code>schedule_city_actual_mileage_cost = 1,776.69</code> 是 889 那次城市排班的实际里程，不是执行版的 1,873.59；两个键名要区分，避免下一位读者再混一次。</li>
+</ol>
+
+<h2>3. 已经稳的结论（R3 只需补数，不用改方法）</h2>
+<ul>
+<li>LP 时间预算按满载摊距离时间是执行性缺口的根因；逐区不动点是对的修法；975 是贪心上界、成本上界，真实可执行成本只会更低——这个逻辑成立。</li>
+<li>论文主数用执行版；889/61.06% 只作“理想 LP 上界”。方向不变：三轮车层仍然划算，只是幅度从 ~60% 降到 ~59%。</li>
+<li>nmax=60 已不绑定；p=10 的 1,340 是下界，已注明。</li>
+<li>里程口径分列正确：满载折算 842.61 vs 实际 1,873.59，差 1,031 元/日（0.17%）。</li>
+</ul>
+
+<h2>4. 台账处理</h2>
+<ul>
+<li>T024：从“通过（附条件）”改为“退回 R1（R2 交付未过条件 2 的验收）”，待 R3 补整数化损失后恢复通过。</li>
+<li>H24/M14 保持关闭（方法层已成立），不因这一项重开。</li>
+</ul>
+
+</main>
+</body>
+</html>
