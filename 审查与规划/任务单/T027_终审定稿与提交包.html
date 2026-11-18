@@ -50,7 +50,7 @@ li{margin:3px 0}
 <ol>
 <li>最终 PDF：<code>paper/main.pdf</code>，xelatex 三遍，undefined 0、overfull 0、U+037E 0、<code>??</code> 0。</li>
 <li>页数：计页 ≤25，AI 报告独立分页；目录页码与正文一致；References 在目录中。</li>
-<li>文件清单：<code>paper/*.tex</code>、<code>paper/figs/*.pdf</code>、<code>paper/main.pdf</code>、<code>code/</code> 全量、<code>data/runs/T0xx/</code> 结果、<code>DATA.md</code>、<code>README.md</code>，逐项写进 <code>交付/T027/file_list.json</code>（路径 + SHA-256）。</li>
+<li>文件清单：<code>paper/*.tex</code>、<code>paper/figs/*.pdf</code>、<code>paper/main.pdf</code>、<code>code/</code> 全量、<code>data/runs/T0xx/</code> 结果、<code>DATA.md</code>、<code>README.md</code>，逐项写进 <code>交付/T027/file_list.json</code>（路径 + SHA-256）。<strong>临时/基准脚本</strong>（如 <code>code/_bench_t023*.py</code>、<code>data/runs/*/scratch/</code>）不得混入正式清单：能删则删，需保留则归入 <code>scratch</code> 并在清单里单列一节说明“非复现路径”。</li>
 <li>复现说明：<code>run_all.py</code> 的完整阶段清单与预计耗时；哪些阶段依赖 T018–T026 的输入（写明），哪些可跳。</li>
 </ol>
 
@@ -66,7 +66,7 @@ li{margin:3px 0}
 <li><strong>七标准</strong>：按项目 <code>CLAUDE.md</code> 第 1–7 条逐条给证据（显式假设、物理严谨、边界条件、数据范围=有效范围、数字来自结果、不确定性分源、图填满坐标轴）。</li>
 <li><strong>COMAP 合规</strong>：25 页上限、Summary 单独一页、目录、参考文献完整、AI 报告合规、无队号以外的身份信息。</li>
 <li><strong>逐数字溯源</strong>：从摘要与 §5–§9 抽 ≥20 个数字，逐个追到结果文件键。</li>
-<li><strong>DeepSeek 外部冷读</strong>：指导方运行 <code>tools/deepseek_review.py</code>，把结构化发现逐条裁决（接受 / 驳回，附理由），阻塞项必须修完再提交。</li>
+<li><strong>DeepSeek 外部冷读</strong>：指导方运行 <code>D:\code\mcm2026_problemA\mcm\tools\deepseek_review.py</code>（CLAUDE.md 里的 <code>D:\code\mcm\tools\</code> 是旧路径），把结构化发现逐条裁决（接受 / 驳回，附理由），阻塞项必须修完再提交。</li>
 <li><strong>回归</strong>：975 / 617,055.7515 / 39,984.2332 与 T021B 完全一致。</li>
 <li>指导方出 <code>审查记录/T027_验收_YYYY-MM-DD.html</code>，给出"可提交 / 不可提交"结论。</li>
 </ol>
