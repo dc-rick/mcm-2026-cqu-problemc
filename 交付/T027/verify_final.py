@@ -1,4 +1,4 @@
-"""T027 R1/R1b/R1c/R1d/R1e verification.
+"""T027 R1/R1b/R1c/R1d/R1e/R1f verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
   1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
@@ -8,8 +8,9 @@ Checks, with evidence written to 交付/T027/verify_final.json:
   3. Section-6 legacy wording checks (carried from R0), the R1-1..R1-13
      item checks from task sheet section 8.1, the R1b-1/R1b-2 text
      checks from section 8.4, the R1c-1..R1c-5 text checks from section 8.5,
-     and the R1d-1/R1d-2 text checks from section 8.6, and the
-     R1e-1/R1e-2 text checks from section 8.7.
+     and the R1d-1/R1d-2 text checks from section 8.6, the
+     R1e-1/R1e-2 text checks from section 8.7, and the R1f-1/R1f-2
+     text checks from section 8.8.
   4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
      from data/runs/T024/schedule_check.json and matched to the paper strings.
   5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
@@ -71,7 +72,7 @@ def norm(text):
 
 
 def main():
-    ev = {"task": "T027", "revision": "R1e", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1f", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
@@ -257,8 +258,24 @@ def main():
             and not has("sec2_assumptions.tex", "They are perturbed one at a time")),
     }
     ev["r1e_checks"] = r1e
+
+    # ---- 3f. R1f item checks (task sheet 8.8) --------------------------
+    r1f = {
+        "R1f-1_q5_noise_wording": (
+            has("sec8_q5.tex",
+                "at $m=0$ the difference (12.12\\% against 12.10\\%) is within seed")
+            and has("sec8_q5.tex", "no better than independent\\_equal")
+            and has("sec8_q5.tex",
+                    "the deficit clearing seed noise only at the largest mismatch")
+            and not has("sec8_q5.tex", "slightly worse than independent")),
+        "R1f-2_summary_deadhead_qualifier": has(
+            "summary.tex",
+            "excludes the end-of-day repeat-positioning deadhead, reported separately"),
+    }
+    ev["r1f_checks"] = r1f
     ok = (ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
-          and all(r1c.values()) and all(r1d.values()) and all(r1e.values()))
+          and all(r1c.values()) and all(r1d.values()) and all(r1e.values())
+          and all(r1f.values()))
 
     # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
@@ -330,8 +347,11 @@ def main():
         pages = doc.page_count
         qq, gr = [], []
         landmarks = {}
+        page_text = {}
         for p in doc:
             tt = p.get_text()
+            if p.number < 2:
+                page_text[p.number + 1] = tt
             if "??" in tt:
                 qq.append(p.number + 1)
             if ";" in tt:
@@ -343,6 +363,9 @@ def main():
         ev["pdf"].update({"pages": pages, "pages_with_qq": qq,
                           "pages_with_u037e": gr, "landmarks": landmarks,
                           "counted_pages": pages - 2})
+        ev["pdf"]["summary_p1_deadhead"] = (
+            "repeat-positioning deadhead" in page_text.get(1, ""))
+        ev["pdf"]["toc_on_p2"] = "Contents" in page_text.get(2, "")
     toc = read_file(os.path.join(PAPER, "main.toc")) if os.path.exists(os.path.join(PAPER, "main.toc")) else ""
     ev["pdf"]["toc_references"] = "References" in toc
     ev["pdf"]["toc_ai_report"] = "Report on Use of AI Tools" in toc
@@ -356,6 +379,8 @@ def main():
         and 25 in ev["pdf"].get("landmarks", {}).get("References", [])
         and 26 in ev["pdf"].get("landmarks", {}).get("Report on Use of AI Tools", [])
         and ev["pdf"].get("counted_pages") == 25
+        and ev["pdf"].get("summary_p1_deadhead")
+        and ev["pdf"].get("toc_on_p2")
         and ev["pdf"]["toc_references"] and ev["pdf"]["toc_ai_report"]
     )
     ok = ok and ev["pdf"]["pdf_pass"]
@@ -370,6 +395,7 @@ def main():
                       "r1c_checks_pass": all(r1c.values()),
                       "r1d_checks_pass": all(r1d.values()),
                       "r1e_checks_pass": all(r1e.values()),
+                      "r1f_checks_pass": all(r1f.values()),
                       "section6_pass": all(checks6.values()),
                       "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],

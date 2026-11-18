@@ -1,6 +1,6 @@
 {
  "task": "T027",
- "revision": "R1e",
+ "revision": "R1f",
  "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
@@ -138,6 +138,10 @@
   "R1e-1_uncapped_adequacy_scope": true,
   "R1e-2_bicycle_cost_not_in_objective": true
  },
+ "r1f_checks": {
+  "R1f-1_q5_noise_wording": true,
+  "R1f-2_summary_deadhead_qualifier": true
+ },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,
  "regression": {
@@ -174,6 +178,8 @@
    ]
   },
   "counted_pages": 25,
+  "summary_p1_deadhead": true,
+  "toc_on_p2": true,
   "toc_references": true,
   "toc_ai_report": true,
   "pdf_pass": true
