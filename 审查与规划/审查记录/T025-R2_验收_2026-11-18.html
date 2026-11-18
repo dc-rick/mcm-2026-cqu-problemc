@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T025-R2 验收：通过（附论文口径条件）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T025-R2 验收：通过（附论文口径条件）</h1>
+<p class="meta">2026-11-18 · 交付 296e8d4（T025_delivery.json R2）· R1 的四项要求全部落实；一条“差额显著性”口径问题留给 T021 锁定</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>R1 要求的 K=2 纯卡车 0.1% 重解、8 个混合方案同口径重解、<code>B=None</code> 零未服务对照、撤回 1% 旧数、逐 K 最优政策更正、<code>gap_tight</code> 结构，全部完成。我独立复算了每条进入论文的数：纯卡车 K=2 138,317.1512 / 33.1936、最优混合 169,908.5541 / 差额 −31,591.403、上限 −1,591.403、零未服务 312,289.2110 / 2.2578×；72 行恒等式误差为 0，32 条紧 gap 行最大 gap 0.0994%。结论“全扫描范围内激励都不划算”现在是 gap 稳健的。</p>
+</div>
+
+<div class="box warn">
+<p><strong>一条必须改口径的地方（不是退回，是论文写法）：</strong>“最优政策移除 10.40 辆、每辆 2,883.3 元、480.6 倍”是两个 0.1% 解的<strong>返回解之差</strong>。两侧 gap 分别是 66.13 和 59.06 元（折算成罚金约 11.0 与 9.8 辆），与 10.40 同量级；目标 gap 只约束目标值、不约束单个变量，<strong>因此这个差的符号不能被求解容差确认</strong>。论文若把它写成“可测量的移除”，就是把求解容差当成了效应。可用的 gap 稳健说法有两个：</p>
+<ul>
+<li><strong>付款上限：</strong>零付款下最优混合政策仍比纯卡车贵至少 <strong>1,532 元/日</strong>（返回 −1,591.40，加上混合解自身的 59.06 gap；1,532/138.32 = 11.1 倍 0.1% 容差）。</li>
+<li><strong>付款量级：</strong>30,000 元付款对 33.19 辆未服务的全部罚金 199.16 元是 <strong>150.6 倍</strong>；即使按 1% 上界 134.81 辆算，也只是 809 元，37.1 倍。这个倍数不依赖“移除了多少”。</li>
+</ul>
+</div>
+
+<h2>1. 独立复算表</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>K=2 纯卡车（紧）</td><td>138,317.1512 / unmet 33.1936 / gap 0.0478%</td><td>fleet_scan gap_tight.K.2.tight：obj 138,317.1512、unmet 33.1936、dev 45,131.4662、truck_km 174.0985、moved 958、46 辆；66.13 元 gap</td><td>✓</td></tr>
+<tr><td>K=2 最优混合（arrivals 30k）</td><td>truck 139,908.5541 / total 169,908.5541 / diff −31,591.403 / ceiling −1,591.403</td><td>139,908.5541 + 30,000 = 169,908.5541；138,317.1512 − 169,908.5541 = −31,591.403；ceiling = 138,317.1512 − 139,908.5541 = −1,591.403</td><td>✓</td></tr>
+<tr><td>K=2 移除量</td><td>10.4047 / 2,883.32 / 480.55×</td><td>33.1936115 − 22.7889483 = 10.4046632；30,000/10.4046632 = 2,883.32；/6 = 480.55</td><td>✓（算术对；显著性见上框）</td></tr>
+<tr><td>零未服务对照</td><td>312,289.2110 / 2.26× / 5,191.6 / 865×</td><td>139,962.2489 + 172,326.9621 = 312,289.2110；/138,317.1512 = 2.2578；172,326.9621/33.1936 = 5,191.57；/6 = 865.3</td><td>✓</td></tr>
+<tr><td>K=0 / 5 / 10 / 20 最优</td><td>175,123.75（−31,739.22）；165,157.78（−31,588.76）；157,520.27（−31,623.33）；142,731.23（−31,528.82）</td><td>逐行 = pure_obj + payment；差额 = pure_obj − total；K=0 为 surplus，K≥2 为 arrivals</td><td>✓</td></tr>
+<tr><td>恒等式</td><td>72 行 total = truck_obj + payment；diff = pure_obj − total</td><td>逐行复算，最大误差 0.0</td><td>✓</td></tr>
+<tr><td>紧 gap 行</td><td>32 行，最大 0.0994%</td><td>max gap = 0.0009936；全部 ≤ 0.1%</td><td>✓</td></tr>
+<tr><td>K=5/10/20 纯卡车</td><td>0 / 0.1936 / 0</td><td>gap_tight 一致；K=5/20 的 0 是<strong>找到的可行零未服务解</strong>，因 unmet ≥ 0 而可证明最优，不依赖 gap；K=10 的 0.1936 是上界</td><td>✓</td></tr>
+<tr><td>回归 T018</td><td>K=20/40/60 逐位相同</td><td>fleet_scan regression_t018 全 0.0</td><td>✓</td></tr>
+</tbody></table></div>
+
+<h2>2. 需要更正的记录文字</h2>
+<ol>
+<li>R2 的 <code>r2_response.k2_reresolve</code> 写“The 809 CNY value of all 33.19 unmet trips is 3.0x the gap value”：33.19×6 = <strong>199.16</strong> 元，不是 809（809 是 1% 上界 134.81 的罚金）。3.0× 这个比值对应 199.16/66.13，数字对、标签错。</li>
+<li>同段“the tight solution is not hiding a zero-unmet alternative”不成立：gap &lt; 罚金总值只能推出“完全消除未服务至少要额外花 133.03 元”，不能排除零未服务最优。正确表述见上方 warn 框。</li>
+<li><code>checks.2_hybrid_by_K</code> 把 K=10 <strong>最优总成本政策</strong>的 157,520.27 / −31,623.33 与<strong>另一条政策</strong>的最大上限 −1,584.60 并列；<code>breakeven.json</code> 里该政策自己的上限是 −1,623.33，−1,584.60 是 K=10 全政策的最大值。论文若逐 K 引上限，须标明是“该政策”还是“该 K 最大值”。</li>
+</ol>
+
+<h2>3. 已稳的结论（论文可直接用）</h2>
+<ul>
+<li>K∈[0,20] 内每一种（来源×预算）政策都比纯卡车贵：最优差额 −31,528.82 到 −31,739.22；加上两侧 gap 仍远小于 0。</li>
+<li>付款上限在每个 K 都为负；最不负的是 K=20 的 −1,528.82，量级是 0.1% 容差（111.20）的 13.8 倍。</li>
+<li>K≥5 纯卡车在 0.1% gap 内找到零未服务可行解，区级稀缺只在 K=2 出现；K=10 的 0.19 是上界。1% 表的 64.4/95.0 已撤回。</li>
+<li>“完成即付”的零未服务方案要 172,327 元付款、总成本 312,289（2.26× 纯卡车），在任何非负付款下都不划算。</li>
+</ul>
+
+<h2>4. T021 必须遵守的论文口径（已写入 T021 任务单补充）</h2>
+<ol>
+<li>主结论用 <strong>“零付款仍贵至少 1,532 元/日”</strong> 或 <strong>“付款是全部未服务罚金的 150.6 倍（按 1% 上界也是 37.1 倍）”</strong>，不依赖移除量。</li>
+<li>10.40 / 2,883.3 / 480.6× 只能写成“两个返回解之差”，同时给出两侧 gap（66.13 / 59.06 元）；或直接写“在求解容差内不可测量”。</li>
+<li>K=5/20 的“零未服务”可写成已证明（可行零解 + 非负）；K=10 写“≤0.19”；不要把它写成下界。</li>
+<li>K=10 的付款上限按“该 K 的最大值 −1,584.60”或“最优政策 −1,623.33”择一，不混用。</li>
+</ol>
+
+<h2>5. 台账处理</h2>
+<ul>
+<li>T025：通过（R2）。</li>
+<li>H22 保持“修复中”：T025 的替代性条件已满足，剩余是 T021 的论文改写与两本账表述；T021 通过后关闭。</li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -43,6 +43,29 @@ code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Conso
 
 <h2>交付</h2>
 <p>每个任务交 <code>交付/T0xx_delivery.json</code>（按 skill §4 契约，检查项与任务单验收项一一对应，带证据）。交付后等指导方验收，未通过的任务的结果不得被下游任务使用。阻塞就交 <code>status: blocked</code> 并写明问题，不要猜。</p>
+<h2 style="margin-top:34px">第二轮：批 2 全部通过，现做 T023、再做 T021</h2>
+<p class="meta">指导方 2026-11-18 追加（本页为消息通道不可用时的落盘版本；以任务台账与本页为准）</p>
+
+<div class="box" style="border-left-color:#1e6b3a">
+<p><strong>T024-R3（1d2bd8c）、T025-R2（296e8d4）、T022-M15（3cfbf53）全部通过。</strong>T022 三项（M16/M12/M15）至此全部完成；任务台账 T022/T024/T025 已改为“通过”。审查记录：<code>审查记录/T024-R3_验收_2026-11-18.html</code>、<code>T025-R2_验收_2026-11-18.html</code>、<code>T022-M15_验收_2026-11-18.html</code>。</p>
+</div>
+
+<h2 style="font-size:16px">必须带进 T021 交付 notes 的三处记录更正（不进入论文、不被后续引用）</h2>
+<ol>
+<li><code>T025_delivery.json</code> 的 <code>r2_response</code> 把 33.19×6 写成 809，应为 <strong>199.16</strong>（809 是 1% 上界 134.81 的罚金）。</li>
+<li>同段“the tight solution is not hiding a zero-unmet alternative”不成立：gap 小于罚金总值只能推出“完全消除未服务至少还要多花 133.03 元”，不能排除零未服务最优。</li>
+<li><code>checks.2_hybrid_by_K</code> 把 K=10 最优总成本政策的 157,520.27 / −31,623.33 与<strong>另一条政策</strong>的最大上限 −1,584.60 并列；该政策自己的上限是 −1,623.33。逐 K 引上限须标明“该政策”还是“该 K 最大值”。</li>
+</ol>
+
+<h2 style="font-size:16px">顺序与口径</h2>
+<div class="tw"><table>
+<thead><tr><th>顺序</th><th>任务</th><th>前置</th><th>开工前必读</th></tr></thead>
+<tbody>
+<tr><td>现在</td><td>T023 不确定性按来源分解（M6 重开、M13 并入）</td><td>已满足（T018–T020 通过）</td><td>任务单新增 §4 口径锁定：参照模型 Q2=T024-R3、Q3=T025-R2、Q4=T019；三轮车常数按 <code>t024_q2_tier2.py:43-53</code>；LP 代理须在 ≥10 点对整数版校核，且整数化损失 1,494.80 是确定性平移、不进方差份额；intervals 基准点与参照值一致到 1e-6</td></tr>
+<tr><td>T023 通过后</td><td>T021 论文整合换数、执行摘要、计页 ≤25</td><td>T018–T020、T022、T024、T025 通过，且 T023 通过</td><td>任务单 §3 数字锁定补充优先于正文与 T022–T025 交付正文；“若 60 辆仍最优”整句作废，Q2 推荐为两级 975 辆；Q3 主结论用“零付款仍贵至少 1,532 元/日”或“付款是全部罚金 199.16 元的 150.6 倍（1% 上界 37.1 倍）”，10.40/2,883.3/480.6× 只能写“两个返回解之差”并给两侧 gap 66.13/59.06</td></tr>
+</tbody></table></div>
+
+<p>其余边界不变：只写 <code>code/</code>、<code>paper/</code>（仅 T021）、<code>data/runs/T0xx/</code>、<code>交付/</code>；不写 <code>审查与规划/</code>；已有 <code>data/</code> 文件只读；Python 用 <code>-I</code>；每个任务单独 commit，不 push。</p>
 </main>
 </body>
 </html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T024-R3 验收：通过（执行版未服务计入整数化损失）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T024-R3 验收：通过（执行版未服务计入整数化损失）</h1>
+<p class="meta">2026-11-18 · 交付 1d2bd8c（T024_delivery.json R3）· 五项 R2 要求逐项验收；论文数锁定为整数执行口径</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>R2 的五项要求全部落实，且我按 50 个 <code>exec_rows</code> 独立重算了每一个进入论文的数：整数化损失 1,494.7969 是逐区 <code>int_short</code> 的和，不是估计；执行版未服务 39,984.2332 = 38,489.4362 + 1,494.7969；两个总成本、节省份额、两个盈亏点全部与结果文件一致。方法层没有新问题，889/61.06% 已正确降格为“理想 LP 上界”。</p>
+</div>
+
+<h2>1. 我读了什么、复算了什么</h2>
+<ul>
+<li>读：<code>交付/T024_delivery.json</code>（R3）、<code>data/runs/T024/schedule_check.json</code>（exec_totals、exec_rows、city、buffer_sweep）、<code>data/runs/T024/check.json</code>、<code>code/t024_q2_tier2.py</code> 的 R3 diff。</li>
+<li>复算：从 <code>exec_rows</code> 50 行重新求和（不用 exec_totals 的自报值），再反推层成本、总成本、节省与两个盈亏点；用 <code>check.json</code> 的键名核对两列未服务与两组里程。</li>
+</ul>
+
+<h2>2. 独立复算表</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付（exec_totals）</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>整数化损失</td><td>int_short 1,494.7969</td><td>Σ 50 区 int_short = 1,494.796947</td><td>✓</td></tr>
+<tr><td>LP 松弛未服务</td><td>unmet_lp 38,489.4362</td><td>Σ 50 区 unmet_lp = 38,489.436209</td><td>✓</td></tr>
+<tr><td>整数执行未服务</td><td>unmet 39,984.2332</td><td>38,489.436209 + 1,494.796947 = 39,984.233156</td><td>✓</td></tr>
+<tr><td>执行车队</td><td>n_exec 975，50 区 0 未分配</td><td>Σ n_exec = 975；Σ unassigned = 0；15 区被抬高</td><td>✓</td></tr>
+<tr><td>满载口径层成本</td><td>533,248.0077</td><td>975×300 + 0.2×4,213.0437 + 6×39,984.2332 = 292,500 + 842.6087 + 239,905.3990 = 533,248.0077</td><td>✓</td></tr>
+<tr><td>满载口径总成本</td><td>617,055.7515</td><td>83,807.7442 + 533,248.0077 = 617,055.7515</td><td>✓</td></tr>
+<tr><td>满载口径节省</td><td>902,223.1988（59.385%）</td><td>1,519,278.9503 − 617,055.7515 = 902,223.1988；/1,519,278.9503 = 0.5938496</td><td>✓</td></tr>
+<tr><td>实际里程层成本</td><td>534,278.9850</td><td>292,500 + 0.2×(7,436.0285+1,931.9018) + 239,905.3990 = 292,500 + 1,873.586 + 239,905.399 = 534,278.985</td><td>✓</td></tr>
+<tr><td>实际里程总成本</td><td>618,086.7288（59.317%）</td><td>83,807.7442 + 534,278.985 = 618,086.729；份额 0.5931710</td><td>✓</td></tr>
+<tr><td>未服务盈亏点</td><td>1.472153 元/辆</td><td>(292,500 + 842.6087)/199,260.9679 = 293,342.6087/199,260.9679 = 1.472153</td><td>✓</td></tr>
+<tr><td>固定费盈亏点</td><td>1,225.357 元/辆·日</td><td>(6×199,260.9679 − 842.6087)/975 = 1,195,565.807/975 = 1,225.357</td><td>✓</td></tr>
+<tr><td>区 24 样例</td><td>LP 2,059.49 + 26.50 = 2,085.98</td><td>lp_unmet_zone 2,059.4861 + rounding_loss 26.4965 = 2,085.9826</td><td>✓</td></tr>
+<tr><td>键名消歧</td><td>priced 1,776.69 vs exec 1,873.59</td><td><code>schedule_city_priced_actual_mileage_cost</code> 1,776.6896；<code>schedule_exec_actual_mileage_cost</code> 1,873.5861；两键分开</td><td>✓</td></tr>
+<tr><td>LP/整数两列</td><td>两列并列</td><td><code>schedule_lp_unmet_zone</code> 2,059.4861 与 <code>schedule_int_unmet_zone</code> 2,085.9826；exec 三个键 lp/int_short/int 分开</td><td>✓</td></tr>
+</tbody></table></div>
+
+<h2>3. 方法核对</h2>
+<ul>
+<li>R3 的代码改动正是“逐区 <code>lp_bikes − int_bikes</code> 加到 exec unmet”，一对一无折算：<code>unmet = unmet_lp + flows_bikes − int_bikes</code>。LP 的汇点约束是等式（b_eq = resid），少送一辆就是多一辆未服务，修正逻辑成立。</li>
+<li>1,494.7969 与我 R2 按 809.4 车-公里 / 0.537 估算的 ~1,506 相差 0.7%，在估计误差内；现在用的是精确值。</li>
+<li><code>dyn_zone</code> 的基线（n=0，239,245.20）与三轮车层（n=975，39,984.23）是同一动态回放模型的两个点，不是动态基线对静态 LP；我核对了 <code>run_fleet</code> 的曲线来源（<code>dyn_zone(za,D,n)</code>）与 <code>base_by_zone = unmet_curve[zi,0]</code>。59.38% 的节省口径成立。</li>
+<li>范围：提交只改 <code>code/t024_q2_tier2.py</code> 与 <code>交付/T024_delivery.json</code>；<code>data/</code> 为未跟踪的运行输出，符合目录约定。</li>
+</ul>
+
+<h2>4. T021 必须遵守的论文口径（已写入 T021 任务单补充）</h2>
+<ol>
+<li><strong>主数用整数执行版：</strong>975 辆、617,055.75 元/日、节省 902,223.20（59.385%），满载口径；实际里程口径并列 618,086.73 / 59.317%，差 1,030.98 元/日（0.17%）。</li>
+<li><strong>889 / 591,587 / 61.06% 只能写“理想 LP 上界”，</strong>并注明该排班自身有 534/13,775 趟排不进；不得作为方案数。</li>
+<li><strong>两列未服务必须并列：</strong>LP 松弛 38,489.44 与整数执行 39,984.23；论文数是后者；区 24 同理 2,059.49 vs 2,085.98。</li>
+<li><strong>盈亏点用执行版：</strong>1.47215 元/未服务辆、1,225.36 元/三轮车·日；0.4311 只能作为理想 LP 口径的注脚。</li>
+<li><strong>格级未服务的区间要写清：</strong>无车层时的动态回放上界 239,245（11.22%），静态小时自由重分下界 115,129（5.40%）；论文的 11.22%→1.875% 是模型内动态口径，不要把 5.40% 当成同一基线去算节省。</li>
+<li><strong>“975/617,056”是上界：</strong>贪心排班与现有分配下，更好的排班或按执行成本重优化可能更低；节省 59.38% 是下界。这一句写进局限性。</li>
+</ol>
+
+<h2>5. 台账处理</h2>
+<ul>
+<li>T024：通过（R3）。</li>
+<li>H24、M14 已于 T024-R1 关闭；其关闭证据中的 885/40,357 数字被 R2/R3 取代，追加更正说明，不重开。</li>
+</ul>
+
+</main>
+</body>
+</html>

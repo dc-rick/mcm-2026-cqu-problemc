@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T022-M15 验收：通过（附论文口径条件）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T022-M15 验收：通过（附论文口径条件）</h1>
+<p class="meta">2026-11-18 · M15 交付 3cfbf53（T022_delivery.json R3）· 4 错位强度 × 3 围栏制度 × 20 种子；T019 围栏口径</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>12 行设计、单归属规则、容量口径与地区拆分我都从 <code>m15_mismatch.json</code> 独立复算，逐项一致：m=0 三制度 12.1015% / 12.1589% / 12.1198%，m=1.5 为 18.9882% / 19.0318% / 19.5488%；独立/共享所需容量比 1.0818 / 1.0961 / 1.1150 / 1.1323；共享围栏对单平台容量 1.0405。M15 的核心结论——“竞争的可测代价主要是容量重复，不是库存深度；共享围栏省容量但不降失单”——数据支持。M12 的配对检验已在 c9ce2ea 通过，T022 三项至此完成。</p>
+</div>
+
+<h2>1. 独立复算表</h2>
+<div class="tw"><table>
+<thead><tr><th>m</th><th>制度</th><th>未服务率</th><th>满位/溢出率</th><th>所需容量（位）</th><th>指导方复算</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">0.0</td><td>独立 150/150</td><td>12.1015%</td><td>0.0001%</td><td>608,326.1</td><td>143,011/1,181,754.7 = 12.1015%</td></tr>
+<tr><td>独立等容 75/75</td><td>12.1589%</td><td>0.8983%</td><td>608,326.1</td><td>143,688.8/1,181,754.7 = 12.1589%</td></tr>
+<tr><td>共享 150</td><td>12.1198%</td><td>0.3476%</td><td>562,331.6</td><td>143,226.5/1,181,754.7 = 12.1198%</td></tr>
+<tr><td rowspan="3">0.5</td><td>独立</td><td>13.2669%</td><td>0.0067%</td><td>619,001.8</td><td>156,761.8/1,181,599.95 = 13.2669%</td></tr>
+<tr><td>独立等容</td><td>13.3219%</td><td>1.5437%</td><td>619,001.8</td><td>157,411.5/1,181,599.95 = 13.3219%</td></tr>
+<tr><td>共享</td><td>13.2929%</td><td>0.3707%</td><td>564,716.9</td><td>157,069.4/1,181,599.95 = 13.2929%</td></tr>
+<tr><td rowspan="3">1.0</td><td>独立</td><td>15.9558%</td><td>0.1479%</td><td>643,486.0</td><td>188,547/1,181,599.95 = 15.9558%</td></tr>
+<tr><td>独立等容</td><td>16.0039%</td><td>3.5272%</td><td>643,486.0</td><td>189,115/1,181,599.95 = 16.0039%</td></tr>
+<tr><td>共享</td><td>16.1140%</td><td>0.6870%</td><td>577,094.6</td><td>190,417/1,181,599.95 = 16.1140%</td></tr>
+<tr><td rowspan="3">1.5</td><td>独立</td><td>18.9882%</td><td>0.5724%</td><td>673,517.5</td><td>224,354/1,181,599.95 = 18.9882%</td></tr>
+<tr><td>独立等容</td><td>19.0318%</td><td>6.2317%</td><td>673,517.5</td><td>224,869/1,181,599.95 = 19.0318%</td></tr>
+<tr><td>共享</td><td>19.5488%</td><td>1.5718%</td><td>594,809.5</td><td>230,977/1,181,599.95 = 19.5488%</td></tr>
+</tbody></table></div>
+
+<div class="tw"><table>
+<thead><tr><th>核对项</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>独立/共享容量比</td><td>1.0818 / 1.0961 / 1.1150 / 1.1323</td><td>608,326.1/562,331.6 = 1.08179；619,001.8/564,716.9 = 1.09613；643,486.0/577,094.6 = 1.11504；673,517.5/594,809.5 = 1.13232</td><td>✓</td></tr>
+<tr><td>共享 vs 单平台</td><td>562,331.6 / 540,447.7 = 1.0405</td><td>1.040492；单平台未服务 11.6607%、容量 540,447.69</td><td>✓</td></tr>
+<tr><td>地区镜像（m=1.0 共享）</td><td>东 A 22.46% / B 6.42%；西 A 5.95% / B 22.04%</td><td>0.224582 / 0.064159；0.059454 / 0.220361</td><td>✓</td></tr>
+<tr><td>流量守恒</td><td>dep_ratio 0.99974、arr_ratio 1.00036</td><td>m15_check 一致；share 和误差 0.0</td><td>✓</td></tr>
+<tr><td>车队对半</td><td>171,819 / 171,819</td><td>max_abs_A_vs_half = max_abs_B_vs_half = 0.0</td><td>✓</td></tr>
+<tr><td>行数与设计</td><td>12 行、4×3×20</td><td>mismatches 0/0.5/1.0/1.5，regimes 三档，seeds 0–19；all_pass=true</td><td>✓</td></tr>
+</tbody></table></div>
+
+<h2>2. 方法核对</h2>
+<ul>
+<li><strong>所需容量是“无上限峰值占用”的 95 分位之和，不是实际泊位数。</strong>独立容量 608,326 大于 4,000×150 = 600,000，正是因为它按 <code>uncapped=True</code> 记录峰值（代码第 322 行），不截断在 150；这是“需要多少位”的反事实，不是仿真里真实存在的位。note 已写明；论文引用时必须叫“所需容量”，不能叫“现有泊位”。</li>
+<li><strong>共享围栏不共享车辆。</strong>两平台仍只服务自己的车，共享只发生在泊位；因此 m≥1.0 时共享失单略高于独立（16.114 vs 15.956、19.549 vs 18.988），是共享池让一个平台的车占用了另一个平台高峰需要的位。这个反直觉方向已由 note 解释，数据支持。</li>
+<li><strong>m=0 的拆分基线代价。</strong>单平台 11.66% → 两平台独立 12.10%，多出的约 0.44 个百分点是“把同一车队拆成两个单归属平台”的碎片化代价，与空间错位无关；它说明 12.1% 不是错位造成的，错位把 12.1% 抬到 19.0%。</li>
+<li><strong>需求口径。</strong>dep 总量 1,181,754.7 是 4,000 个围栏站点的离场量（<code>cell_demand.npz</code> 全城 2,132,542 中围栏内部分）；单平台/两平台都在同一口径下比较，内部一致。</li>
+<li>范围：提交只新增 <code>code/t022_m15_q5_mismatch.py</code> 与 <code>交付/T022_delivery.json</code>；<code>data/runs/T022/</code> 为运行输出（未跟踪），输入哈希写在文件里。</li>
+</ul>
+
+<h2>3. T021 必须遵守的论文口径（已写入 T021 任务单补充）</h2>
+<ol>
+<li><strong>分母要写清：</strong>12.10% / 12.12% 的分母是<strong>围栏内站点离场量</strong>（约 1,181,755），不是全城 2,132,542。T019 记录的“132,251，占 6.2%”用的分母是全城到达 2,132,542；两者<strong>不能直接并列</strong>。若 Q4 与 Q5 同时出现，必须分别标注“全城口径”与“围栏内口径”，或统一重算后再比。</li>
+<li><strong>“零未服务”限定为 zone 级：</strong>原 24 次运行是 5 分钟、zone 级、同比缩放；围栏级同口径同比拆分已是 12.1%。论文不得把 24 次运行的零写成“竞争对可用性中性”。</li>
+<li><strong>布局专属：</strong>这是 4,000 站 / 150 位 / 450 m 的 T019 布局，不是 Q4 的 626/705 围栏前沿；容量重复率 7.6%–11.7% 不可外推到别的布局。</li>
+<li><strong>容量 vs 失单分开写：</strong>共享围栏省 7.6%–11.7% 的所需容量，但不降低失单率（m≥1.0 略升）；共享相对单平台仍多 4.05% 容量、失单多约 0.46 个百分点，这是单归属碎片化，不是错位。</li>
+<li><strong>M12 的 n：</strong>253,617 / 302,058 是 OD 均落入 5,263 格的<strong>建模行程</strong>（原始 265,173 / 314,516 的 95.6% / 96.0%）；论文若写“全部测试行程”，应加“可建模”限定。</li>
+</ol>
+
+<h2>4. 台账处理</h2>
+<ul>
+<li>T022：通过（M16、M12、M15 三项均通过）。</li>
+<li>M15：关闭。M16 仍为“修复中（待论文落地）”，随 T021 关闭。</li>
+</ul>
+
+</main>
+</body>
+</html>
