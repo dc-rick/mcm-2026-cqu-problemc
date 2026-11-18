@@ -263,6 +263,43 @@ li{margin:3px 0}
 
 <h3>12.2 阶段结论</h3>
 <p>第四轮满足“0 阻塞”，且 R1c 的对应项不再出现；六中里五项是已披露的建模深度限制，新增 M7 的事实前提经代码核对不成立，仅采纳其澄清句；三项低中 m2 属实、m1/m3 驳回。故按验收标准不构成“不可提交”，但须先落 R1d 两处文字并复核、跑第五轮，再写最终“可提交”。</p>
+<h2>13. R1d 复核（<code>a6da7ad</code>，2026-11-19）</h2>
+<p>R1d 是对第四轮 M7（主张驳回、采纳澄清）与 m2（σ 定义）的两处纯文字微修（任务单 §8.6）。指导方独立复验：</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td>通过：<code>a6da7ad</code> 仅动 <code>paper/sec5_q2.tex</code>、<code>paper/sec8_q5.tex</code>、<code>paper/main.pdf</code> 与 <code>交付/T027</code> 四个文件；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code> 未触碰</td></tr>
+<tr><td>两处编辑</td><td>通过（diff 恰为两处）：① <code>sec8_q5.tex</code> 的 “where” 后插入 “<code>$\sigma$</code> is the logistic function,”；② <code>sec5_q2.tex</code> 空驶句后加 “The truck cost is common to both totals in the comparison, so this deadhead shifts the two sides equally and leaves the percentage saving unchanged.”。无其他改动</td></tr>
+<tr><td>数字门</td><td>通过：14 个 tex 逐文件 Counter 对 <code>3209636</code>；<code>sec8_q5.tex</code> 与其余 11 个正文文件 identical，<code>sec5_q2.tex</code> 仍仅 +<code>12</code>×1；<code>ai_report.tex</code> +<code>12</code>×1 按 §8.3 豁免</td></tr>
+<tr><td>独立编译</td><td>通过：临时副本三遍 xelatex，27 总 / 25 计页；overfull 0、LaTeX Warning 0、undefined 0、<code>??</code> 0、U+037E 0；underfull 7 与此前同环境编译相同；目录 References→25、AI 报告→26</td></tr>
+<tr><td>渲染</td><td>通过：两条新句在 PDF 各出现一次；σ 句读作 “…where <code>$\sigma$</code> is the logistic function, <code>$\tilde x_i$</code> is the cell's east–west coordinate…”；空驶句紧随 “repeating the daily plan requires it.”</td></tr>
+<tr><td>哈希</td><td>通过：<code>file_list.json</code> 757 个文件逐一 SHA-256 复算，0 缺失、0 差异</td></tr>
+<tr><td>回归</td><td>通过：<code>verify_final.json</code> revision=<code>R1d</code>、<code>all_pass=true</code>、<code>r1d_checks</code> 两条全 true；六数复算一致（975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385%）；交付 checks 39、affected 33，末两条即 R1d-1/2</td></tr>
+</tbody></table></div>
+<p><strong>结论：R1d 通过。</strong>唯一剩余的门是 DeepSeek 第五轮冷读（<code>review/review_r5.json</code>，<code>--prev review_r4.json</code>）。</p>
+<h2>14. DeepSeek 第五轮裁决（<code>R1d</code>；F，0/7/4）与 R1e</h2>
+<p>第五轮对 R1d 的 PDF 源（<code>review/review_r5.json</code>，model deepseek-v4-pro，input 39,937 / output 20,980 tokens）：<b>阻塞 0</b>，中 7，低 4。R1d 的两处修改未被列为缺陷，M7 改判 partial（“now disclosed and quantified”）。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>五网格点 + 固定卡车层后解三轮车，无联合优化</td><td>驳回（已披露）</td><td>同前四轮：§5.3/§10 明写层间序贯与网格；联合两梯队是另一模型</td></tr>
+<tr><td>M2</td><td>1/p 缩放流量与未缩放 I0 混用</td><td>驳回（已披露）</td><td>同前：343,638 是 initial-inventory proxy，§3 写下界、§7.1 两情景分开跑；换 I0 重跑会改全部数字</td></tr>
+<tr><td>M3</td><td>逐区-小时静态三轮车层</td><td>驳回（已披露）</td><td>同前：§5.4/§10 明写静态 LP + earliest-finish</td></tr>
+<tr><td>M6</td><td>κ/ρ 未全局敏感性</td><td>驳回（已披露）</td><td>同前：κ/ρ 不可识别（2017 年 5 月无奖励数据），§6.2 assumed、§6.4 c₀ 表、摘要 pilot design</td></tr>
+<tr><td>M7</td><td>空驶仍未并入 headline 成本</td><td>驳回</td><td>R1d-2 已写明两侧同含 <code>truck_obj</code>、节省不变；正文给出 6,142.58 并写明 “repeating the daily plan requires it”。并进 headline 只抬高两侧水平、不改任何比较结论；改所有印刷值会破坏 token 门与回归</td></tr>
+<tr><td>M5</td><td>59.53% 覆盖的分母与城市级同时 95 分位混用</td><td>驳回</td><td>表注与 §7.1 明确定义 “assigned share of the cell-level 95th percentile peak occupancy”，并给出 974,923.16 vs 630,002.78（比值 0.646）与 495,540 情景；摘要的 “peak occupancy” 与表行同名</td></tr>
+<tr><td>M8（新）</td><td>150-slot capped plan 不满足 per-site 95% 可靠性，却在 §7.4 末句这样写</td><td><b>接受（文字-模型矛盾，高）</b></td><td>属实：cap 在 704/705 站点 binding，capped plan 留下 394,553.13 未分配需求；per-site 95% 是 §7.1 的 uncapped sizing 约定。R1e-1 改写该句（保留 150 与 95 各一次）</td></tr>
+<tr><td>m1</td><td>行程时长常数未验证</td><td>驳回</td><td>同前：<code>data/trips.parquet</code> 无 endtime，不可验证；§4.6 逐字披露、AI 报告列入写入型常数</td></tr>
+<tr><td>m2（新）</td><td>1.0 CNY/day 自行车持有成本未被任何计算使用</td><td><b>接受（悬空参数，低）</b></td><td>属实：<code>code/t023_uncertainty.py</code> 参数表无此项，Q2/Q3 目标只计卡车、三轮车与未服务罚。删参数会破坏 token 门，R1e-2 改为说明其为方案共同成本、不入目标，并把 “They are perturbed” 限定为 truck and tricycle costs</td></tr>
+<tr><td>m3</td><td>三轮车变动成本 842.61 未由行程与距离重建</td><td>驳回</td><td>成本公式在 §5.4 已给（<code>TRI_FIXED·n + TRI_KM·(vehicle_km+deadhead_km) + 6·unmet</code>，<code>t024_q2_tier2.py:46–47</code>：300/辆/日、0.20/km）；文中该数不是 842.61 的口径，按结果文件复算为约 1,873.59（0.20×(7,436.03+1,931.90)），842.61 之说无法复现</td></tr>
+<tr><td>m4</td><td>Poisson 生成假设未在 cell-interval 层检验</td><td>驳回（范围外）</td><td>新估计不在定稿任务内；§4 已报告 pooled overdispersion 与 held-out 验证</td></tr>
+</tbody></table></div>
+
+<h3>14.1 R1e（两处纯文字，零数字 token）</h3>
+<p>任务单 §8.7 已下达：<b>R1e-1</b> 把 §7.4 末句改为 “a sizing standard of 150 slots per selected cell applied to the assigned demand, while the 95\% per-fence adequacy is a property of the uncapped sizing --- not a count of existing berths and not a per-site adequacy guarantee under the cap.”；<b>R1e-2</b> 在成本参数句插入 “a cost common to every plan compared here, since the bicycle stock is a scenario rather than a decision, and therefore not charged in the Q2 or Q3 objectives”，并把 “They are perturbed” 改为 “The truck and tricycle costs are perturbed”。R1e 交付后跑第六轮冷读（<code>--prev review/review_r5.json</code>）。若第六轮仍为 0 阻塞且无新的文字-模型矛盾，即写“可提交”终判；深度类（联合优化、I0、静态层、κ/ρ）不再作为门槛。</p>
+
+<h3>14.2 阶段结论</h3>
+<p>第五轮满足“0 阻塞”；M1/M2/M3/M6 为已披露的建模深度，M7/M5 驳回（口径已定义、节省不变）。新 M8 是真实的文字-模型矛盾（capped plan 与 per-site 95% 不可兼得），m2 是悬空参数，两者均以纯文字修正（R1e），不改任何数字。落 R1e 并复核、跑第六轮后写终判。</p>
 
 </main>
 </body>
