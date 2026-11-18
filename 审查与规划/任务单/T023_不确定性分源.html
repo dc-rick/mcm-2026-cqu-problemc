@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T023 不确定性分源</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T023 · 不确定性按来源分解（重开 M6，并入 M13）</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（待 T018–T020 通过后开工）</strong>　·　问题：M6（重开）、M13　·　可写：<code>code/</code>、<code>data/runs/T023/</code>、<code>交付/T023_delivery.json</code>　·　不改 <code>paper/</code>（换数并入 T021）</p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>项目第 6 条硬标准要求“不确定性按来源分解：识别参数、假设负荷、文献值分开”。M6 当时因 4 天最小集被接受不修，<code>sec9_sensitivity.tex</code> 只有单参数扫描，并自称“不是方差分解”。现在时间不再是约束，这一项要补上。M13（抽样率 0.128/0.185/0.200 情景）并入本任务，不在 T022 重复做。</p>
+</div>
+
+<h2>1. 参数分三组（每个参数写区间与来源）</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:18%">组</th><th style="width:44%">参数</th><th style="width:38%">区间怎么来</th></tr></thead>
+<tbody>
+<tr><td>A 数据识别</td><td>五时段 β_h、分时出发率、吸引力 A_j、时长模型</td><td>按日（9 个记录日）或按用户分块 bootstrap，≥200 次；不得用正态近似代替</td></tr>
+<tr><td>B 假设负荷</td><td>抽样率 p ∈ {0.128, 0.185, 0.200}；期初库存 343,638 / 495,540；日间波动（训练日之间的出发量差异）</td><td>p 与库存按情景；日间波动用 9 个记录日的实测分布</td></tr>
+<tr><td>C 文献/规划值</td><td>COST_KM、COST_LOAD、PENALTY、COST_DEV、固定 600 元/车/天；κ、ρ、c0；步行半径 R；站点上限 150；λ；卡车速度与装卸时间（T018 的假设）</td><td>每个参数给来源或理由与上下界；没有来源的标“规划假设”，区间取 ±50% 并说明</td></tr>
+</tbody></table></div>
+
+<h2>2. 要输出什么</h2>
+<ol>
+<li><strong>主结果的分组区间</strong>：Q2 总成本、最优 K、未服务量；Q3 系统节省（T020 口径）；Q4 限容站点数与有容量保障覆盖率（T019 口径）。每个输出给 P5/P50/P95：只动 A 组、只动 B 组、只动 C 组、三组同时动。</li>
+<li><strong>方差份额</strong>：分组一阶指数（分组 Sobol 或 pick-freeze），三组份额与交互项；写清样本数与收敛检查（样本加倍后份额变化 ≤0.05）。MILP 太慢时可用 LP 松弛作代理，但必须报告代理与整数解在 ≥10 个抽样点上的偏差。</li>
+<li><strong>龙卷风图</strong>：Q2、Q3、Q4 各一张（或合成一张三联图），参数按影响排序，字号 ≥7 pt。</li>
+<li><strong>方案是否翻转</strong>：在各组区间内，推荐 K、推荐预算档、限容方案的站点数是否改变；翻转的条件写清。</li>
+</ol>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><code>data/runs/T023/param_table.json</code>：每个参数的组、主值、区间、来源/理由。</li>
+<li><code>data/runs/T023/intervals.json</code>：输出 × {A, B, C, 全部} 的 P5/P50/P95。</li>
+<li><code>data/runs/T023/variance_shares.json</code>：分组份额、交互项、样本数、加倍样本的收敛对比。</li>
+<li>代理偏差表（若用 LP 松弛）；方案翻转表。</li>
+<li>图文件：<code>figs/</code> 下新图（PDF 矢量），附生成脚本。</li>
+<li>复现信息（种子、命令、输入 SHA-256）；交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+</main>
+</body>
+</html>

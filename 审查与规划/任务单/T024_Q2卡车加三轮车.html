@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T024 Q2 卡车加三轮车</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.warn{border-left-color:var(--warn)}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T024 · Q2 两级调度：卡车跨区 + 三轮车区内</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（待 T018 通过后开工）</strong>　·　问题：H24、M14（含原 T022-M14 子项）　·　可写：<code>code/</code>、<code>data/runs/T024/</code>、<code>交付/T024_delivery.json</code>　·　不改 <code>paper/</code></p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>题面第 2 问原文：“Shared-bicycle platforms deploy <strong>trucks, tricycles and other vehicles</strong> to reposition bicycles”。论文只有一种 Q=40 的卡车。另外，50 区模型看不到区内各格之间的失衡（M14）：区级未服务为 0，不等于格级没有缺车。三轮车容量小、适合短距离，正好处理区内格级调度。两件事一起做，就是一个两级方案。</p>
+</div>
+
+<h2>1. 要做什么</h2>
+<ol>
+<li><strong>先量化区内失衡。</strong>在 T018 推荐方案下，把区级库存按 Q1 到达面拆到格（拆法写清），逐小时计算格级缺车量与未服务量。报告“区级未服务 0、格级未服务 X”的差额。这是 M14 的核心数字。另给车队规模 × {格级未服务率, 总成本} 的对照（至少 0.8、1.0、1.2、1.44 倍 I0 四档），“供给过剩”的成立条件（空间尺度、库存口径）据此写清。</li>
+<li><strong>三轮车参数必须有来源。</strong>容量、速度、每公里成本、日固定成本、单趟最大距离：先找公开资料（行业报道、运营商公开信息、文献）并引用；找不到就标“规划假设”，取区间并做敏感性。不得编造来源。</li>
+<li><strong>区内调度模型。</strong>每个区内是一个格级的时空运输问题（三轮车整数或可分解流），目标是在三轮车固定成本 + 里程成本 + 格级未服务罚金之间权衡；跨区仍由 T018 的卡车 MILP 负责，两级通过区级净流量衔接（写清顺序：先卡车定区间流量，再三轮车做区内分配，或联合求解）。</li>
+<li><strong>同口径对比。</strong>同一需求、库存、服务规则下比较：只用卡车（区级）/ 卡车 + 三轮车（两级）。列：区级与格级未服务量、车公里（分车型）、车辆数（分车型）、总成本。扫描三轮车数量，给出边际收益曲线。</li>
+<li><strong>可执行性。</strong>三轮车也要有逐车班表样例（至少一个区的完整班表）与约束核查（载重、时长、起终点）。</li>
+</ol>
+
+<h2>2. 验收（缺一不可）</h2>
+<ol>
+<li><code>data/runs/T024/cell_unmet.json</code>：T018 方案下区级 vs 格级未服务（总量、按小时、最严重 10 格）。</li>
+<li><code>data/runs/T024/vehicle_params.json</code>：三轮车每个参数的值、区间、来源链接或“规划假设”标签。</li>
+<li><code>data/runs/T024/compare.json</code>：只卡车 vs 两级 × {区级未服务, 格级未服务, 分车型车公里与车辆数, 总成本}；三轮车数量扫描 ≥5 个点。</li>
+<li>班表样例与约束核查全 0（否则 status=partial 并说明）。</li>
+<li>复现信息；交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>结果可能是“三轮车不划算”。</strong>那也是有效结论，照实报告并给出成立条件（例如三轮车日成本高于某阈值）。</p>
+</div>
+
+</main>
+</body>
+</html>

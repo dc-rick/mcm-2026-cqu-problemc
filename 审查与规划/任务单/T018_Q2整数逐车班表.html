@@ -37,6 +37,17 @@ li{margin:3px 0}
 <p><strong>为什么：</strong>论文 <code>sec5_q2.tex:88–92</code> 说“plan is rounded up when a schedule is drawn”，并用 <strong>623.17 辆/小时</strong>作为推荐方案的核查。复算：623.17 来自贪心基线（<code>q2_greedy_check.json</code> 全天只搬 2,076 辆）；推荐 LP 全天搬 24,679 辆，<strong>峰值 2,083.15 辆在 23 时</strong>（52.08 车次）。班表从未生成；卡车变量是连续的（<code>21_q2_opt.py:94</code>）。另外，<code>:137</code> 只约束 <code>served ≤ I[z,t]</code>，卡车取车只受 <code>I[z,t+1] ≥ 0</code> 的净约束（:140），即卡车可以取走同一小时内才到达的车，用户与卡车合计取车可以超过小时初库存。详见 <code>审查记录/外部评审M奖_核实_2026-11-18.html</code>。</p>
 </div>
 
+<div class="box hi">
+<p><strong>输入口径锁定（T018–T024 共用，2026-11-18 定）：</strong></p>
+<ol>
+<li><strong>设计需求</strong>：Q1 模型在训练日（05-10、11、15、16、18）上估计的 OD 与分时出发率；测试日 05-12、05-19 不得进入任何设计用需求、吸引力 A_j 或出发率（M11）。若沿用 <code>lib.TYP_DAYS</code>（含 12、19）须改为训练日，并在交付里报告两种口径的差值。</li>
+<li><strong>留出回放</strong>：在 05-12、05-19 的实测出发/到达上逐日回放，调度方只用训练日信息派车，写清“派车时已知什么”。</li>
+<li><strong>期初库存</strong>：主口径 343,638，统一称“由末次观测还车位置构造的期初库存代理”（英文固定短语由 T021 定）；情景 495,540。</li>
+<li><strong>抽样率</strong>：主口径 p = 0.128（SCALE = 1/0.128）；情景 0.185、0.200 由 T023 传播。</li>
+<li><strong>成本参数</strong>：沿用 <code>21_q2_opt.py</code> 现值（COST_KM 6、COST_LOAD 0.5、PENALTY 6、COST_DEV 3、固定 600 元/车/天），任何改动先报指导方。</li>
+</ol>
+</div>
+
 <h2>1. 要做什么</h2>
 <ol>
 <li><strong>锁定小时内事件顺序并写成约束。</strong>推荐顺序：小时初库存 I → 卡车取车 → 用户取车 → 用户还车与卡车卸车在小时末计入。约束：<code>Σ_j x[z,j,t] + served[z,t] ≤ I[z,t]</code>（取车与用户共用小时初库存）。若改用别的顺序，在交付里写出理由与误差方向。必须报告：在旧解上，这条约束被违反多少（区-时数、最大缺口辆数）。</li>
