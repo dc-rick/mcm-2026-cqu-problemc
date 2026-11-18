@@ -57,7 +57,7 @@ li{margin:3px 0}
 
 <h2>3. 一致性与禁区</h2>
 <ul>
-<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>例外（逐条授权）：</strong>（i）L16：sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；（ii）§6 冷读修正带来的两处：summary 的 “10--24 May” 改为 “10--19 May”（token 24→19）、A6 增加 “travel at 20 km/h”（新增 token 20）。<strong>除这三处外，正文数字 token 不得有任何增减。</strong></li>
+<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>例外（逐条授权）：</strong>（i）L16：sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；（ii）§6 冷读修正带来的两处：summary 的 “10--24 May” 改为 “10--19 May”（token 24→19）、A6 增加 “travel at 20 km/h”（新增 token 20）；（iii）L19：sec4:219 的 “minimum of 0.306” 改为 “0.305”（<code>data/runs/T005/k_stability.json</code> 的 <code>k.5.ari_pairwise_min=0.3054539</code>，三位小数应为 0.305；该 token 不在 T021A 锁表内，是本轮新发现的四舍五入错误）。<strong>除这四处外，正文数字 token 不得有任何增减。</strong></li>
 <li>禁止在收尾阶段改结论、改表值、改图；发现不一致先报 <code>blocked</code>，不要"顺手修"。</li>
 <li>不写内部任务编号（T0xx）、不写改稿历史、不写"earlier version"。</li>
 </ul>
@@ -73,7 +73,7 @@ li{margin:3px 0}
 </ol>
 
 <h2>6. 冷读文字修正（2026-11-19 追加）</h2>
-<p class="meta">指导方已对 <code>8708d37</code> 版跑完 DeepSeek 冷读（<code>review/review_r1.json</code>：0 blocking / 5 major / 5 minor，评级 F）。下列六处是冷读暴露的<b>文字与表述缺陷</b>，只改表述、不改任何表值、图、结果与结论；数字 token 变化仅 §3 授权的两处。</p>
+<p class="meta">指导方已对 <code>8708d37</code> 版跑完 DeepSeek 冷读（<code>review/review_r1.json</code>：0 blocking / 5 major / 5 minor，评级 F）。下列八处是冷读与逐数字溯源暴露的<b>文字与表述缺陷</b>，只改表述、不改任何表值、图、结果与结论；数字 token 变化仅 §3 授权的四处。</p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>位置</th><th>现行文字</th><th>改为</th><th>依据</th></tr></thead>
 <tbody>
@@ -82,9 +82,10 @@ li{margin:3px 0}
 <tr><td>3</td><td><code>sec5_q2.tex</code> §5.4 首段</td><td>“The tricycle layer is therefore a same-zone vehicle-routing problem … The layer is solved zone by zone as an integer routing program”</td><td>按实际实现写清楚：每个 zone-hour 一个 donor→sink 的运输规划（transportation program），由 LP 流量构造整数 trip 列表，再按 earliest-finish 分配给三轮车；参数（$Q_{\text{tri}}=20$、15 km/h、0.5 min/辆、≤5 km、07:00--20:00、300 CNY/日、0.2 CNY/km、6 CNY 惩罚）与全部数字不变</td><td><code>code/t024_q2_tier2.py</code>：<code>_tri_lp</code>（transportation LP）、<code>_int_trips</code>、<code>_assign</code>（earliest-finish）；现文字写 “VRP” 会让评委索要未实现的车辆路径模型</td></tr>
 <tr><td>4</td><td><code>sec2_assumptions.tex</code> A6</td><td>“Trucks serve only the eight nearest zones within 9 km (290 arcs), the range of an overnight shift.”</td><td>“…… (290 arcs) and travel at 20 km/h.”（46.92 min 上限 = 9 km ÷ 20 km/h + 40 辆 × 0.5 min 装卸，可复算；删去与全天小时班表矛盾的 “overnight shift”）</td><td><code>code/t018_q2_int.py:65</code> <code>SPEED_KMH=20.0</code>；新增 token 20 已在 §3 授权</td></tr>
 <tr><td>5</td><td><code>sec7_q4.tex</code> §7.1、§7.5、§7.6</td><td>“starts each fence at its measured inventory”“At the measured inventory”“The measured 5/16 snapshot”</td><td>统一为 “initial-inventory proxy”（§3.4 的定义：由每辆车最后一次归还位置推出的存量，不是实测车队）；“measured 5/16 snapshot” 可改为 “5/16 00:00 snapshot”</td><td><code>sec3_data.tex</code> 对 343,638 的定义；术语必须全文一致</td></tr>
-<tr><td>6</td><td><code>sec7_q4.tex</code> 表 <code>tab:q4plan</code></td><td>行名 “Assigned demand”“Unassigned demand”</td><td>“Assigned sizing demand”“Unassigned sizing demand”（§7.1 已说明这是逐站 95 分位的 sizing convention，不是同时刻全城需求；全城同时刻 95 分为 630,002.78）</td><td><code>sec7_q4.tex</code> §7.1 第 27--36 行；只改行名，数字不动</td></tr>
+<tr><td>7</td><td><code>sec4_q1.tex</code> §4.6</td><td>“the pairwise adjusted Rand index at $k=5$ is 0.665 with a minimum of 0.306”</td><td>“minimum of 0.305”（<code>ari_pairwise_min=0.30545390288</code>，三位小数 0.305；AI 报告已写 0.305）</td><td><code>data/runs/T005/k_stability.json</code>；token 0.306→0.305 已在 §3 授权</td></tr>
+<tr><td>8</td><td><code>ai_report.tex</code></td><td>“The paper keeps 343,638 only as the measured initial inventory”；“with the fleet scanned over $\{20,40,60,80\}$ trucks”</td><td>“initial-inventory proxy”（与 §3.4、§7 统一）；“$\{0,20,40,60,80\}$ trucks”（表 <code>tab:q2scan</code> 含 $K=0$ 无调度点）</td><td>AI 报告不计页；两处均须与正文一致</td></tr>
 </tbody></table></div>
-<p><strong>执行规则：</strong>六处全部为文字修正；改后必须重编译并确认 <b>计页仍为 25</b>（无余量）。若某处使版面溢出，可在同一节内等量压缩文字，但不得删数字、不得删限定条件、不得删核心结果表与图；做不到就报 <code>blocked</code> 并说明是哪一处。改后按 §3 复算 token 多重集，新增/删除 token 必须与 §3 授权的三项（3.65→3.64、24→19、+20）完全一致。</p>
+<p><strong>执行规则：</strong>八处为文字修正（第 7 处含一个数字 token）；改后必须重编译并确认 <b>计页仍为 25</b>（无余量）。若某处使版面溢出，可在同一节内等量压缩文字，但不得删数字、不得删限定条件、不得删核心结果表与图；做不到就报 <code>blocked</code> 并说明是哪一处。改后按 §3 复算 token 多重集，新增/删除 token 必须与 §3 授权的四项（3.65→3.64、24→19、+20、0.306→0.305）完全一致。</p>
 
 <h2>7. 停止条件</h2>
 <ul>
