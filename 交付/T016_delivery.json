@@ -1,0 +1,96 @@
+{
+ "task": "T016",
+ "title": "日数口径修正",
+ "date": "2026-11-18",
+ "status": "T016 已交付",
+ "checks": {
+  "1_sec3_estimation_window": true,
+  "2_sec4_caption": true,
+  "3_sec4_table_head": true,
+  "4_sec4_regular_profile": true,
+  "5_sec4_heavy_profile": true,
+  "6_no_ten_days_wording": true,
+  "7_tokens_only_date_labels": true,
+  "8_compile_unchanged": true,
+  "9_data_17_may_absent_nine_days": true,
+  "10_scope_clean": true
+ },
+ "replacements": [
+  {
+   "file": "paper/sec3_data.tex",
+   "line": 37,
+   "old": "All estimation uses the ten days 10--19 May,",
+   "new": "All estimation uses the nine recorded days of 10--19 May,"
+  },
+  {
+   "file": "paper/sec4_q1.tex",
+   "line": 178,
+   "old": "Latent user segments (ten days).",
+   "new": "Latent user segments (the nine recorded days of 10--19 May)."
+  },
+  {
+   "file": "paper/sec4_q1.tex",
+   "line": 186,
+   "old": "\\textbf{user (10 days)}",
+   "new": "\\textbf{user (10--19 May)}"
+  },
+  {
+   "file": "paper/sec4_q1.tex",
+   "line": 199,
+   "old": "over the ten-day window",
+   "new": "over the nine recorded days of the 10--19 May window"
+  },
+  {
+   "file": "paper/sec4_q1.tex",
+   "line": 201,
+   "old": "over ten days",
+   "new": "over the nine recorded days"
+  }
+ ],
+ "compile": {
+  "engine": "xelatex",
+  "passes": 2,
+  "total_pages": 30,
+  "body_pages": 24,
+  "body_range": "sections 1-10, pages 3-26",
+  "undefined": 0,
+  "overfull": 0,
+  "u037e": 0,
+  "semicolons_in_pdf": 131,
+  "double_question_marks": 0,
+  "references_page": 27
+ },
+ "token_diff": {
+  "base": "7ce233c",
+  "only_in_base": {},
+  "only_in_new": {
+   "10": 2,
+   "19": 3
+  }
+ },
+ "per_day_counts_10_19": {
+  "2017-05-10": 262569,
+  "2017-05-11": 272210,
+  "2017-05-12": 265173,
+  "2017-05-13": 225281,
+  "2017-05-14": 236594,
+  "2017-05-15": 279554,
+  "2017-05-16": 288719,
+  "2017-05-18": 322201,
+  "2017-05-19": 314516
+ },
+ "notes": [
+  "数据依据：data/trips.parquet 按 starttime 计数，2017-05-17 无任何记录；10--19 May 只有九天有数据（10/11/12/13/14/15/16/18/19，22.5--32.2 万单/日），20--24 May 为截断窗口。code/04_behaviour.py:17 的用户表过滤即 05-10..05-19，故 trips per user 的分母是九个记录日。",
+  "只改 5 处文字，未动任何数字、表值、图注数值或公式；未重跑模型。",
+  "‘10--19 May’ 保留为窗口标签（其内 17 May 缺记录），文中用 ‘nine recorded days’ 限定，二者不再矛盾。",
+  "数字 token 多重集与 7ce233c 的差异只有 10 与 19（日期标签），无删除、无数据值变化。",
+  "grep 'ten days|ten-day|10 days' paper/*.tex = 0。"
+ ],
+ "outputs": [
+  "paper/main.pdf",
+  "paper/sec3_data.tex",
+  "paper/sec4_q1.tex",
+  "code/t016_delivery.py",
+  "交付/T016_delivery.json"
+ ]
+}
