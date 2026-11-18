@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T027 验收：退回 R1（冷读两阻塞成立，暂不可提交）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:15.5px;margin:18px 0 6px}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T027 验收：退回 R1（R0 已核，冷读两阻塞成立；暂不可提交）</h1>
+<p class="meta">2026-11-19 · R0 交付 commit <code>3209636</code>（<code>交付/T027_delivery.json</code>）· 13 项自报 check 全部复核 · 独立编译、token 门、757 文件哈希、回归、25 项数字溯源 · DeepSeek 两轮冷读逐条裁决</p>
+
+<div class="box hi">
+<p><strong>结论：暂不可提交，退回 R1。</strong>R0 的交付质量与数字一致性通过：独立编译 <strong>27 总 / 25 计页</strong>，overfull / undefined / <code>??</code> / U+037E 均为 0；正文 token 与 <code>8708d37</code> 的差异恰为授权的五项；<strong>757</strong> 个文件逐个 SHA-256 复算全对；回归 975 / 617,055.7515 / 39,984.2332 一致；25 项溯源全部落到结果文件键。但 DeepSeek 第二轮冷读的两条阻塞成立：<strong>B2</strong>——A11、§6.3、§10 写“同区改派、卡车层不变”，与 §6.2 自己的分析及 <code>t008_q3_pool.py</code> 的跨区实现矛盾（结果无误，是假设写错）；<strong>B1</strong>——产生 59.385% 节省的三轮车层没有公式。另有 M3、M4、M5、M2、m2、m3 成立。按任务单 <strong>§8 的 13 项</strong>返工后复验，第三轮冷读无阻塞才写最终结论。</p>
+</div>
+
+<h2>1. 我读了什么、独立跑了什么（R0 = 3209636）</h2>
+<ul>
+<li><strong>范围</strong>：<code>git show --stat 3209636</code> 只动 <code>paper/</code>（8 个 tex + <code>main.pdf</code> + 删除 <code>main_txt_check.txt</code>）与 <code>交付/T027/</code>；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code>、<code>.claude/</code> 未动。</li>
+<li><strong>独立编译</strong>：把 <code>paper/*.tex</code> 与 <code>figs/*.pdf</code> 复制到干净临时目录，xelatex ×3，退出码 0/0/0；<code>Output written on main.pdf (27 pages)</code>；overfull 0、underfull 记录在案、undefined reference/citation 0；PDF 全文无 <code>??</code>、无 U+037E；TOC 中 References 起始 p25、Report on Use of AI Tools 起始 p26，与正文一致。计页 = 27 − 2（AI 报告）= 25。</li>
+<li><strong>Token 门</strong>：13 个正文 tex 对 <code>8708d37</code> 逐文件比对数字 token 多重集：<code>sec4_q1</code> {3.65→3.64, 0.306→0.305}、<code>summary</code> {24→19}、<code>sec2_assumptions</code> {+20}、<code>references</code> {17→19}，其余 9 个正文文件完全一致；<code>ai_report.tex</code> 按任务单排除。与 §3 授权的五项逐项相等。</li>
+<li><strong>文件清单</strong>：<code>交付/T027/file_list.json</code> 757 个条目逐个复算 SHA-256 与字节数，两轮全部一致；非复现路径 29 个单列；不含 <code>main_txt_check.txt</code>。</li>
+<li><strong>回归</strong>：<code>data/runs/T024/schedule_check.json</code> 的 <code>n_exec=975</code>、<code>unmet=39,984.233156</code>、<code>layer_cost=533,248.0077</code>、<code>total=617,055.7515</code>、<code>saving=902,223.1988</code>、<code>share=0.593850</code>；恒等式 38,489.4362 + 1,494.7969 = 39,984.2332、292,500 + 842.6087 + 239,905.399 = 533,248.0077、83,807.7438 + 533,248.0077 = 617,055.7515 全部成立。</li>
+<li><strong>目检</strong>：PDF p7、p10、p14、p17、p23、p25 逐页看：图无裁切、坐标轴填满数据范围、灰色外推带在位；表 tab:q2schemes / tab:q4plan 未越版心。</li>
+<li><strong>外部冷读</strong>：<code>review/review_r1.json</code>（评级 F，0 阻塞 / 5 中 / 5 低，对 <code>8708d37</code>）与 <code>review/review_r2.json</code>（评级 M，2 阻塞 / 6 中 / 3 低，对 <code>3209636</code>）。</li>
+</ul>
+
+<h2>2. 七标准逐条（R0）</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>标准</th><th>结论</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>显式假设</td><td><b>不通过</b>（R1 修）</td><td>A1–A11 齐备；写入型常数逐条列出（卡车 20 km/h、0.5 CNY/辆、600 CNY/车·日、6 CNY/km；三轮车 20 辆/趟、15 km/h、0.5 min/辆、≤5 km、300 CNY/日、0.20 CNY/km、07:00–20:00；κ=2、ρ=0.35、c₀=0.8；30,000 预算）；时长模型在 §4.6 明说为规划假设。但 <b>A11 的“same zone / no cross-zone reroute”是假陈述</b>（见 §6 B2），且与 §6.2 矛盾。</td></tr>
+<tr><td>2</td><td>物理严谨</td><td>通过（R1 补公式）</td><td>自行车守恒（T007 城市残差 1.16e-10）、事件顺序（每区-小时最少 0.81 辆松弛）、装载 ≤40、单趟 46.92 min &lt; 60 min、库存非负（最小 1,891.36）；Q4 容量 150×站点；三轮车 LP 的时间预算按“2d/(vQ)+2h/60”逐辆计。R1 把后两者写成公式。</td></tr>
+<tr><td>3</td><td>边界条件</td><td><b>部分不通过</b>（R1 修）</td><td>两个存量情景、10–19 May 九日、07:00–20:00、K∈{0,20,40,60,80}、p∈[0.128,0.200]、450 m 半径、5 km 行程、150 位上限都写明。但 §5 的“return them to their starting zones by midnight”超出 eq:q2fleet（只有总量守恒），已列 M22，R1-4 改写。</td></tr>
+<tr><td>4</td><td>数据范围 = 有效范围</td><td>通过</td><td>p 用 0.128（下界）并声明所有绝对流量是上界；20–24 May 为截断样本、只用于扩张估计；495,540 给区间 [484,754, 506,635] 并说明偏差方向；4.33 标为上限；§10 列明未建模因素（天气、土地使用、新投放）。密度图/曲线外推区在图上以灰带标出。</td></tr>
+<tr><td>5</td><td>数字来自结果</td><td>通过（附 L23）</td><td><code>numbers.json</code> 724 条由 <code>code/t021a_numbers.py</code> 从结果文件写入并逐条回读；我另做 25 项独立溯源（§4），26/25 项对到文件键。发现 <code>numbers.json</code> 的 <code>0.098</code> 条目指向 T023 方差份额而非 §4.6 的 KS（真源 <code>T005/fig3_redraw.json</code> 0.097861），已记 L23；论文数字本身无误。</td></tr>
+<tr><td>6</td><td>不确定性分源</td><td>通过</td><td>T023 按“识别参数（A）/假设负荷（B）/文献值（C）”三组 128 次联合抽样，给 K*、节省份额、Q4 覆盖的组内份额；T026 给两来源上限 1.08%–2.92% 与 c₀ 表；§9 给区间与单因素表；T025 给求解容差内的付款上限。</td></tr>
+<tr><td>7</td><td>图填满坐标轴</td><td>通过</td><td>5 图（fig1_data、fig3_q1_validation、fig4_q2、fig_q3_cost_vs_r、fig9_tornado）均为矢量 PDF；目检 p7/p10/p14/p17/p23：xlim 到数据范围、轨迹图截断轴、外推区灰带；fig_q3 两个 panel 分别全网格与放大。</td></tr>
+</tbody></table></div>
+
+<h2>3. COMAP 合规（R0）</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>要求</th><th>实际</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>页数</td><td>≤25 页（AI 报告不计）</td><td>27 总页；摘要 1 + 目录 1 + 正文 22 + 参考文献 1 = 25；AI 报告 pp26–27</td><td>通过（无余量）</td></tr>
+<tr><td>摘要</td><td>单独一页</td><td>page 1，独立分页</td><td>通过</td></tr>
+<tr><td>目录</td><td>可选但须与正文一致</td><td>TOC 页码与正文一致，含 References</td><td>通过</td></tr>
+<tr><td>参考文献</td><td>完整、正文有引</td><td>p25；32 条；除 Gurobi 外全部在正文有 \cite（M23，R1-6 修）</td><td>通过（R1 补一处）</td></tr>
+<tr><td>AI 报告</td><td>合规披露</td><td>\cite{aiapp}、工具版本、11–19 Nov 日期、5 图实清单、724 条数字来源、写入型常数、4 组 Query/Output、复现顺序</td><td>通过</td></tr>
+<tr><td>身份信息</td><td>不得出现</td><td>无队号、无姓名、无机构</td><td>通过</td></tr>
+<tr><td>内部流程</td><td>不得出现</td><td>T0xx / “six figures” / earlier version 等 0 命中</td><td>通过</td></tr>
+</tbody></table></div>
+
+<h2>4. 数字溯源（25 项，R0 印刷值）</h2>
+<p class="meta">“锁”= <code>data/runs/T021A/numbers.json</code> 的 token 条目；“直核”= 指导方直接读结果文件复算（这些 token 不在锁内或锁条目错指）。</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>印刷值</th><th>出处（文件 :: 键）</th><th>存储值</th><th>方式</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>343,638</td><td><code>data/runs/T018/baselines.json :: design/I0</code></td><td>343638.0</td><td>锁</td></tr>
+<tr><td>2</td><td>495,540</td><td><code>data/runs/T009/q4_results.json :: validation/initial_inventory/fleet495_sum</code></td><td>495540.0</td><td>锁</td></tr>
+<tr><td>3</td><td>3.21（百万单）</td><td><code>data/runs/T002/ratios.json :: bbox_rows</code>（÷10⁶）</td><td>3.21331</td><td>锁</td></tr>
+<tr><td>4</td><td>3,214,096</td><td><code>data/runs/T002/ratios.json :: raw_rows</code></td><td>3214096</td><td>锁</td></tr>
+<tr><td>5</td><td>4.33</td><td><code>data/runs/T022/fleet_estimates.json :: rides_per_bike_day/values/F_495540</code></td><td>4.32542</td><td>锁</td></tr>
+<tr><td>6</td><td>0.128</td><td><code>data/runs/T002/p_estimate.json :: consecutive/exact</code></td><td>0.128280</td><td>锁</td></tr>
+<tr><td>7</td><td>12.83%</td><td><code>data/runs/T002/ratios.json :: variants/A_paper_core_allpairs/exact</code></td><td>12.8280</td><td>锁</td></tr>
+<tr><td>8</td><td>19.97%</td><td>同上 <code>:: le250</code></td><td>19.9677</td><td>锁</td></tr>
+<tr><td>9</td><td>0.200</td><td>同上 <code>:: le250</code> ÷100</td><td>0.199677</td><td>直核</td></tr>
+<tr><td>10</td><td>2.30% / 1.30%</td><td><code>data/runs/T002/p_estimate.json :: placebo/le250_skip1</code>、<code>skip2</code></td><td>0.022957 / 0.013046</td><td>直核</td></tr>
+<tr><td>11</td><td>0.185</td><td><code>T002</code> 的 <code>p_250_skip1=0.180872</code> 与 <code>skip2=0.189098</code> 的均值</td><td>0.184985</td><td>直核</td></tr>
+<tr><td>12</td><td>0.098（KS）</td><td><code>data/runs/T005/fig3_redraw.json :: ks/pooled_cross_cell</code></td><td>0.097861</td><td>直核（锁条目错指，L23）</td></tr>
+<tr><td>13</td><td>12.83 / 8.89 / 3.94（§4.6）</td><td><code>data/runs/T006/q1_vs_obs.json :: same_cell_share/model·observed·diff</code></td><td>0.128337 / 0.088863 / 0.039474</td><td>直核</td></tr>
+<tr><td>14</td><td>0.305 / 0.665</td><td><code>data/runs/T005/k_stability.json :: k.5.ari_pairwise_min / _mean</code></td><td>0.305454 / 0.6646</td><td>直核</td></tr>
+<tr><td>15</td><td>83,807.7438</td><td><code>data/runs/T018/baselines.json :: recommended/obj</code></td><td>83807.7438</td><td>锁</td></tr>
+<tr><td>16</td><td>975</td><td><code>data/runs/T024/schedule_check.json :: exec_totals/n_exec</code></td><td>975</td><td>锁 + 回归</td></tr>
+<tr><td>17</td><td>533,248.01</td><td>同上 <code>:: layer_cost_fullload</code></td><td>533248.0077</td><td>锁 + 回归</td></tr>
+<tr><td>18</td><td>617,055.7515</td><td>同上 <code>:: total_fullload</code></td><td>617055.7515</td><td>锁 + 回归</td></tr>
+<tr><td>19</td><td>39,984.2332</td><td>同上 <code>:: unmet</code></td><td>39984.23316</td><td>锁 + 回归</td></tr>
+<tr><td>20</td><td>902,223.20 / 59.385%</td><td>同上 <code>:: saving_fullload / saving_fullload_share</code></td><td>902223.1988 / 59.38496</td><td>锁 + 回归</td></tr>
+<tr><td>21</td><td>1,494.80</td><td>同上 <code>:: int_short</code></td><td>1494.79695</td><td>锁 + 回归</td></tr>
+<tr><td>22</td><td>432.23</td><td><code>data/runs/T018/baselines.json :: rows/no_trucks/unmet</code></td><td>432.2284</td><td>锁</td></tr>
+<tr><td>23</td><td>1,591.40 / 66.13 / 59.06 / 1,532</td><td><code>T025/breakeven.json :: per_K/1/best_policy/payment_ceiling·gap</code>；<code>T025/fleet_scan.json :: gap_tight/K/2/tight/gap</code></td><td>1591.403 / 59.055 / 66.134 / 1532.348</td><td>锁</td></tr>
+<tr><td>24</td><td>16,608.52 / 18,011.46 / 27,680.9 / 2.92%</td><td><code>T026/optimum.json :: caps/arrivals/payment_star·net_saving_star·q_star·净节省占比</code></td><td>16608.516 / 18011.459 / 27680.861 / 2.91894</td><td>锁</td></tr>
+<tr><td>25</td><td>4,000 / 0.21829 / 394,553.13 / 0.0049</td><td><code>T019/summary.json :: levels/meas343/selected_n·knee/deviation_normalised·unassigned</code>；<code>T019/frontier.json :: meas343/selected/gap</code></td><td>4000 / 0.218291 / 394553.133 / 0.004909</td><td>锁</td></tr>
+</tbody></table></div>
+<p class="meta">另有表 6 的 5 个区段份额与 <code>data/runs/T006/return_share_segments.csv</code> 逐行对上；摘要的 59.53% / 55.80% 对 <code>T019/summary.json :: occupancy_coverage / arrival_coverage</code>（59.52982 / 55.80452），6,651.22 与 1.08% 对 <code>T026/optimum.json :: caps/surplus/net_saving_star</code> 及其占比。</p>
+
+<h2>5. DeepSeek 第一轮裁决（8708d37；F，0/5/5）</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>落地</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>三轮车层无变量/目标/约束</td><td>部分接受</td><td>R0 只按实现把 VRP 改为 transportation program（§6 #3）；<b>未补公式</b>，第二轮升级为阻塞，R1-5 补公式</td></tr>
+<tr><td>M2</td><td>K 只在 5 点扫描、非联合最优</td><td>驳回</td><td>§5.3 明写 K=60 只是 compared grid 的最小、不是 Q2 推荐；§5 末给 128 次联合抽样的 K* 分布；§9 给区间</td></tr>
+<tr><td>M3</td><td>5.84%（R=450）与 11.22%（R=300）口径混用</td><td>接受</td><td>§5.2 明写 11.22% 是 R=300 的卡车单层、5.84% 是 R=450 的 pre-plan，两者不是同一个量；摘要不并列 11.22</td></tr>
+<tr><td>M4</td><td>抽样率估计缺正式模型</td><td>接受</td><td>§3.3 重写：exact 率是下界、250 m 率减 placebo 得 (0.1997−b)/(1−b)、给出 p 区间与中心值</td></tr>
+<tr><td>M5</td><td>Q4 表把逐站 95 分位之和称作 demand</td><td>接受</td><td>§7.1 写明 sizing convention、不可加性（0.646/0.468 两例）；tab:q4plan 行名改 Assigned/Unassigned sizing demand</td></tr>
+<tr><td>m1</td><td>摘要用 10–24 May</td><td>接受</td><td>改 10–19 May（token 24→19）</td></tr>
+<tr><td>m2</td><td>卡车速度未写、A6 说 overnight shift</td><td>接受</td><td>A6 加 travel at 20 km/h、删 overnight shift（token +20）</td></tr>
+<tr><td>m3</td><td>AI 报告写 5 图但正文实际图数</td><td>接受</td><td>H28：AI 报告按实际 5 图重写，fig2 删除、fig5/fig6 为旧文件不入论文</td></tr>
+<tr><td>m4</td><td>“measured” 存量实为派生代理</td><td>接受</td><td>§7 三处统一为 initial-inventory proxy</td></tr>
+<tr><td>m5</td><td>k=5 不稳定、轮廓系数不选 k=5</td><td>接受</td><td>§4.6 已报 ARI 0.665 / min 0.305、轮廓 k=5 0.2562 vs k=6 0.2634，明说“不选 k=5 但保留五段”</td></tr>
+</tbody></table></div>
+<p class="meta">第二轮 <code>prev_issues_status</code> 复核：其 M2/M3/M4/M5 的四条“not_fixed / partial”按上表与 §6 的 B2 证据驳回或已在本轮接纳——M3/§5.2 已分清路径与半径，M5/§7.1 已写 sizing convention，M4/§3.3 已给出估计式；其 M2（联合优化）仍驳回，理由同上。</p>
+
+<h2>6. DeepSeek 第二轮裁决（3209636；M，2/6/3）</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据与去向</th></tr></thead>
+<tbody>
+<tr><td>B1</td><td>三轮车层（59.385% 节省）只有散文</td><td><b>部分接受</b></td><td>真缺口。按 <code>t024_q2_tier2.py:246</code> 的 <code>_tri_lp</code> 补紧凑公式 + 整数化/分配说明（R1-5）；不加区级班表（页数无余量），以 §5.4 区 24 数字与归档 schedule CSV 作证据</td></tr>
+<tr><td>B2</td><td>A11/§6.3 的 same-zone 与 §6.2 矛盾</td><td><b>接受</b></td><td>真矛盾。<code>t008_q3_pool.py:124</code> 目标不限区；<code>t020_q3_budget.py:502</code> <code>zone_delta</code> 把跨区到达变化送进 T018；T008 <code>cross_zone_share</code> 记录跨区份额。<b>结果无误，三处文字改模型事实</b>（R1-1～R1-3）；不写 7.46%（那是 T008 自己 r 的份额，不是 r*=0.60）</td></tr>
+<tr><td>M1</td><td>未联合优化</td><td>驳回</td><td>同第一轮 M2；论文不声称联合最优</td></tr>
+<tr><td>M2</td><td>I0 未按抽样放大</td><td>部分接受</td><td>343,638 是代理、论文已在两个存量下跑；补“真存量下界”半句（R1-8）</td></tr>
+<tr><td>M3</td><td>“return to starting zones” 超出 eq:q2fleet；deadhead 不在目标</td><td>接受（文字）</td><td>eq:q2fleet 只有总量；<code>t018_q2_int.py:635</code> 的 deadhead LP 另行配空驶、论文已声明不入目标；R1-4 改写</td></tr>
+<tr><td>M4</td><td>capped Q4 报 MILP gap 但选址 MILP 未定义</td><td>接受（文字）</td><td><code>t019_q4_cap.py:316</code> 的 0-1 规划；贪心只属 uncapped 参考；R1-6 补公式 + \cite{gurobi}</td></tr>
+<tr><td>M5</td><td>495,540 空间分布未定义</td><td>接受（文字）</td><td><code>t019_q4_cap.py:206</code> 的累计净流最小可行初值形状、按总量归一；R1-7</td></tr>
+<tr><td>M6</td><td>时长模型未验证</td><td>驳回</td><td>§4.6 已逐字写“explicit assumption … no end time … not swept … inherits that limitation”；<code>data/trips.parquet</code> 无 endtime 字段，无法验证</td></tr>
+<tr><td>m1</td><td>四位小数过多</td><td>驳回（补精度句）</td><td>按结果文件精度打印以便逐个回查；改舍入会破坏 token 门与回归；R1-12 加精度约定一句</td></tr>
+<tr><td>m2</td><td>12.83% 两处巧合</td><td>接受（半句）</td><td>T006 模型 0.128337 / 观测 0.088863 vs T002 精确相邻 0.128280，数值巧合；R1-9</td></tr>
+<tr><td>m3</td><td>Gurobi 未在正文引</td><td>接受</td><td>R1-6 的句子加 \cite{gurobi}</td></tr>
+</tbody></table></div>
+
+<h2>7. R1 条件与最终验收</h2>
+<ul>
+<li><strong>13 项</strong>：任务单 §8.1 的 R1-1～R1-13 逐条落地；三处 same-zone 表述全部改写；两个公式块与 <code>_tri_lp</code> / <code>solve_cap</code> 逐项一致；typo 修正；AI 报告常数清单加 12 nearest donors。</li>
+<li><strong>数字门</strong>：基线 <code>3209636</code>；唯一授权新增 token <code>12</code>（<code>sec5_q2.tex</code> 一次）；其余数字 token 一律不动（压缩只删非数字词）。</li>
+<li><strong>页数</strong>：27 总 / 25 计页；独立编译 overfull / undefined / <code>??</code> / U+037E 全 0；TOC 与正文一致。</li>
+<li><strong>回归</strong>：975 / 617,055.7515 / 39,984.2332 与 <code>T024/schedule_check.json</code> 一致；757 文件哈希重算。</li>
+<li><strong>第三轮冷读</strong>：对 R1 的 PDF 跑 <code>review/review_r3.json</code>；不再有阻塞，且 B1/B2/M3/M4/M5 的对应项确认消失，才写“可提交”。</li>
+<li><strong>L23（记录，不修）</strong>：<code>numbers.json</code> 的 <code>0.098</code> 条目指向 <code>T023/variance_shares.json</code> 的 q4_coverage 份额；§4.6 的 0.098 实为 <code>T005/fig3_redraw.json :: ks/pooled_cross_cell = 0.097861</code>。论文值正确，锁条目错指，最终记录以本节 §4 的直接溯源为准。</li>
+</ul>
+
+<div class="box warn">
+<p><strong>给提交方的口径</strong>：R0 是一份“数字全对、排版合规、但模型表述有漏”的稿子——这也是终审阶段才会暴露的类型。R1 只动文字与两条推导公式，不动任何结果；因此回归与 token 门仍是硬门，任何表值、图或结论的变化都视为新缺陷。</p>
+</div>
+
+</main>
+</body>
+</html>

@@ -32,7 +32,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T027 · 终审定稿与提交包</h1>
-<p class="meta">状态：<strong>已下达 2026-11-19（T021B 已通过，基线 <code>8708d37</code>；同日追加 §6 冷读文字修正）</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、L16（§4 舍入）、全部剩余低级别项、冷读六处文字修正　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
+<p class="meta">状态：<strong>已下达 2026-11-19（T021B 已通过，基线 <code>8708d37</code>；同日追加 §6 冷读文字修正）</strong>　·　<strong>2026-11-19 退回 R1：R0 交付（<code>3209636</code>）已核对，DeepSeek 第二轮冷读报 2 阻塞 / 6 中 / 3 低，逐条裁决见 §8；按 §8 的 13 项修改后重新交付</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、L16（§4 舍入）、全部剩余低级别项、冷读六处文字修正；R1 追加 H29、M21–M24、L19–L22　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
 
 <div class="box hi">
 <p><strong>分工：</strong>本任务由执行方完成“可提交物”的整理（AI 报告、最终编译、提交清单）；<strong>七标准冷读、COMAP 合规复核、逐数字溯源与 DeepSeek 外部冷读由指导方在验收时做</strong>，执行方不用替自己做最终判决。</p>
@@ -57,7 +57,7 @@ li{margin:3px 0}
 
 <h2>3. 一致性与禁区</h2>
 <ul>
-<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>例外（逐条授权）：</strong>（i）L16：sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；（ii）§6 冷读修正带来的两处：summary 的 “10--24 May” 改为 “10--19 May”（token 24→19）、A6 增加 “travel at 20 km/h”（新增 token 20）；（iii）L19：sec4:219 的 “minimum of 0.306” 改为 “0.305”（<code>data/runs/T005/k_stability.json</code> 的 <code>k.5.ari_pairwise_min=0.3054539</code>，三位小数应为 0.305；该 token 不在 T021A 锁表内，是本轮新发现的四舍五入错误）。<strong>除这四处外，正文数字 token 不得有任何增减。</strong></li>
+<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>例外（逐条授权）：</strong>（i）L16：sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；（ii）§6 冷读修正带来的两处：summary 的 “10--24 May” 改为 “10--19 May”（token 24→19）、A6 增加 “travel at 20 km/h”（新增 token 20）；（iii）L19：sec4:219 的 “minimum of 0.306” 改为 “0.305”（<code>data/runs/T005/k_stability.json</code> 的 <code>k.5.ari_pairwise_min=0.3054539</code>，三位小数应为 0.305；该 token 不在 T021A 锁表内，是本轮新发现的四舍五入错误）；（iv）references.tex 的 <code>aiapp</code> 条目 “used 11--17 November 2026” 改为 “11--19 November 2026”（与 AI 报告的工具使用区间一致；token 17→19）。<strong>除这五处外，正文数字 token 不得有任何增减。</strong></li>
 <li>禁止在收尾阶段改结论、改表值、改图；发现不一致先报 <code>blocked</code>，不要"顺手修"。</li>
 <li>不写内部任务编号（T0xx）、不写改稿历史、不写"earlier version"。</li>
 </ul>
@@ -73,7 +73,7 @@ li{margin:3px 0}
 </ol>
 
 <h2>6. 冷读文字修正（2026-11-19 追加）</h2>
-<p class="meta">指导方已对 <code>8708d37</code> 版跑完 DeepSeek 冷读（<code>review/review_r1.json</code>：0 blocking / 5 major / 5 minor，评级 F）。下列八处是冷读与逐数字溯源暴露的<b>文字与表述缺陷</b>，只改表述、不改任何表值、图、结果与结论；数字 token 变化仅 §3 授权的四处。</p>
+<p class="meta">指导方已对 <code>8708d37</code> 版跑完 DeepSeek 冷读（<code>review/review_r1.json</code>：0 blocking / 5 major / 5 minor，评级 F）。下列九处是冷读与逐数字溯源暴露的<b>文字与表述缺陷</b>，只改表述、不改任何表值、图、结果与结论；数字 token 变化仅 §3 授权的五处。</p>
 <div class="tw"><table>
 <thead><tr><th>#</th><th>位置</th><th>现行文字</th><th>改为</th><th>依据</th></tr></thead>
 <tbody>
@@ -84,13 +84,68 @@ li{margin:3px 0}
 <tr><td>5</td><td><code>sec7_q4.tex</code> §7.1、§7.5、§7.6</td><td>“starts each fence at its measured inventory”“At the measured inventory”“The measured 5/16 snapshot”</td><td>统一为 “initial-inventory proxy”（§3.4 的定义：由每辆车最后一次归还位置推出的存量，不是实测车队）；“measured 5/16 snapshot” 可改为 “5/16 00:00 snapshot”</td><td><code>sec3_data.tex</code> 对 343,638 的定义；术语必须全文一致</td></tr>
 <tr><td>7</td><td><code>sec4_q1.tex</code> §4.6</td><td>“the pairwise adjusted Rand index at $k=5$ is 0.665 with a minimum of 0.306”</td><td>“minimum of 0.305”（<code>ari_pairwise_min=0.30545390288</code>，三位小数 0.305；AI 报告已写 0.305）</td><td><code>data/runs/T005/k_stability.json</code>；token 0.306→0.305 已在 §3 授权</td></tr>
 <tr><td>8</td><td><code>ai_report.tex</code></td><td>“The paper keeps 343,638 only as the measured initial inventory”；“with the fleet scanned over $\{20,40,60,80\}$ trucks”</td><td>“initial-inventory proxy”（与 §3.4、§7 统一）；“$\{0,20,40,60,80\}$ trucks”（表 <code>tab:q2scan</code> 含 $K=0$ 无调度点）</td><td>AI 报告不计页；两处均须与正文一致</td></tr>
+<tr><td>9</td><td><code>references.tex</code> <code>aiapp</code> 条目</td><td>“tool Claude Code 2.1.322, used 11--17 November 2026”</td><td>“used 11--19 November 2026”（与 AI 报告的 11–19 一致；交付 notes 已如实披露该不一致）</td><td>任务单 §1.2 日期区间；token 17→19 在 §3 授权</td></tr>
 </tbody></table></div>
-<p><strong>执行规则：</strong>八处为文字修正（第 7 处含一个数字 token）；改后必须重编译并确认 <b>计页仍为 25</b>（无余量）。若某处使版面溢出，可在同一节内等量压缩文字，但不得删数字、不得删限定条件、不得删核心结果表与图；做不到就报 <code>blocked</code> 并说明是哪一处。改后按 §3 复算 token 多重集，新增/删除 token 必须与 §3 授权的四项（3.65→3.64、24→19、+20、0.306→0.305）完全一致。</p>
+<p><strong>执行规则：</strong>九处为文字修正（第 7、9 处各含一个数字 token）；改后必须重编译并确认 <b>计页仍为 25</b>（无余量）。若某处使版面溢出，可在同一节内等量压缩文字，但不得删数字、不得删限定条件、不得删核心结果表与图；做不到就报 <code>blocked</code> 并说明是哪一处。改后按 §3 复算 token 多重集，新增/删除 token 必须与 §3 授权的五项（3.65→3.64、24→19、+20、0.306→0.305、17→19）完全一致。</p>
 
 <h2>7. 停止条件</h2>
 <ul>
 <li>冷读发现会推翻结论的缺陷 → 停下来，回到 T021A 级别重做，不在终审阶段打补丁。</li>
 <li>页数压不下来且必须删核心结果 → 回到用户，不要在终审阶段自行取舍。</li>
+</ul>
+
+<h2>8. R1 返工：DeepSeek 第二轮冷读修正（2026-11-19 退回）</h2>
+<p class="meta">指导方对 R0（<code>3209636</code>）跑完第二轮冷读（<code>review/review_r2.json</code>：2 阻塞 / 6 中 / 3 低，评级 M）。逐条裁决如下。<b>本节 13 项只改模型表述与推导文字，不改任何表值、图、结果文件与结论；页码仍须 27 总 / 25 计。</b>裁决说明中引用的代码行是指导方已核对的实现，执行方按此写公式，不得改动代码或重跑。</p>
+
+<div class="tw"><table>
+<thead><tr><th>冷读编号</th><th>发现</th><th>裁决</th><th>理由与依据</th></tr></thead>
+<tbody>
+<tr><td>B1</td><td>三轮车层（产生 59.385% 节省）只有散文，无变量、目标、约束</td><td><b>部分接受</b></td><td>确为表述缺口。按 <code>code/t024_q2_tier2.py</code> 的实际实现补一个紧凑公式块（R1-5）。冷读要求“至少一个区级班表做证据”：不加表（页数无余量），以 §5.4 已有的区 24 数字与归档班表（<code>data/runs/T024/</code> 的 schedule CSV）承担复现证据。</td></tr>
+<tr><td>B2</td><td>A11 与 §6.3 写“同区改派使卡车层不变”，与 §6.2 的卡车口径结果矛盾</td><td><b>接受</b></td><td>属实。<code>code/t008_q3_pool.py:124</code> 的 <code>_hour_lp</code> 目标单元不限区，<code>zone_delta</code>（<code>t020_q3_budget.py:502</code>）把跨区改派的区-小时到达变化送进 T018 卡车 MILP；<code>data/runs/T008/q3_results.json</code> 的 <code>zone_decomposition</code> 记录跨区份额（targeted 0.0746）。<b>结果无误，是文字写错</b>：A11 与 §6.3、§10 三处改为模型事实（R1-1～R1-3）。不在论文写 7.46%：该值对应 T008 自己的 r，不是本文 r*=0.60 的政策，写具体数会张冠李戴。</td></tr>
+<tr><td>M1</td><td>K 只在 5 个网格点扫描，未联合优化</td><td><b>驳回</b></td><td>论文已明确 $K=60$ 是“compared grid 的最小值、不是 Q2 推荐”（§5.3），§5 末给出 128 次联合抽样的 $K^*$ 分布（11/128=8.6% 选 60 以上），§9 给出 $20$--$60$ / $7$--$80$ 区间。联合 MILP 是另一篇论文；纸面没有声称联合最优。</td></tr>
+<tr><td>M2</td><td>流量按 1/p 放大而 $I_0$ 未按同一抽样模型放大</td><td><b>部分接受</b></td><td>343,638 是“末次归还位置推出的存量代理”，不是车队计数；论文同时在 343,638 与 495,540 两个存量下跑并报告未服务 5.84%/3.51%，已把存量水平当情景。缺一句“它是真存量的下界”（订单文件里没有的车不可能出现），R1-8 补上。</td></tr>
+<tr><td>M3</td><td>正文“return them to their starting zones by midnight”超出 eq:q2fleet；deadhead 不在目标</td><td><b>接受（只改文字）</b></td><td>eq:q2fleet 只有 $\sum_z n_{z,0}=\sum_z n_{z,23}=K$。实现是 end-of-day 位置用 <code>t018_q2_int.py:635</code> 的 <code>deadhead</code> LP 匹配回 00:00 起点，成本 1,023.76 辆-公里、论文已声明不入目标。R1-4 把句子改成车队守恒 + 另行配空驶。</td></tr>
+<tr><td>M4</td><td>正文讲贪心 (1−1/e)，表里报 MILP gap，但从未定义选址 MILP</td><td><b>接受（只改文字）</b></td><td>实现是 <code>t019_q4_cap.py:316</code> 的 <code>solve_cap</code>：0-1 站点 $s_j$、流量 $f_{ij}$、未分配 $u_i$、容量 $150\,s_j$、站点数 $n$，MIPGap 0.005。贪心（<code>t009_q4.py:76</code> <code>greedy_partition</code>）只用于 uncapped 参考的 705 站。R1-6 补公式并点明两者分工。</td></tr>
+<tr><td>M5</td><td>495,540 情景的空间分布未定义</td><td><b>接受（只改文字）</b></td><td><code>t019_q4_cap.py:206</code>：<code>raw = max(0, -min_t cumsum(arr-dep)); I0_fleet = raw/raw.sum()*495540</code>，即需求模型累计净流推出的最小可行初值形状，按总量归一。R1-7 用一句写清。</td></tr>
+<tr><td>M6</td><td>时长模型纯属假设、未验证</td><td><b>驳回</b></td><td>论文 §4.6 已逐字写明：“Ride duration is generated from speed rather than modelled directly. This is an explicit assumption… the order file contains no end time from which a duration could be observed… they were not swept, and any duration-dependent statement in this paper inherits that limitation.” 数据确无 endtime（<code>data/trips.parquet</code> 字段已核）。冷读漏读。</td></tr>
+<tr><td>m1</td><td>四位以上小数过多</td><td><b>驳回（补一句精度约定）</b></td><td>数值按结果文件精度打印，是为了每个印刷值可回查（七标准第 5 条）；改四舍五入会破坏 token 门与回归。R1-12 在 §10 加一句精度约定作答。</td></tr>
+<tr><td>m2</td><td>12.83% 同时是同一格模拟份额与精确相邻率</td><td><b>接受（半句）</b></td><td>两个量确不同：<code>data/runs/T006/q1_vs_obs.json</code> 模型 0.128337 / 观测 0.088863；<code>data/runs/T002/p_estimate.json</code> 精确相邻 0.128280。数值巧合成立，R1-9 加半句说明，不重复数字。</td></tr>
+<tr><td>m3</td><td>Gurobi 列在参考文献但正文未引</td><td><b>接受</b></td><td>正文确无 \cite{gurobi}（只 <code>references.tex:140</code>）。R1-6 的选址 MILP 句加 <code>\cite{gurobi}</code>，不写版本号（避免新增 token）。</td></tr>
+</tbody></table></div>
+
+<h3>8.1 逐项修改（13 项）</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>位置</th><th>现行</th><th>改为</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>R1-1</td><td><code>sec2_assumptions.tex:86-88</code>（A11 Placement 条）</td><td>“A reroute is placed in the hour of the original trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is modelled.”</td><td>“A reroute is placed in the hour of the original trip at a cell drawn from that hour's deficit list; the target is not restricted to the source zone, so a small share of accepted reroutes changes a zone-hour arrival total, which is the channel through which the incentive can reach the truck layer (Section~\ref{sec:q3}). No cross-hour rearrangement is modelled.”</td><td><code>t008_q3_pool.py:124</code> 目标不限区；<code>t020_q3_budget.py:502</code> <code>zone_delta</code>；T008 <code>cross_zone_share</code></td></tr>
+<tr><td>R1-2</td><td><code>sec6_q3.tex:226-229</code>（Five limits 第一条）</td><td>“First, reroutes are restricted to the \emph{same zone}, which keeps the truck layer unchanged.”</td><td>“First, reroutes are cell-level, not zone-level: the target cell may lie outside the source zone, so a small share of accepted reroutes changes a zone-hour arrival total. That is the only channel through which the incentive can reach the truck layer, and it is priced in the truck-caliber test above, where it does not overturn the negative ceiling.”</td><td>同 R1-1；§6.2 已写 “only the part of the reroute that changes a zone-hour arrival total…”</td></tr>
+<tr><td>R1-3</td><td><code>sec10_evaluation.tex:31-34</code></td><td>“Reroutes stay within a zone, which keeps the truck layer unchanged, so the saving replaces part of the tricycle layer and nothing else”</td><td>“The saving is measured with the truck plan held fixed: it neither credits nor charges the induced truck-layer change of the reroutes, which the truck-caliber test prices separately, so the saving replaces part of the tricycle layer and nothing else”</td><td>与 R1-1/R1-2 同一事实；Q3 节省按 $K=60$ 固定卡车层计（T026）</td></tr>
+<tr><td>R1-4</td><td><code>sec5_q2.tex:77-78</code></td><td>“\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve trucks and return them to their starting zones by midnight;”</td><td>“\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve the truck count, with $K$ at 00:00 and at midnight but no per-zone requirement; end-of-day positions are matched to the 00:00 ones by the deadhead relocation reported below, outside the objective;”</td><td>eq:q2fleet 只有总量约束；<code>t018_q2_int.py:635</code> <code>deadhead</code>；论文已报 1,023.76 辆-公里、不入目标</td></tr>
+<tr><td>R1-5</td><td><code>sec5_q2.tex</code> §5.4，在 “The layer is solved zone by zone; the truck layer is held fixed at the $K=60$ plan.” 之后</td><td>无公式</td><td>按 <code>_tri_lp</code> 补一个紧凑公式块（详见 §8.2 的写法要求）：见下</td><td><code>t024_q2_tier2.py:246</code> <code>_tri_lp</code>；<code>_int_trips</code>；<code>_assign</code></td></tr>
+<tr><td>R1-6</td><td><code>sec7_q4.tex</code> §7.2，在贪心段之后、“The number of fences…” 之前</td><td>只有贪心与 (1−1/e)，capped 计划的 MILP 未定义</td><td>补受限选址 0-1 规划（见 §8.2），并写清：贪心是 uncapped 参考的选站规则；(1−1/e) 不适用于 capped 规划；capped 计划由 Gurobi \cite{gurobi} 求解</td><td><code>t019_q4_cap.py:316</code> <code>solve_cap</code>；<code>t009_q4.py:76</code></td></tr>
+<tr><td>R1-7</td><td><code>sec7_q4.tex:35-36</code></td><td>“……the initial-inventory proxy 343,638 and the closed fleet 495,540 are run separately and never mixed.”</td><td>句后加：“The closed-fleet scenario spreads that total over cells in proportion to the smallest initial stock that keeps every cell non-negative under the demand model's cumulative net flow, so its spatial shape is the flow-implied one, not the proxy's.”</td><td><code>t019_q4_cap.py:206</code></td></tr>
+<tr><td>R1-8</td><td><code>sec3_data.tex:101-104</code></td><td>“……not a fleet count; it is used only as $I_0$ in Q2, Q4 and Q5.”</td><td>“……not a fleet count and a lower bound on the true stock, since a bicycle absent from the order file cannot appear in it; it is used only as $I_0$ in Q2, Q4 and Q5.”</td><td>抽样事实；与 §2 A 条、§7 两情景一致</td></tr>
+<tr><td>R1-9</td><td><code>sec4_q1.tex</code> §4.6，同一格份额句之后</td><td>“\textbf{12.83\% same-cell trips against 8.89\% observed, an overestimate of 3.94 percentage points}”</td><td>句末加半句：“(the equality with the adjacency rate of \S\ref{sec:data} is a numerical coincidence; the two quantities are unrelated)”</td><td>T006 模型 0.128337/观测 0.088863 vs T002 精确相邻 0.128280</td></tr>
+<tr><td>R1-10</td><td><code>sec7_q4.tex</code> R1-6 新句内</td><td>—</td><td>“\cite{gurobi}” 一处；不写版本号数字</td><td><code>references.tex:140</code></td></tr>
+<tr><td>R1-11</td><td><code>sec3_data.tex:66</code></td><td>“The wide rate, less that false-match share, scales to”</td><td>“The wide rate, less the false-match share, scales to”</td><td>typo</td></tr>
+<tr><td>R1-12</td><td><code>sec10_evaluation.tex</code> “The numbers are approximations…” 段末</td><td>—</td><td>加一句：“Values are printed at the precision of the archived result files so that each printed value can be checked against its source.”</td><td>回答 m1；七标准第 5 条</td></tr>
+<tr><td>R1-13</td><td><code>ai_report.tex</code> 写入型常数清单</td><td>—</td><td>加一条：“12 nearest stocked donor cells per deficit cell in the tricycle stage”</td><td><code>t024_q2_tier2.py:49</code> <code>TRI_NEAREST=12</code>；AI 报告不计 token 门</td></tr>
+</tbody></table></div>
+
+<h3>8.2 两个公式块的写法要求（R1-5、R1-6）</h3>
+<div class="box">
+<p><b>R1-5 三轮车层（区-小时内，符号不得与正文冲突：卡车用 $n_{zt}$，故三轮车用 $\nu_z$；残差用 $e_a$，不要用 $r$——§6 的 $r$ 是奖励）：</b>目标为 $\min \sum_{ab\in A_z} (c_{\text{km}}/Q_{\text{tri}})\,d_{ab}\,y_{ab} + w_{\text{tri}}\sum_a u_a$；约束三条——(i) 汇点平衡：$\sum_b y_{ab}+u_a=e_a$（$e_a$ 为该格该小时卡车与步行之后的未服务出发量）；(ii) 源点存量：$\sum_a y_{ab}\le I_b$（$I_b$ 为该格小时初存量）；(iii) 时间预算：$\sum_{ab}[\frac{2d_{ab}}{v_{\text{tri}}Q_{\text{tri}}}+\frac{2h_{\text{tri}}}{60}]\,y_{ab}\le\nu_z$（$\nu_z$ 为该区三轮车数，逐小时可用一整个小时，故区-小时预算是 $\nu_z$ 三轮车-小时）；$y,u\ge0$。弧集 $A_z$ 为每个亏缺格与区内最近的 <b>12</b> 个有存量格配对、且不超过行程上限（正文已有 5 km，不重复数字）。</p>
+<p>公式后写清整数化与分配：LP 流量先按源点整数存量取整、拆成每趟至多 $Q_{\text{tri}}$ 辆的整数 trip 列表，再按 earliest finish 把 trip 分给该区三轮车（trip 间计入空驶，窗口 07:00--20:00，超出即不可排）；车队 $\nu_z$ 逐区选择——连续计数上的 LP 给理想上界，逐区抬到能排完自身 trip 列表的最小整数即执行计划（两个数正文已有，<b>不要在新句里重写 889 / 975</b>）。</p>
+<p><b>R1-6 受限选址（0-1 规划）：</b>$\max\sum_{(i,j)\in A}f_{ij}$，s.t. $\sum_j f_{ij}+u_i=a_i$、$\sum_i f_{ij}\le \bar s\,s_j$、$\sum_j s_j=n$、$s_j\in\{0,1\}$、$f,u\ge0$；$A$ 为步行半径内的格对，$\bar s$ 为上文已给的每站上限（<b>写 “$\bar s$ the per-site cap set above”，不要再写 150</b>），$n$ 为站点数。写清：贪心与 (1−1/e) 只适用于 uncapped 参考的选站；capped 计划是上述 0-1 规划，间隙见表；求解器 Gurobi \cite{gurobi}（不写版本号）。</p>
+</div>
+
+<h3>8.3 R1 数字门与页数</h3>
+<ul>
+<li><strong>基线改为 <code>3209636</code></strong>（R0 交付版）。正文 13 个 tex 文件对 <code>3209636</code> 逐文件比对数字 token 多重集，<strong>唯一授权新增：<code>sec5_q2.tex</code> 的 token <code>12</code> 一次</strong>（R1-5 的最近 donor 数，依据 <code>TRI_NEAREST=12</code>）。其余任何新增、删除或改动数字 token 均为失败；压缩时只能删非数字词，<b>所有数字必须保留</b>（含 889、975、1,023.76、150、5,263 等）。R1-6 用 $\bar s$ 符号避免重复 150；R1-7 用“that total”避免重复 495,540；R1-9 不重复 12.83。</li>
+<li><strong>页数</strong>：仍须 27 总 / 25 计页（摘要 1 + 目录 1 + 正文 22 + 参考文献 1；AI 报告 p26–27 不计）。两个公式块约 +0.3 页，须在同节内等量压缩文字腾出；不得删数字、不得删限定条件、不得删核心结果表与图、不得改字号/页边距。做不到报 <code>blocked</code> 并写明溢出量。</li>
+<li><strong>回归</strong>：975 / 617,055.7515 / 39,984.2332 与 <code>data/runs/T024/schedule_check.json</code> 逐一复算一致；<code>paper/main.pdf</code> 三遍 xelatex，undefined 0、overfull 0、U+037E 0、<code>??</code> 0，目录页码与正文一致。</li>
+<li><strong>交付</strong>：更新 <code>交付/T027_delivery.json</code>（<code>revision: "R1"</code>），checks 逐项对应 §8.1 的 13 项与 §8.3 四项；<code>affected</code> 每条 old → new → basis；file_list 与哈希重算。R1 只改 <code>paper/</code> 与 <code>交付/T027*</code>；<code>code/</code>、<code>data/</code> 不动（公式以现有代码为准，不重跑）。</li>
+<li><strong>R1 之后</strong>：指导方复跑 token 门、独立编译、回归与 DeepSeek 第三轮冷读；第三轮不再有阻塞项才写验收结论。</li>
 </ul>
 
 </main>
