@@ -48,16 +48,20 @@ li{margin:3px 0}
 <h2>2. 要输出什么</h2>
 <ol>
 <li><strong>主结果的分组区间</strong>：Q2 总成本、最优 K、未服务量；Q3 系统节省（T020 口径）；Q4 限容站点数与有容量保障覆盖率（T019 口径）。每个输出给 P5/P50/P95：只动 A 组、只动 B 组、只动 C 组、三组同时动。</li>
-<li><strong>方差份额</strong>：分组一阶指数（分组 Sobol 或 pick-freeze），三组份额与交互项；写清样本数与收敛检查（样本加倍后份额变化 ≤0.05）。MILP 太慢时可用 LP 松弛作代理，但必须报告代理与整数解在 ≥10 个抽样点上的偏差。</li>
+<li><strong>方差份额</strong>：分组一阶指数（分组 Sobol 或 pick-freeze），三组份额与残差项；写清样本数与收敛检查（判据见下方 2026-11-18 修订：加倍变化 ≤2 个 bootstrap SE，并随份额报告 SE）。MILP 太慢时可用 LP 松弛作代理，但必须报告代理与整数解在 ≥10 个抽样点上的偏差。</li>
 <li><strong>龙卷风图</strong>：Q2、Q3、Q4 各一张（或合成一张三联图），参数按影响排序，字号 ≥7 pt。</li>
 <li><strong>方案是否翻转</strong>：在各组区间内，推荐 K、推荐预算档、限容方案的站点数是否改变；翻转的条件写清。</li>
 </ol>
+
+<div class="box hi">
+<p><strong>2026-11-18 判据修订（指导方，基于执行方实证）：</strong>原“样本加倍后份额变化 ≤0.05”在 n=128 时不可达。400 次配对 bootstrap 的份额标准误 SE=0.06–0.16；n64→n128 的嵌套变化 0.023–0.170 对应 0.8–1.6 SE，属抽样噪声；扩到 n=1,024（约 9–10 小时）最坏输出 SE≈0.04–0.06，仍不能保证 0.05。故判据改为：<strong>每个输出（<code>q3_pure_unmet</code> 除外）的 <code>doubling_change_over_se ≤ 2.0</code>，且每个份额在 JSON、表、图中带 <code>share_se_boot</code> 与 95% 区间（±1.96 SE）</strong>。取 2.0 而非 1.5：本表共 9 个输出 × 3 组 = 27 个份额，按 1.5 SE 会有约 10% 的估计因抽样噪声被判失败；实测最大为 1.57（q4_unassigned），2.0 是多重比较下的合理带。同时：<code>1−Σ份额</code> 改名 <code>residual_1_minus_sum</code> 并附自身 bootstrap SE，不得称为“交互项”或二阶指数（一阶指数之和 >1 时残差为负，是抽样噪声，不是物理量）；<code>q3_pure_unmet</code> 在多数抽样为 0，标 <code>degenerate</code>，只做定性报告。交付 notes 必须原样记录原 0.05 门限未达、原因与本修订。</p>
+</div>
 
 <h2>3. 验收（缺一不可）</h2>
 <ol>
 <li><code>data/runs/T023/param_table.json</code>：每个参数的组、主值、区间、来源/理由。</li>
 <li><code>data/runs/T023/intervals.json</code>：输出 × {A, B, C, 全部} 的 P5/P50/P95。</li>
-<li><code>data/runs/T023/variance_shares.json</code>：分组份额、交互项、样本数、加倍样本的收敛对比。</li>
+<li><code>data/runs/T023/variance_shares.json</code>：分组份额（附 <code>share_se_boot</code>）、残差项（<code>residual_1_minus_sum</code>，附 SE）、样本数、加倍样本的收敛对比与 <code>doubling_change_over_se</code>。</li>
 <li>代理偏差表（若用 LP 松弛）；方案翻转表。</li>
 <li>图文件：<code>figs/</code> 下新图（PDF 矢量），附生成脚本。</li>
 <li>复现信息（种子、命令、输入 SHA-256）；交付 JSON 按契约；单独 commit，不 push。</li>
@@ -93,7 +97,7 @@ li{margin:3px 0}
 
 <h2 style="font-size:16px">4.4 验收追加（与第 3 节并列，缺一不可）</h2>
 <ol>
-<li><code>variance_shares.json</code> 必须标明每个输出是“MILP 求解”还是“LP 代理”，并给代理偏差表；三组份额 + 交互项 + 样本数 + 加倍样本收敛对比。</li>
+<li><code>variance_shares.json</code> 必须标明每个输出是“MILP 求解”还是“LP 代理”，并给代理偏差表；三组份额（附 SE）+ 残差项（附 SE）+ 样本数 + 加倍样本收敛对比与 <code>doubling_change_over_se</code>。</li>
 <li><code>intervals.json</code> 的每个端点必须能追到某一次抽样；基准点（P50 附近）必须与 4.1 的参照值一致到 1e-6，否则说明参照模型跑错了。</li>
 <li>方案翻转表：Q2 车队是否仍为 975、Q4 站点数是否仍为 4,000、Q3 符号是否翻正，各给条件。</li>
 <li>交付 notes 里写明本任务没有引用任何被取代交付的数字（885 / 266,327 / 40,357 / 705 / 76.86% / 6.83%–20.83% / 10.40 / 2,883.3 / 480.6×）。</li>
