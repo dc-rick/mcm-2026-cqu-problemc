@@ -1,4 +1,4 @@
-"""T027 R1/R1b/R1c verification.
+"""T027 R1/R1b/R1c/R1d verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
   1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
@@ -7,8 +7,8 @@ Checks, with evidence written to 交付/T027/verify_final.json:
   2. Forbidden strings: internal task ids (T0xx), revision language.
   3. Section-6 legacy wording checks (carried from R0), the R1-1..R1-13
      item checks from task sheet section 8.1, the R1b-1/R1b-2 text
-     checks from section 8.4, and the R1c-1..R1c-5 text checks from
-     section 8.5.
+     checks from section 8.4, the R1c-1..R1c-5 text checks from section 8.5,
+     and the R1d-1/R1d-2 text checks from section 8.6.
   4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
      from data/runs/T024/schedule_check.json and matched to the paper strings.
   5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
@@ -70,7 +70,7 @@ def norm(text):
 
 
 def main():
-    ev = {"task": "T027", "revision": "R1c", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1d", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
@@ -221,8 +221,21 @@ def main():
             and not has("summary.tex", "serving \\textbf{4.33 rides")),
     }
     ev["r1c_checks"] = r1c
+
+    # ---- 3d. R1d item checks (task sheet 8.6) --------------------------
+    r1d = {
+        "R1d-1_sigma_defined": has(
+            "sec8_q5.tex",
+            "is $\\sigma(a+2m\\tilde x_i)$, where $\\sigma$ is the logistic function"),
+        "R1d-2_deadhead_shared": (
+            has("sec5_q2.tex",
+                "The truck cost is common to both totals in the comparison")
+            and has("sec5_q2.tex",
+                    "this deadhead shifts the two sides equally and leaves the percentage saving unchanged")),
+    }
+    ev["r1d_checks"] = r1d
     ok = (ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
-          and all(r1c.values()))
+          and all(r1c.values()) and all(r1d.values()))
 
     # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
@@ -332,6 +345,7 @@ def main():
                       "r1_checks_pass": all(r1.values()),
                       "r1b_checks_pass": all(r1b.values()),
                       "r1c_checks_pass": all(r1c.values()),
+                      "r1d_checks_pass": all(r1d.values()),
                       "section6_pass": all(checks6.values()),
                       "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],

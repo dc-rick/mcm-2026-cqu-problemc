@@ -1,6 +1,6 @@
 {
  "task": "T027",
- "revision": "R1c",
+ "revision": "R1d",
  "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
@@ -129,6 +129,10 @@
   "R1c-3_sec6_two_calibers": true,
   "R1c-4_sec6_truck_caliber_first": true,
   "R1c-5_summary_4_33_upper": true
+ },
+ "r1d_checks": {
+  "R1d-1_sigma_defined": true,
+  "R1d-2_deadhead_shared": true
  },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,
