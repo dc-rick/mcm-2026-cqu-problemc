@@ -25,8 +25,8 @@ li{margin:3px 0}
 <body>
 <main>
 
-<h1>T022 · P1 补强实验（Q1 共用 β、Q5 空间错位）</h1>
-<p class="meta">状态：<strong>已下达 2026-11-18；2026-11-18 改为必做（不可裁）</strong>　·　问题：M12、M15（M13 移入 T023，M14 移入 T024）　·　可写：<code>code/</code>、<code>data/runs/T022/</code>、<code>交付/T022_delivery.json</code>　·　不改 <code>paper/</code>（结果若采用，另开换数任务或并入 T021 R1）</p>
+<h1>T022 · P1 补强实验（车队估计偏差方向、Q1 共用 β、Q5 空间错位）</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18；2026-11-18 改为必做（不可裁）</strong>　·　问题：M16、M12、M15（M13 移入 T023，M14 移入 T024）　·　可写：<code>code/</code>、<code>data/runs/T022/</code>、<code>交付/T022_delivery.json</code>　·　不改 <code>paper/</code>（结果若采用，另开换数任务或并入 T021 R1）</p>
 
 <div class="box warn">
 <p><strong>2026-11-18 修订：</strong>用户确认时间不是约束，本单不可裁。M12 不依赖其他任务，可立即与 T018/T019 并行；M15 依赖 T019 的限容围栏（共享围栏的容量用 T019 口径）。每个子项独立交付。原 M13、M14 子项分别并入 T023、T024，本单不重复做。</p>
@@ -35,6 +35,7 @@ li{margin:3px 0}
 <h2>子项与验收</h2>
 <ol>
 <li><strong>M12 · Q1 分时段 β 的价值。</strong>加“全日共用一个 β”的基线：同训练日（10/11/15/16/18）、同测试日（12/19）、同候选目的地集。按测试日分别报告目的地对数损失、Top-5 命中率，以及区-时净流量误差（L1 与最大绝对值）。验收：五时段与共用 β 两行 × 两测试日的表；差值与符号。</li>
+<li><strong>M16 · 捕获–再捕获的偏差方向（最先做，不依赖其他任务）。</strong><code>sec3_data.tex:96</code> 与 <code>sec9_sensitivity.tex:18</code> 写 “heterogeneity biases it up”。捕获概率异质（常用车两窗都易被看到）通常使 Chapman 估计<strong>偏低</strong>。要做：(1) 按第一窗口使用频次分层（至少 4 层，分层规则写明）做分层 Chapman，并报告各层 n1、n2、m；(2) Chao (1987) 下界或 Mth 类估计；(3) 对“退役/新投放”给出在本数据定义下的偏差方向推导（目标总体是第一窗口时刻的在役车队）。验收：<code>data/runs/T022/fleet_estimates.json</code>（原估计 495,540 复现 + 新估计 + 偏差方向结论）；4.33 次/车/天按新区间重算。<strong>注意：</strong>495,540 是 T018–T024 的库存情景值；新估计出来后先由指导方验收，未改口径前其他任务继续用 495,540。</li>
 <li><strong>M13 · 已移入 T023。</strong></li>
 <li><strong>M14 · 已移入 T024。</strong></li>
 <li><strong>M15 · Q5 有区分力的竞争实验。</strong>保留现有同比拆分作对照，再加两平台空间分布错位情景（例如 A 偏东、B 偏西，总车量与总需求不变；错位规则写明）。比较独立运营与共享围栏的未服务率、满位率、所需容量。验收：至少 3 档错位强度 × {独立, 共享} 的表；随机种子 ≥6。</li>
