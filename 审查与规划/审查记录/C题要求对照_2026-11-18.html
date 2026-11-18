@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C 题要求对照：内容全齐，卡在 25 页上限</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.tag{display:inline-block;border-radius:999px;padding:0 8px;font-size:11.5px;border:1px solid var(--line);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}
+.tag.bad{color:var(--hi);border-color:var(--hi)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>C 题要求对照：内容全齐，卡在 25 页上限</h1>
+<p class="meta">对照：2026-11-18　·　题面：<code>2026_CQU_MCM_Problem_C.pdf</code>（2 页，用户桌面原题）　·　论文：<code>paper/main.pdf</code>（当前 30 页）</p>
+
+<h2>1. 题面五问：全部有答案</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:6%">问</th><th style="width:34%">题面原话（摘要）</th><th style="width:34%">论文对应</th><th style="width:12%">状态</th><th style="width:14%">关键结果</th></tr></thead>
+<tbody>
+<tr><td>Q1</td><td>“Establish a mathematical model for users’ bicycle travel behavior based on the data.”</td><td>§4：五时段 β 的 NHPP×重力模型、logit 目的地、用户分群；§3 数据与抽样</td><td><span class="tag ok">完成</span></td><td>KS 0.098；同格 12.83% 模型 vs 8.89% 观测</td></tr>
+<tr><td>Q2</td><td>“Based on the travel behavior model built above, propose an optimal bicycle rebalancing and scheduling plan for a typical day.”</td><td>§5：时空网络 LP，Q1 OD 为主输入；表 6 七种 α/K；§5.5 贪心诊断与夜间占比</td><td><span class="tag ok">完成</span></td><td>α=1 K=60：24,679 辆 / 5,530 车公里 / 0 失单 / 82,195 CNY</td></tr>
+<tr><td>Q3</td><td>“Explore and present your user incentive scheme.”</td><td>§6：可执行需求池、r* 两条界（上界与保守）、公开推送三档、免费搭车</td><td><span class="tag ok">完成</span></td><td>节省 6.83%–20.83%；跨区仅 7.46%</td></tr>
+<tr><td>Q4</td><td>“Using the travel behaviour model from Question (1) to predict parking demand at different locations, provide suggestions on the layout and size planning of electronic fences.”</td><td>§7：到达过程 + 站立库存、R=450 m、前沿与 λ 换汇率、705 围栏与容量、重叠校验</td><td><span class="tag ok">完成</span></td><td>705 围栏 / 76.86% / 491,692 格位</td></tr>
+<tr><td>Q5</td><td>“Discuss how factors such as the coexistence of multiple competing shared-bicycle platforms affect the resolution of the above problems.”</td><td>§8：条件式可得性、空间/成本/数据三重重复、multi-homing、监管建议、外部市场证据</td><td><span class="tag ok">完成</span></td><td>固定成本 43.8%；数据噪声 ×√3；multi-homing 不改变覆盖要求</td></tr>
+</tbody></table></div>
+
+<h2>2. 题面六项成文要求：五项满足，一项超限</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:28%">题面要求</th><th style="width:44%">现状</th><th style="width:14%">状态</th><th style="width:14%">证据</th></tr></thead>
+<tbody>
+<tr><td>One-page Summary Sheet</td><td>第 1 页为标题 + 摘要，占满一页</td><td><span class="tag ok">满足</span></td><td>PDF p1</td></tr>
+<tr><td>Table of Contents</td><td>第 2 页目录，含 References（p27）</td><td><span class="tag ok">满足</span></td><td>PDF p2</td></tr>
+<tr><td>Your complete solution</td><td>§1–§10 正文，第 3–26 页</td><td><span class="tag ok">满足</span></td><td>PDF p3–26</td></tr>
+<tr><td>Executive Summary（可并入正文）</td><td>第 1 页摘要 + §10 评价与结论，承担执行摘要职能</td><td><span class="tag ok">满足（并入）</span></td><td>p1、§10</td></tr>
+<tr><td>In-text Citations and Reference List</td><td>32 条参考文献，第 27–28 页；正文 \cite 全覆盖</td><td><span class="tag ok">满足</span></td><td>PDF p27–28</td></tr>
+<tr><td>AI Use Report（不计入 25 页）</td><td>第 29–30 页，2 页；正文列明工具、模型、用途与人工核对</td><td><span class="tag ok">满足</span></td><td>PDF p29–30</td></tr>
+<tr><td><strong>“no more than 25 total pages”</strong>（AI 报告除外）</td><td><strong>计页 28 页</strong>：p1 摘要 + p2 目录 + p3–26 正文（24）+ p27–28 参考文献（2）；AI 报告 p29–30 不计</td><td><span class="tag bad">超 3 页</span></td><td>PDF 30 页</td></tr>
+</tbody></table></div>
+
+<div class="box hi">
+<p><strong>唯一硬性缺口：25 页上限。</strong>题面写的是 “Your PDF solution of no more than 25 total pages should include: 1. One-page Summary Sheet 2. Table of Contents 3. Your complete solution 4. Executive Summary 5. In-text Citations and Reference List 6. AI Use Report (if used, does not count toward the 25-page limit)”。摘要页、目录、参考文献都在这 25 页之内，只有 AI 报告豁免。当前计页 28 = 25 + 3。</p>
+<p>时间线：T013 时总 27 页、计页 25（AI 报告 2 页），<strong>刚好卡线</strong>；T012 全文重提与 T014 终检把正文扩到 24 页、参考文献 2 页，计页变成 28。此后没有任何任务重新核对题面的页数上限——这是我在这次逐条对照里才抓到的。</p>
+</div>
+
+<h2>3. 建议：补，且只补这一项</h2>
+<ol>
+<li><strong>必须补</strong>：把计页从 28 压到 25（总 PDF 30 → 27，AI 报告仍 2 页）。这是格式硬规则，不是质量问题；超限有被判违规的风险。</li>
+<li><strong>只动版面，不动数字与论证</strong>：优先缩图（6 张图各缩 10%–15%）、表用 <code>\small/\footnotesize</code>、参考文献收紧 <code>\itemsep</code>、图浮动体周围留白收紧；若仍差半页，再删冗余句，不删结果与限定条件。</li>
+<li><strong>不动内容结构</strong>：五问答案、模型、结果、边界说明全部保留；Q5 已完整回答“多平台竞争如何影响前述问题”，不需要补写。</li>
+<li><strong>验收</strong>：总页 ≤27、计页 =25（摘要 1 + 目录 1 + 正文 ≤21 + 参考文献 ≤2）、AI 报告仍 2 页；数字 token 多重集与当前版本完全一致；30→27 页重编译 undefined 0、overfull 0、U+037E 0；图字号不小于 7 pt。</li>
+</ol>
+
+<div class="box ok">
+<p><strong>结论：</strong>内容层面对照 C 题五问与六项成文要求，除页数外全部满足；<strong>唯一没做的是把页数压回 25 页以内</strong>。建议立即下达 T017（纯版面压缩），预计 1–2 小时含复核；除此之外不需要补任何内容。</p>
+</div>
+
+</main>
+</body>
+</html>
