@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T025-R1 验收：退回 R1（K=2 的 gap 引错解）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T025-R1 验收：退回 R1（K=2 的 gap 引错解）</h1>
+<p class="meta">2026-11-18 · 交付 0941d08（T025_delivery.json R1）· 四项修项全部通过；但 K=2“未服务是真的”这一条的 gap 证据来自另一个解</p>
+
+<div class="box ok">
+<p><strong>通过的部分：</strong>0.1% 重解三项全部达标（gap 0.0466% / 0.0564% / 0.0950%）；纯卡车 unmet 从 0/64.4/95.0 收敛到 0/0.19/0，非单调确系 gap 噪声；24 条紧 gap 混合行全部 ≤0.0994%；64 行恒等式全过；T018 回归逐位为 0；付款上限 −1,739.2 / −1,058.7 / −1,588.8 / −1,623.3 / −1,528.8 全部为负，且紧 gap 三点的绝对值是 0.1% 容差的 12–14 倍；−686.58 已撤回；gap_tight 字段齐备。</p>
+</div>
+
+<div class="box hi">
+<p><strong>退回的原因（一条）：</strong>交付说“K=2 的 achieved gap 0.45%，所以 134.81 的未服务是真的”。<strong>0.45% 不是纯卡车 K=2 解的 gap。</strong><code>fleet_scan.json</code> 里 K=2 的纯卡车解 gap = <strong>0.8402%</strong>（obj 139,418.87）；0.4496% 是 <code>breakeven.json</code> 里 K=2 混合方案（arrivals, B=30k）那个解的 gap。两个解被混成了一句话。</p>
+<p>后果：纯卡车 K=2 的 gap 绝对值 = 0.008402×139,418.87 = <strong>1,171 元</strong>，而全部 134.81 未服务的罚金只有 <strong>809 元</strong>（134.81×6）。也就是说，一个“未服务为 0、总成本低 809 元”的解完全落在 1,171 元的最优性间隙里，求解器在 gap ≤1% 时就会停手，不会去证明它不存在。<strong>所以 134.81 没有被建立为真。</strong>这和 K=10/20 的 64.4/95.0 是同一个机制——而那两个已经证明会在 0.1% 下消失。</p>
+<p>这也是我上一轮的责任：我把“K=0/2 保持”写进了 R1，前提是默认 K=2 的 134.81 可靠。那个前提没有验证，现予撤回。</p>
+</div>
+
+<h2>1. 指导方复算</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>紧 gap 纯卡车</td><td>0.0 / 0.1936 / 0.0</td><td>gap_tight.K 逐项一致；0.0466% / 0.0564% / 0.0950%</td><td>✓</td></tr>
+<tr><td>K=2 纯卡车 gap</td><td>称 0.45%</td><td><code>fleet_scan.rows</code> K=2: <strong>0.008402 = 0.840%</strong></td><td>✗ 引错解</td></tr>
+<tr><td>0.45% 的出处</td><td>—</td><td><code>breakeven.json</code> K=2 best_policy.gap = 0.004496（混合解的 gap，不是纯卡车的）</td><td>已定位</td></tr>
+<tr><td>K=2 未服务罚金 vs gap</td><td>—</td><td>809 元 vs 1,171 元：罚金 &lt; gap，未服务无法证明为真</td><td>✗</td></tr>
+<tr><td>付款上限</td><td>−1,739.2 / −1,058.7 / −1,588.8 / −1,623.3 / −1,528.8</td><td>逐 K 复算 pure_obj − hybrid_truck_obj：−1,739.216 / −1,058.711 / −1,588.759 / −1,623.333 / −1,528.824</td><td>✓</td></tr>
+<tr><td>总额差</td><td>−31,739.2 … −31,528.8</td><td>= 上限 − 30,000（B=30k 付款），五个 K 全对</td><td>✓</td></tr>
+<tr><td>紧 gap 容差倍数</td><td>11–15×</td><td>1,588.8/133.6 = 11.9；1,623.3/125.9 = 12.9；1,528.8/111.2 = 13.8</td><td>✓</td></tr>
+<tr><td>混合行数</td><td>64（40 粗 + 24 紧）</td><td>逐行统计一致；紧行最大 gap 0.0009936</td><td>✓</td></tr>
+<tr><td>T018 回归</td><td>逐位为 0</td><td>K=20/40/60 的 obj/unmet/dev/km/moved 全部 abs_diff = 0.0</td><td>✓</td></tr>
+<tr><td>K=0 最优来源</td><td>摘要称“每个 K 最优都是 arrivals B=30k”</td><td>K=0 最优是 <strong>surplus</strong> B=30k（−31,739.22 vs arrivals −31,835.50）；check 2 写对了，摘要写错了</td><td>文字需改</td></tr>
+</tbody></table></div>
+
+<h2>2. R1 要做的事（只有一条，重解 + 改文字）</h2>
+<ol>
+<li><strong>K=2 两侧都用 0.1% 重解：</strong>纯卡车一次 + 8 个混合方案一次（与 K=5/10/20 同口径）。K=2 只有 45 辆车，预计几秒到几十秒。</li>
+<li><strong>按结果二选一：</strong>
+  <ul>
+  <li>若未服务降到 ~0：<strong>撤回</strong> K=2 的“消除 112.02 单、267.8 元/单、44.6 倍、258 次改线换 1 单”整段机制结论，改写成“K≤2 时未服务也是 gap 伪影；在本文扫描的全部车队规模上，激励都换不到可测量的未服务减少”。结论反而更干净。</li>
+  <li>若未服务仍在 134 附近：用 0.1% 的 gap 重新写这句话，并把 267.8 元/单与 44.6 倍的数重新算一遍（罚金不变的话数字几乎不动，但 gap 证据要对）。</li>
+  </ul></li>
+<li><strong>改两处文字：</strong>摘要“每个 K 最优都是 arrivals B=30k”改为“除 K=0 为 surplus 外，其余 K 为 arrivals B=30k”；K=2 的 gap 引用统一改成该次重解的实际值。</li>
+<li>重跑后更新 <code>fleet_scan.json</code> 的 K=2 行为 gap_tight 结构（与 5/10/20 同构），<code>breakeven.json</code> 的 K=2 ceiling 与 tolerance 同步；<code>check.json</code> 增加 K=2 的紧 gap 断言。</li>
+</ol>
+
+<h2>3. 不受影响、可以直接给 T021 的结论</h2>
+<ul>
+<li>在 K∈[0,20] 的每一种组合下，激励的总支出都高于纯卡车；最小差距 −31,058.7（K=2），紧 gap 三点为 −31,588.8 / −31,623.3 / −31,528.8。</li>
+<li>付款上限全为负，紧 gap 三点的绝对值是求解容差的 12–14 倍：<strong>结论不是 gap 噪声</strong>。</li>
+<li>K≥5 时车位层面的稀缺已不存在（未服务 0 / 0.19 / 0），激励没有可替代的对象。这是“激励是卡车受限时的替代品”这句话的定量边界。</li>
+<li>60 辆卡车（K=60）下激励净支出（T020）；K≤20 下激励仍净支出（T025）。Q3 的价值在设计与预算纪律，不在节省。</li>
+</ul>
+
+<h2>4. 台账处理</h2>
+<ul>
+<li>T025：退回 R1（第二项：K=2 的 gap 证据）。H22 仍打开，等 K=2 重解后与 T021 一起关闭。</li>
+<li>我上一轮 T025 验收记录里“315.8（K=20）到 267.9（K=2）元”一句加注：315.8 已随 gap 伪影撤回，267.9 待 K=2 紧 gap 重解确认。</li>
+</ul>
+
+</main>
+</body>
+</html>
