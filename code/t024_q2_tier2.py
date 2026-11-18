@@ -47,11 +47,11 @@ TRI_FIXED = 300.0       # CNY per tricycle per day
 TRI_KM = 0.20           # CNY per vehicle-km
 TRI_MAX_TRIP = 5.0      # km
 TRI_NEAREST = 12        # donor candidates per deficit cell
-TRI_NMAX = 20           # per-zone curve upper bound
+TRI_NMAX = 40           # per-zone curve upper bound (R1: was 20)
 TRI_HOUR0 = 7           # one 13-hour shift, 07:00-20:00
 TRI_HOUR1 = 20
 
-FLEETS = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+FLEETS = list(range(0, 2001, 100))
 
 PLAN_K = 60
 
@@ -284,12 +284,12 @@ def _tri_lp(sink, donor, resid, I, D, n):
     res = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq,
                   bounds=(0, None), method="highs")
     if not res.success:
-        return None, 0.0
+        return None, 0.0, 0.0
     x = res.x
     flows = [(int(sink[a]), int(donor[b]), float(x[k]))
              for k, (a, b) in enumerate(arcs) if x[k] > 1e-9]
     km = float(sum(dd[a, b] * x[k] for k, (a, b) in enumerate(arcs)))
-    return flows, km
+    return flows, km, km / TRI_Q
 
 
 def dyn_sim(inp, plan, nvec, collect_trips=False, record=False):
@@ -314,7 +314,8 @@ def dyn_sim(inp, plan, nvec, collect_trips=False, record=False):
     unmet_h = np.zeros(24)
     strict_h = np.zeros(24)
     tri_bikes = np.zeros(Z)
-    tri_km = np.zeros(Z)
+    tri_bike_km = np.zeros(Z)
+    tri_vehicle_km = np.zeros(Z)
     trips = []
     traj = np.zeros((24, C)) if record else None
 
@@ -341,7 +342,7 @@ def dyn_sim(inp, plan, nvec, collect_trips=False, record=False):
                 donor = idx[I[idx] > 1e-9]
                 if len(sink) == 0 or len(donor) == 0:
                     continue
-                flows, km = _tri_lp(sink, donor, resid, I, D, n)
+                flows, bkm, vkm = _tri_lp(sink, donor, resid, I, D, n)
                 if not flows:
                     continue
                 for (d, s, f) in flows:
@@ -349,7 +350,8 @@ def dyn_sim(inp, plan, nvec, collect_trips=False, record=False):
                     I[d] += f
                     resid[d] -= f
                 tri_bikes[z] += sum(f for (_, _, f) in flows)
-                tri_km[z] += km
+                tri_bike_km[z] += bkm
+                tri_vehicle_km[z] += vkm
                 if collect_trips:
                     for (d, s, f) in flows:
                         trips.append(dict(hour=h, zone=int(z), donor=s,
@@ -369,7 +371,8 @@ def dyn_sim(inp, plan, nvec, collect_trips=False, record=False):
             traj[h] = I
     return dict(unmet=float(unmet_h.sum()), strict=float(strict_h.sum()),
                 unmet_by_hour=unmet_h, strict_by_hour=strict_h,
-                tri_bikes=tri_bikes, tri_km=tri_km, trips=trips,
+                tri_bikes=tri_bikes, tri_bike_km=tri_bike_km,
+                tri_vehicle_km=tri_vehicle_km, trips=trips,
                 traj=traj)
 
 
@@ -407,7 +410,8 @@ def dyn_zone(za, D, n, collect_trips=False):
     unmet = 0.0
     strict = 0.0
     tri_bikes = 0.0
-    tri_km = 0.0
+    tri_bike_km = 0.0
+    tri_vehicle_km = 0.0
     trips = []
     sub = D[np.ix_(za["idx"], za["idx"])]
     for h in range(24):
@@ -425,7 +429,9 @@ def dyn_zone(za, D, n, collect_trips=False):
             sink = np.where(resid > 1e-9)[0]
             donor = np.where(I > 1e-9)[0]
             if len(sink) and len(donor):
-                flows, km = _tri_lp_local(sink, donor, resid, I, sub, n)
+                I_before = I.copy() if collect_trips else None
+                resid_before = resid.copy() if collect_trips else None
+                flows, bkm, vkm = _tri_lp_local(sink, donor, resid, I, sub, n)
                 if flows:
                     for (d, s, f) in flows:
                         I[s] -= f
@@ -437,8 +443,13 @@ def dyn_zone(za, D, n, collect_trips=False):
                                               donor=int(za["idx"][s]),
                                               sink=int(za["idx"][d]),
                                               bikes=float(f),
+                                              avail=int(np.floor(
+                                                  I_before[s])),
+                                              room=int(np.floor(
+                                                  resid_before[d])),
                                               km=float(sub[s, d])))
-                    tri_km += km
+                    tri_bike_km += bkm
+                    tri_vehicle_km += vkm
         d = za["drop"][h]
         if d > 1e-12:
             m = arr[h]
@@ -446,7 +457,9 @@ def dyn_zone(za, D, n, collect_trips=False):
         I += arr[h]
         unmet += np.maximum(resid, 0.0).sum()
     return dict(unmet=float(unmet), strict=float(strict),
-                tri_bikes=float(tri_bikes), tri_km=float(tri_km),
+                tri_bikes=float(tri_bikes),
+                tri_bike_km=float(tri_bike_km),
+                tri_vehicle_km=float(tri_vehicle_km),
                 trips=trips)
 
 
@@ -483,12 +496,48 @@ def _tri_lp_local(sink, donor, resid, I, sub, n):
     res = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq,
                   bounds=(0, None), method="highs")
     if not res.success:
-        return None, 0.0
+        return None, 0.0, 0.0
     x = res.x
     flows = [(int(sink[a]), int(donor[b]), float(x[k]))
              for k, (a, b) in enumerate(arcs) if x[k] > 1e-9]
     km = float(sum(dd[a, b] * x[k] for k, (a, b) in enumerate(arcs)))
-    return flows, km
+    return flows, km, km / TRI_Q
+
+
+def _dp_curves(curves, Z, nmax, ncap):
+    """Min-cost allocation DP: dp[N] = min cost with exactly N tricycles.
+    Vectorised over the fleet axis; choice[zi, N] stores the tricycles given
+    to zone zi in the reconstruction of N."""
+    dp = np.full(ncap + 1, np.inf)
+    dp[0] = 0.0
+    choice = np.zeros((Z, ncap + 1), dtype=np.int16)
+    for zi in range(Z):
+        c = curves[zi]
+        ndp = np.full(ncap + 1, np.inf)
+        for n in range(min(nmax, ncap) + 1):
+            if n == 0:
+                cand = dp + c[0]
+                better = cand < ndp
+                ndp[better] = cand[better]
+                continue
+            cand = dp[:ncap + 1 - n] + c[n]
+            upto = ndp[n:]
+            better = cand < upto
+            upto[better] = cand[better]
+            ch = choice[zi, n:]
+            ch[better] = n
+        dp = ndp
+    return dp, choice
+
+
+def _dp_recon(choice, N, Z):
+    nz = np.zeros(Z, dtype=int)
+    left = int(N)
+    for zi in range(Z - 1, -1, -1):
+        n = int(choice[zi, left])
+        nz[zi] = n
+        left -= n
+    return nz
 
 
 def run_fleet(force=False):
@@ -506,16 +555,18 @@ def run_fleet(force=False):
     curves = np.zeros((Z, TRI_NMAX + 1))
     unmet_curve = np.zeros((Z, TRI_NMAX + 1))
     km_curve = np.zeros((Z, TRI_NMAX + 1))
+    bike_km_curve = np.zeros((Z, TRI_NMAX + 1))
     strict_curve = np.zeros((Z, TRI_NMAX + 1))
     bikes_curve = np.zeros((Z, TRI_NMAX + 1))
     base_by_zone = np.zeros(Z)
     for zi, za in enumerate(zas):
         for n in range(TRI_NMAX + 1):
             r = dyn_zone(za, D, n)
-            curves[zi, n] = (TRI_FIXED * n + TRI_KM * r["tri_km"]
+            curves[zi, n] = (TRI_FIXED * n + TRI_KM * r["tri_vehicle_km"]
                              + PENALTY * r["unmet"])
             unmet_curve[zi, n] = r["unmet"]
-            km_curve[zi, n] = r["tri_km"]
+            km_curve[zi, n] = r["tri_vehicle_km"]
+            bike_km_curve[zi, n] = r["tri_bike_km"]
             strict_curve[zi, n] = r["strict"]
             bikes_curve[zi, n] = r["tri_bikes"]
         base_by_zone[zi] = unmet_curve[zi, 0]
@@ -523,32 +574,12 @@ def run_fleet(force=False):
               f"n={TRI_NMAX} {unmet_curve[zi,TRI_NMAX]:.1f}  "
               f"t={time.time()-t0:.0f}s")
     # integer allocation by DP: minimise sum C_z(n_z), sum n_z <= N
-    # one DP up to the largest fleet cap, then read every N off its prefix
     NCAP = max(FLEETS)
-    dp = np.full(NCAP + 1, np.inf)
-    dp[0] = 0.0
-    choice = np.zeros((Z, NCAP + 1), dtype=int)
-    for zi in range(Z):
-        ndp = np.full(NCAP + 1, np.inf)
-        for used in range(NCAP + 1):
-            if not np.isfinite(dp[used]):
-                continue
-            for n in range(min(TRI_NMAX, NCAP - used) + 1):
-                v = dp[used] + curves[zi, n]
-                if v < ndp[used + n]:
-                    ndp[used + n] = v
-                    choice[zi, used + n] = n
-        dp = ndp
+    dp, choice = _dp_curves(curves, Z, TRI_NMAX, NCAP)
     alloc = {}
     for N in FLEETS:
         u = int(np.argmin(dp[:N + 1]))
-        nz = np.zeros(Z, dtype=int)
-        left = u
-        for zi in range(Z - 1, -1, -1):
-            n = choice[zi, left]
-            nz[zi] = n
-            left -= n
-        alloc[N] = nz
+        alloc[N] = _dp_recon(choice, u, Z)
     best_used = int(np.argmin(dp))
     best_cost = float(dp[best_used])
     rows = []
@@ -557,6 +588,7 @@ def run_fleet(force=False):
         nz = alloc[N]
         unmet = float(sum(unmet_curve[zi, nz[zi]] for zi in range(Z)))
         km = float(sum(km_curve[zi, nz[zi]] for zi in range(Z)))
+        bike_km = float(sum(bike_km_curve[zi, nz[zi]] for zi in range(Z)))
         tri_cost = float(TRI_FIXED * nz.sum() + TRI_KM * km)
         total = float(scal["obj"]) + tri_cost + PENALTY * unmet
         rows.append(dict(
@@ -565,7 +597,8 @@ def run_fleet(force=False):
             max_zone_tricycles=int(nz.max()) if Z else 0,
             cell_unmet=unmet, pre_tricycle_shortfall=float(
                 sum(strict_curve[zi, nz[zi]] for zi in range(Z))),
-            tricycle_km=km, tricycle_bikes=float(
+            tricycle_vehicle_km=km, tricycle_bike_km=bike_km,
+            tricycle_bikes=float(
                 sum(bikes_curve[zi, nz[zi]] for zi in range(Z))),
             tricycle_cost=tri_cost, truck_obj=float(scal["obj"]),
             total=total, saving_vs_no_tricycle=float(base_total - total),
@@ -573,6 +606,51 @@ def run_fleet(force=False):
     for k in range(1, len(rows)):
         rows[k]["marginal_saving"] = float(
             rows[k - 1]["total"] - rows[k]["total"])
+    base_unmet = float(base_by_zone.sum())
+    # penalty sensitivity: re-allocate at each penalty p -----------------
+    pen_rows = []
+    for p in (1.0, 2.0, 3.0, 4.0, 6.0, 10.0):
+        cp = (TRI_FIXED * np.arange(TRI_NMAX + 1)[None, :]
+              + TRI_KM * km_curve + p * unmet_curve)
+        dpp, chp = _dp_curves(cp, Z, TRI_NMAX, NCAP)
+        N = int(np.argmin(dpp))
+        nz = _dp_recon(chp, N, Z)
+        unmet = float(sum(unmet_curve[zi, nz[zi]] for zi in range(Z)))
+        km = float(sum(km_curve[zi, nz[zi]] for zi in range(Z)))
+        tri = float(TRI_FIXED * N + TRI_KM * km)
+        removed = base_unmet - unmet
+        pen_rows.append(dict(
+            penalty=p, best_used=N, tricycles=int(nz.sum()),
+            cell_unmet=unmet, removed_unmet=removed,
+            tricycle_cost=tri, vehicle_km=km,
+            penalty_cost=float(p * unmet), total=float(tri + p * unmet),
+            threshold=float(tri / removed) if removed > 1e-9 else None))
+    thr = []
+    for N in FLEETS:
+        nz = alloc[N]
+        unmet = float(sum(unmet_curve[zi, nz[zi]] for zi in range(Z)))
+        km = float(sum(km_curve[zi, nz[zi]] for zi in range(Z)))
+        tri = float(TRI_FIXED * N + TRI_KM * km)
+        removed = base_unmet - unmet
+        if removed > 1e-9:
+            thr.append(dict(fleet_N=int(N), tricycle_cost=tri,
+                            removed_unmet=removed,
+                            threshold=float(tri / removed)))
+    gmin = min(thr, key=lambda r: r["threshold"]) if thr else None
+    nmax_sweep = []
+    for nmx in (20, 25, 30, 40):
+        dpn, chn = _dp_curves(curves[:, :nmx + 1], Z, nmx, NCAP)
+        Nn = int(np.argmin(dpn))
+        nzn = _dp_recon(chn, Nn, Z)
+        un = float(sum(unmet_curve[zi, nzn[zi]] for zi in range(Z)))
+        kn = float(sum(km_curve[zi, nzn[zi]] for zi in range(Z)))
+        trn = float(TRI_FIXED * Nn + TRI_KM * kn)
+        nmax_sweep.append(dict(
+            nmax=nmx, best_used=Nn, cell_unmet=un, vehicle_km=kn,
+            tricycle_cost=trn,
+            total=float(scal["obj"]) + trn + PENALTY * un,
+            zones_at_cap=int((nzn >= nmx).sum())))
+    best_row = max(rows, key=lambda r: r["saving_vs_no_tricycle"])
     out = dict(
         K=int(scal["K"]), zone_unmet=float(scal["unmet"]),
         truck_obj=float(scal["obj"]), truck_km=float(scal["truck_km"]),
@@ -580,11 +658,36 @@ def run_fleet(force=False):
         no_tricycle=dict(cell_unmet=float(base_by_zone.sum()),
                          total=base_total),
         best_used=int(best_used), best_layer_cost=float(best_cost),
+        best_allocation=[int(v) for v in _dp_recon(choice, best_used, Z)],
         rows=rows,
+        penalty_scan=dict(
+            rows=pen_rows,
+            global_threshold=gmin,
+            nmax_sweep=nmax_sweep,
+            note=("N*(p) re-optimises the per-zone curves at each penalty p "
+                  "with the same integer DP; global_threshold is the "
+                  "smallest tricycle cost per removed unmet trip among the "
+                  "fleet-scan rows, i.e. the lowest penalty at which any "
+                  "scale breaks even; nmax_sweep re-solves the allocation "
+                  "with the per-zone upper bound capped at 20/25/30/40")),
+        cell_unmet_interval=dict(
+            static_lower=float(load_json("cell_unmet.json")["static"]["total_strict"])
+            if os.path.exists(os.path.join(RUN, "cell_unmet.json")) else None,
+            static_share=float(load_json("cell_unmet.json")["static"]
+                               ["strict_share_of_trips"])
+            if os.path.exists(os.path.join(RUN, "cell_unmet.json")) else None,
+            dynamic_upper=float(base_unmet),
+            dynamic_share=float(base_unmet / 2132542.1875),
+            note=("the static hourly arrival-surface split is a lower bound "
+                  "(bikes are re-split for free every hour); the dynamic "
+                  "no-tricycle replay is the operational upper bound. "
+                  "Walking across cell boundaries is not modelled at 300 m "
+                  "because no neighbour centre is within reach on this grid")),
         curves=dict(zones=[int(z) for z in range(Z)],
                     cost=curves.tolist(),
                     unmet=unmet_curve.tolist(),
-                    km=km_curve.tolist()),
+                    km=km_curve.tolist(),
+                    bike_km=bike_km_curve.tolist()),
         allocation={str(N): [int(v) for v in alloc[N]] for N in FLEETS},
         params=dict(Q=TRI_Q, V=TRI_V, handle_min=TRI_HANDLE,
                     fixed=TRI_FIXED, km=TRI_KM, max_trip=TRI_MAX_TRIP,
@@ -666,14 +769,48 @@ def run_schedule(force=False):
     D = np.load(os.path.join(lib.DATA, "dist_matrix.npy"))
     za = zone_arrays(inp, plan)[zmax]
     r = dyn_zone(za, D, n, collect_trips=True)
-    trips = []
+    # integer loads: round each LP arc flow to whole bicycles, capped by the
+    # donor's integer stock in that hour; flows that round to zero are merged
+    # away.  The LP is continuous, so this is the executable projection.
+    budget = {}
     for t in r["trips"]:
-        rem = t["bikes"]
-        while rem > 1e-9:
-            load = min(TRI_Q, rem)
-            rem -= load
+        key = (t["hour"], t["donor"])
+        if key not in budget:
+            budget[key] = t["avail"]
+    room = {}
+    for t in r["trips"]:
+        key = (t["hour"], t["sink"])
+        if key not in room:
+            room[key] = t["room"]
+    flows_bikes = float(sum(t["bikes"] for t in r["trips"]))
+    dropped_flows = 0
+    dropped_bikes = 0.0
+    trips = []
+    q = int(round(TRI_Q))
+    for t in r["trips"]:
+        key = (t["hour"], t["donor"])
+        n_int = int(round(t["bikes"]))
+        n_int = min(n_int, max(0, budget[key]))
+        budget[key] -= n_int
+        if n_int <= 0:
+            dropped_flows += 1
+            dropped_bikes += t["bikes"]
+            continue
+        n_full, rem = divmod(n_int, q)
+        for _ in range(n_full):
             trips.append(dict(hour=t["hour"], donor=t["donor"],
-                              sink=t["sink"], bikes=load, km=t["km"]))
+                              sink=t["sink"], bikes=q, km=t["km"]))
+        if rem:
+            trips.append(dict(hour=t["hour"], donor=t["donor"],
+                              sink=t["sink"], bikes=rem, km=t["km"]))
+    int_bikes = float(sum(t["bikes"] for t in trips))
+    # sink room check: integer deliveries may exceed the fractional residual
+    # by less than one bicycle per flow
+    deliv = {}
+    for t in trips:
+        key = (t["hour"], t["sink"])
+        deliv[key] = deliv.get(key, 0) + t["bikes"]
+    sink_excess = max((deliv[k] - room.get(k, 0) for k in deliv), default=0)
     trips.sort(key=lambda t: (t["hour"], t["donor"]))
     free = [0.0] * n
     pos = [None] * n
@@ -714,22 +851,35 @@ def run_schedule(force=False):
         tricycles_allocated=n_alloc, dispatch_buffer=n - n_alloc,
         trips=int(len(trips)), scheduled=int(len(sched)),
         unassigned=int(unassigned),
-        max_load=max((s["bikes"] for s in sched), default=0.0),
-        max_load_ok=bool(max((s["bikes"] for s in sched), default=0.0)
+        max_load=max((s["bikes"] for s in sched), default=0),
+        max_load_ok=bool(max((s["bikes"] for s in sched), default=0)
                          <= TRI_Q + 1e-9),
+        loads_integer=bool(all(float(s["bikes"]).is_integer()
+                               for s in sched)),
         max_end_h=max((s["end_h"] for s in sched), default=0.0),
         shift_ok=bool(max((s["end_h"] for s in sched), default=0.0)
                       <= TRI_HOUR1 + 1e-9),
         max_deadhead_km=max((s["deadhead_km"] for s in sched), default=0.0),
+        vehicle_km=float(sum(s["km"] for s in sched)),
+        bike_km=float(sum(s["km"] * s["bikes"] for s in sched)),
+        lp_bikes=flows_bikes, int_bikes=int_bikes,
+        dropped_flows=dropped_flows, dropped_bikes=dropped_bikes,
+        sink_excess_bikes=float(sink_excess),
+        rounding_bound=0.5 * len(r["trips"]),
+        rounding_loss=flows_bikes - int_bikes,
+        rounding_share=float((flows_bikes - int_bikes)
+                             / max(flows_bikes, 1e-9)),
         per_tricycle={str(k): dict(trips=len(v),
-                                   bikes=float(sum(s["bikes"] for s in v)),
+                                   bikes=int(sum(s["bikes"] for s in v)),
                                    km=float(sum(s["km"] for s in v)),
                                    end_h=float(v[-1]["end_h"]))
                       for k, v in by_tri.items()},
         note=("one zone's complete day at the fleet that maximises the "
-              "two-tier saving; LP flows split into loads of at most Q bikes, "
+              "two-tier saving; LP flows are rounded to whole bicycles under "
+              "the donor's integer stock, split into loads of at most Q, and "
               "assigned to the earliest-free tricycle with deadhead travel "
-              "included."))
+              "included.  vehicle_km is tricycle travel; bike_km is the "
+              "bicycle-kilometre work done."))
     dump(checks, "schedule_check.json")
     return checks
 
@@ -774,10 +924,11 @@ def run_params(force=False):
         base["break_even"] = dict(
             best_fleet=int(best["fleet_N"]),
             fixed_cost_ceiling=float(
-                (PENALTY * removed - TRI_KM * best["tricycle_km"])
+                (PENALTY * removed - TRI_KM * best["tricycle_vehicle_km"])
                 / max(best["tricycles"], 1)),
             penalty_ceiling=float(
-                (TRI_FIXED * best["tricycles"] + TRI_KM * best["tricycle_km"])
+                (TRI_FIXED * best["tricycles"]
+                 + TRI_KM * best["tricycle_vehicle_km"])
                 / max(removed, 1e-12)),
             note=("the layer pays for itself iff the fixed cost per "
                   "tricycle-day is below fixed_cost_ceiling or the value of "
@@ -806,6 +957,8 @@ def run_check(force=False):
     tot = sum(len(v) for v in nb) - len(zid)
     cross = sum(1 for c, v in enumerate(nb) for j in v
                 if j != c and zid[j] != zid[c])
+    nmax = int(cmp["params"]["nmax"])
+    best_alloc = np.array(cmp["best_allocation"])
     out = dict(
         pcell_zone_match_max_err=meta["pcell_zone_match_max_err"],
         pcell_row_sum_max_err=meta["pcell_row_sum_max_err"],
@@ -813,12 +966,17 @@ def run_check(force=False):
         cost_identity_ok=bool(cost_ok),
         schedule_unassigned=int(sch["unassigned"]),
         schedule_load_ok=bool(sch["max_load_ok"]),
+        schedule_loads_integer=bool(sch.get("loads_integer", False)),
         schedule_shift_ok=bool(sch["shift_ok"]),
         walk_cross_zone_share=float(cross / max(tot, 1)),
+        nmax=nmax,
+        best_used=int(cmp["best_used"]),
+        zones_at_nmax=int((best_alloc >= nmax).sum()),
         all_pass=bool(meta["pcell_zone_match_max_err"] < 1e-6
                       and meta["pcell_row_sum_max_err"] < 1e-6
                       and cost_ok and sch["unassigned"] == 0
-                      and sch["max_load_ok"] and sch["shift_ok"]))
+                      and sch["max_load_ok"] and sch["shift_ok"]
+                      and sch.get("loads_integer", False)))
     dump(out, "check.json")
     return out
 
