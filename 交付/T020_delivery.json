@@ -1,0 +1,126 @@
+{
+  "task": "T020",
+  "title": "Q3 完成即付：预算约束下重新优化奖励",
+  "date": "2026-11-18",
+  "status": "delivered",
+  "revision": "R0",
+  "summary": "Two ledgers separated (q = incremental reroutes, P = payable head count, payment = r*P). The bill r*sum(pi(r)x) is put inside the stacked 24-hour LP and B in {30k,60k,100k,170k,none} is swept over a 0.01-CNY r grid. Main scheme keeps the surplus source cap and adds T019 fence-capacity rows. At B=170k the arrivals caliber gives r*=1.72, q=92,119.6, P=97,882.3, payment=168,357.6 (within budget); the surplus caliber at B=60k gives r*=1.78, q=31,507.5, P=33,353.5, payment=59,369.3. Without budget the surplus optimum is r*=1.82, q=32,389.5, P=34,210.3, payment=62,262.7, total 674,925.7 (6.33% cell-level equivalent). Feeding the incentive's zone-hour OD change into the T018 integer scheduler gives a pure-truck objective of 83,807.74 against hybrid totals of 143,782-256,876, i.e. a system saving of -71.6% to -206.5%: under the Q2 service constraints the incentive program is a net cost, and the old 6.83%-20.83% is only a cell-level equivalent benchmark.",
+  "revision_note": "R0 - first delivery.",
+  "checks": {
+    "1_reproduce_old_ledger": "pass; command=`python -I code/t020_q3_budget.py --stage repro`; evidence=data/runs/T020/repro.json: arrivals r=1.76 q=95,565.81547068337 (T008 95,565.815471, abs diff 3.17e-7), P=101,286.09417811286 (reviewer 101,286.09, abs diff 0.0042), invited=206,531.9526, bill_new=178,263.5258 vs bill_old=168,195.8352; surplus r=1.83 q=32,777.11212887447 (T008 32,777.112129, abs diff 1.26e-7), P=34,601.16900772738 (reviewer 34,601.17, abs diff 0.00099), invited=65,857.9849, bill_new=63,320.1393 vs bill_old=59,982.1152; check.json repro_q_ok=true, repro_P_ok=true. Both rows: no budget row, no fence-capacity rows, same hourly LP as T008 stacked over 24 hours.",
+    "2_policy_table": "pass; evidence=data/runs/T020/policy_table.json, 2 calibers x 5 budgets = 10 rows, every row carries r, invited, P, q, payment, bill_old, truck_cost_change, total_spend, saving_vs_all_truck, q_inside_sites, q_outside_sites; settings block records r_grid 0.01-3.00 step 0.01, truck_unit=3.3305185482504633, N=216,343.75, level=meas343, payment_ledger='r * P, P = sum pi(r) x'. Key rows: arrivals B=170k r=1.72 q=92,119.63 P=97,882.30 invited=208,062.33 payment=168,357.55 total=582,088.28 saving=19.215%; surplus B=60k r=1.78 q=31,507.48 P=33,353.53 invited=66,652.08 payment=59,369.29 total=674,969.91 saving=6.324%; no-budget arrivals r=1.74 q=93,328.82 P=99,038.48 payment=172,326.96 total=582,030.47 saving=19.223%; no-budget surplus r=1.82 q=32,389.51 P=34,210.25 payment=62,262.66 total=674,925.66 saving=6.330%. No-capacity reference in each caliber: arrivals r=1.75 q=94,953.08 payment=176,222.77 total=580,516.66 saving=19.4328%; surplus r=1.82 q=32,555.67 payment=62,582.07 total=674,691.67 saving=6.3626%.",
+    "3_budget_respected": "pass; evidence=data/runs/T020/check.json budgets_respected: all 10 rows payment <= B (worst margin 168,357.55 <= 170,000, 99,127.94 <= 100,000, 59,973.78 <= 60,000, 30,000.000000000673 <= 30,000 on a 1e-9 grid tolerance); hard-budget simulation in data/runs/T020/hard_budget.json, 1,000 seeded days (seed 20261118), overrun_days=0 and overrun_probability=0.0 on every row, check.json hard_budget_zero_overrun=true. Rule: reserve r per invitation (worst case, every invitee completes); cumulative reserve hits B at hour 7 for arrivals B=30k/60k/100k, hour 8 for arrivals B=170k, hour 18 for surplus B=100k; truncated q falls to 3,634.5 / 9,554.7 / 19,999.1 / 43,760.2 and surplus rows 5,902.8 / 15,934.2 / 27,071.7.",
+    "4_capacity": "pass; evidence=data/runs/T020/check.json capacity: max_site_over_capacity = 0.0 to 7.11e-15 (floating-point zero) for all 10 rows, 1-47 binding sites per row; constraint is sum_{e->c} (f[c,j]/a[c]) w_e x_e <= min over the four 15-min steps of hour h of spare[j,h] from data/runs/T019/spare_capacity.npz with site shares from plan_meas343_main.npz. Reroutes to cells served by no fence: q_outside_sites = 6,102.8-21,910.9 (arrivals, 21.1-22.7% of q) and 4,555.1-7,346.1 (surplus, 22.7%), over 1,009 outside cells; reported as a separate column because the fence constraint cannot cover them. Capacity deduction vs the no-cap reference: 1,027.89 bikes (arrivals), 166.16 (surplus).",
+    "5_system_saving": "pass; evidence=data/runs/T020/hybrid.json. Pure truck (T018 integer MILP, same Q1 demand, I0, K=60, costs, event order, bike_integer): obj=83,807.74383516546. Hybrid = same MILP with PZ re-fitted by IPF to the incentive's zone-hour arrival change (rows = departures fixed, columns = new arrival totals; row err 3.6e-12, column err 2.1e-4). surplus no budget: truck_obj=84,388.46, payment=62,262.66, total=146,651.12, diff=-62,843.37 (-74.99%); arrivals no budget: truck_obj=84,549.21, payment=172,326.96, total=256,876.17, diff=-173,068.43 (-206.51%); surplus B=60k: truck_obj=84,413.06, payment=59,369.29, total=143,782.35, diff=-59,974.61 (-71.56%). Old cell-level reference carried in the same file: 20.83% targeted upper / 6.83% conservative, labelled 'cell-level equivalent-cost model, not a system saving'. Zone-hour arrival change: |delta| sum 4,471.3 (surplus) / 8,409.9 (arrivals); positive sum 2,235.7 / 4,205.0; consistent with the 7.46% cross-zone share on p.~sec6_q3:172."
+  },
+  "repro": {
+    "commands": [
+      "python -I code/t020_q3_budget.py --stage all --force"
+    ],
+    "python": "3.11.9",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "seed": 20261118,
+    "sim_days": 1000,
+    "runtime_s_policy": 99.87,
+    "inputs": {
+      "data/runs/T019/spare_capacity.npz": "9ec22730964920f2...",
+      "data/runs/T019/plan_meas343_main.npz": "8af812811c1c184b..."
+    },
+    "outputs_sha256": {
+      "code/t020_q3_budget.py": "93d21b0d87012b67e0b34fb06af4e015fc7c247e3f05488d93bd23a1196d70cf",
+      "data/runs/T020/repro.json": "5cd136c38f54789c3b1b1a28e27888ca445712a6aed29604acc10c5d1209386d",
+      "data/runs/T020/policy_table.json": "613dc7225b1118eeb86393505c6605f59c5962b15977c3a419826bd1d91e2a49",
+      "data/runs/T020/hard_budget.json": "968188689453463fc289127a5cb9331603f21d2f35dcb17dc7ca56599e09c81a",
+      "data/runs/T020/hybrid.json": "75a6cb671f89abeb19b928bb07463ef0617b090b11c28ca1a74759f578319fed",
+      "data/runs/T020/check.json": "27cb19fa0a70e1537c849fff8b34e69044ae39c3645c779d026b13a2f528bdb0"
+    }
+  },
+  "affected": [
+    {
+      "location": "paper/sec6_q3.tex:139-145 (eq:mix)",
+      "old": "min_{r>=0} r q(r) + c_truck (N - q(r)), i.e. the bill is r times the incremental reroute volume",
+      "new": "min_{r>=0} r P(r) + c_truck (N - q(r)), P(r)=sum_e pi_e(r) x_e (payable head count), q(r)=sum_e (pi_e(r)-pi_e(0)) x_e (effective reroutes), payment = r P(r). Both q and P are tabulated in every row.",
+      "basis": "data/runs/T020/repro.json: at r=1.76 P=101,286.0942 and q=95,565.8155, so payment=178,263.53 vs the old r*q=168,195.84; at r=1.83 payment=63,320.14 vs 59,982.12."
+    },
+    {
+      "location": "paper/sec6_q3.tex:148-155 (upper-bound box and saving)",
+      "old": "r*=1.76, q*=95,566 placements (44.2%), bill=168,196 CNY, residual 120,778 costs 402,253, total 570,449 vs 720,537, saving 20.83%",
+      "new": "With the T019 fence-capacity rows and no budget: r*=1.74, q*=93,329 placements (43.14%), P*=99,038 payees, invited 206,149, payment=172,327 CNY, residual 123,015 x 3.3305 = 409,704, total 582,030 CNY vs 720,537, a cell-level equivalent saving of 19.22%. Without the capacity rows (potential upper bound): r*=1.75, q*=94,953, P*=100,699, payment=176,223, total 580,517, saving 19.43%; the fence-capacity constraint removes 1,028 placements.",
+      "basis": "data/runs/T020/policy_table.json levels.arrivals rows budget=null and no_target_cap_reference; all_truck_cost=720,536.8722."
+    },
+    {
+      "location": "paper/sec6_q3.tex:157-163 (conservative box)",
+      "old": "r*=1.83, q*=32,777 placements (15.2%), bill=59,982 CNY, residual 183,567 costs 611,372, total 671,354, saving 6.83%",
+      "new": "With the fence-capacity rows and no budget: r*=1.82, q*=32,390 placements (14.97%), P*=34,210 payees, invited 65,738, payment=62,263 CNY, residual 183,954 x 3.3305 = 612,663, total 674,926 CNY, a cell-level equivalent saving of 6.33%. Without the capacity rows: r*=1.82, q*=32,556, P*=34,386, payment=62,582, total 674,692, saving 6.36%; the capacity constraint removes 166 placements.",
+      "basis": "data/runs/T020/policy_table.json levels.surplus rows budget=null and no_target_cap_reference."
+    },
+    {
+      "location": "paper/sec6_q3.tex:165-175 (headline range and the 7.4643% cross-zone paragraph)",
+      "old": "'The defensible headline is therefore the range 6.83%-20.83%' ... 'a cell-level saving of 20.83% therefore does not translate into a system-level truck saving'",
+      "new": "Relabel 6.33%-19.22% (or 6.36%-19.43% without the capacity rows) explicitly as cell-level equivalent benchmarks, and replace the qualitative 'does not translate' with the computed system comparison: pure-truck T018 objective 83,807.74 CNY vs hybrid totals 143,782.35 (surplus B=60k), 146,651.12 (surplus no budget) and 256,876.17 (arrivals no budget), i.e. system savings of -71.56%, -74.99% and -206.51%. The zone-hour OD change is small (positive sum 2,235.7 surplus / 4,205.0 arrivals), so the truck objective moves by only +580.7 / +741.5 CNY; even at the most favourable 3.3305 CNY per arrival removed the truck-side benefit could not exceed ~14,900 CNY, against payments of 62,263-172,327.",
+      "basis": "data/runs/T020/hybrid.json: pure_truck.obj=83,807.74383516546; policies[].truck_obj and saving_pct; delta_positive and delta_zone_hour_abs_sum."
+    },
+    {
+      "location": "paper/sec6_q3.tex:179-186 (public push: '100,041 free riders')",
+      "old": "A public push pays every rider who ends in a target cell, including the 100,041 riders who were already going there and change nothing. Those free riders are the difference between the targeted and the public schemes.",
+      "new": "Under pay-on-completion the targeted scheme also pays the pi(0) share: P - q = 5,710 payees (5.8% of P) in the arrivals caliber and 1,821 (5.3%) in the surplus caliber at the optimum. The sentence must distinguish (a) the 100,041 riders who were already going to a target cell under the public push from (b) the 5,710/1,821 who would have gone anyway under the targeted program. Only (b) is new information; (a) stays as the public-push lower bound.",
+      "basis": "data/runs/T020/policy_table.json: arrivals no-budget P-q = 99,038.4839-93,328.8197 = 5,709.66; surplus no-budget P-q = 34,210.2531-32,389.5130 = 1,820.74."
+    },
+    {
+      "location": "paper/sec6_q3.tex:236-237 (daily caps of 170,000 / 60,000 CNY)",
+      "old": "A hard budget of 170,000 CNY per day for the upper-bound scheme (the conservative scheme spends 60,000), with any surplus carried to the next day.",
+      "new": "The budget is now an explicit LP row (r sum pi_e(r) x_e <= B) rather than an ex-post check. At B=170,000 the arrivals optimum is r*=1.72, q=92,120, payment=168,358 (within 1,642 of the cap); at B=60,000 the surplus optimum is r*=1.78, q=31,507, payment=59,369. A hard budget enforced by reserving r per invitation (worst case, every invitee completes) stops the day at hour 8 / hour 7 and truncates q to 43,760 / 15,934; with zero overrun probability in 1,000 simulated days. Quote both the expected-payment and the reservation rule, because they differ by a factor of 2-8.",
+      "basis": "data/runs/T020/policy_table.json rows budget=170000 (arrivals) and budget=60000 (surplus); data/runs/T020/hard_budget.json rows source_cap=arrivals B=170000 (stop_hour 8, issued_fraction 0.7580) and source_cap=surplus B=60000 (stop_hour 8, issued_fraction 0.5515)."
+    },
+    {
+      "location": "paper/sec1_intro.tex:130 (Q3 table row)",
+      "old": "1.76 CNY: 95,566 placements, 20.83% cell-level saving; 1.83 CNY: 32,777, 6.83%",
+      "new": "1.74 CNY: 93,329 placements, payment 172,327 CNY, 19.22% cell-level saving (capacity-constrained), 1.75/19.43% without capacity; 1.82 CNY: 32,390, payment 62,263, 6.33% (6.36% without capacity). Label the percentage as a cell-level equivalent, not a system saving.",
+      "basis": "data/runs/T020/policy_table.json no-budget rows and no_target_cap_reference."
+    },
+    {
+      "location": "paper/summary.tex:50-52",
+      "old": "upper bound 20.83% saving at r*=1.76 and q*=95,566; conservative 6.83% at r*=1.83 and q*=32,777; reported range 6.83%-20.83%",
+      "new": "Upper bound 19.43% (19.22% with the fence-capacity rows) at r*=1.75 (1.74), q*=94,953 (93,329), payment 176,223 (172,327); conservative 6.36% (6.33%) at r*=1.82, q*=32,556 (32,390), payment 62,582 (62,263). State that these are cell-level equivalent savings and that the Q2-coupled system comparison gives -74.99% (surplus) / -206.51% (arrivals).",
+      "basis": "data/runs/T020/policy_table.json + data/runs/T020/hybrid.json."
+    },
+    {
+      "location": "paper/sec10_evaluation.tex:45 and :95",
+      "old": "'the 20.83% cell-level saving cannot be subtracted ...' and 'saving of 6.83%-20.83% against an all-truck benchmark'",
+      "new": "Replace the range with 6.33%-19.22% (6.36%-19.43% without the capacity rows) and add the measured system result: the Q2-coupled comparison is negative, -59,975 to -173,068 CNY (-71.6% to -206.5%). The evaluation section should treat the incentive program as a service-quality instrument with a quantified net cost, not as a cost-saving measure.",
+      "basis": "data/runs/T020/hybrid.json policies[]."
+    },
+    {
+      "location": "paper/sec6_q3.tex (new subsection after the mix, proposed)",
+      "old": "(no budget table; the 170k/60k caps were asserted, not optimised)",
+      "new": "Add a budget-policy table: rows = B in {30k, 60k, 100k, 170k, none} x {surplus main, arrivals upper bound}; columns = r*, invited, P, q, payment, truck residual, total, cell-level saving. Add one paragraph on the reservation rule (stop hours 7-8 for the arrival caliber; surplus B=100k stops at hour 18) and one on the fence-capacity deduction (1,028 / 166 placements) plus the outside-fence share (21.1-22.7% of q over 1,009 cells, uncapacitated).",
+      "basis": "data/runs/T020/policy_table.json and data/runs/T020/hard_budget.json; check.json outside shares."
+    }
+  ],
+  "outputs": [
+    "code/t020_q3_budget.py",
+    "data/runs/T020/repro.json",
+    "data/runs/T020/policy_table.json",
+    "data/runs/T020/hard_budget.json",
+    "data/runs/T020/hybrid.json",
+    "data/runs/T020/check.json",
+    "交付/T020_delivery.json"
+  ],
+  "notes": [
+    "The hard-budget reservation rule is far more conservative than an expected-payment budget: reserving r per invitation puts the full-day reserve at 238,418-358,699 CNY, so B=30k-170k stop issuing at hour 7-8 and the realised q is 3,634-43,760, i.e. 4-47% of the LP plan. Overrun probability is 0 by construction in all 1,000-day simulations; the cost of that guarantee is the truncation. An operator who budgets on expected payment instead (the LP rows) can spend the full B but accepts a non-zero overrun tail that this delivery does not quantify.",
+    "The fence-capacity constraint covers only cells inside an open T019 site. Reroutes to the 1,009 cells served by no fence are 21.1-22.7% of q and are reported separately (policy_table.json q_outside_sites); they are physically uncapacitated by the fence system, not verified empty.",
+    "Feeding the incentive into T018 requires re-fitting PZ, because T018 generates arrivals from PZ and its raw ARR matrix is unused. The IPF keeps departure rows fixed and moves column totals to the incentive's zone-hour arrival totals (row error 3.6e-12, column error 2.1e-4 relative ~2e-9). This is an aggregate translation: only 6.9% of reroutes (|delta| 4,471 / 2q = 64,780) cross a zone boundary, consistent with the paper's 7.46% figure.",
+    "The negative system saving is robust to the IPF method: the largest conceivable truck-side benefit is 3.3305 x the positive zone-hour arrival change = 14,003 CNY (arrivals) / 7,446 CNY (surplus), against payments of 172,327 / 62,263. Even a perfect truck response would leave the hybrid far more expensive than pure truck.",
+    "Both sides of the hybrid comparison carry the T018 fixed cost of 36,000 CNY (600 x K=60), so the difference is variable truck cost plus payment; no fixed cost is double-counted or dropped.",
+    "No parameter of the logit model (kappa=2.0, rho=0.35, c0=0.8) was changed; T008's seven parameter sets remain the sensitivity basis and were not re-run here.",
+    "All totals use N=216,343.75 and c_truck=3.3305185482504633 CNY, the same constants as T008.",
+    "paper/ was not modified; the affected entries are proposals for T021."
+  ],
+  "integrity": {
+    "readonly_respected": true,
+    "no_files_written_in_review_or_planning": true,
+    "paper_unmodified": true,
+    "tracked_data_unmodified": true
+  }
+}
