@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>外部评审核实：P0 三项全部成立</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>外部评审（冲 M 奖）核实：P0 三项全部成立</h1>
+<p class="meta">核实：2026-11-18　·　对象：用户转来的外部评审意见（P0 三项 + P1 五项）　·　基线：remote main <code>c4be8d1</code>　·　方法：从 <code>data/runs/T007–T009</code> 结果文件独立复算，不信任何自报</p>
+
+<div class="box hi">
+<p><strong>结论：</strong>意见里引用的四组数字我全部复算成立，而且三处都是论文自己的说法与代码不符，不是口径之争。按项目分级，H20–H22 都是“高”：改变结论、或评委一眼能抓的矛盾。论文当前的 Q2 运营建议、Q3 预算和 Q4 选址都受影响。</p>
+</div>
+
+<h2>1. 逐条复算</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:15%">意见</th><th style="width:43%">复算</th><th style="width:28%">论文现状</th><th style="width:14%">判定</th></tr></thead>
+<tbody>
+<tr><td>Q2：623.17 来自贪心基线；LP 峰值 2,083.15</td>
+<td><code>q2_greedy_check.json</code> 的 <code>hourly_moved</code> 全天合计 <strong>2,076.46</strong>，最大 623.17；推荐方案 <code>q2_plan_q1.npz</code> 的 <code>XM.sum((1,2))</code> 全天合计 24,679.28（= 主结果），<strong>最大 2,083.15 辆，在 23 时</strong>，相当于 52.08 车次（Q=40）。卡车变量 <code>vt=CONTINUOUS</code>（<code>21_q2_opt.py:94</code>，主结果未用 <code>--integer</code>）；弧 = 8 近邻 ≤9 km、一弧一小时，<strong>未建模装卸时间</strong>。</td>
+<td><code>sec5_q2.tex:88–92</code>：“the resulting plan is rounded up when a schedule is drawn. A post-solve greedy check confirms … a peak of 623.17 bicycles moved in one hour”——把贪心基线的峰值当成推荐方案的核查，且班表从未生成</td>
+<td>成立（高，H20）</td></tr>
+<tr><td>Q4：式 (29) 写的是最小化，代码用折中点</td>
+<td><code>main.aux</code>：<code>eq:fencecost</code> = 式 <strong>29</strong>。<code>t009_q4.py:186–187</code>：<code>cost = cumsum(caps) + 150·n</code>，<code>n_selected = knee(cost, cov_path)+1</code>；<code>knee()</code>（:130）是 Kneedle，取归一化 (成本, 覆盖率) 曲线上离弦最远的点。cost(n) 随 n 单调增，按字面“最小化”会得到 n=0。</td>
+<td><code>sec7_q4.tex:48</code>：“chosen on the capacity–coverage frontier <strong>by minimising</strong> cost(n)”</td>
+<td>成立（高，H21）</td></tr>
+<tr><td>Q4：705×150 = 105,750 ≪ 491,692</td>
+<td>算术成立。另：705 处覆盖格内的<strong>期初库存</strong>就有 236,432.58 辆（<code>q4_results.json</code> → meas343.standing_total），已是 105,750 的 2.24 倍——上限 150 时连停着的车都放不下，不只是峰值放不下。若 343,638 辆全部入栏，至少需 343,638/150 = <strong>2,291</strong> 处；全覆盖方案 2,364 处 ×150 = 354,600，而它需要 734,345 位。</td>
+<td><code>sec7_q4.tex:122–129</code>：推荐“capped layout”，但写明“not solved here as a separate optimisation”；704/705 处超 150 位</td>
+<td>成立（高，H21）</td></tr>
+<tr><td>Q3：完成即付至少 17.76 万 / 6.31 万</td>
+<td>用 <code>t008_q3_pool.py</code> 的 <code>_hour_lp</code> 在 r*=1.76（全到达来源）与 r*=1.83（盈余来源）重解 24 个小时 LP，取最优 x，按 π(r)·x 计应付人数：
+<br>上界：邀约 206,531.95，新增 q=95,565.82，<strong>付款人数 101,286.09，应付 178,263.53 元</strong>（论文账单 168,195.84 = r×q）
+<br>保守：邀约 65,857.98，新增 q=32,777.11，<strong>付款人数 34,601.17，应付 63,320.14 元</strong>（论文 59,982.12）
+<br>差额来自 π(0)·x：本来就会去目标格、也领到奖励的人。代码 <code>bill = r·q</code>（:317/357/370）只按增量计费。</td>
+<td><code>sec6_q3.tex:236–237</code>：“A hard budget of 170,000 CNY per day … (the conservative scheme spends 60,000)”——两档预算都低于完成即付的期望支出</td>
+<td>成立（高，H22）。意见写 17.76 万，复算 17.83 万，同向且更大</td></tr>
+<tr><td>P1：留出日是否参与估计</td>
+<td><code>12_q1_od.py:26–28</code>：吸引力 A_j 只用训练日 TR_DAYS（10/11/15/16/18），测试日 TE_DAYS = 12、19。但 Q2/Q4 的出发量用 <code>lib.TYP_DAYS</code>（<code>lib.py:19</code>）= 7 个工作日，<strong>含 12 与 19</strong>。所以 Q1 目的地检验是干净的，Q2/Q4 的“留出日回放”目前不干净。</td>
+<td>论文未声称 Q2/Q4 有留出检验</td>
+<td>成立（中，M11）——写进 T018/T019 的回放要求</td></tr>
+</tbody></table></div>
+
+<h2>2. 复算脚本与可复现性</h2>
+<ul>
+<li>Q2：直接读 <code>data/runs/T007/q2_plan_q1.npz</code>（<code>XM</code> 24×50×50）与 <code>q2_greedy_check.json</code>；<code>plans/q1_a1_K60.json</code> 的 obj 82,194.80 / moved 24,679.28 与论文一致，说明读的是同一个解。</li>
+<li>Q3：<code>/tmp</code> 下只读脚本 import <code>code/t008_q3_pool.py</code>，调用 <code>load_data / build_edges / _hour_lp</code>，不调 <code>main()</code>，不写任何项目文件；q 与 <code>q3_results.json</code> 的 95,565.82 / 32,777.11 逐位一致，说明 LP 解相同。</li>
+<li>没有改动 <code>code/</code>、<code>paper/</code>、<code>data/</code>、<code>交付/</code>。</li>
+</ul>
+
+<h2>3. 处理方案</h2>
+<div class="tw"><table>
+<thead><tr><th>任务</th><th>内容</th><th>问题</th><th>依赖</th><th>优先级</th></tr></thead>
+<tbody>
+<tr><td>T018</td><td>Q2 整数逐车班表 + 三方案同口径对比 + 留出日回放</td><td>H20、M11</td><td>无</td><td>P0，与 T019 并行</td></tr>
+<tr><td>T019</td><td>Q4 限容（150 位）联合选址–分配–容量 + 回放</td><td>H21、M11</td><td>无</td><td>P0，与 T018 并行</td></tr>
+<tr><td>T020</td><td>Q3 完成即付 + 预算约束 + 围栏容量检查 + 回送 Q2</td><td>H22</td><td>T018（整数调度器）、T019（目标格容量）</td><td>P0</td></tr>
+<tr><td>T021</td><td>论文整合：换数、修式 (29)、摘要逐项追溯、计页 ≤25</td><td>H20–H22、H23</td><td>T018–T020 通过</td><td>P0</td></tr>
+<tr><td>T022</td><td>P1 补强：Q1 共用 β 基线、p 情景传播、Q5 空间错位实验</td><td>M11–M14</td><td>T021 后，视时间</td><td>P1，可裁</td></tr>
+</tbody></table></div>
+<p>顺序采纳意见：先锁口径，T018 与 T019 并行，再 T020，最后 T021 换数。DDL 2026-11-22。若时间不够，T022 整体裁撤，P0 的三个验收件优先。<strong>重算后若节省率、覆盖率低于原摘要，按实际结果写，不保留旧数。</strong></p>
+
+</main>
+</body>
+</html>

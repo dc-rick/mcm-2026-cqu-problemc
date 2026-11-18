@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T019 Q4 限容围栏</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.warn{border-left-color:var(--warn)}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T019 · Q4 限容围栏：选址、分配、容量联合求解</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18</strong>　·　问题：H21、M11　·　前置：无（与 T018 并行）　·　可写：<code>code/</code>、<code>data/runs/T019/</code>、<code>交付/T019_delivery.json</code>　·　<strong>本任务不改 <code>paper/</code></strong></p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>式 (29)（<code>sec7_q4.tex:48</code>）写“by minimising cost(n)”，但 cost(n) 随 n 单调增；代码（<code>t009_q4.py:186–187</code>）实际用的是 Kneedle 折中点。论文推荐“每处 150 位的限容方案”却注明“not solved here”。705 处 ×150 = <strong>105,750 位</strong>，而这 705 处覆盖格内的期初库存就有 <strong>236,433 辆</strong>，需要的容量是 491,692 位。76.86% 覆盖率在限容下不再成立。</p>
+</div>
+
+<h2>1. 要做什么</h2>
+<ol>
+<li><strong>旧方案改标签。</strong>705 处结果保留为“无硬容量上限的参考方案（Kneedle 折中点，λ=150）”。在交付中给出式 (29) 的准确替换文字：选取规则是“归一化 (成本, 覆盖率) 曲线上离弦最远的点”，不是最小化。T021 照此改论文。</li>
+<li><strong>限容联合模型。</strong>候选站点 = 5,263 格中心；需求格 i 的停车量 a_i（同一 Q1 到达面 + 期初库存，口径与 T009 一致）只分配一次；分配只允许到 450 m 内的站点；站点容量 ≤ <strong>150 位</strong>（普通站点情景）；<strong>显式变量记录未分配量</strong>。目标：在站点数 n 给定时最大化“有容量保障的已分配停车量”，扫描 n，给出前沿；或用带固定成本的 MILP。需求定义（峰值占用、95 分位、还是站立库存+日内净流入）写清，与 T009 的 MC 95 分位保持可比，差异要说明。</li>
+<li><strong>两种库存情景。</strong>I0 = 343,638（5/16 末次还车位置代理）与 495,540（封闭车队）各解一次。</li>
+<li><strong>大型站点情景（可选，需有依据）。</strong>只有能给出用地依据（OSM 停车场/广场面积等，可引用 T009 的 OSM 数据）时，才单列“普通 150 + 有地块依据的大站”情景，报告增益。没有依据就不做，交付里写“未做及原因”。</li>
+<li><strong>回放检查。</strong>选定方案后，按 15 分钟步长从期初库存回放一天的到达/出发，报告：满位站点数、满位站点-时段数、溢出车辆数（到了满位站被迫停到栏外或下一站）、<strong>有容量保障的覆盖率</strong>。回放用训练日需求定方案、在测试日 12 与 19 日的实际到达上回放（M11），写清方案定型时已知的信息。</li>
+<li><strong>结论如实。</strong>若 450 m + 150 位共同约束下覆盖率大幅下降，直接报告；给出“再加多少站点覆盖率升到多少”的边际曲线，这本身就是结论。</li>
+</ol>
+
+<h2>2. 不许做的事</h2>
+<ul>
+<li>不改 <code>paper/</code>、<code>data/</code> 已有文件、<code>审查与规划/</code>；不覆盖 <code>data/runs/T009/</code>。</li>
+<li>不能让同一需求格的停车量在多个站点重复计入；不放松 450 m。</li>
+<li>不得把 150 位当成已证实的工程上限：它是规划情景，交付里注明来源（论文 ~210 m² 的推算）。</li>
+</ul>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><strong>站点清单</strong> <code>data/runs/T019/fences_cap150_{meas343,fleet495}.csv</code>：<code>site_cell, x, y, capacity, assigned_demand</code>；每行 <code>capacity ≤ 150</code>、<code>assigned_demand ≤ capacity</code>。</li>
+<li><strong>分配一致性</strong>：每个需求格的分配量合计 + 未分配量 = 其需求（误差 ≤1e-6）；所有分配距离 ≤450 m；报告违反数（必须 0）。</li>
+<li><strong>汇总表</strong> <code>data/runs/T019/summary.json</code>：两种库存 × {站点数、总车位、有容量保障覆盖率、未分配量}；旧 705 处无上限方案作参照行。</li>
+<li><strong>边际曲线</strong>：站点数 → 保障覆盖率，至少 6 个点，含达到 76.86% 所需站点数（若可达）。</li>
+<li><strong>回放</strong>：12 日、19 日各一份满位/溢出结果；15 分钟步长；期初库存口径写明。</li>
+<li><strong>式 (29) 替换文字</strong>与选取规则的准确描述（给 T021）。</li>
+<li>复现信息（命令、种子、求解器与 gap、输入 SHA-256）；交付 JSON 按契约，<code>checks</code> 对应 1–7；单独 commit，不 push。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>给 T020 的接口：</strong>输出每个站点各 15 分钟时段的剩余容量 <code>data/runs/T019/spare_capacity.npz</code>，T020 检查激励目标格是否有空位。</p>
+</div>
+
+</main>
+</body>
+</html>

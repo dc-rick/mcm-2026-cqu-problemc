@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T022 P1 补强实验</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--warn)}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T022 · P1 补强实验（视时间，可整体裁撤）</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18，排在 P0（T018–T021）之后</strong>　·　问题：M12、M13、M14、M15　·　可写：<code>code/</code>、<code>data/runs/T022/</code>、<code>交付/T022_delivery.json</code>　·　不改 <code>paper/</code>（结果若采用，另开换数任务或并入 T021 R1）</p>
+
+<div class="box warn">
+<p><strong>优先级：</strong>T018–T020 任一未通过时不开工。每个子项独立交付，做完一项交一项；DDL 前做不完的子项在交付里标“未做”，不得用估算数代替。</p>
+</div>
+
+<h2>子项与验收</h2>
+<ol>
+<li><strong>M12 · Q1 分时段 β 的价值。</strong>加“全日共用一个 β”的基线：同训练日（10/11/15/16/18）、同测试日（12/19）、同候选目的地集。按测试日分别报告目的地对数损失、Top-5 命中率，以及区-时净流量误差（L1 与最大绝对值）。验收：五时段与共用 β 两行 × 两测试日的表；差值与符号。</li>
+<li><strong>M13 · 抽样率情景传播。</strong>p ∈ {0.128, 0.185, 0.200}，至少传播到 Q2 整数调度（T018 的 K 扫描）与 Q4 限容方案（T019）。验收：每个 p 下的最优 K、未服务量、总成本；限容站点数、保障覆盖率；方案排序是否改变。</li>
+<li><strong>M14 · 车队规模的空间尺度。</strong>同一 I0 下比较 50 区与 5,263 格的未服务量，报告有多少格级未服务被分区聚合掩盖。若要主张减车，给出车队规模 × {格级未服务率, 成本} 的对照。验收：一张对照表，“供给过剩”的条件写清。</li>
+<li><strong>M15 · Q5 有区分力的竞争实验。</strong>保留现有同比拆分作对照，再加两平台空间分布错位情景（例如 A 偏东、B 偏西，总车量与总需求不变；错位规则写明）。比较独立运营与共享围栏的未服务率、满位率、所需容量。验收：至少 3 档错位强度 × {独立, 共享} 的表；随机种子 ≥6。</li>
+</ol>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T021 论文整合换数</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T021 · 论文整合：换数、修式 (29)、摘要追溯、计页 ≤25</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（待 T018–T020 通过后开工）</strong>　·　问题：H20、H21、H22、H23　·　可写：<code>paper/</code>、<code>code/</code>（只限图与数字抽取脚本）、<code>交付/T021_delivery.json</code></p>
+
+<div class="box hi">
+<p><strong>原则：</strong>所有新数字只从 T018–T020 已验收的结果文件抽取，写一份数字锁定表 <code>data/runs/T021/numbers.json</code>（数字 → 文件 → 键）。重算后的结果若比原摘要差，就按实际写，不保留旧数。</p>
+</div>
+
+<h2>1. 要改什么</h2>
+<ol>
+<li><strong>Q2（§5）</strong>：删除“rounded up when a schedule is drawn”与 623.17 的误用；写事件顺序约束、整数调度、逐车班表摘录（一张小表或附图）、约束核查结论、三方案同口径对比表、整数–LP 差距、留出日回放。若 60 辆仍最优，摘要写“在所比较的车队规模（20/40/60/80）中推荐 60 辆”。</li>
+<li><strong>Q4（§7）</strong>：式 (29) 换成 T019 给出的准确选取规则；705 处标为“无硬容量上限的参考方案”；主结果改为 150 位限容方案（站点数、总车位、有容量保障覆盖率、未分配量，两种库存）；回放的满位与溢出；边际曲线。</li>
+<li><strong>Q3（§6）</strong>：两本账（新增改道 vs 应付人数）、预算约束下的政策对比表、硬预算执行规则、回送 Q2 后的系统节省；旧 6.83%–20.83% 改称格级等价成本模型下的节省；删除或改正 17 万 / 6 万预算句。</li>
+<li><strong>口径（H23）</strong>：343,638 全文统一称“由末次观测还车位置构造的期初库存代理”（英文给一个固定短语，全篇一致）。“供给过剩”改为带空间尺度与库存条件的判断。</li>
+<li><strong>摘要</strong>：每问一个主要结果 + 必要条件，每个数字能在锁定表里找到。为腾篇幅，优先压缩不进入决策模型的用户聚类段与重复的政策段。</li>
+<li><strong>页数</strong>：计页（总页 − AI 报告）<strong>= 25 以内</strong>；AI 报告独立分页，并补记本轮（T018–T021）的 AI 使用。</li>
+</ol>
+
+<h2>2. 验收（缺一不可）</h2>
+<ol>
+<li>数字锁定表覆盖摘要与 §5–§7 的每个新数字；抽 10 个由指导方复算。</li>
+<li><code>grep</code> 门：<code>623.17</code> 不再作为推荐方案出现；“by minimising” 不再修饰式 (29)；“170,000”“60,000” 预算句已按 T020 改写。</li>
+<li>xelatex 两遍以上：undefined 0、overfull 0、U+037E 0、<code>??</code> 0；计页 ≤25；目录页码一致。</li>
+<li>未改动部分的数字 token 与 <code>c4be8d1</code> 一致（交付附逐文件 diff，变化只来自 §5–§7、摘要与本单列出的段落）。</li>
+<li>交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+</main>
+</body>
+</html>

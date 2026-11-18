@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T018 Q2 整数逐车班表</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T018 · Q2 整数逐车班表与同口径基线</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18</strong>　·　问题：H20、M11　·　前置：无（与 T019 并行）　·　可写：<code>code/</code>、<code>data/runs/T018/</code>、<code>交付/T018_delivery.json</code>　·　<strong>本任务不改 <code>paper/</code></strong>（换数在 T021）</p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>论文 <code>sec5_q2.tex:88–92</code> 说“plan is rounded up when a schedule is drawn”，并用 <strong>623.17 辆/小时</strong>作为推荐方案的核查。复算：623.17 来自贪心基线（<code>q2_greedy_check.json</code> 全天只搬 2,076 辆）；推荐 LP 全天搬 24,679 辆，<strong>峰值 2,083.15 辆在 23 时</strong>（52.08 车次）。班表从未生成；卡车变量是连续的（<code>21_q2_opt.py:94</code>）。另外，<code>:137</code> 只约束 <code>served ≤ I[z,t]</code>，卡车取车只受 <code>I[z,t+1] ≥ 0</code> 的净约束（:140），即卡车可以取走同一小时内才到达的车，用户与卡车合计取车可以超过小时初库存。详见 <code>审查记录/外部评审M奖_核实_2026-11-18.html</code>。</p>
+</div>
+
+<h2>1. 要做什么</h2>
+<ol>
+<li><strong>锁定小时内事件顺序并写成约束。</strong>推荐顺序：小时初库存 I → 卡车取车 → 用户取车 → 用户还车与卡车卸车在小时末计入。约束：<code>Σ_j x[z,j,t] + served[z,t] ≤ I[z,t]</code>（取车与用户共用小时初库存）。若改用别的顺序，在交付里写出理由与误差方向。必须报告：在旧解上，这条约束被违反多少（区-时数、最大缺口辆数）。</li>
+<li><strong>整数调度。</strong>同一 Q1 需求（<code>--od q1 --conserve</code>，α=1）、同一 I0=343,638、同一成本参数（COST_KM 6 / COST_LOAD 0.5 / PENALTY 6 / COST_DEV 3 / 固定 600 元/车/天）。卡车变量 <code>mt</code>、<code>nn</code> 取整数（<code>--integer</code> 或等价 MILP），Gurobi 报告 gap；<strong>gap ≤1%</strong> 或在交付中写明时限与最终 gap。K ∈ {20, 40, 60, 80} 各解一次。</li>
+<li><strong>恢复逐车路线。</strong>对整数卡车流做流分解，给每辆车编号，输出 <code>data/runs/T018/schedule_K60.csv</code>：<code>truck_id, hour, from_zone, to_zone, km, load_bikes, unload_bikes, load_after</code>。车不动的小时也要一行（<code>to_zone=from_zone, km=0</code>），保证每辆车 24 行可追溯。</li>
+<li><strong>可执行性假设必须显式写出。</strong>卡车行驶速度、每辆单车装/卸时间、班次长度、车辆起点（车库或前一日终点）——每个值给来源或理由，不得“取合理值”。核查：每趟 <code>km/速度 + (装+卸)×每辆时间 ≤ 60 分钟</code>；载重 ≤40；期末车辆位置 = 次日起点（或回库的额外里程与成本）。对装卸时间做一次 ±50% 敏感性，报告违反趟数。</li>
+<li><strong>同口径三方案对比。</strong>(a) 不调度 K=0；(b) 贪心调度（<code>22_q2_sim.py</code> 的 <code>greedy_plan</code>，在同一需求、库存、事件顺序下回放）；(c) 推荐整数调度。每行列：未服务量、期末库存偏差 dev、车公里、搬运量、峰值小时搬运、总成本（同一目标函数）。另列整数解相对 LP 下界的成本差（元与 %）。</li>
+<li><strong>留出日回放（M11）。</strong>当前 Q2 出发量用 <code>lib.TYP_DAYS</code>，含测试日 12、19。用只含训练日（10/11/15/16/18）的需求生成派车方案，再在 12 日与 19 日的实际出发/到达上回放（方案固定不变），报告未服务量与 dev。交付里写清派车时已知哪些信息（只有训练日的 OD 与 I0）。</li>
+</ol>
+
+<h2>2. 不许做的事</h2>
+<ul>
+<li>不改 <code>paper/</code>、<code>data/</code> 已有文件、<code>审查与规划/</code>；新结果只写 <code>data/runs/T018/</code>。</li>
+<li>不覆盖 <code>data/runs/T007/</code>；旧 LP 解保留作对照。</li>
+<li>结果变差就如实报告。K=60 若不再最优，照实写哪个 K 最优。</li>
+</ul>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><strong>班表</strong>：<code>schedule_K60.csv</code>（及最优 K 的班表）行数 = 车辆数 × 24；按班表逐小时重放，搬运量合计与 MILP 的 <code>x</code> 合计差 ≤1e-6。</li>
+<li><strong>约束核查表</strong> <code>data/runs/T018/constraint_check.json</code>：载重、时长（含装卸）、车辆守恒、事件顺序（取车+用户 ≤ 小时初库存）、库存非负、期末车辆位置；每项给违反数与最大违反量，<strong>必须全 0</strong>，否则 status=partial 并说明。</li>
+<li><strong>旧解违反量</strong>：报告旧 LP 解（T007 K=60）在新事件顺序下的违反区-时数与最大缺口。</li>
+<li><strong>对比表</strong> <code>data/runs/T018/baselines.json</code>：不调度 / 贪心 / 推荐 × {未服务、dev、车公里、搬运量、峰值小时、总成本}，同一目标函数；K=20/40/60/80 的整数解行；整数–LP 差距。</li>
+<li><strong>峰值</strong>：推荐整数方案的峰值小时搬运量单独给出；交付里明确写“623.17 是贪心基线，不是推荐方案”。</li>
+<li><strong>留出日回放</strong>：12 日、19 日各一行，未服务量与 dev；派车信息集写清。</li>
+<li><strong>复现</strong>：命令、随机种子、Gurobi 版本、输入文件 SHA-256、求解时间与 gap 写进交付。</li>
+<li>交付 <code>交付/T018_delivery.json</code> 按 skill §4 契约；<code>checks</code> 键对应本节 1–7；单独 commit，不 push。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>给 T020 的接口：</strong>请把整数调度封装成可调用函数（输入：区-时 OD/出发量、I0、K；输出：成本分解与班表），T020 要把激励改变后的 OD 送回来重算卡车需求。</p>
+</div>
+
+</main>
+</body>
+</html>
