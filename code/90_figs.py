@@ -36,10 +36,10 @@ def fig1():
     a.axvline(9.5, color=C["red"], ls=":", lw=1)
     a.set_xticks(x[::2]); a.set_xticklabels([d[5:] for d in full][::2])
     a.set_ylabel("orders (thousand / day)"); a.set_xlabel("date, 2017")
-    a.annotate("no records", xy=(7, 6), xytext=(4.6, 330), fontsize=7,
+    a.annotate("no records", xy=(7, 6), xytext=(4.6, 330), fontsize=8.6,
                color=C["dark"], ha="center",
                arrowprops=dict(arrowstyle="->", lw=.7, color=C["dark"]))
-    a.annotate("sampling truncated", xy=(10.4, 90), xytext=(11.6, 210), fontsize=7,
+    a.annotate("sampling truncated", xy=(10.4, 90), xytext=(11.6, 210), fontsize=8.6,
                color=C["grey"], ha="center",
                arrowprops=dict(arrowstyle="->", lw=.7, color=C["grey"]))
     a.set_ylim(0, 360)
@@ -68,7 +68,7 @@ def fig1():
     c.plot(xs, lognorm.cdf(xs, sh, 0, sc), color=C["red"], lw=1.2, ls="--",
            label=f"lognormal ($\sigma$={sh:.2f}, median {sc:.2f} km)")
     c.set_xscale("log"); c.set_xlabel("straight-line trip distance (km)")
-    c.set_ylabel("cumulative share"); c.legend(loc="lower right", fontsize=7)
+    c.set_ylabel("cumulative share"); c.legend(loc="lower right", fontsize=8.6)
     c.set_title("(c) trip length", loc="left")
 
     e = ax[1, 1]
@@ -77,8 +77,8 @@ def fig1():
     e.set_xlabel("longitude"); e.set_ylabel("latitude")
     e.set_title("(d) spatial density of trip starts", loc="left")
     cb = plt.colorbar(h[3], ax=e, fraction=0.046, pad=0.02)
-    cb.set_label("trips per cell", fontsize=7)
-    cb.ax.tick_params(labelsize=6)
+    cb.set_label("trips per cell", fontsize=8.6)
+    cb.ax.tick_params(labelsize=8.6)
     save(fig, "fig1_data")
 
 
@@ -100,7 +100,7 @@ def fig2():
            label="share of users")
     a.barh(y + .18, seg.share_trips * 100, height=.34, color=C["blue"],
            label="share of trips")
-    a.set_yticks(y); a.set_yticklabels(seg.name, fontsize=7.5)
+    a.set_yticks(y); a.set_yticklabels(seg.name, fontsize=8.6)
     a.set_xlabel("%"); a.legend(loc="lower right"); a.invert_yaxis()
     a.set_title("(a) segment size", loc="left")
 
@@ -114,9 +114,9 @@ def fig2():
         ax.bar(np.arange(len(seg)), seg[key], color=cols, width=.62)
         ax.set_xticks(np.arange(len(seg)))
         ax.set_xticklabels([short[s] for s in seg.seg], rotation=32, ha="right",
-                           fontsize=6)
-        ax.set_ylabel(lab, fontsize=7)
-        ax.set_title(title, loc="left", fontsize=8)
+                           fontsize=8.6)
+        ax.set_ylabel(lab, fontsize=8.6)
+        ax.set_title(title, loc="left", fontsize=8.6)
     save(fig, "fig2_segments")
 
 

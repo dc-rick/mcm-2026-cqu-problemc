@@ -98,7 +98,7 @@ a.set_ylabel("cumulative share")
 a.set_title("(a) full-model synthetic day vs held-out", loc="left")
 a.text(0.04, 0.95, f"KS = {ks_all:.3f}", transform=a.transAxes)
 a.text(0.40, 0.32, "same-cell (full sample):\nmodel 12.83% / observed 8.89%",
-       transform=a.transAxes, fontsize=7.5)
+       transform=a.transAxes, fontsize=8.6)
 a.legend(loc="lower right")
 
 b = ax[0, 1]
@@ -109,7 +109,7 @@ xx = np.arange(len(names))
 b.bar(xx - 0.18, bf, 0.34, color=lib.COL["blue"], label="full")
 b.bar(xx + 0.18, bd, 0.34, color=lib.COL["grey"], label="distance only")
 for i, (f, d0) in enumerate(zip(bf, bd)):
-    b.text(i, max(f, d0) + 0.05, f"+{f-d0:.3f}", ha="center", fontsize=7)
+    b.text(i, max(f, d0) + 0.05, f"+{f-d0:.3f}", ha="center", fontsize=8.6)
 b.set_xticks(xx, ["0-5", "6-9", "10-15", "16-19", "20-23"])
 b.set_ylabel("distance decay (1/km)")
 b.set_title("(b) full vs distance-only MLE", loc="left")
@@ -125,7 +125,7 @@ c.set_xticks(xx, ["0-5", "6-9", "10-15", "16-19", "20-23"])
 c.set_ylabel("log-loss difference (nats/trip)")
 c.set_title("(c) out-of-sample difference, linear axis", loc="left")
 c.text(0.30, 0.12, "negative = better than distance-only",
-       transform=c.transAxes, fontsize=7.5)
+       transform=c.transAxes, fontsize=8.6)
 
 d = ax[1, 1]
 tf = [band_val[k]["top5"]["full"] for k in names]
@@ -133,7 +133,7 @@ td = [band_val[k]["top5"]["distance"] for k in names]
 d.bar(xx - 0.18, tf, 0.34, color=lib.COL["blue"], label="full")
 d.bar(xx + 0.18, td, 0.34, color=lib.COL["grey"], label="distance only")
 for i, (f, d0) in enumerate(zip(tf, td)):
-    d.text(i - 0.03, f + 0.01, f"{f:.2f}", ha="center", fontsize=7)
+    d.text(i - 0.03, f + 0.01, f"{f:.2f}", ha="center", fontsize=8.6)
 d.set_xticks(xx, ["0-5", "6-9", "10-15", "16-19", "20-23"])
 d.set_ylabel("top-5 hit rate")
 d.set_title("(d) top-5 hit rate, linear axis", loc="left")
@@ -199,7 +199,7 @@ c2.set_ylabel("end-of-day deviation")
 c2.set_yscale("log")
 c2.set_ylim(60, 40000)
 c.axvline(60, color=lib.COL["grey"], lw=0.6, ls=":")
-c.text(0.03, 0.06, "$K=60$", transform=c.transAxes, fontsize=7.5)
+c.text(0.03, 0.06, "$K=60$", transform=c.transAxes, fontsize=8.6)
 
 d = ax[1, 1]
 red = [("full", q2["scenarios"]["q1_a1_K80"]),
@@ -212,7 +212,7 @@ bars = d.bar(labels, costs, color=[lib.COL["blue"], lib.COL["orange"],
                                    lib.COL["red"]])
 for bar, u in zip(bars, unmet):
     d.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.02,
-           f"unmet {u:,.0f}", ha="center", fontsize=7)
+           f"unmet {u:,.0f}", ha="center", fontsize=8.6)
 d.set_ylabel("objective (CNY/day)")
 d.set_title("(d) three reduced-fleet points at $K=80$", loc="left")
 d.set_ylim(0, max(costs) * 1.12)
@@ -277,7 +277,7 @@ bars = c.bar(names, vals, color=[lib.COL["grey"], lib.COL["blue"],
                                  lib.COL["orange"]])
 for bar, v0 in zip(bars, vals):
     c.text(bar.get_x() + bar.get_width() / 2, v0 + 12000, f"{v0:,.0f}",
-           ha="center", fontsize=7)
+           ha="center", fontsize=8.6)
 c.set_ylabel("daily cost (CNY)")
 c.set_title("(c) cost of the two optimal mixes", loc="left")
 c.set_ylim(0, max(vals) * 1.12)
@@ -295,7 +295,7 @@ d.bar(xx, cross, 0.5, bottom=same, color=lib.COL["orange"],
 for i in range(2):
     d.text(i, same[i] + cross[i] + 1800,
            f"{100*cross[i]/(same[i]+cross[i]):.2f}% cross", ha="center",
-           fontsize=7.5)
+           fontsize=8.6)
 d.set_xticks(xx, labels)
 d.set_ylabel("rerouted bicycles")
 d.set_title("(d) zone decomposition of the optimum", loc="left")
@@ -364,7 +364,7 @@ bars = d.bar(names, vals, color=[lib.COL["grey"], lib.COL["blue"],
                                  lib.COL["teal"]])
 for bar, v0 in zip(bars, vals):
     d.text(bar.get_x() + bar.get_width() / 2, v0 + 0.3, f"{v0:.1f}%",
-           ha="center", fontsize=7.5)
+           ha="center", fontsize=8.6)
 d.set_ylabel("share within 300 m of a subway entrance (%)")
 d.set_title("(d) OSM cross-check", loc="left")
 d.set_ylim(0, max(vals) * 1.2)

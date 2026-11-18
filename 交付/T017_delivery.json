@@ -1,0 +1,279 @@
+{
+ "task": "T017",
+ "title": "页码压缩",
+ "date": "2026-11-18",
+ "status": "T017 已交付",
+ "checks": {
+  "1_total_pages_27": true,
+  "2_counted_pages_25": true,
+  "3_page_map": true,
+  "4_compile_clean": true,
+  "5_u037e_zero_and_no_qq": true,
+  "6_toc_references_page": true,
+  "7_bibitems_32": true,
+  "8_tokens_only_layout": true,
+  "9_numbers_10_of_10": true,
+  "10_figures_min_text_ge_7pt": true
+ },
+ "page_map": {
+  "before": {
+   "total": 30,
+   "counted": 28,
+   "summary": "p1",
+   "toc": "p2",
+   "body": "p3-26 (24)",
+   "references": "p27-28 (2)",
+   "ai_report": "p29-30 (2)"
+  },
+  "after": {
+   "total": 27,
+   "counted": 25,
+   "summary": "p1",
+   "toc": "p2",
+   "body": "p3-23 (21)",
+   "references": "p24-25 (2)",
+   "ai_report": "p26-27 (2)"
+  }
+ },
+ "compile": {
+  "engine": "xelatex",
+  "passes": 3,
+  "total_pages": 27,
+  "body_pages": 21,
+  "undefined": 0,
+  "overfull": 0,
+  "u037e": 0,
+  "double_question_marks": 0,
+  "semicolons": 131,
+  "references_page": 24,
+  "counted_pages": 25
+ },
+ "changes": [
+  {
+   "what": "figure files regenerated with a larger minimum font size",
+   "detail": "all explicit matplotlib sizes 6/6.5/7/7.5 and tick/legend 8 -> 8.6 pt; plot data, axes and annotations unchanged",
+   "files": [
+    "code/90_figs.py (fig1, fig2)",
+    "code/t012_figs.py (fig3-fig6)",
+    "code/lib.py style(): tick/legend 8 -> 8.6",
+    "figs/fig1_data.pdf",
+    "figs/fig2_segments.pdf",
+    "figs/fig3_q1_validation.pdf",
+    "figs/fig4_q2.pdf",
+    "figs/fig5_q3.pdf",
+    "figs/fig6_q4.pdf"
+   ]
+  },
+  {
+   "what": "figure inclusion width",
+   "detail": "unchanged at 0.9\\linewidth; the size reduction comes from the regenerated files' tighter layout, not from scaling the image down",
+   "files": [
+    "paper/sec3-7"
+   ]
+  },
+  {
+   "what": "tables set in footnotesize",
+   "detail": "9 table environments; no row, column or value changed",
+   "files": [
+    "paper/sec1, sec2, sec3, sec4 (2 tables), sec5, sec6, sec7, sec9"
+   ]
+  },
+  {
+   "what": "float separation",
+   "detail": "\\textfloatsep 20/10 -> 5pt, \\floatsep 12 -> 4pt, \\intextsep 12 -> 4pt, captionsetup skip 4 -> 2pt",
+   "files": [
+    "paper/main.tex"
+   ]
+  },
+  {
+   "what": "paragraph and display spacing",
+   "detail": "\\parskip 2 -> 0pt, \\abovedisplayskip/\\belowdisplayskip 5 -> 3pt, short variants 2 -> 1pt",
+   "files": [
+    "paper/main.tex"
+   ]
+  },
+  {
+   "what": "list spacing",
+   "detail": "enumitem itemsep 1 -> 0pt, topsep 2 -> 1pt",
+   "files": [
+    "paper/main.tex"
+   ]
+  },
+  {
+   "what": "heading spacing",
+   "detail": "titlesec: section 7pt/3pt, subsection 6pt/2pt around headings (font sizes untouched)",
+   "files": [
+    "paper/main.tex"
+   ]
+  },
+  {
+   "what": "table row height",
+   "detail": "\\arraystretch 0.96",
+   "files": [
+    "paper/main.tex"
+   ]
+  }
+ ],
+ "deleted_sentences": [],
+ "token_diff": {
+  "main.tex": {
+   "only_in_base": {
+    "5": 1
+   },
+   "only_in_new": {
+    "4": 1,
+    "2": 1,
+    "1": 9,
+    "0": 4,
+    "7": 1,
+    "3": 3,
+    "6": 1,
+    "0.96": 1
+   }
+  }
+ },
+ "figures": [
+  {
+   "file": "fig1_data.pdf",
+   "natural_width_cm": 18.17,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.822,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.07,
+   "mathtext_script_pt_printed": 4.95
+  },
+  {
+   "file": "fig3_q1_validation.pdf",
+   "natural_width_cm": 18.18,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.822,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.07,
+   "mathtext_script_pt_printed": 4.95
+  },
+  {
+   "file": "fig2_segments.pdf",
+   "natural_width_cm": 18.3,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.816,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.02,
+   "mathtext_script_pt_printed": 4.92
+  },
+  {
+   "file": "fig4_q2.pdf",
+   "natural_width_cm": 18.17,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.822,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.07,
+   "mathtext_script_pt_printed": 4.95
+  },
+  {
+   "file": "fig5_q3.pdf",
+   "natural_width_cm": 18.18,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.822,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.07,
+   "mathtext_script_pt_printed": 4.95
+  },
+  {
+   "file": "fig6_q4.pdf",
+   "natural_width_cm": 18.18,
+   "inclusion": "0.9\\linewidth (14.94 cm)",
+   "scale": 0.822,
+   "min_text_pt_native": 8.6,
+   "min_text_pt_printed": 7.07,
+   "mathtext_script_pt_printed": 4.95
+  }
+ ],
+ "numbers_spot_check": [
+  {
+   "shown": "20.83",
+   "log_value": "0.20830007675074336",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "6.83",
+   "log_value": "0.06825835929691104",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "32,777",
+   "log_value": "32777.11212887443",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "95,566",
+   "log_value": "95565.81547068334",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "491,692",
+   "log_value": "491691.9370767786",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "705",
+   "log_value": "705",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "76.86",
+   "log_value": "0.7685847656798482",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "24,679",
+   "log_value": "24679.28",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "495,540",
+   "log_value": "495539.98812757694",
+   "in_pdf": true,
+   "ok": true
+  },
+  {
+   "shown": "4.33",
+   "log_value": "4.325410892870622",
+   "in_pdf": true,
+   "ok": true
+  }
+ ],
+ "notes": [
+  "没有删除任何句子、数字、表行、公式或图线；deleted_sentences 为空。压缩全部来自图、表字号、浮动体与段落/标题间距。",
+  "图内字号：六个图文件的最小正文字号由 7–8 pt 提到 8.6 pt；按 0.9\\linewidth 印刷（缩放 0.822）后为 7.07 pt。数学上下标由 mathtext 按 70% 渲染（原生 6.02 pt，印刷 4.95 pt），这是排版惯例，不属于坐标轴或图例标签。",
+  "tex 数字 token 与 4cc2933 的差异只在 main.tex，且全部是版式参数（新增 5/4/2/1/0/7/3/6 与 0.96 等间距数值）；没有任何内容文件（sec1–sec10、summary、references、ai_report）出现 token 变化。",
+  "图 1（p6）、图 2（p10）、图 6（p19）已放大目检：无裁切、无重叠、坐标轴与图例可读。",
+  "参考文献仍 32 条、编号不变；AI 报告仍 2 页且内容未删。",
+  "未重跑任何模型；图由 code/90_figs.py（仅 fig1/fig2）与 code/t012_figs.py（fig3–fig6）从冻结结果重绘。"
+ ],
+ "outputs": [
+  "paper/main.pdf",
+  "paper/main.tex",
+  "paper/sec1_intro.tex",
+  "paper/sec2_assumptions.tex",
+  "paper/sec3_data.tex",
+  "paper/sec4_q1.tex",
+  "paper/sec5_q2.tex",
+  "paper/sec6_q3.tex",
+  "paper/sec7_q4.tex",
+  "paper/sec9_sensitivity.tex",
+  "figs/*.pdf",
+  "code/lib.py",
+  "code/90_figs.py",
+  "code/t012_figs.py",
+  "code/t017_delivery.py",
+  "交付/T017_delivery.json"
+ ]
+}
