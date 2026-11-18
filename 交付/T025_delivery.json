@@ -1,0 +1,85 @@
+{
+  "task": "T025",
+  "title": "Q3 激励在稀缺工况下的替代性",
+  "date": "2026-11-18",
+  "status": "delivered",
+  "revision": "R0",
+  "summary": "Fleet scan (T018 integer MILP, K in {0,2,5,10,20}) shows real zone-level scarcity below 40 trucks: K=0 unmet 432.2 / dev 46,930, K=2 unmet 134.8 / dev 45,356. The T020 hybrid was then run at all five K for both source calibers and all four budgets (40 MILPs, same PZ/IPF/event order/costs). At every K every policy is more expensive than pure truck: the best diff is -30,686.6 (K=20) to -31,744.0 (K=5), and the largest payment ceiling (pure obj minus hybrid truck obj) is -686.6 CNY - negative, so even a zero reward cannot break even at the sampled reward levels. The mechanism is a price mismatch, not a coverage failure: at K=20 the arrivals B=30k policy removes all 95 unmet trips, but 30,000 CNY for 95 trips is 315.8 CNY per removed trip against the 6 CNY penalty; at K=2 it removes 112.0 of 134.8 unmet at 267.9 CNY each. Only 4.9% of reroutes cross a zone boundary (1,405 of 28,885) and ~17% of those land where they reduce a zone-hour imbalance, so ~258 reroutes buy one removed unmet trip. Conclusion: within K in [0,20] the incentive is never worthwhile; it is justified as a design and a budget rule, not as a saving.",
+  "checks": {
+    "1_fleet_scan": "pass; evidence=data/runs/T025/fleet_scan.json, K in {0,2,5,10,20} plus 40/60 for regression: K=0 obj=143,384.5294 unmet=432.2284 dev=46,930.3863 km=0 moved=0; K=2 obj=139,418.8683 unmet=134.8138 dev=45,355.9919 km=152.585 moved=853; K=5 obj=133,719.1458 unmet=0 dev=42,369.0546 km=404.330 moved=2,372; K=10 obj=126,272.6590 unmet=64.4146 dev=37,508.7887 km=827.218 moved=4,793; K=20 obj=112,172.9834 unmet=95.0075 dev=28,083.1015 km=1,767.022 moved=9,503. Regression against data/runs/T018: abs diff = 0.0 exactly for obj/unmet/dev/truck_km/moved at K=20, K=40 and K=60 (bit-identical re-solve); check.json regression_t018_ok=true, regression_max_abs_diff=0.0.",
+    "2_hybrid_by_K": "pass; evidence=data/runs/T025/hybrid_by_K.json, 5 K x 2 sources x 4 budgets = 40 rows, each with K, source_cap, budget, r, q, P, invited, payment, truck_obj, truck_unmet, truck_dev, truck_km, truck_moved, total, pure_obj, pure_unmet, pure_dev, diff, diff_pct, unmet_removed, payment_ceiling, payment_per_unmet_removed, IPF errors; check.json total_identity_ok=true and diff_identity_ok=true (total=truck_obj+payment, diff=pure_obj-total to 1e-6). Best row per K: K=0 surplus B=30k total=175,123.75 diff=-31,739.22; K=2 arrivals B=30k total=170,477.58 diff=-31,058.71, unmet_removed=112.02; K=5 surplus B=30k total=165,463.12 diff=-31,743.97; K=10 arrivals B=30k total=157,566.99 diff=-31,294.33, unmet_removed=41.63; K=20 arrivals B=30k total=142,859.57 diff=-30,686.58, unmet_removed=95.01.",
+    "3_breakeven": "pass; evidence=data/runs/T025/breakeven.json. any_K_worthwhile=false, all_negative=true for every K, max_payment_ceiling=-686.5834 CNY. Ceiling formula: payment < pure_obj(K) - truck_obj_hybrid(K); the right-hand side is negative at all 40 rows, so no non-negative payment breaks even at the sampled reward levels. Robustness to the 1% MIP gap: the largest possible gap benefit is 1% of the smallest pure objective (1,434 CNY at K=0), which still leaves the break-even payment below ~750 CNY - a factor of 40 under the smallest payment in the policy set (30,000 CNY).",
+    "4_mechanism": "pass; evidence=data/runs/T025/mechanism.json. aligned_share = (sum|net| - sum|net+dA|)/(2*sum positive dA) with net = model arrivals minus departures in the pure plan: +0.1735 at K=0/5 (surplus B=30k) and +0.1589 at K=2/10/20 (arrivals B=30k), i.e. cross-zone reroutes reduce the zone-hour imbalance by only 16-17% of their theoretical maximum. Cross-zone volume: 1,453.8 of q=20,397.6 (K=0 surplus) and 1,405.2 of q=28,884.7 (K=2-20 arrivals B=30k), 4.9-7.1%. Payment per removed unmet trip: 267.9 CNY at K=2 (112.0 removed), 315.8 at K=20 (95.0 removed), 720.5 at K=10 (41.6 removed), against the 6 CNY penalty; reroutes per removed unmet trip 257.9 (K=2) to 303.9 (K=20). At K=0 the incentive removes none: unmet rises from 432.23 to 438.65.",
+    "5_caliber": "pass; same as T020 throughout: T018 integer MILP (event_order, bike_integer, training-day demand, I0=343,638, COST_KM=6, COST_LOAD=0.5, PENALTY=6, COST_DEV=3, FIXED_K=600, Q_TRUCK=40); incentive LP is T020's PoolLP with cap_on=True and r taken from T020's policy_table rows; PZ refitted by T020's ipf_adjust (rows=departures, columns=new zone-hour arrival totals), row error <=3.6e-12 and column error <=2.5e-4. No deviation. MIP gap 1% and time limit 300 s in every solve; K=0 is an LP (gap 0).",
+    "6_repro": "pass; command=`python -I code/t025_q3_scarcity.py --stage all --force`; Python 3.11.9, numpy 2.4.6, scipy 1.17.1, Gurobi (mcm environment); no random seed needed (deterministic MILP); observed wall time fleet 159.4 s, hybrid 255.8 s, plans 31.2 s, mechanism 2.7 s. Input SHA-256 in repro block."
+  },
+  "repro": {
+    "commands": [
+      "python -I code/t025_q3_scarcity.py --stage all --force"
+    ],
+    "python": "3.11.9",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "inputs": {
+      "data/runs/T018/q1_od_train.npz": "reused via t018.setup_design()",
+      "data/q2_state.npz": "I0",
+      "data/runs/T020/policy_table.json": "r per (source,budget)"
+    },
+    "outputs_sha256": {
+      "code/t025_q3_scarcity.py": "b386b1cb1ef9aca0",
+      "data/runs/T025/fleet_scan.json": "b0f89a1c63a33b84",
+      "data/runs/T025/hybrid_by_K.json": "a3f965ad85707c5c",
+      "data/runs/T025/breakeven.json": "81feda190d21b8d4",
+      "data/runs/T025/mechanism.json": "0969cbbfa06b0d81",
+      "data/runs/T025/check.json": "1374b7880f6d7c83"
+    }
+  },
+  "affected": [
+    {
+      "location": "paper/sec6_q3.tex (new subsection after the mix, proposed)",
+      "old": "Q3 presents the incentive as a cost-saving instrument with a cell-level equivalent saving; no statement of when it is worthwhile.",
+      "new": "Add 'When is the incentive worthwhile?' with the fleet scan: K=0 unmet 432.2 / dev 46,930; K=2 134.8 / 45,356; K=5 0 / 42,369; K=10 64.4 / 37,509; K=20 95.0 / 28,083; K=40 0 / 8,908; K=60 0 / 459.4. State that the incentive removes up to 100% of zone-level unmet at K=20 (95.0) but at 315.8 CNY per removed trip against a 6 CNY penalty, and that at every K in [0,20] every (source, budget) policy is more expensive than pure truck (best diff -30,686.6 to -31,744.0).",
+      "basis": "data/runs/T025/fleet_scan.json and breakeven.json."
+    },
+    {
+      "location": "paper/sec10_evaluation.tex:45 and :95",
+      "old": "The evaluation treats the Q3 program as a saving instrument and notes that the cell-level saving cannot be subtracted.",
+      "new": "Add the fleet-size dimension: the incentive substitutes for trucks only if the value of the unmet it removes exceeds its payment; with a 6 CNY/trip penalty the break-even reward is far below the 0.8-1.7 CNY range (observed cost 268-316 CNY per removed unmet trip). The program's value is in the design and the budget rule, and the threshold for future fleet reductions is stated explicitly.",
+      "basis": "breakeven.json mechanism numbers; hybrid_by_K.json."
+    },
+    {
+      "location": "paper/summary.tex:50-52",
+      "old": "Q3 summary ends at the 6.33%-19.22% cell-level range and the negative Q2-coupled comparison.",
+      "new": "One clause: the incentive is never worthwhile for K <= 20 (best policy still -30,687 CNY), and it removes at most 95-112 zone-level unmet trips at 268-316 CNY each; its value is design + budget discipline, not saving.",
+      "basis": "data/runs/T025/breakeven.json and mechanism.json."
+    }
+  ],
+  "outputs": [
+    "code/t025_q3_scarcity.py",
+    "data/runs/T025/fleet_scan.json",
+    "data/runs/T025/hybrid_by_K.json",
+    "data/runs/T025/breakeven.json",
+    "data/runs/T025/mechanism.json",
+    "data/runs/T025/check.json",
+    "data/runs/T025/plan_int_K0.npz",
+    "data/runs/T025/plan_int_K2.npz",
+    "data/runs/T025/plan_int_K5.npz",
+    "data/runs/T025/plan_int_K10.npz",
+    "data/runs/T025/plan_int_K20.npz",
+    "交付/T025_delivery.json"
+  ],
+  "notes": [
+    "Unmet is not monotone in K: K=5 returns 0 unmet while K=10 and K=20 return 64.4 and 95.0. These are near-optimal solutions at a 1% MIP gap, so the unmet component can move within the gap; the comparison that matters is the objective, which is monotone in K on the scan (143,384.5 / 139,418.9 / 133,719.1 / 126,272.7 / 112,173.0 / 84,860.0 / 83,807.7). The reported unmet at K=10/20 is an upper bound, not a proven minimum.",
+    "The payment ceiling is a diagnostic at the sampled reward levels, not a free dial: payment and q are linked through r. Its negative sign is nevertheless robust because the smallest payment in the set is 30,000 CNY while the largest possible truck-side benefit is bounded by the MILP gap (<=1,434 CNY at K=0) and by 3.3305 x positive zone-hour arrivals.",
+    "At K=0 the model is an LP (no integer trucks), so the -1,739 to -3,205 CNY truck-objective increase is exact, not gap noise. The incentive raises the K=0 objective because the Q3 surplus/deficit cells are hourly and cell-level, while T018 prices the end-of-day zone deviation: arrivals moved into a cell that is short in its own worst hour can land in a zone-hour where the zone is already long.",
+    "The Q3 LP and the IPF-refitted PZ are K-independent; the same 8 policies are applied to every K, so differences across K come only from the truck model.",
+    "paper/ was not modified; affected entries are proposals for T021. T024 (tricycle two-tier) is a separate task and was not touched here."
+  ],
+  "integrity": {
+    "readonly_respected": true,
+    "no_files_written_in_review_or_planning": true,
+    "paper_unmodified": true,
+    "t018_outputs_not_overwritten": true,
+    "tracked_data_unmodified": true
+  }
+}

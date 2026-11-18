@@ -1,0 +1,425 @@
+"""T025: does the Q3 incentive pay off when the truck fleet is scarce?
+
+T020 showed that at K = 60 trucks (zone-level unmet 0) the incentive is a
+net cost.  T025 asks the complementary question: shrink the fleet until
+zone-level scarcity is real, and see whether the incentive substitutes for
+trucks at some K.  Same caliber as T020 throughout: T018 integer MILP,
+event order, bike integer loads, training-day demand, I0 = 343,638, the
+same cost constants; incentive LP identical to T020 and PZ re-fitted by the
+same IPF.
+
+Stages: fleet | hybrid | breakeven | check | all
+"""
+import argparse
+import json
+import os
+import sys
+import time
+
+import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import lib
+import t018_q2_int as t18
+import t020_q3_budget as t20
+
+RUN = os.path.join(lib.DATA, "runs", "T025")
+os.makedirs(RUN, exist_ok=True)
+
+K_SCAN = [0, 2, 5, 10, 20]
+K_REG = [20, 40, 60]
+SOURCES = ["surplus", "arrivals"]
+BUDGETS = [30000.0, 60000.0, 100000.0, None]
+TIME_LIMIT = 300
+MIP_GAP = 0.01
+
+
+def dump(obj, name):
+    path = os.path.join(RUN, name)
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(obj, fh, ensure_ascii=False, indent=1)
+    print("wrote", path)
+    return path
+
+
+def load_json(name):
+    with open(os.path.join(RUN, name), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+# --------------------------------------------------------------------------
+def run_fleet(force=False):
+    path = os.path.join(RUN, "fleet_scan.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("fleet_scan.json")
+    t18.setup_design()
+    DEP, PZ, NET, I0 = t18.DEP, t18.PZ, t18.NET, t18.I0
+    rows = []
+    for K in sorted(set(K_SCAN) | set(K_REG)):
+        t0 = time.time()
+        res = t18.solve(DEP, t18.ARR, PZ, NET, I0, K=K, integer=True,
+                        time_limit=TIME_LIMIT, mip_gap=MIP_GAP,
+                        event_order=True, bike_integer=True)
+        if res is None:
+            rows.append(dict(K=K, status="solve_failed"))
+            continue
+        rows.append(dict(
+            K=K, obj=float(res["obj"]), variable=float(res["obj_variable"]),
+            unmet=float(res["unmet"]), dev=float(res["dev"]),
+            truck_km=float(res["truck_km"]), moved=float(res["moved"]),
+            trucks_used=float(res["trucks_used"]),
+            peak_moved=float(res["peak_moved"]), peak_hour=int(res["peak_hour"]),
+            runtime=float(time.time() - t0), gap=float(res["gap"]),
+            status=int(res["status"])))
+
+    # regression against T018's saved integer solutions
+    reg = {}
+    for K in K_REG:
+        p = os.path.join(lib.DATA, "runs", "T018", f"result_int_K{K}.json")
+        with open(p, encoding="utf-8") as fh:
+            old = json.load(fh)
+        new = next(r for r in rows if r["K"] == K)
+        reg[K] = {k: dict(t018=float(old[k]), t025=float(new[k]),
+                          abs_diff=float(abs(old[k] - new[k])))
+                  for k in ("obj", "unmet", "dev", "truck_km", "moved")}
+    scan = [r for r in rows if r["K"] in K_SCAN]
+    positive = [r["K"] for r in scan if r["unmet"] > 1e-6]
+    out = dict(
+        ks=K_SCAN, rows=rows, regression_t018=reg,
+        first_positive_unmet_K=int(min(positive)) if positive else None,
+        dev_share_at_first_positive=(
+            float(next(r for r in scan
+                       if r["K"] == min(positive))["dev"]) if positive else None),
+        note=("T018 integer MILP, K in {0,2,5,10,20}; K=40/60 re-run only for "
+              "the regression check against data/runs/T018. Same demand, I0, "
+              "event order, bike_integer loads and costs as T018."),
+        runtime_s=float(sum(r.get("runtime", 0.0) for r in rows)))
+    dump(out, "fleet_scan.json")
+    return out
+
+
+# --------------------------------------------------------------------------
+def _policy_frames():
+    """Solve the T020 LP once per (source, budget) and return the refitted PZ."""
+    pol = t20.load_json("policy_table.json")
+    pool = t20.load_pool()
+    capinfo = t20.build_capacity(pool)
+    lp = t20.PoolLP(pool, capinfo)
+    frames = []
+    for cap_name in SOURCES:
+        caps = np.empty(lp.ns)
+        for k, (h, s) in enumerate(lp.src_key_list):
+            if cap_name == "arrivals":
+                caps[k] = pool["arr"][h, s]
+            else:
+                caps[k] = max(0.0, pool["arr"][h, s] - pool["dep"][h, s])
+        lp.b_src = caps
+        for B in BUDGETS:
+            row = next(z for z in pol["levels"][cap_name]["rows"]
+                       if z["budget"] == B)
+            got = lp.solve(row["r"], budget=B, cap_on=True, want_x=True)
+            dA = t20.zone_delta(got["x"], lp.w, pool)
+            frames.append(dict(source_cap=cap_name, budget=B, r=row["r"],
+                               q=float(got["q"]), P=float(got["P"]),
+                               invited=float(got["invited"]),
+                               payment=float(got["payment"]),
+                               dA=dA))
+            print(f"  LP {cap_name} B={B}: r={row['r']} q={got['q']:.1f} "
+                  f"pay={got['payment']:.1f}")
+    return frames
+
+
+def run_hybrid(force=False):
+    path = os.path.join(RUN, "hybrid_by_K.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("hybrid_by_K.json")
+    fleet = load_json("fleet_scan.json")
+    pure = {r["K"]: r for r in fleet["rows"]}
+    k0 = fleet["first_positive_unmet_K"]
+    k_above = min(k for k in sorted(set(K_SCAN) | set(K_REG)) if k > k0)
+    # all five scan points: the unmet curve is non-monotone (K=5 serves all
+    # zone-level departures while K=10/20 leave 64/95), so the break-even
+    # question is asked at every K rather than only at the first scarce one.
+    kset = sorted(set(K_SCAN) | {0, k0, k_above})
+    print("hybrid K set", kset)
+
+    t18.setup_design()
+    DEP, ARR, NET, I0 = t18.DEP, t18.ARR, t18.NET, t18.I0
+    frames = _policy_frames()
+    # refit PZ once per policy (K-independent)
+    for f in frames:
+        PZ2 = np.empty_like(t18.PZ)
+        errs = []
+        for t in range(24):
+            PZ2[t], re_, ce_ = t20.ipf_adjust(t18.PZ[t], DEP[:, t], f["dA"][t])
+            errs.append((re_, ce_))
+        f["PZ2"] = PZ2
+        f["ipf_row_err_max"] = float(max(e[0] for e in errs))
+        f["ipf_col_err_max"] = float(max(e[1] for e in errs))
+
+    rows = []
+    for K in kset:
+        base = pure[K]
+        for f in frames:
+            res = t18.solve(DEP, ARR, f["PZ2"], NET, I0, K=K, integer=True,
+                            time_limit=TIME_LIMIT, mip_gap=MIP_GAP,
+                            event_order=True, bike_integer=True)
+            if res is None:
+                rows.append(dict(K=K, source_cap=f["source_cap"],
+                                 budget=f["budget"], status="solve_failed"))
+                continue
+            total = float(res["obj"]) + f["payment"]
+            removed = float(base["unmet"] - res["unmet"])
+            rows.append(dict(
+                K=K, source_cap=f["source_cap"], budget=f["budget"],
+                r=f["r"], q=f["q"], P=f["P"], invited=f["invited"],
+                payment=f["payment"], truck_obj=float(res["obj"]),
+                truck_unmet=float(res["unmet"]), truck_dev=float(res["dev"]),
+                truck_km=float(res["truck_km"]), truck_moved=float(res["moved"]),
+                total=total, pure_obj=float(base["obj"]),
+                pure_unmet=float(base["unmet"]), pure_dev=float(base["dev"]),
+                diff=float(base["obj"] - total),
+                diff_pct=float(100.0 * (base["obj"] - total) / base["obj"]),
+                unmet_removed=removed,
+                payment_ceiling=float(base["obj"] - res["obj"]),
+                payment_per_unmet_removed=(
+                    float(f["payment"] / removed) if removed > 1e-9 else None),
+                ipf_row_err_max=f["ipf_row_err_max"],
+                ipf_col_err_max=f["ipf_col_err_max"]))
+            print(f"hybrid K={K} {f['source_cap']} B={f['budget']}: "
+                  f"truck={res['obj']:.1f} pay={f['payment']:.1f} "
+                  f"total={total:.1f} pure={base['obj']:.1f} "
+                  f"diff={base['obj'] - total:.1f}")
+
+    out = dict(
+        ks=kset, k_first_positive_unmet=k0, rows=rows,
+        caliber=dict(
+            truck_model="T018 integer MILP, event_order, bike_integer, K as "
+                        "in fleet_scan",
+            incentive_lp="T020 PoolLP, cap_on=True, r from T020 policy_table",
+            pz_refit="T020 ipf_adjust, rows=departures, columns=new "
+                     "zone-hour arrival totals",
+            costs=dict(COST_KM=t18.COST_KM, COST_LOAD=t18.COST_LOAD,
+                       PENALTY=t18.PENALTY, COST_DEV=t18.COST_DEV,
+                       FIXED_K=t18.FIXED_K, Q_TRUCK=t18.Q_TRUCK),
+            note=("total = T018 objective (including 600*K fixed) + payment; "
+                  "payment_ceiling is the largest payment at which the mixed "
+                  "policy would still beat pure truck at this K")),
+        runtime_s=None)
+    dump(out, "hybrid_by_K.json")
+    return out
+
+
+# --------------------------------------------------------------------------
+def run_plans(force=False):
+    """Re-solve the pure-truck scan and keep the plan arrays in this run dir."""
+    tag_ok = all(os.path.exists(os.path.join(RUN, f"plan_int_K{K}.npz"))
+                 for K in K_SCAN)
+    if tag_ok and not force:
+        print("reuse plan_int_K*.npz")
+        return
+    t18.setup_design()
+    DEP, PZ, NET, I0 = t18.DEP, t18.PZ, t18.NET, t18.I0
+    fleet = {r["K"]: r for r in load_json("fleet_scan.json")["rows"]}
+    for K in K_SCAN:
+        res = t18.solve(DEP, t18.ARR, PZ, NET, I0, K=K, integer=True,
+                        time_limit=TIME_LIMIT, mip_gap=MIP_GAP,
+                        event_order=True, bike_integer=True)
+        if res is None:
+            raise RuntimeError(f"K={K} failed")
+        assert abs(res["obj"] - fleet[K]["obj"]) < 1e-6, (K, res["obj"])
+        arrays = {k: res[k] for k in ("XM", "MK", "NN", "I", "U")}
+        np.savez(os.path.join(RUN, f"plan_int_K{K}.npz"), **arrays)
+        print("saved", os.path.join(RUN, f"plan_int_K{K}.npz"))
+
+
+def _model_arrivals(PZ, DEP, U):
+    served = DEP - U                       # (Z, T)
+    arr = np.empty((24, PZ.shape[1]))
+    for t in range(24):
+        arr[t] = PZ[t].T @ served[:, t]
+    return arr
+
+
+def run_alignment(force=False):
+    path = os.path.join(RUN, "mechanism.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("mechanism.json")
+    t18.setup_design()
+    DEP, PZ = t18.DEP, t18.PZ
+    frames = _policy_frames()
+    out = dict(
+        metric=("net[t,z] = model arrivals - departures in the pure-truck plan; "
+                "aligned_share = (sum|net| - sum|net+dA|) / (2*sum positive dA); "
+                "+1 = every cross-zone reroute reduces a zone-hour imbalance, "
+                "0 = orthogonal, -1 = every reroute worsens one"),
+        per_K=[])
+    for K in K_SCAN:
+        z = np.load(os.path.join(RUN, f"plan_int_K{K}.npz"))
+        arr = _model_arrivals(PZ, DEP, z["U"])
+        net = arr - DEP.T                      # (24, Z)
+        base = float(np.abs(net).sum())
+        rows = []
+        for f in frames:
+            dA = f["dA"]
+            pos = float(np.maximum(dA, 0.0).sum())
+            after = float(np.abs(net + dA).sum())
+            rows.append(dict(
+                source_cap=f["source_cap"], budget=f["budget"],
+                q=float(f["q"]), cross_zone_bikes=pos,
+                imbalance_before=base, imbalance_after=after,
+                imbalance_change=after - base,
+                aligned_share=float((base - after) / max(2 * pos, 1e-12))))
+        out["per_K"].append(dict(K=K, imbalance_abs_sum=base, policies=rows))
+        best = max(rows, key=lambda r: r["aligned_share"])
+        print(f"K={K}: best aligned_share={best['aligned_share']:+.3f} "
+              f"({best['source_cap']} B={best['budget']}), "
+              f"imbalance {base:.1f} -> {best['imbalance_after']:.1f}")
+    dump(out, "mechanism.json")
+    return out
+
+
+# --------------------------------------------------------------------------
+def run_breakeven(force=False):
+    path = os.path.join(RUN, "breakeven.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("breakeven.json")
+    fleet = load_json("fleet_scan.json")
+    hyb = load_json("hybrid_by_K.json")
+    pure = {r["K"]: r for r in fleet["rows"]}
+    per_k = []
+    for K in hyb["ks"]:
+        rows = [r for r in hyb["rows"]
+                if r["K"] == K and r.get("status") != "solve_failed"]
+        best = max(rows, key=lambda r: r["diff"]) if rows else None
+        ceilings = [r["payment_ceiling"] for r in rows]
+        per_k.append(dict(
+            K=K, pure_obj=float(pure[K]["obj"]),
+            pure_unmet=float(pure[K]["unmet"]), pure_dev=float(pure[K]["dev"]),
+            best_policy=dict(source_cap=best["source_cap"],
+                             budget=best["budget"], payment=best["payment"],
+                             truck_obj=best["truck_obj"],
+                             total=best["total"], diff=best["diff"],
+                             unmet_removed=best["unmet_removed"]) if best else None,
+            max_payment_ceiling=float(max(ceilings)) if ceilings else None,
+            min_payment=float(min(r["payment"] for r in rows)) if rows else None,
+            all_negative=bool(all(r["diff"] < 0 for r in rows)) if rows else None,
+            coverage_ratio=(float(best["unmet_removed"] /
+                                  max(pure[K]["unmet"], 1e-9))
+                            if best else None),
+            q_over_unmet=(float(best["q"] / max(pure[K]["unmet"], 1e-9))
+                          if best else None)))
+    any_positive = any(p["max_payment_ceiling"] is not None
+                       and p["max_payment_ceiling"] > 0 for p in per_k)
+    best_ceiling = max((p["max_payment_ceiling"] for p in per_k
+                        if p["max_payment_ceiling"] is not None), default=None)
+    mech = None
+    mpath = os.path.join(RUN, "mechanism.json")
+    if os.path.exists(mpath):
+        with open(mpath, encoding="utf-8") as fh:
+            mech = json.load(fh)
+        for p in per_k:
+            m = next(x for x in mech["per_K"] if x["K"] == p["K"])
+            if p["best_policy"] is None:
+                continue
+            a = next(r for r in m["policies"]
+                     if r["source_cap"] == p["best_policy"]["source_cap"]
+                     and r["budget"] == p["best_policy"]["budget"])
+            p["alignment_of_best"] = dict(
+                aligned_share=a["aligned_share"],
+                cross_zone_bikes=a["cross_zone_bikes"],
+                imbalance_before=a["imbalance_before"],
+                imbalance_after=a["imbalance_after"])
+    out = dict(
+        per_K=per_k,
+        any_K_worthwhile=bool(any_positive),
+        conclusion=("incentive is worthwhile at some K in the scan"
+                    if any_positive else
+                    "within the fleet sizes compared (K = "
+                    f"{hyb['ks']}), the incentive is never worthwhile: even a "
+                    "zero payment leaves the mixed policy at or above the pure "
+                    "truck cost at every K"),
+        max_payment_ceiling=best_ceiling,
+        ceiling_formula=("payment < pure_obj(K) - truck_obj_hybrid(K); "
+                         "payment_ceiling in hybrid_by_K.json is the "
+                         "right-hand side. A negative ceiling means no "
+                         "non-negative payment can break even at that K."),
+        mechanism=None)
+    # mechanism numbers at the first scarce K
+    k0 = hyb["k_first_positive_unmet"]
+    rows0 = [r for r in hyb["rows"] if r["K"] == k0]
+    if rows0:
+        best0 = max(rows0, key=lambda r: r["diff"])
+        out["mechanism"] = dict(
+            K=k0, pure_unmet=float(best0["pure_unmet"]),
+            hybrid_unmet=float(best0["truck_unmet"]),
+            unmet_removed=float(best0["unmet_removed"]),
+            incentive_q=float(best0["q"]),
+            q_over_unmet=float(best0["q"] / max(best0["pure_unmet"], 1e-9)),
+            payment_per_unmet_removed=best0["payment_per_unmet_removed"],
+            penalty_per_unmet=t18.PENALTY,
+            note=("the incentive moves q cell-level reroutes; only the part "
+                  "that changes a zone-hour arrival total can remove a "
+                  "zone-level unmet trip, and zone-level unmet is what the "
+                  "truck objective prices at 6 CNY."))
+    dump(out, "breakeven.json")
+    return out
+
+
+# --------------------------------------------------------------------------
+def run_check(force=False):
+    path = os.path.join(RUN, "check.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("check.json")
+    fleet = load_json("fleet_scan.json")
+    hyb = load_json("hybrid_by_K.json")
+    be = load_json("breakeven.json")
+    reg = fleet["regression_t018"]
+    reg_ok = all(v["abs_diff"] < 1e-6 for K in reg for v in reg[K].values())
+    budgets_ok = all(r["payment"] <= r["budget"] + 1e-6
+                     for r in hyb["rows"]
+                     if r.get("budget") is not None
+                     and r.get("status") != "solve_failed")
+    totals_ok = all(abs(r["total"] - (r["truck_obj"] + r["payment"])) < 1e-6
+                    for r in hyb["rows"] if r.get("status") != "solve_failed")
+    diff_ok = all(abs(r["diff"] - (r["pure_obj"] - r["total"])) < 1e-6
+                  for r in hyb["rows"] if r.get("status") != "solve_failed")
+    out = dict(regression_t018_ok=bool(reg_ok),
+               regression_max_abs_diff=float(max(
+                   v["abs_diff"] for K in reg for v in reg[K].values())),
+               budgets_respected=bool(budgets_ok),
+               total_identity_ok=bool(totals_ok),
+               diff_identity_ok=bool(diff_ok),
+               conclusion_any_worthwhile=bool(be["any_K_worthwhile"]),
+               all_pass=bool(reg_ok and budgets_ok and totals_ok and diff_ok))
+    dump(out, "check.json")
+    return out
+
+
+# --------------------------------------------------------------------------
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--stage", default="all",
+                    choices=("fleet", "hybrid", "plans", "mechanism",
+                             "breakeven", "check", "all"))
+    ap.add_argument("--force", action="store_true")
+    args = ap.parse_args()
+    t0 = time.time()
+    if args.stage in ("fleet", "all"):
+        run_fleet(force=args.force)
+    if args.stage in ("hybrid", "all"):
+        run_hybrid(force=args.force)
+    if args.stage in ("plans", "all"):
+        run_plans(force=args.force)
+    if args.stage in ("mechanism", "all"):
+        run_alignment(force=args.force)
+    if args.stage in ("breakeven", "all"):
+        run_breakeven(force=True)
+    if args.stage in ("check", "all"):
+        run_check(force=True)
+    print(f"done in {time.time() - t0:.1f}s")
