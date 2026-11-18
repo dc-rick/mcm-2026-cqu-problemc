@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T026 激励与三轮车同口径重解</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T026 · Q3 激励 vs 三轮车：同口径重解</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（T023 之后、T021 之前；用户已拍板）</strong>　·　问题：H25（新）　·　可写：<code>code/</code>、<code>data/runs/T026/</code>、<code>交付/T026_delivery.json</code>　·　不改 <code>paper/</code></p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>T025 证明的是“激励换不掉卡车”——而 Q2 的卡车层是 50 区级，区级日基线未服务只有 <strong>432.23</strong> 辆，本来就没有可替代的空间，所以那个负结论是<strong>结构性的</strong>，不是激励本身的问题。激励真正替代的是<strong>格级短缺</strong>；现在格级短缺由三轮车处理（T024-R3）：239,245.20 → 39,984.23，三轮车层成本 293,342.61 元/日，折 <strong>1.47215 元/未服务辆</strong>。把奖励和这个单价放在一起，方向就反过来了。</p>
+</div>
+
+<h2>1. 先算的上界（已有数据，零新计算）</h2>
+<p>用 T008 的 q(r)（601 档奖励，两种来源上限）与 T024-R3 的 1.47215 直接算净收益 <code>q(r) × (1.47215 − r)</code>：</p>
+<div class="tw"><table>
+<thead><tr><th>奖励 r</th><th>上界口径 q / 净收益</th><th>保守口径 q / 净收益</th></tr></thead>
+<tbody>
+<tr><td>0.92（上界最优）</td><td>35,837.3 / <strong>+19,787.64</strong></td><td>—</td></tr>
+<tr><td>0.94（保守最优）</td><td>—</td><td>11,475.3 / <strong>+6,106.59</strong></td></tr>
+<tr><td>1.472（交叉点）</td><td>75,769.4 / ≈ +163</td><td>24,110.8 / ≈ +52</td></tr>
+<tr><td>1.76（论文现选 r*）</td><td>95,565.8 / <strong>−27,508.34</strong></td><td>31,209.4 / <strong>−8,983.53</strong></td></tr>
+<tr><td>1.83</td><td>99,687.8 / −35,672.98</td><td>32,777.1 / −11,729.19</td></tr>
+</tbody></table></div>
+<div class="box warn">
+<p><strong>这只是上界，不能直接当结论</strong>，因为三处近似：① 1.47215 是<strong>平均</strong>成本（(固定+里程)/移除量），逐区不动点是整数，少填一点短缺不一定能减一辆车；② q(r) 是在 T008 的短缺 Δ_c 上算的，不是 T024 动态回放的格级短缺；③ 卡车层在 r 变化时应保持不变，需要验证。本任务就是把这三条做实。</p>
+</div>
+
+<h2>2. 要做什么</h2>
+<ol>
+<li><strong>统一短缺口径</strong>：用 T024 的（格, 小时）短缺作为 Δ_c，重建 T008 的 reroute LP（同一接受函数 π(r)，κ/ρ/c0 不变，两种来源上限），得到 q(r) 与实际填掉的短缺。Δ_c 只取“步行之后仍然缺”的那部分，必须与 T024 的 <code>cellunmet</code> 口径对齐，写清对齐方式。</li>
+<li><strong>外循环</strong>：给定 r，(a) 在剩余短缺上跑 reroute LP；(b) 把剩余短缺送回 T024 的逐区三轮车 LP 与逐区不动点，求 n_z(r)；(c) 迭代到不动点（最多 10 次，残差 &lt; 1 辆）。报告每行的迭代次数与末次残差。</li>
+<li><strong>r 扫描</strong>：r ∈ {0, 0.05, 0.10, …, 2.00}（41 档），两种来源上限各一遍。每档报告 total(r) = payment + 三轮车层 + 卡车层（卡车层应不变，若变要解释）。</li>
+<li><strong>回归门</strong>：r = 0 必须<strong>逐位复现</strong> T024-R3：975 辆、617,055.7515、未服务 39,984.2332、未分配 0、层成本 533,248.0077。</li>
+<li><strong>求根与最优</strong>：给交叉点 r_cross（total(r) = total(0) 的根，二分到 0.001 元）、最优 r*、净节省、以及 n_z 的逐区下降（总下降多少辆、哪些区下降）。</li>
+<li><strong>与上界对照</strong>：把精确结果与第 1 节的上界画在同一张表里，说明差距来自整数化还是来源上限。</li>
+<li><strong>敏感性</strong>：接受函数 c0 ±20% 下 r* 与净节省的移动（各一行即可）。</li>
+</ol>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><code>cost_vs_r.json</code>：≥41 行 × 2 口径；每行含 r、q、payment、n_total、tricycle_layer、truck_layer、total、unmet、iter、resid。</li>
+<li><code>optimum.json</code>：r_cross、r*、净节省、n_total(r*)、逐区下降表、与上界对照。</li>
+<li><code>regression.json</code>：r=0 与 T024-R3 的逐项对比，全部相对误差 0 或列明来源。</li>
+<li><code>sensitivity_c0.json</code>：c0 × {0.8, 1.0, 1.2} 三行。</li>
+<li>图：total(r) 曲线（两种口径 + 交叉点标注），PDF 矢量，附生成脚本。</li>
+<li>复现信息（种子、命令、输入 SHA-256）；交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+<h2>4. 口径与禁区</h2>
+<ul>
+<li>不得写“可测量的移除”；写“在同一模型内，把奖励从 1.76 降到 r* 使总成本下降 X 元/日”。</li>
+<li>与 T025 <strong>不矛盾，要并列</strong>：T025 是卡车口径（区级无短缺，激励换不掉卡车）；T026 是格级/三轮车口径（激励可以替代三轮车）。论文两段都要写，并写清各自的适用条件。</li>
+<li>第 1 节的平均成本上界只能作对照，不能作结果；结果只用外循环的精确值。</li>
+<li>奖励支付是平台支出，三轮车成本也是平台支出，两者可比；用户的时间成本不计入（与 T008 一致），要在 assumptions 里写明。</li>
+<li>不得引用 T008 的 6.83%–20.83% 作系统节省，也不得引用 T025 的 10.40 / 2,883.3 / 480.6×。</li>
+</ul>
+
+</main>
+</body>
+</html>
