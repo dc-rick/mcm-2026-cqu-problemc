@@ -300,6 +300,43 @@ li{margin:3px 0}
 
 <h3>14.2 阶段结论</h3>
 <p>第五轮满足“0 阻塞”；M1/M2/M3/M6 为已披露的建模深度，M7/M5 驳回（口径已定义、节省不变）。新 M8 是真实的文字-模型矛盾（capped plan 与 per-site 95% 不可兼得），m2 是悬空参数，两者均以纯文字修正（R1e），不改任何数字。落 R1e 并复核、跑第六轮后写终判。</p>
+<h2>15. R1e 复核（<code>542f4ae</code>，2026-11-19）</h2>
+<p>R1e 是对第五轮 M8（capped plan 的 per-site 95% 措辞）与 m2（悬空的自行车持有成本）的两处纯文字微修（任务单 §8.7）。指导方独立复验：</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td>通过：<code>542f4ae</code> 仅动 <code>paper/sec7_q4.tex</code>、<code>paper/sec2_assumptions.tex</code>、<code>paper/main.pdf</code> 与 <code>交付/T027</code> 四个文件；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code> 未触碰</td></tr>
+<tr><td>两处编辑</td><td>通过（diff 恰为两处）：① §7.4 末句改为 “a sizing standard of 150 slots per selected cell applied to the assigned demand, while the 95\% per-fence adequacy is a property of the uncapped sizing --- not a count of existing berths and not a per-site adequacy guarantee under the cap.”；② 成本参数句插入 “a cost common to every plan compared here, since the bicycle stock is a scenario rather than a decision, and therefore not charged in the Q2 or Q3 objectives”，并把 “They are perturbed” 改为 “The truck and tricycle costs are perturbed”。无其他改动</td></tr>
+<tr><td>数字门</td><td>通过：14 个 tex 逐文件 Counter 对 <code>3209636</code>；<code>sec7_q4.tex</code> 与 <code>sec2_assumptions.tex</code> 均 identical（150 与 95 各仍一次），全篇仍仅 <code>sec5_q2.tex</code> +<code>12</code>×1；<code>ai_report.tex</code> +<code>12</code>×1 按 §8.3 豁免</td></tr>
+<tr><td>独立编译</td><td>通过：临时副本三遍 xelatex，27 总 / 25 计页；overfull 0、LaTeX Warning 0、undefined 0、<code>??</code> 0、U+037E 0；underfull 7 与此前同环境编译相同；目录 References→25、AI 报告→26</td></tr>
+<tr><td>渲染</td><td>通过：两条新句在 PDF 各出现一次；§7.4 句读作 “…applied to the assigned demand, while the 95\% per-fence adequacy is a property of the uncapped sizing… not a per-site adequacy guarantee under the cap.”，与 §7.1 的 uncapped 约定一致，不再与 394,553.13 未分配需求冲突</td></tr>
+<tr><td>哈希</td><td>通过：<code>file_list.json</code> 757 个文件逐一 SHA-256 复算，0 缺失、0 差异</td></tr>
+<tr><td>回归</td><td>通过：<code>verify_final.json</code> revision=<code>R1e</code>、<code>all_pass=true</code>、<code>r1e_checks</code> 两条全 true；六数复算一致（975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385%）；交付 checks 45、affected 35，末两条即 R1e-1/2</td></tr>
+</tbody></table></div>
+<p><strong>结论：R1e 通过。</strong>唯一剩余的门是 DeepSeek 第六轮冷读（<code>review/review_r6.json</code>，<code>--prev review_r5.json</code>）。</p>
+<h2>16. DeepSeek 第六轮裁决（<code>R1e</code>；F，0/8/3）与 R1f</h2>
+<p>第六轮对 R1e 的 PDF 源（<code>review/review_r6.json</code>，model deepseek-v4-pro，input 40,023 / output 15,362 tokens）：<b>阻塞 0</b>，中 8，低 3。R1e 的 M8 判 fixed、M5 亦判 fixed。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>N1</td><td>三个 cell-level 未服务基线（5.84%、11.22%、5.40%）未统一</td><td>驳回</td><td>§5.2（<code>sec5_q2.tex:27--38</code>）逐一命名：pre-plan 5.84%/3.51%、truck 后动态重演 239,245.20=11.22%、静态免费重排 115,129.19=5.40% 为不可达下界，并明写 “The step from 11.22% to the post-tricycle 1.875% below is a within-model comparison … not a change from the pre-plan 5.84%”；三者在文内已区分，N1 的“未统一”不成立</td></tr>
+<tr><td>N2</td><td>1/p 缩放流量与未缩放 I0</td><td>驳回（已披露）</td><td>同 M2：343,638 是 proxy，§3 写下界、§7.1 两情景分开跑</td></tr>
+<tr><td>N3</td><td>三轮车层仍静态逐区-小时</td><td>驳回（已披露）</td><td>同 M3：§5.4/§10 明写</td></tr>
+<tr><td>N4</td><td>无联合两梯队优化</td><td>驳回（已披露）</td><td>同 M1：§5.3/§10 明写网格与序贯</td></tr>
+<tr><td>N5</td><td>κ/ρ 未扫；同区重演与 scheme 的目标表不一致</td><td>驳回</td><td>κ/ρ 同 M6（不可识别、c₀ 表、pilot design）；同区点已由 R1c-1…4 写明：摘要/§6.4 的 “in this replay” 与 A12 的 “keeps the target inside the source zone”，跨区规则在 §6.3 卡车口径计价；N5 的 “not explicitly restricted” 已过时</td></tr>
+<tr><td>N6</td><td>摘要的 headline 成本不含日终空驶</td><td><b>接受（摘要口径）</b></td><td>正文与 R1d-2 已写，但摘要单读会误读；R1f-2 在 Q2 条件句加无数字限定；若 p1 溢出则撤回并记录</td></tr>
+<tr><td>N7</td><td>摘要 59.53% 的分母未在摘要限定</td><td>驳回</td><td>M5 已被本轮判 fixed；表注与 §7.1 明确定义分母，摘要的 “peak occupancy” 与表行同名；重写会新增长句并危及 p1</td></tr>
+<tr><td>N8（新）</td><td>Q5 的 20-seed 结果无标准误；12.12 vs 12.10、19.55 vs 18.99 可能在噪声内</td><td><b>部分接受（正文措辞）</b></td><td><code>data/runs/T022/m15_mismatch.json</code> 已存 <code>unmet_rate_sd</code>（0.0006–0.0008）：m=0 差 0.02pp≈0.2 SE、m=1.0 差 0.11pp≈1.3 SE 在噪声内，m=1.5 差 0.52pp≈6 SE 显著；正文 “slightly worse” 把三组并列，措辞过强。R1f-1 改写该句（数字与出现次数不变）；不新增 sd 数字（token 门）</td></tr>
+<tr><td>m1</td><td>Q1 同格出行高估 3.94pp</td><td>驳回（已披露）</td><td>§4.6 已写该偏差与其方向；改模型不在定稿范围</td></tr>
+<tr><td>m2</td><td>小数位过多</td><td>驳回</td><td>精度约定（§10），同前几轮</td></tr>
+<tr><td>m3</td><td>“两个列表”可能超过 25 页</td><td>驳回</td><td>与已独立核验的 27 总 / 25 计页矛盾；References 起 p25、AI 起 p26</td></tr>
+</tbody></table></div>
+
+<h3>16.1 R1f（两处纯文字，零数字 token）</h3>
+<p>任务单 §8.8 已下达：<b>R1f-1</b> 把 §8 的 “slightly worse” 句改为 “at $m=0$ the difference … is within seed noise, and at $m\ge1.0$ it is no better than independent\_equal …, the deficit clearing seed noise only at the largest mismatch.”（12.12/12.10/16.11/16.00/19.55/19.03 及 m=0、m≥1.0 的出现次数全部保留）；<b>R1f-2</b> 在摘要 Q2 条件句前插入 “the two-tier total excludes the end-of-day repeat-positioning deadhead, reported separately;”（无数字；若 p1 溢出则撤回并说明）。R1f 交付后跑第七轮冷读（<code>--prev review/review_r6.json</code>）。第七轮 0 阻塞且无新的文字-模型矛盾/推断强度问题即写“可提交”；深度类不再作为门槛。</p>
+
+<h3>16.2 阶段结论</h3>
+<p>第六轮满足“0 阻塞”，M5/M8 已判 fixed；八项中里 N2–N5、N7 为重复或已定义口径，N1、m3 与正文/页数事实不符；剩 N8 的措辞过强与 N6 的摘要口径两处，均以纯文字修正（R1f），不动任何数字。落 R1f 并复核、跑第七轮后写终判。</p>
 
 </main>
 </body>
