@@ -24,7 +24,7 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   without regard to whether a bicycle will be available there. This is the usual
   assumption of trip-distribution modelling. It is conditional here: the 50-zone LP
   finds no zone stockout at the measured inventory, but the cell-level simulation
-  finds 5.84\% unserved at 343,638 and 3.51\% at 495,540, so the censoring is small
+  finds 5.84\% unserved at the initial-inventory proxy 343,638 and 3.51\% at 495,540, so the censoring is small
   but not zero and is reported rather than assumed away.
 
 \item \emph{Endogenous attraction.} The attraction of a destination is measured by
@@ -51,8 +51,9 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   parameters $\kappa,\rho$ and the inertia constant $c_0$ are not identified from our
   data: the order file contains no reward records, although Mobike had been operating
   red-envelope (hongbao) bikes since March 2017 \cite{technode2017,sixthtone2017}.
-  They are therefore treated as behavioural parameters and swept in
-  Section~\ref{sec:sens}.
+  They are fixed at $\kappa=2$, $\rho=0.35$, $c_0=0.8$ throughout; only $c_0$ is
+  re-optimised (at 0.8 and 1.2 times its value) in Section~\ref{sec:sens}, and the
+  absence of a full $\kappa,\rho$ sweep is carried as a limitation.
 
 \item \emph{Parking demand equals arrivals, on a standing stock.} A parked bicycle
   occupies space where its trip ended. Parking demand at a location is therefore the
@@ -62,10 +63,34 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \item \emph{Cost parameters.} A bicycle costs 1.0 CNY per day to own and maintain
   (about 1{,}000 CNY over a three-year life); a truck costs 600 CNY per day to own,
   insure and staff, and 6 CNY per kilometre to run. These are planning assumptions
-  of the right order for 2017 Beijing. The truck-kilometre price is not swept on the
-  final OD surface, so no price-sensitivity numbers are quoted; the qualitative
-  argument is given in Section~\ref{sec:sens}. All costs are linear in the other
-  parameters.
+  of the right order for 2017 Beijing. They are perturbed one at a time over
+  $\pm50\%$ in Section~\ref{sec:sens}; the truck-kilometre price alone moves the Q2
+  total by 33,534.39 CNY/day over 3--9 CNY/km, and Section~\ref{sec:sens} ranks every
+  input this way. All costs are linear in the other parameters.
+
+\item \emph{Two-tier repositioning.} Trucks move bicycles between zones as in A6.
+  Tricycles move bicycles between cells \emph{within one zone} only, carrying
+  $Q_{\text{tri}}=20$ bicycles at 15 km/h with 0.5 minutes per bicycle handled, trips
+  of at most 5 km, operating 07:00--20:00, at 300 CNY per tricycle-day and 0.2 CNY per
+  kilometre. Because reroutes do not cross a zone boundary, the truck layer is
+  unchanged by the tricycle layer. The tricycle allocation is integer, and the
+  executable plan raises the fractional LP fleet to the smallest fixed point at which
+  every zone's schedule can be run.
+
+\item \emph{Two ledgers, one budget.} A reward can be settled on the \emph{increment}
+  ledger, paying $r$ per completed reroute that fills a deficit (bill $r\,q$), or on
+  the \emph{payment} ledger, paying $r$ per accepted invitation including riders who
+  would have gone there anyway (bill $r\,P$). The 30,000 CNY daily budget is a promise
+  and the two ledgers price it differently; every result is labelled by its ledger. The
+  payment ledger is enforced by reserving $r$ per invitation and stopping when the
+  cumulative reserve reaches the budget, which is conservative and may truncate the
+  program; at the Q3 optimum the increment-ledger bill is checked against the budget
+  rather than truncated by it.
+
+\item \emph{Placement and payment.} A reroute is placed in the hour of the original
+  trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is
+  modelled. A reward is posted at $r$ per completed reroute and is uniform across
+  users; a personalised reward is not modelled.
 \end{enumerate}
 
 \subsection{Notation}

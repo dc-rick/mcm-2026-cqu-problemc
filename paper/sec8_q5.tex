@@ -1,63 +1,146 @@
 % =============================== 8. Q5 ===============================
 \section{Question 5: What Competition Does to the Problem}\label{sec:q5}
 
-\subsection{The question, made precise}
+\subsection{Three things competition can break}
 
 The five questions above were answered for a single operator holding the whole market.
-Competition changes several things, and one of them is often assumed rather than
-tested. We separate what we simulated from what we did not.
+Competition can affect availability, parking capacity and information, and the three are
+not the same kind of claim. Availability is a stochastic statement about stockouts;
+parking capacity is a deterministic statement about slots; information is a statement
+about what any single firm can estimate. We simulate the second at the resolution the
+Q4 plan actually has, and treat the first and third as arguments whose direction we can
+state and whose magnitude we cannot.
 
-Let there be $n$ platforms and let platform $k$ hold a share $s_k$ of both the fleet and
-the demand. This is the single-homing case: a rider installs one application and uses
-it. The alternative, multi-homing, changes the arithmetic and is discussed in
-\S\ref{sec:multihome}.
+\subsection{A cell-resolution mismatch experiment}
 
-\subsection{One conditional simulation of availability}
+The T019 plan is fixed: 4,000 sites, 150 slots each, $R=450$ m, initial-inventory proxy
+343,638. Two platforms share the market equally (share $s=0.5$), each drawing its own
+Poisson arrivals and departures at half rate, each holding half of every cell's
+standing inventory. Three institutions are compared:
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt]
+\item \textbf{independent} --- each platform owns a 150-slot fence at each open site and
+  only its own bicycles park there;
+\item \textbf{independent\_equal} --- the same, but 75 slots per platform, so the concrete
+  per site equals the shared regime's 150 and the comparison isolates pooling rather
+  than total capacity;
+\item \textbf{shared} --- one 150-slot fence per site, both platforms park in it, riders
+  still take only their own bicycles, and overflow is rationed in proportion to that
+  step's arrivals. Sharing pools slots, not fleets.
+\end{itemize}
+A spatial mismatch is then imposed at four intensities $m\in\{0,0.5,1.0,1.5\}$:
+platform A's share of each origin cell's trips is $\sigma(a+2m\tilde x_i)$, where
+$\tilde x_i$ is the cell's east--west coordinate scaled to $[-1,1]$ and $a$ is bisected
+so that A still carries half of all trips. At $m=0$ the split is proportional and is the
+model-consistent control; at $m=1.5$ A's riders are concentrated in the east while its
+fleet remains at half of every cell's inventory. Twenty seeds, 15-minute steps,
+$1{,}181{,}755$ within-fence departures per run.
 
-We simulated the zone-level system of Section~\ref{sec:q2} with the fleet and the
-demand both multiplied by $s\in\{1.0,0.7,0.5,0.35\}$, six seeds each, five-minute
-resolution, Poisson departures and multinomial destinations. \textbf{Unserved demand
-was zero in all twenty-four runs.} This is a conditional statement about the
-proportional single-homing scenario we simulated, at this depth of fleet, with this demand surface.
-It is not a general result that competition is neutral for availability, and we do not
-make that claim.
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption[Q5 spatial mismatch]{Two platforms at share 0.5 on the 4,000-site, 150-slot Q4
+plan, by mismatch intensity $m$ and parking institution (T022-M15, 20 seeds).
+``Unmet'' is unserved departures as a share of within-fence departures; ``full'' is the
+share of site-steps at capacity; ``required slots'' is the sum over sites of the 95th
+percentile over seeds of peak occupancy, an unbounded-peak sizing convention, not
+existing berths. The single-platform row is the same plan under one operator.}
+\label{tab:q5mismatch}
+\small
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+$m$ & \textbf{Institution} & \textbf{Unmet rate} & \textbf{Full-site rate} &
+\textbf{Required slots} \\
+\midrule
+--- & single platform & 11.66\% & 0.33\% & 540,447.69 \\
+\midrule
+0.0 & independent        & 12.10\% & 0.00007\% & 608,326.14 \\
+0.0 & independent\_equal & 12.16\% & 0.90\%    & 608,326.14 \\
+0.0 & shared             & 12.12\% & 0.35\%    & 562,331.65 \\
+\midrule
+0.5 & independent        & 13.27\% & 0.0067\%  & 619,001.76 \\
+0.5 & independent\_equal & 13.32\% & 1.54\%    & 619,001.76 \\
+0.5 & shared             & 13.29\% & 0.37\%    & 564,716.90 \\
+\midrule
+1.0 & independent        & 15.96\% & 0.15\%    & 643,485.96 \\
+1.0 & independent\_equal & 16.00\% & 3.53\%    & 643,485.96 \\
+1.0 & shared             & 16.11\% & 0.69\%    & 577,094.59 \\
+\midrule
+1.5 & independent        & 18.99\% & 0.57\%    & 673,517.52 \\
+1.5 & independent\_equal & 19.03\% & 6.23\%    & 673,517.52 \\
+1.5 & shared             & 19.55\% & 1.57\%    & 594,809.49 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-The mechanism is nonetheless informative. If the fleet and the demand are both scaled
-by $s$, the inventory process scales by $s$, and the event ``inventory reaches zero''
-is unchanged only while the stocks are large compared with the fluctuations. Near the
-core they are, by two orders of magnitude; in the sparse periphery they may not be, and
-the simulation has no mechanism that would reveal it. The honest reading is that the
-proportional-single-homing experiment did not produce a stockout, not that no
-fragmentation scenario can.
+\subsection{What the simulation says}
 
-\subsection{The three duplications}\label{sec:duplications}
+\textbf{Splitting the market costs service even with no mismatch.} The single platform
+leaves 11.66\% of within-fence departures unserved. At $m=0$, with both platforms
+proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%, about
+half a percentage point worse. The mechanism is not spatial: each platform's own Poisson
+fluctuations no longer pool with the other's, so the same total fleet produces more
+empty-fence steps. This is also why the old zone-level control --- which found zero unmet
+under a proportional split --- does not survive the cell resolution: at zone scale the
+stocks are large enough that the split's noise is invisible, and at fence scale it is
+not.
 
-\textbf{Space.} Fence capacity cannot be shared as easily as bicycles can. Each
-platform must hold, at each location, enough slots for its own peak, and independent
-demand fluctuations do not pool across platforms. The size of this effect depends on
-the layout and the inventory scenario. The Monte-Carlo quantification was computed on
-the 626-fence layout rather than the 705-fence knee; we therefore do not quote a
-duplication percentage. What survives is the direction: splitting the same arrivals
-across $n$
-platforms raises the slot requirement at the ordinary street corner, because each
-platform buffers its own noise, while the flagship plaza is dominated by deterministic
-drift and is barely affected.
+\textbf{The denominator is within-fence departures, not the city.} The 12.10\% is
+143,011.06 unserved departures over 1,181,754.7 within-fence departures. It is
+\emph{not} comparable with the 6.20\% city-wide figure of the Q4 replay (132,250.84
+unserved out of 2,132,542 scaled departures), because the fence network covers a subset
+of the city and the two denominators differ by nearly a factor of two. Whenever the two
+appear together, they must be labelled separately.
+
+\textbf{Mismatch is the larger effect.} Moving from $m=0$ to $m=1.5$ raises the
+independent unmet rate from 12.10\% to 18.99\% and the shared rate from 12.12\% to
+19.55\%, roughly seven percentage points. The spatial concentration of one platform's
+riders away from its own bicycles is a stronger force than the loss of noise pooling,
+and it grows monotonically with the intensity.
+
+\textbf{Sharing fences does not reduce lost orders.} The shared regime is not better
+than the independent one: at $m=0$ it is 12.12\% against 12.10\%, and at $m\ge1.0$ it is
+slightly worse than independent\_equal (16.11\% against 16.00\%, 19.55\% against
+19.03\%). Sharing pools parking slots, not bicycles; a platform's riders still cannot
+use the other platform's fleet, and proportional rationing of a shared fence's overflow
+is not better than owning a smaller fence. The shared regime \emph{does} save concrete:
+its required capacity is 562,331.65 slots against 608,326.14 for independent at $m=0$,
+which is 4.05\% above the single-platform 540,447.69 rather than 12.56\% above it.
+
+\textbf{Capacity duplication has a price.} The required capacity of the independent
+regime exceeds the shared one by a factor of \textbf{1.0818} at $m=0$, 1.0961 at $m=0.5$,
+1.1150 at $m=1.0$ and 1.1323 at $m=1.5$ --- 7.6\% to 11.7\% duplicated concrete, rising
+with mismatch. Even the shared regime needs 4.05\% more slots than a single platform at
+$m=0$, and 10.06\% more at $m=1.5$. These are required capacities --- a 95th-percentile
+per-site sizing standard --- not existing berth counts, and they are specific to this
+4,000-site, 150-slot, 450 m layout and this inventory; they do not transfer to another
+city or another grid.
+
+\textbf{The full-site rates separate the institutions cleanly.} The independent regime
+almost never fills a fence (0.00007\% to 0.57\% of site-steps), because each platform's
+own fence sits half-empty while the other platform's riders walk past it. The
+independent\_equal regime, with the same total concrete split in two, fills up to 6.23\%
+of site-steps, and the shared regime sits between them at 0.35\% to 1.57\%. A low
+full-site rate is therefore not evidence of adequate capacity; it is evidence that the
+capacity is in the wrong hands.
+
+\subsection{Cost and data duplication}
 
 \textbf{Cost.} The rebalancing plan of Q2 is computed over the whole city. A platform
-with a third of the trips still faces the same 290 arcs and the same nightly window,
-but fills each truck with a third as many bicycles. The fixed component of the truck
-fleet --- 600 CNY per truck per day, which is \textbf{43.8\%} of the daily cost at
-$K=60$ (36,000 of 82,195 CNY) --- is therefore incurred by every platform separately.
+with a third of the trips still faces the same 290 arcs and the same nightly window, but
+fills each truck with a third as many bicycles. The fixed component of the truck fleet
+--- 600 CNY per truck per day, which is \textbf{42.96\%} of the daily cost at $K=60$
+(36,000 of 83,807.74 CNY) --- is therefore incurred by every platform separately. The
+same argument applies to the tricycle layer's fixed cost, 300 CNY per tricycle-day, which
+is 293,342.61 of the 617,055.7515 two-tier total.
 
 \textbf{Data.} This is the most serious loss and the least visible. Every model in this
 paper is estimated from the full origin--destination matrix. A platform holding a third
-of the market observes a third of the rows: the attraction $A_j$ of
-\eqnref{eq:gravity} becomes noisier by a factor $\sqrt{3}$, and the cell deficit
-$\Delta_c$ of \eqnref{eq:deficit} is estimated with a standard error that grows the
-same way. For the median deficit cell, whose $\Delta_c$ is 18.97 bicycles, that is
-about 4.4 bicycles from the full sample and 7.5 from a third of it. More decisively,
-\emph{no platform can compute the plans of Q2 and Q4 at all}, because both are defined
-on a system that no single firm can see.
+of the market observes a third of the rows, so the attraction $A_j$ of
+\eqnref{eq:gravity} and the cell deficit $\Delta_c$ used in \eqnref{eq:q3lp} are estimated
+with a standard error that grows as $\sqrt{3}$. More decisively, \emph{no platform can
+compute the plans of Q2 and Q4 at all}, because the Q2 truck plan is defined on a
+city-wide zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on
+a city-wide deficit list. Each is a public-good computation that only the city can run.
 
 \subsection{Multi-homing, and why it does not rescue the situation}\label{sec:multihome}
 
@@ -88,10 +171,11 @@ The analysis suggests four measures, in descending order of value.
   the city already does for taxi and bus data --- costs the firms nothing competitively
   and makes every result in this paper computable. This is the single highest-value
   intervention.
-\item \textbf{Share the fences.} Electronic fencing is public infrastructure. If the
-  city builds and allocates fence capacity neutrally, the duplication described above
-  is avoided and the capped layout of \S\ref{sec:q4} becomes enforceable. Fences owned
-  by platforms recreate the fragmentation at the level of concrete.
+\item \textbf{Share the fences, and pool more than concrete.} Electronic fencing is
+  public infrastructure, and the shared regime saves 7.6\%--11.7\% of the slot
+  requirement relative to independent fences. But sharing fences alone does not reduce
+  lost orders (\S\ref{sec:q5}), because the fleets remain separate; shared fences must be
+  paired with shared data and a neutral rebalancing operator to matter for service.
 \item \textbf{Coordinate rebalancing.} A neutral rebalancing operator, or a
   requirement that platforms' trucks serve shared depots, recovers the fixed cost that
   is currently paid three times.

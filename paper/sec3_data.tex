@@ -92,15 +92,25 @@ second window, and $m=309{,}961$ in both. The Chapman estimator is
 \label{eq:fleet}
 \end{equation}
 with a sampling standard error of 131 bicycles (95\% interval 495,283--495,797).
-The estimator assumes the two windows sample the same closed population; a bicycle
-retired between them biases the estimate down, and heterogeneity biases it up. As a
-model interval we report the observed 14-day union as a hard lower bound,
-484,754, and the normalised nine-day unseen-share method as an upper reference,
-506,635. The 5/16 00:00 drop-off snapshot gives 343,638 bicycles, which is not a
-fleet estimate; it is used only as the measured initial inventory in Q2, Q4 and Q5.
+The estimator assumes the two windows sample the same closed population, and the
+closure failures are larger than the sampling error and point in a particular
+direction. Heterogeneity in use biases the pooled estimate \emph{down}: the recapture
+rate rises monotonically from 0.4945 for one-trip bicycles to 0.8039 for 11-or-more-trip
+bicycles, so heavy users are over-represented in the overlap. Retirement of a
+recapturable bicycle biases it \emph{up} by 0.10533 per bicycle; new deployment between
+the windows biases it \emph{up} by 1.49339 per bicycle; retirement of a never-used
+bicycle has no effect. A stratified Chapman estimator returns the observed 14-day union
+exactly, so only $N\ge484{,}754$ is design-independent. As a model interval we therefore
+report that union as the lower end, 484,754, and the normalised nine-day unseen-share
+method as an upper reference, 506,635. The 5/16 00:00 drop-off snapshot gives 343,638
+bicycles. We call this the \emph{initial-inventory proxy}: the stock implied by each
+bicycle's last observed return position, not a fleet count; it is used only as $I_0$ in
+Q2, Q4 and Q5.
 
 At 495,540 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
-\textbf{4.33 times per day}. Individual bicycles sit idle even when the fleet is
+\textbf{4.33 times per day}; because the fleet estimate is biased low, 4.33 is an upper
+estimate, 4.42 is the design-independent ceiling at $N\ge484{,}754$, and 4.01 holds only
+in the 534,039 scenario. Individual bicycles sit idle even when the fleet is
 abundant in the aggregate; that is the tension the rest of the paper quantifies.
 
 \subsection{Spatial units}
@@ -125,7 +135,7 @@ truck moves bicycles. They are used for rebalancing (Q2).
 \footnotesize
 \caption[Data summary after cleaning]{Data summary after cleaning. Distances are straight-line between decoded
 endpoints. The fleet is the closed-population capture--recapture estimate; the
-initial inventory is a different quantity.}
+initial-inventory proxy is a different quantity.}
 \label{tab:data}
 \small
 \begin{tabular}{@{}lrl@{}}
@@ -144,8 +154,8 @@ Median trip distance & 0.70 km & lognormal $\sigma=0.65$ \\
 Study cells & 5,263 & $\geq50$ trips, $0.005^\circ$ grid \\
 Traffic zones & 50 & weighted $k$-means \\
 Closed fleet & 495,540 & Eq.~\eqref{eq:fleet}, interval [484,754, 506,635] \\
-Rides per bicycle per day & 4.33 & scaled trips / fleet \\
-Measured initial inventory & 343,638 & 5/16 00:00 snapshot, used as $I_0$ \\
+Rides per bicycle per day & 4.33 & upper estimate; 4.42 at $N\ge484{,}754$ \\
+Initial-inventory proxy & 343,638 & last observed return positions, used as $I_0$ \\
 \bottomrule
 \end{tabular}
 \end{table}

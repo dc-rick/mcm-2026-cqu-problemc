@@ -1,115 +1,194 @@
 % =========================== 9. SENSITIVITY ===========================
 \section{Sensitivity and the Boundaries of Validity}\label{sec:sens}
 
-Four quantities are not identified by the data --- the sampling rate, the initial
-inventory, the incentive parameters and the cost parameters --- and one is estimated
-with sampling error, the fleet size. We perturb each and report how far the
-conclusions move. This is a one-at-a-time account, not a variance decomposition: the
-contributions of the sources are not separated here, and the intervals below must not
-be read as a global uncertainty budget.
+\subsection{How the uncertainty is designed}
 
-\subsection{The fleet estimate}
+The models have three kinds of input, and they are not uncertain in the same way. Group
+\textbf{A} is \emph{data-identified}: the arrival and OD surfaces, resampled by a
+day-block bootstrap. Group \textbf{B} is \emph{load and inventory}: the sampling rate
+$p$, the initial-inventory proxy $I_0$, and which day is treated as typical, enumerated
+exactly over 54 combinations. Group \textbf{C} is \emph{assumed}: the cost coefficients,
+the tricycle parameters, and the behavioural constants $\kappa,\rho,c_0$, which were not
+identified from any data. The joint sample \textbf{F} draws all three groups together
+from their design distributions ($n=128$ draws, eight pick-freeze passes each; group A
+and C marginals have $n=128$, group B has the exact 54).
 
-The closed fleet is a capture--recapture estimate between the nine complete days and
-the truncated second window (\eqnref{eq:fleet}): 462,893 bicycles seen in the first
-window, 331,822 in the second, 309,961 in both, giving \textbf{495,540} with a sampling
-standard error of 131 (95\% interval 495,283--495,797). Two assumptions dominate the
-uncertainty, and neither is sampling error. A bicycle retired between the windows
-biases the estimate down; heterogeneity in use biases it up. We therefore report a
-model interval \textbf{[484,754, 506,635]}, whose lower end is the observed 14-day
-union and whose upper end is the normalised nine-day unseen-share reference. The
-interval is more than forty times wider than the sampling interval, which is the
-honest statement: the statistical error is negligible and the closure assumptions are
-not.
+Two cautions govern the reading. First, the reference column is the \emph{planning
+midpoint}, not an expectation and not a median: the cost parameters enter
+multiplicatively, so the midpoint of the parameter box is not the centre of the cost
+distribution, and the Q2 midpoint of 617,056 sits well above the joint median of
+484,372. Second, every Q2 and Q3 interval is an \emph{LP-proxy} interval. At 11
+representative parameter points the integer chain deviates from the proxy by at most
+38,986.30 CNY/day, about 0.2 standard deviations of the Q2 total; the intervals
+therefore describe the shape of the parameter response, not a calibrated confidence
+interval for the integer plan.
 
-The structural sensitivity is handled in the models rather than in a table. Q2 and Q4
-are solved at the measured 5/16 inventory 343,638 and at the closed fleet 495,540, and
-the difference is reported in both (\S\ref{sec:q2}, \S\ref{sec:q4}). We do not
-resample the orders to test the fleet estimator: at a 5\% rate, 64.5\% of 200 draws
-deviate by more than 4\% from the full-sample value and the maximum deviation is
-17.9\%; only at the 50\% rate does the maximum fall below 4\% (3.67\%).
-
-\subsection{The incentive parameters}
-
-The three logit parameters of \eqnref{eq:logit} are not identified --- no reward was
-offered in May 2017 --- so we re-solve \eqnref{eq:mix} for seven parameter sets, each
-under the main and the lower truck unit, on a coarser 0.05-CNY reward grid. The
-baseline row of that sweep is the same optimum reported in \S\ref{sec:q3} to the
-precision of the grid; the table below shows the six perturbations.
+\subsection{Grouped intervals}
 
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption[Sensitivity of the incentive design]{Sensitivity of the incentive design. Each parameter set is solved under the
-main truck unit 3.3305 (columns 2--4) and the lower unit 1.8718 (columns 5--7); the
-reward grid is 0.05 CNY. ``Saving'' is against the corresponding all-truck benchmark
-(720,537 at the main unit, 404,953 at the lower unit).}
-\label{tab:q3sens}
-\small
-\begin{tabular}{@{}lrrrrrr@{}}
+\caption[Grouped uncertainty intervals]{P5--P95 intervals by source group. ``Reference''
+is the planning-midpoint value used in the text; ``joint'' is the P5/P50/P95 over the
+128 joint draws; A, B and C hold the other two groups at their reference values and
+vary only the named group (A and C marginal, $n=128$; B exact, $n=54$). Q2 and Q3
+intervals are LP-proxy intervals (see text).}
+\label{tab:q9intervals}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-\textbf{Variant} & \textbf{$r^*$} & \textbf{$q^*$} & \textbf{Saving} &
-\textbf{$r^*$} & \textbf{$q^*$} & \textbf{Saving} \\
- & \multicolumn{3}{c}{\textbf{main unit 3.3305}} &
-   \multicolumn{3}{c}{\textbf{lower unit 1.8718}} \\
+\textbf{Output (unit)} & \textbf{Reference} & \textbf{Joint P5/P50/P95} &
+\textbf{A} & \textbf{B} & \textbf{C} \\
 \midrule
-$\kappa=1.0$ & 2.10 & 44,681 & 7.63\% & 1.15 & 16,648 & 2.97\% \\
-$\kappa=3.0$ & 1.40 & 112,778 & 30.22\% & 1.05 & 83,346 & 16.91\% \\
-$\rho=0.20$ & 1.40 & 102,110 & 27.36\% & 0.95 & 71,767 & 16.34\% \\
-$\rho=0.50$ & 2.15 & 84,996 & 13.93\% & 1.30 & 28,528 & 4.03\% \\
-$c_0=0.4$ & 1.65 & 99,332 & 23.17\% & 1.10 & 60,595 & 11.55\% \\
-$c_0=1.2$ & 1.90 & 92,948 & 18.45\% & 1.20 & 43,319 & 7.19\% \\
+Q2 total (CNY/day) & 617,056 & 271,732 / 484,372 / 882,188 &
+536,867--630,491 & 387,906--608,445 & 407,117--1,376,489 \\
+Q2 unmet (bikes/day) & 39,984 & 2,789 / 11,392 / 73,744 &
+27,226--42,354 & 5,534--38,642 & 22,166--142,932 \\
+Q2 saving share & 0.594 & $-0.461$ / 0.260 / 0.692 &
+0.586--0.613 & $-0.071$--0.586 & 0.184--0.697 \\
+Q2 truck $K^*$ (trucks) & 60 & 0 / 40 / 60 &
+40--60 & 20--60 & 7--80 \\
+Q3 pure objective (CNY/day) & 138,317 & 47,905 / 89,689 / 162,867 &
+125,302--137,573 & 71,031--154,475 & 74,364--197,192 \\
+Q3 payment ceiling (CNY/day) & $-1{,}591$ & $-1{,}149$ / $-218$ / $+540$ &
+$-1{,}436$--$-612$ & $-1{,}606$--$-245$ & $-1{,}793$--$+526$ \\
+Q4 occupancy coverage & 0.5953 & 0.3866 / 0.6250 / 0.8236 &
+0.5838--0.5946 & 0.5267--0.8447 & 0.3262--0.7443 \\
+Q4 unassigned (bike-slots) & 394,553 & 121,720 / 285,182 / 614,403 &
+396,175--420,335 & 85,304--526,191 & 249,274--656,872 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
-The qualitative conclusion is robust: in all fourteen runs incentives are worth using,
-the optimal reward lies between 0.95 and 2.15 CNY, and the saving spans
-\textbf{2.97\%--30.22\%}. The level of the reward and the size of the
-programme are not robust in the same way: placements move from 16,648 to 112,778, a
-factor of 6.8, which is why the design is presented as a function of parameters that a
-pilot should estimate before scaling. The direction is consistent throughout ---
-targeted incentives beat trucks --- but the magnitude is a scenario, not a fact.
+Three readings follow from \tabref{tab:q9intervals}. The Q2 total is dominated by the
+assumed group: the C interval alone spans 407,117--1,376,489, wider than the joint
+interval's lower half. The Q2 saving share is the only Q2 output whose joint P5 is
+negative ($-0.461$): the two-tier plan is worse than the no-tricycle baseline in about
+a quarter of the joint draws, because the parameters that make tricycles cheap also make
+the truck layer expensive. And the Q3 payment ceiling changes sign in the joint sample
+(+540 at P95), so ``incentives are not worthwhile at $K=2$'' must carry the qualifier
+that it flips in roughly 14\%--16\% of the parameter draws (C: 20 of 128, joint: 18 of
+128; A and B: 0 and 1). This qualifier belongs to the T025 truck caliber only; the
+T026 tricycle-caliber result is assessed by the two source caps and the $c_0$ table of
+\S\ref{sec:q3}, not by these intervals.
 
-\subsection{The truck-kilometre price}
+Q4 is the most stable output. Its occupancy coverage has a joint interval of
+0.3866--0.8236, and even the 95th percentile is below 1 in every draw: the statement
+that the 150-slot cap binds is never reversed. The Q3 unmet at $K=2$ is a degenerate
+output (reference 33.19, joint P5 and P50 identical at 33.19, P95 35.96) and is used
+only qualitatively.
 
-The Q2 program is solved with $c_{\text{km}}=6$ CNY per truck-kilometre. A re-solve
-at $c_{\text{km}}\in\{3,6,12\}$ was not carried out on the final OD surface, so no
-price-sensitivity numbers are quoted here. What can be said without a re-run is
-structural: the program's binding constraint is
-the balance requirement, not the budget, because the service penalty $w=6$ CNY per
-unmet departure is comparable to the cost of moving a bicycle. A cheaper truck changes
-how far bicycles travel; it does not remove the need to move them.
+\subsection{Where the variance comes from}
 
-\subsection{The initial inventory}
+\begin{center}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Output} & \textbf{A} & \textbf{B} & \textbf{C} &
+\textbf{Sum $\pm$ SE} \\
+\midrule
+Q2 total & 0.047$\pm$0.119 & 0.248$\pm$0.129 & 0.778$\pm$0.089 & 1.072$\pm$0.242 \\
+Q2 unmet & 0.145$\pm$0.158 & 0.387$\pm$0.156 & 0.849$\pm$0.091 & 1.381$\pm$0.310 \\
+Q2 saving share & 0.017$\pm$0.111 & 0.501$\pm$0.095 & 0.497$\pm$0.083 & 1.014$\pm$0.229 \\
+Q3 pure objective & 0.150$\pm$0.078 & 0.541$\pm$0.067 & 0.610$\pm$0.078 & 1.300$\pm$0.154 \\
+Q3 payment ceiling & 0.158$\pm$0.096 & 0.084$\pm$0.083 & 0.508$\pm$0.102 & 0.750$\pm$0.184 \\
+Q4 occupancy coverage & 0.159$\pm$0.098 & 0.370$\pm$0.097 & 0.757$\pm$0.068 & 1.287$\pm$0.198 \\
+Q4 arrival coverage & 0.159$\pm$0.097 & 0.399$\pm$0.089 & 0.765$\pm$0.063 & 1.323$\pm$0.194 \\
+Q4 unassigned & 0.136$\pm$0.112 & 0.738$\pm$0.081 & 0.382$\pm$0.108 & 1.256$\pm$0.222 \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-This is the largest single uncertainty, and it is structural rather than parametric.
-The data record where each bicycle ended its last observed trip, not where it stood at
-midnight. The 5/16 00:00 snapshot gives 343,638 bicycles at cell resolution; the closed
-fleet implies 495,540. At a 450 m walking radius the simulated unserved share is
-\textbf{5.84\%} at 343,638 and \textbf{3.51\%} at 495,540. Widening the radius to 600 m
-lowers these to 2.35\% and 1.28\%, and a finer grid gives 2.07\% and 2.39\%. The
-13.4\% of the narrower R=300 m, no-neighbour-cell convention is a different object
-and should not be compared with the 5.84\%/3.51\% pair.
+The shares are first-order indices from the pick-freeze covariance identity, with
+bootstrap standard errors from 400 replicates (256 draws). They describe where the
+spread comes from, and the answer differs by question. Q2 total and Q4 coverage are
+dominated by the assumed group C; Q2 unmet and Q4 unassigned are dominated by the load
+and inventory group B; the Q2 saving share splits almost evenly between B and C and is
+nearly free of the data group A. That split is the quantitative version of a point the
+text has made throughout: the expensive uncertainties are assumptions and scenarios,
+not sampling error.
 
-The spread across radius and inventory level is the uncertainty. At the measured
-inventory the cell-level model leaves more riders unserved than the zone-level LP,
-which reports zero because aggregation hides the cell-level shortages; at the closed
-fleet the two converge. We use the cell-level pair as the service statement and the LP
-as the planning model, and no conclusion depends on the 13.4\% figure.
+The three shares sum to more than one for most outputs --- 1.072 for Q2 total, 1.381
+for Q2 unmet, 0.750 for the Q3 ceiling. The residual $1-\sum_g S_g$ is within two
+bootstrap standard errors of zero for every output (Q2 unmet is the largest, 1.23 SE),
+so we treat the excess as a residual of the first-order decomposition, not as evidence
+of a second-order interaction. We do not report a second-order index.
+
+\subsection{The tornado}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.98\linewidth]{../figs/fig9_tornado.pdf}
+\caption[One-at-a-time tornado]{One-at-a-time range of each input over its assumed
+interval, for three outputs: (a) the Q2 total cost, (b) the Q3 payment ceiling at $K=2$,
+(c) the Q4 occupancy coverage. Bars are the range between the low and high value of the
+named input, with the other inputs at their reference values. Inputs that do not enter
+an output have zero bars by construction.}
+\label{fig:tornado}
+\end{figure}
+
+\figref{fig:tornado} ranks the inputs one at a time. For the Q2 total, the largest
+ranges are the tricycle shift length (629,963.87 CNY/day), the day-to-day demand swing
+(317,739.26), the tricycle fixed cost (292,500.00), the unserved penalty (231,947.90)
+and the tricycle handling time (197,498.59). The queue is a warning about what the model
+is sensitive to: four of the top five are tricycle assumptions, not truck assumptions.
+For the Q3 payment ceiling the ranking is completely different --- the truck deviation
+cost (1,782.03), the acceptance constant $c_0$ (1,632.62), the day (1,436.12) and the
+detour weight $\rho$ (562.07) --- which is why the Q3 conclusion is qualified by the $c_0$
+table of \S\ref{sec:q3} rather than by the Q2 tornado. For Q4 coverage the cap dominates
+everything: changing the 150-slot cap moves coverage by 46.77 percentage points, the day
+by 17.11 and the walking radius by 7.11, while every cost coefficient has a zero bar
+because cost does not enter the coverage objective.
+
+The zero bars are informative, not missing. They show that an input which matters in one
+question may be irrelevant in another, and that a single global sensitivity ranking would
+be misleading. Each question is therefore given its own panel and its own qualifier.
+
+\subsection{The fleet estimate}
+
+The closed fleet is a capture--recapture estimate between the nine complete days and
+the truncated second window: 462,893 bicycles seen in the first window, 331,822 in the
+second, 309,961 in both, giving \textbf{495,540} with a sampling standard error of 131
+(95\% interval 495,283--495,797). The closure failures dominate, and the signs are the
+opposite of what a first guess suggests. Heterogeneity in use is the largest: the
+recapture rate rises monotonically from 0.4945 for one-trip bicycles to 0.8039 for
+11-or-more-trip bicycles ($\chi^2=15{,}063.61$ on 4 df; Cochran--Armitage $z=121.57$;
+rate ratio 1.6257), so heavy users are over-represented in the overlap and the pooled
+estimate is biased \emph{down}. Retirement of a recapturable bicycle biases the estimate
+\emph{up} by 0.10533 per bicycle; new deployment between the windows biases it \emph{up}
+by 1.49339 per bicycle; retirement of a never-used bicycle has no effect (0). A
+stratified Chapman estimator, which allows each use stratum its own recapture rate,
+returns the observed 14-day union \textbf{484,754} exactly --- by construction, not by
+fit --- so only $N\ge484{,}754$ is design-independent. The earlier Chao1 value 534,039 is
+withdrawn as a lower bound: the homogeneous model reproduces all three statistics and
+the Chao1 value to within 0.05 bicycles, so the excess is an unequal-effort artefact, not
+heterogeneity, and the value survives only as a scenario.
+
+We therefore report the model interval \textbf{[484,754, 506,635]}, whose lower end is
+the observed union and whose upper end is the normalised nine-day unseen-share
+reference. It is more than forty times wider than the sampling interval, which is the
+honest statement: the statistical error is negligible and the closure assumptions are
+not. The rides-per-bicycle-per-day figure follows the same ordering: 4.33 at the
+495,540 point estimate (an upper estimate, because that fleet is biased low), 4.42 at the
+design-independent ceiling $N\ge484{,}754$, and 4.01 only in the 534,039 scenario. We
+quote 4.33 and state the ceiling alongside it.
 
 \subsection{Range of validity}
 
 The conclusions hold for a dense, flat, monocentric city on a weekday in May 2017,
-with 495,540 bicycles and 4.33 rides per bicycle per day. They should not be
-extrapolated to:
+with at least 484,754 bicycles and 4.33--4.42 rides per bicycle per day. They should not
+be extrapolated to:
 
 \begin{itemize}[leftmargin=1.4em]
 \item \emph{systems with stations}, where the docking constraint changes the inventory
   process and the rebalancing problem becomes a routing problem with hard capacity;
 \item \emph{low-density cities}, where the walking radius of Q4 covers a much smaller
   share of arrivals and the incentive pool of Q3 vanishes;
-\item \emph{extreme weather or holidays}, not represented in the nine recorded days;
+\item \emph{other layouts}, where the 4,000-site, 150-slot result is specific to this
+  0.005$^\circ$ grid, this walking radius and this demand surface;
+\item \emph{extreme weather or holidays}, not represented in the fourteen recorded dates
+  (of which five training and two held-out days drive the models; 17 May has no records);
 \item \emph{the long run}, where the attraction $A_j$ itself changes with land use. The
   model is a description of an equilibrium, not a forecast of one.
 \end{itemize}

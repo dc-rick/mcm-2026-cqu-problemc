@@ -104,11 +104,11 @@ The contributions are four.
   answers are internally consistent.
 \item \textbf{An incentive supply curve.} Rather than assert an acceptance rate, we
   derive the cost of voluntary relocation as a function of the reward, solve an hourly
-  assignment program with one reroute per trip, and solve for the cost-minimising
-  reward and the resulting split between incentives and trucks.
+  assignment program with one reroute per trip, and price the instrument against both
+  layers: it cannot replace the trucks, and it can replace part of the tricycle layer.
 \item \textbf{Explicit uncertainty.} The unidentified quantities are bounded, not
   assumed: the sampling rate is estimated and its role as an upper-bound scale factor
-  is stated, the initial inventory is carried as two scenarios, and every behavioural
+  is stated, the initial-inventory proxy is carried as two scenarios, and every behavioural
   parameter is swept in Section~\ref{sec:sens}.
 \end{enumerate}
 
@@ -125,11 +125,11 @@ Section~\ref{sec:data}; costs are in 2017 CNY.}
 \toprule
  & \textbf{Question} & \textbf{Model} & \textbf{Answer} \\
 \midrule
-Q1 & Behaviour & NHPP arrivals + singly-constrained gravity + speed-based duration & $\beta$ falls from 2.52 (midday) to 2.01 (morning); top-5 hit rate 0.40--0.48 \\
-Q2 & Rebalancing & Time-space network LP with truck flow conservation & 24{,}679 bikes/day, 5{,}530 truck-km, 3.33 CNY/bike; $K=60$ dominates $K=40$ \\
-Q3 & Incentives & Logit acceptance + hourly assignment program & 1.76 CNY: 95{,}566 placements, 20.83\% cell-level saving; 1.83 CNY: 32{,}777, 6.83\% \\
-Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 705 fences at 450 m cover 76.86\%; 491{,}692 slots at 343{,}638, 621{,}004 at 495{,}540 \\
-Q5 & Competition & Split-fleet simulation + externality accounting & Zero unmet in the one proportional scenario; capital and data are duplicated \\
+Q1 & Behaviour & NHPP arrivals + singly-constrained gravity + speed-based duration & Median trip 0.70 km; distance dominates (log-loss 3.24--3.52 against 8.57 uniform); one shared $\beta$ is an acceptable simplification \\
+Q2 & Rebalancing & Integer time-space network MILP (trucks) + same-zone tricycle routing & Two-tier: 60 trucks + 975 tricycles, 617{,}055.7515 CNY/day, saving 902{,}223.20 (59.385\%), unmet 39{,}984.2332 \\
+Q3 & Incentives & Logit acceptance + hourly assignment program & Cannot replace trucks (at least 1{,}532 CNY/day worse at zero payment); can replace tricycles: $r^*=0.60$, saving 18{,}011.46 (2.92\%) \\
+Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 4{,}000 sites $\times$ 150 slots: 59.53\% occupancy / 55.80\% arrival coverage at 343{,}638; 394{,}553.13 unassigned \\
+Q5 & Competition & Two-platform cell-resolution simulation & Unmet 12.10\% against 11.66\% single; capacity 1.08--1.13$\times$; sharing does not reduce lost orders \\
 \bottomrule
 \end{tabular}
 \end{table}
