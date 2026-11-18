@@ -28,9 +28,10 @@ os.makedirs(RUN, exist_ok=True)
 
 K_SCAN = [0, 2, 5, 10, 20]
 K_REG = [20, 40, 60]
-# R1: the pure-truck unmet at K=10/20 (64.4 / 95.0) sat inside the 1% MIP gap,
-# so K=5/10/20 are re-solved at 0.1% for both the pure and the hybrid models.
-K_TIGHT = [5, 10, 20]
+# R2: K=2 joins the tight-gap set after the review showed that its 0.84%
+# pure-truck gap (1,171 CNY) exceeds the 809 CNY value of all 134.8 unmet
+# trips, so "unmet = 0 is cheaper" cannot be excluded at 1%.
+K_TIGHT = [2, 5, 10, 20]
 SOURCES = ["surplus", "arrivals"]
 BUDGETS = [30000.0, 60000.0, 100000.0, None]
 TIME_LIMIT = 300
@@ -145,7 +146,7 @@ def run_fleet(force=False):
             note=("K in K_TIGHT re-solved at the tight gap; coarse is the 1% "
                   "gap row in rows. unmet_upper_bound_1pct is what the 1% "
                   "solve returned; unmet_tight is the 0.1% value. K=0 is an "
-                  "LP (gap 0) and K=2 stays at 1%.")),
+                  "LP (gap 0); K=2/5/10/20 use the tight gap.")),
         note=("T018 integer MILP, K in {0,2,5,10,20}; K=40/60 re-run only for "
               "the regression check against data/runs/T018. Same demand, I0, "
               "event order, bike_integer loads and costs as T018."),
@@ -323,24 +324,44 @@ def run_hybrid(force=False):
 # --------------------------------------------------------------------------
 def run_plans(force=False):
     """Re-solve the pure-truck scan and keep the plan arrays in this run dir."""
+    fleet = load_json("fleet_scan.json")
+    tight_ks = [K for K in K_TIGHT
+                if fleet["gap_tight"]["K"].get(str(K), {}).get("tight")]
     tag_ok = all(os.path.exists(os.path.join(RUN, f"plan_int_K{K}.npz"))
                  for K in K_SCAN)
+    tag_ok = tag_ok and all(
+        os.path.exists(os.path.join(RUN, f"plan_int_K{K}_tight.npz"))
+        for K in tight_ks)
     if tag_ok and not force:
         print("reuse plan_int_K*.npz")
         return
     t18.setup_design()
     DEP, PZ, NET, I0 = t18.DEP, t18.PZ, t18.NET, t18.I0
-    fleet = {r["K"]: r for r in load_json("fleet_scan.json")["rows"]}
+    frow = {r["K"]: r for r in fleet["rows"]}
     for K in K_SCAN:
         res = t18.solve(DEP, t18.ARR, PZ, NET, I0, K=K, integer=True,
                         time_limit=TIME_LIMIT, mip_gap=MIP_GAP,
                         event_order=True, bike_integer=True)
         if res is None:
             raise RuntimeError(f"K={K} failed")
-        assert abs(res["obj"] - fleet[K]["obj"]) < 1e-6, (K, res["obj"])
+        assert abs(res["obj"] - frow[K]["obj"]) < 1e-6, (K, res["obj"])
         arrays = {k: res[k] for k in ("XM", "MK", "NN", "I", "U")}
         np.savez(os.path.join(RUN, f"plan_int_K{K}.npz"), **arrays)
         print("saved", os.path.join(RUN, f"plan_int_K{K}.npz"))
+    # R2: the tight-gap plan at the first scarce K is the mechanism baseline.
+    for K in tight_ks:
+        t = fleet["gap_tight"]["K"][str(K)]["tight"]
+        res = t18.solve(DEP, t18.ARR, PZ, NET, I0, K=K, integer=True,
+                        time_limit=TIME_LIMIT, mip_gap=MIP_GAP_TIGHT,
+                        event_order=True, bike_integer=True)
+        if res is None:
+            raise RuntimeError(f"K={K} tight failed")
+        assert abs(res["obj"] - t["obj"]) < 1e-6, (K, res["obj"], t["obj"])
+        arrays = {k: res[k] for k in ("XM", "MK", "NN", "I", "U")}
+        arrays["obj"] = np.array(res["obj"])
+        arrays["gap"] = np.array(res["gap"])
+        np.savez(os.path.join(RUN, f"plan_int_K{K}_tight.npz"), **arrays)
+        print("saved", os.path.join(RUN, f"plan_int_K{K}_tight.npz"))
 
 
 def _model_arrivals(PZ, DEP, U):
@@ -384,6 +405,35 @@ def run_alignment(force=False):
         out["per_K"].append(dict(K=K, imbalance_abs_sum=base, policies=rows))
         best = max(rows, key=lambda r: r["aligned_share"])
         print(f"K={K}: best aligned_share={best['aligned_share']:+.3f} "
+              f"({best['source_cap']} B={best['budget']}), "
+              f"imbalance {base:.1f} -> {best['imbalance_after']:.1f}")
+    # R2: the same diagnostic on the tight-gap plan (the K=2 baseline the
+    # retracted 1% figures were built on).
+    out["tight"] = {}
+    for K in K_TIGHT:
+        p = os.path.join(RUN, f"plan_int_K{K}_tight.npz")
+        if not os.path.exists(p):
+            continue
+        z = np.load(p)
+        arr = _model_arrivals(PZ, DEP, z["U"])
+        net = arr - DEP.T
+        base = float(np.abs(net).sum())
+        rows = []
+        for f in frames:
+            dA = f["dA"]
+            pos = float(np.maximum(dA, 0.0).sum())
+            after = float(np.abs(net + dA).sum())
+            rows.append(dict(
+                source_cap=f["source_cap"], budget=f["budget"],
+                q=float(f["q"]), cross_zone_bikes=pos,
+                imbalance_before=base, imbalance_after=after,
+                imbalance_change=after - base,
+                aligned_share=float((base - after) / max(2 * pos, 1e-12))))
+        out["tight"][str(K)] = dict(
+            K=K, gap=MIP_GAP_TIGHT, plan_obj=float(z["obj"]),
+            plan_gap=float(z["gap"]), imbalance_abs_sum=base, policies=rows)
+        best = max(rows, key=lambda r: r["aligned_share"])
+        print(f"tight K={K}: best aligned_share={best['aligned_share']:+.3f} "
               f"({best['source_cap']} B={best['budget']}), "
               f"imbalance {base:.1f} -> {best['imbalance_after']:.1f}")
     dump(out, "mechanism.json")
@@ -453,10 +503,15 @@ def run_breakeven(force=False):
         with open(mpath, encoding="utf-8") as fh:
             mech = json.load(fh)
         for p in per_k:
-            m = next(x for x in mech["per_K"] if x["K"] == p["K"])
             if p["best_policy"] is None:
                 continue
-            a = next(r for r in m["policies"]
+            if (p["gap_mode"] == "tight"
+                    and mech.get("tight", {}).get(str(p["K"])) is not None):
+                pols = mech["tight"][str(p["K"])]["policies"]
+            else:
+                m = next(x for x in mech["per_K"] if x["K"] == p["K"])
+                pols = m["policies"]
+            a = next(r for r in pols
                      if r["source_cap"] == p["best_policy"]["source_cap"]
                      and r["budget"] == p["best_policy"]["budget"])
             p["alignment_of_best"] = dict(
@@ -483,28 +538,49 @@ def run_breakeven(force=False):
         max_payment_ceiling=best_ceiling,
         ceiling_formula=("payment < pure_obj(K) - truck_obj_hybrid(K); "
                          "payment_ceiling in hybrid_by_K.json is the "
-                         "right-hand side. A negative ceiling means no "
+                         "right-hand side, with both sides re-solved at the "
+                         "same gap. A negative ceiling means no "
                          "non-negative payment can break even at that K. "
-                         "K=5/10/20 use the 0.1% re-solve on both sides; "
-                         "K=0/2 stay at 1%."),
+                         "K in K_TIGHT (2/5/10/20) use the 0.1% re-solve on "
+                         "both sides; K=0 stays LP."),
         mechanism=None)
-    # mechanism numbers at the first scarce K
-    k0 = hyb["k_first_positive_unmet"]
-    rows0 = [r for r in hyb["rows"] if r["K"] == k0]
-    if rows0:
+    # R2: mechanism numbers at the first K > 0 that still has positive unmet
+    # at the gap actually used for that K (K = 0 is the no-truck LP and is not
+    # a substitution point).  Both sides of every figure are same-caliber.
+    by_k = {p["K"]: p for p in per_k}
+    cand = [K for K in sorted(by_k) if K > 0 and by_k[K]["pure_unmet"] > 1e-9]
+    k0 = cand[0] if cand else None
+    if k0 is not None:
+        mode0 = by_k[k0]["gap_mode"]
+        rows0 = [r for r in hyb["rows"]
+                 if r["K"] == k0 and r.get("gap_mode") == mode0
+                 and r.get("status") != "solve_failed"]
         best0 = max(rows0, key=lambda r: r["diff"])
+        zero0 = min(rows0, key=lambda r: (r["truck_unmet"], r["total"]))
         out["mechanism"] = dict(
-            K=k0, pure_unmet=float(best0["pure_unmet"]),
+            K=k0, gap_mode=mode0, pure_obj=float(best0["pure_obj"]),
+            pure_unmet=float(best0["pure_unmet"]),
             hybrid_unmet=float(best0["truck_unmet"]),
             unmet_removed=float(best0["unmet_removed"]),
             incentive_q=float(best0["q"]),
             q_over_unmet=float(best0["q"] / max(best0["pure_unmet"], 1e-9)),
-            payment_per_unmet_removed=best0["payment_per_unmet_removed"],
+            payment=float(best0["payment"]),
+            payment_per_unmet_removed=(
+                float(best0["payment"] / best0["unmet_removed"])
+                if best0["unmet_removed"] > 1e-9 else None),
             penalty_per_unmet=t18.PENALTY,
+            zero_unmet_policy=dict(
+                source_cap=zero0["source_cap"], budget=zero0["budget"],
+                truck_unmet=float(zero0["truck_unmet"]),
+                payment=float(zero0["payment"]), total=float(zero0["total"]),
+                diff=float(zero0["diff"]),
+                pure_obj=float(zero0["pure_obj"])),
             note=("the incentive moves q cell-level reroutes; only the part "
                   "that changes a zone-hour arrival total can remove a "
                   "zone-level unmet trip, and zone-level unmet is what the "
-                  "truck objective prices at 6 CNY."))
+                  "truck objective prices at 6 CNY.  The best-total policy is "
+                  "chosen by diff; the zero-unmet policy is the least-unmet "
+                  "row at the same K and shows what full coverage would cost."))
     dump(out, "breakeven.json")
     return out
 
@@ -547,6 +623,21 @@ def run_check(force=False):
         for K in K_TIGHT)
     ceiling_ok = all(p["ceiling_zero_within_tolerance"]
                      for p in be["per_K"])
+    # R2: the mechanism baseline must be the tight K=2 plan, and its plan
+    # arrays must reproduce the fleet_scan tight objective.
+    mk = be.get("mechanism") or {}
+    mech_ok = bool(mk.get("K") == 2 and mk.get("gap_mode") == "tight")
+    tight_plan_path = os.path.join(RUN, "plan_int_K2_tight.npz")
+    if os.path.exists(tight_plan_path):
+        zp = np.load(tight_plan_path)
+        tight_plan_obj = float(zp["obj"])
+        t2 = tight_pure.get("2", {}).get("tight")
+        tight_plan_ok = bool(t2 is not None
+                             and abs(tight_plan_obj - t2["obj"]) < 1e-6)
+    else:
+        tight_plan_obj = None
+        tight_plan_ok = False
+    mech_ok = bool(mech_ok and tight_plan_ok)
     out = dict(regression_t018_ok=bool(reg_ok),
                regression_max_abs_diff=float(max(
                    v["abs_diff"] for K in reg for v in reg[K].values())),
@@ -558,10 +649,14 @@ def run_check(force=False):
                gap_tight_hybrid_ok=bool(tight_hyb_ok),
                gap_tight_hybrid_rows=int(len(tight_hyb)),
                tight_unmet_by_K=tight_unmet,
+               mechanism_K=mk.get("K"), mechanism_gap_mode=mk.get("gap_mode"),
+               mechanism_K2_tight_ok=mech_ok,
+               tight_plan_obj=tight_plan_obj,
                ceiling_zero_within_tolerance=bool(ceiling_ok),
                ceiling_statement=be["ceiling_statement"],
                all_pass=bool(reg_ok and budgets_ok and totals_ok and diff_ok
-                             and tight_pure_ok and tight_hyb_ok and ceiling_ok))
+                             and tight_pure_ok and tight_hyb_ok and ceiling_ok
+                             and mech_ok))
     dump(out, "check.json")
     return out
 
