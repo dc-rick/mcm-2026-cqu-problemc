@@ -140,15 +140,16 @@ sharply: the plan is built for the typical day, not for the tail.
 \subsection{The tricycle layer: replacing within-zone walking with a fleet}
 
 The truck plan equalises zone totals. Inside a zone, riders can already borrow a
-bicycle up to 300 m away, but that walking option cannot move a bicycle across a cell
-boundary when the neighbouring cell is more than one cell-centre away; on this grid
-the 300 m radius reaches no neighbour centre. The tricycle layer is therefore a
-same-zone vehicle-routing problem: a tricycle carries $Q_{\text{tri}}=20$ bicycles,
-travels at 15 km/h, needs 0.5 minutes per bicycle handled, makes trips of at most 5 km,
-and operates from 07:00 to 20:00. Its cost is 300 CNY per tricycle-day, 0.2 CNY per
-vehicle-kilometre, and the same 6 CNY penalty on any cell-level departure left unserved.
-The layer is solved zone by zone as an integer routing program; the truck layer is held
-fixed at the $K=60$ plan.
+bicycle up to 300 m away, but the 300 m radius reaches no neighbour cell centre on this
+grid, so walking cannot move a bicycle across a cell boundary. The tricycle layer is
+therefore a within-zone transport problem: a transportation program per zone-hour moves
+bicycles from donors to sinks, its flow is cut into integer trips, and the trips go to
+tricycles by earliest finish. A tricycle carries $Q_{\text{tri}}=20$ bicycles, travels
+at 15 km/h, needs 0.5 minutes per bicycle handled, makes trips of at most 5 km, and
+operates from 07:00 to 20:00. Its cost is 300 CNY per tricycle-day, 0.2 CNY per
+vehicle-kilometre, and the same 6 CNY penalty on any cell-level departure left
+unserved. The layer is solved zone by zone; the truck layer is held fixed at the
+$K=60$ plan.
 
 Solved as an LP over tricycle counts, the layer buys 889 tricycles, costs 507,779.67
 and leaves 40,041.58 cell-level departures unserved, for a total of 591,587.42 and a

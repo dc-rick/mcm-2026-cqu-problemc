@@ -51,18 +51,18 @@ independently with probability $p$, then every count must be divided by $p$, and
 number of distinct bicycle identifiers understates the fleet. We estimate $p$ from
 the bicycles themselves.
 
-For a given bicycle, consider two consecutive orders that both appear in the file.
-They are adjacent in the bicycle's true history exactly when no order between them was
-dropped, which for independent retention happens with probability $p$. Adjacency is
-observable: if the two orders are adjacent, the bicycle was not moved in between, so
-the second order must start in the same 153 m geohash cell in which the first ended.
-Conversely, a mismatch proves that at least one order is missing. Across 2,003,318
-consecutive pairs, \textbf{12.83\% satisfy the exact end-equals-next-start test};
-17.72\% are within 160 m and 19.97\% within 250 m. Placebo pairs that skip one or two
-observed trips, and are therefore known to be separated by a missed ride, match at
-only 2.30\% and 1.30\% within 250 m. Correcting the exact-match rate for that false
-match gives $p\approx0.18$--$0.19$; we use the bracket $p\in[0.128,0.200]$ and the
-central value 0.185 in the discussion below.
+Consider two consecutive orders of a bicycle present in the file. They are adjacent
+exactly when no order between them was dropped, which for independent retention
+happens with probability $p$. A true adjacency is usually visible, but not always: the
+bicycle is not moved, yet coordinate jitter and the 153 m geohash grid put about a
+third of true returns in a neighbouring cell, so the exact test undercounts; a mismatch
+proves an order is missing. Across 2,003,318 consecutive pairs, \textbf{12.83\% satisfy
+the exact end-equals-next-start test}, a lower bound; 17.72\% are within 160 m and
+19.97\% within 250 m, wide enough to count essentially every true return. Placebo pairs
+that skip one or two observed trips, known to be separated by a missed ride, match at
+only 2.30\% and 1.30\% within 250 m. The wide rate, less that false-match share, scales
+to $p\approx0.18$--$0.19$; the exact rate only bounds $p$ from below. We use the bracket
+$p\in[0.128,0.200]$ and the central value 0.185.
 
 We retain $p=0.128$ for the absolute flow quantities. This is
 the \emph{lower} end of the bracket, so dividing by 0.128 overstates every absolute

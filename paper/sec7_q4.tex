@@ -6,7 +6,7 @@
 A dockless bicycle occupies space where its trip ends and stays until someone rides it
 away. Parking demand is therefore the arrival process of Section~\ref{sec:q1}, but the
 occupancy it produces is the \emph{integral} of that process on top of the standing
-stock; the simulation starts each fence at its measured inventory and sizes the peak of
+stock; the simulation starts each fence at the initial-inventory proxy and sizes the peak of
 the path, because the initial-inventory proxy contains 343,638 bicycles and Q2 shows
 that the plan is a reset, not an evacuation.
 
@@ -90,14 +90,14 @@ Sites & 4,000 & 4,000 \\
 Total slots & 600,000 & 600,000 \\
 Occupancy coverage & \textbf{59.53\%} & \textbf{52.18\%} \\
 Arrival coverage & \textbf{55.80\%} & \textbf{49.59\%} \\
-Assigned demand & 580,370.03 & 586,368.97 \\
-Unassigned demand & \textbf{394,553.13} & \textbf{537,333.64} \\
+Assigned sizing demand & 580,370.03 & 586,368.97 \\
+Unassigned sizing demand & \textbf{394,553.13} & \textbf{537,333.64} \\
 MILP gap & 0.0049 & 0.0050 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\tabref{tab:q4plan} is the main result. At the measured inventory the plan covers
+\tabref{tab:q4plan} is the main result. At the initial-inventory proxy the plan covers
 \textbf{59.53\% of peak occupancy} and \textbf{55.80\% of arrivals}, leaving 394,553.13
 bike-slots of demand unassigned; at the closed fleet the same layout covers 52.18\% and
 49.59\%, leaving 537,333.64. The site-integer MILP gap is below 0.005, so the layout is
@@ -231,7 +231,7 @@ correlation of \textbf{0.804}, an L1 distance of \textbf{0.423}, and a top-100 o
 of \textbf{32}. The geography is stable; the ranking is not exact, which is expected
 for a demand surface estimated on a different week.
 
-\textbf{Standing inventory.} The measured 5/16 snapshot and the minimum-feasible Q1
+\textbf{Standing inventory.} The initial-inventory proxy's 5/16 snapshot and the minimum-feasible Q1
 inventory shape correlate at 0.687 with an L1 distance of 0.922. The level is imposed in
 both scenarios; only the shape is compared, and it is similar but not identical.
 

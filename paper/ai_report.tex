@@ -5,7 +5,7 @@
 \subsection*{Tool used}
 
 Claude Code (Anthropic), version 2.1.322, a command-line agentic coding assistant
-based on a large language model, used from 11 to 18 November 2026. The runtime
+based on a large language model, used from 11 to 19 November 2026. The runtime
 reported the model identifier \texttt{deepseek-flash[1m]} for the final pass. The tool
 operated in a local development environment with file-system access and the ability
 to execute Python and typeset \LaTeX{}.
@@ -21,16 +21,30 @@ to execute Python and typeset \LaTeX{}.
   program (formulated by the authors, encoded with Gurobi's Python interface), the
   discrete-event simulators, the logit incentive model, the maximal-coverage siting
   heuristic and the Monte-Carlo capacity model.
-\item \textbf{Figures.} Produced all six figures as vector PDFs with matplotlib.
+\item \textbf{Figures.} Produced the five figures included in the paper --- the dataset,
+  Q1 validation, the Q2 schedule, Q3 cost against reward and the sensitivity tornado
+  --- as vector PDFs with matplotlib; the intermediate files of a superseded figure
+  set remain in the repository but are not included in the paper.
 \item \textbf{Text.} Drafted the \LaTeX{} manuscript, tables and reference list from
-  the computed results under the authors' direction and repeated review.
+  the computed results under the authors' direction and repeated review, and in the
+  final round rewrote the sections that quote the revised results, recompressed the
+  layout to the page limit and rewrote the summary.
+\item \textbf{Final-round work (18--19 November 2026).} Two sessions of the same tool
+  worked in parallel: one drafted written task specifications, acceptance criteria and
+  numerical locks; the other wrote and modified the final-round scripts (integer truck
+  scheduling, budgeted incentives, capped fences, the same-zone tricycle layer, the
+  uncertainty decomposition and the two-platform mismatch experiment), checked each
+  delivered number against the stored result files, and rewrote the affected sections,
+  the summary and the page layout.
 \end{enumerate}
 
 \subsection*{Representative queries and outputs}
 
-The two examples below are from the validation stage and are reproduced from the
-working record; the outputs are archived with the code as
-\texttt{dest\_validation.json} and \texttt{k\_stability.json}.
+The first two examples are from the validation stage and are reproduced from the
+working record; their outputs are archived with the code as
+\texttt{dest\_validation.json} and \texttt{k\_stability.json}. Examples 3 and 4 are
+from the final round and are archived as \texttt{exec\_rows} in the two-tier result
+file and as \texttt{cost\_vs\_r.json}.
 
 \noindent\textbf{Example 1: held-out comparison of destination models.}
 \begin{quote}
@@ -65,12 +79,50 @@ at $k=6$. The output therefore did not support the claim that the segmentation i
 stable across random initialisations.
 \end{quote}
 
+\noindent\textbf{Example 3: what the executable tricycle plan actually leaves unserved.}
+\begin{quote}
+\small
+\textbf{Query.} The reported unmet of the two-tier plan is taken from the linear
+relaxation; recompute it from the integer trips, adding the shortfall between planned
+and delivered bicycle loads cell by cell, and report the layer, the total and the
+saving together with the relaxation columns.
+
+\textbf{Output.} The integer trips delivered 1{,}494.80 fewer bicycle loads than the
+relaxation; adding that shortfall gives 39{,}984.2332 unserved departures, a layer of
+533{,}248.01 and a two-tier total of 617{,}055.75 CNY/day, a saving of
+902{,}223.20 (59.385\%) against the no-tricycle baseline, instead of the 59.98\% that
+the relaxation supported. The relaxed and integer-executed columns are now reported
+side by side.
+\end{quote}
+
+\noindent\textbf{Example 4: does the incentive pay inside the tricycle layer?}
+\begin{quote}
+\small
+\textbf{Query.} Re-solve the reroute program inside the per-zone tricycle fixed point
+on the reward grid 0--3.00 in 0.05-CNY steps under both source caps; $r=0$ must
+reproduce the accepted two-tier plan bit for bit; report the optimum, the net saving,
+the payment against the daily budget and the break-even reward.
+
+\textbf{Output.} The $r=0$ run reproduced 975 tricycles, 39{,}984.2332 unserved and
+617{,}055.75 CNY/day exactly. The optimum is $r=0.60$ under both source caps:
+27{,}680.9 reroutes, a payment of 16{,}608.52 inside the 30{,}000 budget and a net
+saving of 18{,}011.46 CNY/day (2.92\%) under the arrivals cap, and 6{,}651.22
+(1.08\%) under the surplus cap; the break-even rewards are 1.04 and 1.63. The truck
+layer is unchanged by construction.
+\end{quote}
+
 \subsection*{What was verified, and how}
 
 \begin{itemize}[leftmargin=1.4em]
-\item \textbf{Result numbers are script-generated, with listed exceptions.} Most
-  values quoted in the text are printed by \texttt{95\_numbers.py} from the result
-  files under \texttt{data/}. The constant 343{,}638 is still hard-coded in four
+\item \textbf{Result numbers are script-generated, with listed exceptions.} Values
+  from the preparation and first modelling stages are printed by
+  \texttt{95\_numbers.py} from the result files under \texttt{data/}. The final-round
+  values are printed from their result files by \texttt{code/t021a\_numbers.py},
+  which writes the number lock \texttt{numbers.json} (archived with the final-round
+  result files): 724 entries,
+  each recording the printed token, the result file and key, a scale factor and a
+  caliber, and each verified by re-reading the stored value. The constant 343{,}638
+  is still hard-coded in four
   computation scripts and two figure lines: \texttt{20\_q2\_diag.py} line 11,
   used at line 26 for the initial inventory written to \texttt{q2\_state.npz};
   \texttt{24\_cell\_curve.py} line 9, used at line 36 for the cell-level initial
@@ -79,17 +131,32 @@ stable across random initialisations.
   \texttt{90\_figs.py} lines 256 and 258, the cost curve. It is an input to the
   Q2/Q5 runs, not a display value. The Q5 interpretation text in
   \texttt{50\_q5\_platform.py} lines 37--38 is also written by hand. The paper
-  keeps 343{,}638 only as the measured initial inventory, and does not use it as a
+  keeps 343{,}638 only as the initial-inventory proxy, and does not use it as a
   fleet estimate. The two full-coverage slot bands 600,000--750,000 and
   780,000--900,000 in \texttt{t009\_q4.py} are typed planning bands, used only as
   sanity checks.
+\item \textbf{Typed constants of the final round are planning assumptions.} Truck
+  scheduling uses 20 km/h, 0.5 CNY per bicycle loaded or unloaded, 600 CNY per
+  truck-day and 6 CNY per truck-kilometre, with the fleet scanned over
+  $\{0,20,40,60,80\}$ trucks. The tricycle layer uses 20 bicycles per trip, 15 km/h,
+  0.5 minutes per bicycle handled, trips of at most 5 km, 300 CNY per tricycle-day,
+  0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift. The 150-slot fence cap
+  and the 450 m walking radius are typed; the 4,000-site knee is computed by the
+  Kneedle rule on the capacity--coverage frontier, not typed. The incentive
+  acceptance parameters $\kappa=2$, $\rho=0.35$ and $c_0=0.8$ are assumed (no reward
+  was offered in the data), the reward grid is 0.05 CNY, the daily budget is
+  30{,}000 CNY, and $c_0$ is re-optimised at 0.8 and 1.2 times its value; a full
+  sweep of $\kappa$ and $\rho$ was not run.
 \item \textbf{The computation is reproducible in a fixed order, not by a single
-  command.} After the preparation scripts 00--04, the numbered stages are run from
-  the project root in the order 10 $\to$ 11 $\to$ 20 $\to$ 21 $\to$ \dots $\to$ 95;
-  later stages read the outputs of earlier ones (\texttt{q1\_params.json},
-  \texttt{q2\_state.npz}, and so on). \texttt{lib.py} resolves \texttt{data/} and
-  \texttt{figs/} relative to its own file, so the tree can be moved. The pipeline is
-  reproducible, but it requires the stated order and is not unattended.
+  command.} After the preparation scripts 00--04 and \texttt{build\_dist\_matrix.py},
+  the numbered stages are run in the order 10 $\to$ 11 $\to$ 12 $\to$ 20 $\to$ 21
+  $\to$ \dots $\to$ 95 (\texttt{12\_q1\_od.py} writes the Q1 origin--destination
+  surface that the Q2 and Q4 stages read); later stages read the outputs of earlier
+  ones (\texttt{q1\_params.json}, \texttt{q2\_state.npz}, and so on). The
+  final-round scripts run after that chain, in the order documented with the code.
+  \texttt{lib.py} resolves \texttt{data/} and \texttt{figs/} relative to its own
+  file, so the tree can be moved. The pipeline is reproducible, but it requires the
+  stated order and is not unattended.
 \item \textbf{References were checked against Crossref.} Every bibliographic entry
   with a DOI was retrieved from the Crossref API and its authors, year, title,
   journal, volume, issue and pages were compared with the entry. Entries without a
