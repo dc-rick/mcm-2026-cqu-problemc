@@ -1,0 +1,139 @@
+{
+ "task": "T018",
+ "title": "Q2 整数逐车班表与同口径基线",
+ "date": "2026-11-18",
+ "status": "delivered",
+ "revision": "R0",
+ "summary": "在 T007 Q2 模型上加入事件顺序约束（卡车取车与用户取车共用小时初库存）、把 mt/nn 改为整数、设计需求改为只用训练日 10/11/15/16/18，K=20/40/60/80 各解一次 MILP（gap ≤0.99%）。K=60 仍最优：整数目标 83,802.81 元，未服务 0，dev 591.37，车公里 5,610.99，搬运 24,725.51，峰值 2,180.80 辆/小时（23 时，55 车次）；相对 LP 下界 82,968.07 高 834.74 元（1.006%）。逐车班表 60 辆 × 24 行，重放搬运量与 MILP 的 x 合计完全一致。旧 T007 K=60 LP 解在新事件顺序下有 3 个区-时违反，最大缺口 384.89 辆。贪心基线在新口径下峰值 601.27 辆/小时、总成本 177,892.62 元（比不调度还贵）；623.17 是旧 7 日需求下的贪心基线，不是推荐方案。留出日回放：05-12 未服务 1,023.31、dev 53,052.96；05-19 未服务 14,177.97、dev 52,044.57。",
+ "checks": {
+  "1_schedule": "pass; data/runs/T018/schedule_K60.csv has 1,440 rows = 60 trucks × 24 hours; every truck has 24 rows (idle hours included with to_zone=from_zone, km=0). CSV load_bikes total 24,725.5106429296 vs MILP sum(x) 24,725.5106429296, diff 0.0 <= 1e-6. Same check passes for K=20 (480 rows, diff 2.6e-9), K=40 (960 rows, diff 2.7e-8), K=80 (1,920 rows, diff 3.0e-9). Evidence: data/runs/T018/schedule_check.json.",
+  "2_constraint_check": "pass; all violation counts are zero in data/runs/T018/constraint_check.json: event order 0 (max gap 0.0 bikes), load 0 (max load 40.0 = Q), duration 0 (max trip 46.92 min at 20 km/h + 20 min handling for 40 bikes; +50% handling -> 56.92 min, 0 violations; -50% -> 36.92 min, 0 violations), truck conservation 0 (max residual 0.0; fleet start=end=60), inventory non-negative 0 (min replay inventory 1,891.36), end positions 0 (60 trucks assigned; deadhead 968.38 km / 5,810.29 CNY / 60 truck-trips needed to restore the 00:00 start pattern). Schedule replay reproduces the MILP inventory to 2.2e-7 and unmet exactly (0.0). status=delivered.",
+  "3_old_violations": "pass; old T007 K=60 LP solution (data/runs/T007/plans/q1_a1_K60.npz) measured on its own 7-day demand: 3 of 1,200 zone-hours violate sum_j x + served <= I, total gap 717.54 bikes, max gap 384.89 bikes (zone 20, hour 8; truck_out 384.89, I_start 6,128.35, served 6,128.35). Other violations: zone 17 hour 7 (169.98) and zone 24 hour 8 (162.68). In all three the trucks pick up exactly the bikes that arrive during the same hour. Evidence: data/runs/T018/old_violations.json.",
+  "4_baselines": "pass; data/runs/T018/baselines.json. No trucks (K=0): unmet 432.23, dev 46,930.39, truck-km 0, moved 0, peak 0, cost 143,384.53. Greedy (K=60, Q=40, same demand/inventory/event order): unmet 393.41, dev 44,647.16, truck-km 767.26, moved 1,974.15, peak 601.27 @ hour 6, cost 177,892.62. Recommended integer K=60: unmet 0, dev 591.37, truck-km 5,610.99, moved 24,725.51, peak 2,180.80 @ hour 23, cost 83,802.81. Integer K rows: K=20 111,997.70 (gap 0.80%), K=40 85,026.73 (0.92%), K=60 83,802.81 (0.99%), K=80 95,095.51 (0.96%). Integer minus LP lower bound: K=20 +903.03 (+0.813%), K=40 +786.50 (+0.934%), K=60 +834.74 (+1.006%), K=80 +919.31 (+0.976%). K=60 remains the cheapest K; the integer-LP difference at K=60 is 1.006% because the MILP stopped at a 0.99% gap (dual bound 82,971.71).",
+  "5_peak": "pass; recommended integer K=60 peak hourly moved = 2,180.80 bicycles at hour 23, carried by 55 truck-trips (payload 39.65 bikes/trip average on the peak hour); MILP peak load per truck = 40.0. Explicitly: 623.17 bicycles/hour is the greedy baseline on the old 7-day TYP_DAYS demand (reproduced here to 1e-12: 623.1685376926556 vs reference 623.1685376926566), NOT the recommended plan. Under the T018 training-day demand the greedy peak is 601.27. The old LP peak on the same model was 2,071.75 (K=60, hour 23). Evidence: baselines.json -> rows, greedy_regression.",
+  "6_holdout": "pass; data/runs/T018/holdout.json. Plan fixed at integer K=60 designed only on training days 10/11/15/16/18; test-day departures/arrivals are used only in the replay. 2017-05-12: observed 1,981,382.81 departures (92.9% of design 2,132,542.18), unmet 1,023.31 (0.052%), dev 53,052.96. 2017-05-19: observed 2,359,828.13 (110.7% of design), unmet 14,177.97 (0.60%), dev 52,044.57. No truck move was capped on either day. Information set: training-day OD, fitted destination model, I0=343,638, cost parameters; no test-day information enters the plan. Design-demand caliber: training-day 5-day mean 2,132,542.19 vs TYP_DAYS 7-day mean 2,143,417.41 (-0.51%); zone-hour L1 difference 40,148.44 (1.87% of the 7-day total), max 199.11 bikes; the 7-day rebuild reproduces data/runs/T006/q1_od.npz to max abs 1.8e-4 (max relative 8.1e-7). Evidence: data/runs/T018/demand_diff.json.",
+  "7_reproducibility": "pass; commands: `python -I code/t018_q2_int.py --stage demand`, `--stage int`, `--stage schedule`, `--stage check`, `--stage baselines`, `--stage holdout` (or `--stage all`). No random seed is used; the pipeline is deterministic (Gurobi default seed 0). Gurobi 13.0.0. Integer solve times/gaps: K=20 6.03 s / 0.799%, K=40 13.41 s / 0.919%, K=60 23.67 s / 0.992%, K=80 20.83 s / 0.957%. LP solves 0.37-0.48 s each. Input SHA-256: trips.parquet 5208d0b7..., cells.parquet 7606e416..., dist_matrix.npy 4e3259f0..., q2_state.npz 3e5e2a86..., q1_params.json 58fc4065..., q1_od_train.npz 98797f44..., T007 plan q1_a1_K60.npz 567481fc.... Output SHA-256: schedule_K60.csv 64c987d7..., constraint_check.json 7ce62b72..., baselines.json 8d84cf85..., holdout.json caa7f92a..., old_violations.json 077a1594..., demand_diff.json 1c9de9e8...."
+ },
+ "affected": [
+  {
+   "location": "paper/sec5_q2.tex:49",
+   "old": "d_{zt} - u_{zt} \\;\\le\\; I_{z,t}",
+   "new": "\\sum_j x_{zjt} + d_{zt} - u_{zt} \\;\\le\\; I_{z,t}",
+   "basis": "T018 event order: truck pickup and user pickup share the hour-start inventory; truck drops and user returns are credited at hour end. The old constraint alone lets trucks take bikes that arrive during the same hour (T018 found 3 zone-hours, max 384.89 bikes)."
+  },
+  {
+   "location": "paper/sec5_q2.tex:86-92",
+   "old": "Truck flows are left continuous ... the resulting plan is rounded up when a schedule is drawn. A post-solve greedy check confirms 40 bicycles per truck at the tightest source and a peak of 623.17 bicycles moved in one hour against a 2,400-bicycle hourly limit, with zero violations.",
+   "new": "Truck counts are integer (the bike flow x remains continuous). The per-truck schedule for the recommended K=60 plan is 60 trucks x 24 hours; its peak is 2,180.8 bicycles in hour 23, carried by 55 truck-trips. The 623.17 figure is the greedy baseline on the old 7-day demand, not the recommended plan; under the training-day demand the greedy peak is 601.3.",
+   "basis": "T018 runs: data/runs/T018/schedule_K60.csv, baselines.json -> rows.recommended_integer and greedy_regression, constraint_check.json (max load 40.0, 0 duration/event-order violations)."
+  },
+  {
+   "location": "paper/sec5_q2.tex:106-112 (tab:q2, alpha=1 rows)",
+   "old": "K=20 9,600 / 1,752 / 0 / 27,469 / 109,719; K=40 19,200 / 4,088 / 0 / 8,269 / 82,933; K=60 24,679 / 5,530 / 0 / 225 / 82,195; K=80 24,753 / 5,420 / 0 / 176 / 93,428",
+   "new": "Integer, training-day demand, event order: K=20 9,502.5 / 1,776.8 / 54.8 / 28,085.6 / 111,997.7; K=40 19,078.6 / 4,104.2 / 0 / 8,954.1 / 85,026.7; K=60 24,725.5 / 5,611.0 / 0 / 591.4 / 83,802.8; K=80 25,033.6 / 5,558.9 / 0 / 408.5 / 95,095.5",
+   "basis": "T018 integer MILP results (data/runs/T018/result_int_K*.json). K=20 leaves 54.8 departures unserved because with only 20 integer trucks the optimizer trades a small penalty against a larger dev reduction. The alpha=0.8/0.6 rows were not rerun in T018 (out of scope) and must either be rerun under this caliber or labelled as the old LP caliber in T021."
+  },
+  {
+   "location": "paper/sec5_q2.tex:113-120 (recommendation paragraph)",
+   "old": "24,679 bicycles relocated per day over 5,530 truck-kilometres, at a daily cost of 82,195 CNY including the trucks, or 3.33 CNY per bicycle moved ... K=60 is simultaneously cheaper (82,195) and far better balanced (deviation 225) than K=40. K=80 adds 11,233 CNY and moves only 73 more bicycles",
+   "new": "24,725.5 bicycles relocated per day over 5,611.0 truck-kilometres, at a daily cost of 83,802.8 CNY including the trucks, or 3.39 CNY per bicycle moved ... K=60 is cheaper (83,802.8) and far better balanced (deviation 591.4) than K=40 (85,026.7, dev 8,954.1). K=80 adds 11,292.7 CNY and moves 308.1 more bicycles",
+   "basis": "T018 integer K=60 vs K=40/K=80 (data/runs/T018/baselines.json); 83,802.80884510826 / 24,725.510642929603 = 3.389 CNY per bicycle moved."
+  }
+ ],
+ "outputs": [
+  "code/t018_q2_int.py",
+  "data/runs/T018/q1_od_train.npz",
+  "data/runs/T018/demand_diff.json",
+  "data/runs/T018/old_violations.json",
+  "data/runs/T018/result_lp_K20.json",
+  "data/runs/T018/result_lp_K40.json",
+  "data/runs/T018/result_lp_K60.json",
+  "data/runs/T018/result_lp_K80.json",
+  "data/runs/T018/result_lp_K0.json",
+  "data/runs/T018/result_int_K20.json",
+  "data/runs/T018/result_int_K40.json",
+  "data/runs/T018/result_int_K60.json",
+  "data/runs/T018/result_int_K80.json",
+  "data/runs/T018/plan_int_K20.npz",
+  "data/runs/T018/plan_int_K40.npz",
+  "data/runs/T018/plan_int_K60.npz",
+  "data/runs/T018/plan_int_K80.npz",
+  "data/runs/T018/schedule_K20.csv",
+  "data/runs/T018/schedule_K40.csv",
+  "data/runs/T018/schedule_K60.csv",
+  "data/runs/T018/schedule_K80.csv",
+  "data/runs/T018/schedule_check.json",
+  "data/runs/T018/constraint_check.json",
+  "data/runs/T018/baselines.json",
+  "data/runs/T018/holdout.json",
+  "data/runs/T018/int_run.log"
+ ],
+ "notes": [
+  "K=60 仍是最优 K（整数目标 83,802.81，K=40 85,026.73，K=80 95,095.51，K=20 111,997.70）。整数解相对 LP 下界在 K=60 高 834.74 元（1.006%）；MILP 自身在 0.99% gap 处停止（上限 600 s、目标 gap 1%，实际 23.7 s 达标）。",
+  "班表里的 load_bikes 是小数：任务只要求 mt、nn 取整，x 仍是连续变量；同一弧同一小时由 mk 辆车平分 x，因此每辆车载重 = x/mk ≤40。若 T020 需要整数车-载，需把 x 也设为整数并重解。",
+  "期末车辆位置：模型只约束 Σn[z,23]=K，不强制 n[z,23]=n[z,0]。把当日末位置匹配回设计日 00:00 起点需要 60 车次空驶、968.38 km、5,810.29 元/天；这笔费用不在 MILP 目标内，且空驶会占用次日 0 时的卡车能力（模型未计）。若要把方案做成严格可重复的日循环，可加 n[z,23]=n[z,0] 约束后重解，作为 T020/T024 的可选改进。",
+  "贪心基线在新目标下比不调度更贵（177,892.62 vs 143,384.53）：固定成本 36,000 元，而它只减少 dev 2,283 辆（6,849 元）和未服务 38.8 辆（233 元），车公里与装卸成本 5,591 元。",
+  "留出日的 dev 约 52,000-53,000 辆（约 I0 的 15%），接近不调度水平：K=60 方案的期末平衡是针对设计日调的，换一天需求后不再平衡。这是固定日班表的真实代价，T021 应如实写；若要按日调整，需要日内滚动或按日重解。",
+  "装卸时间 0.25 min/辆/次（两人班组，40 辆装载 10 min、卸载 10 min）是本任务的显式假设，不是实测值；±50% 敏感性下 0 违反。速度 20 km/h 同理。班次按每车每日 3 个 8 小时班组（06-14、14-22、22-06）交班，车辆 24 小时可用，换班不产生额外车公里；司机工时在模型外。",
+  "旧 LP 违反量是在旧解自己的 7 日需求上量的；若换到 5 日需求，旧解的违反会不同，但旧解本来就不是为新需求设计的，所以用其自身需求作对照。",
+  "T020 接口已封装为 code/t018_q2_int.py 的 solve_schedule(dep, arr, PZ, cent, I0, K)：输入区-时出发/到达（全尺度）、P(j|i,t)、区中心、I0、K，返回成本分解与逐车班表 DataFrame。",
+  "α=0.8、α=0.6、obs 三行未在 T018 重解（任务只要求 K∈{20,40,60,80}、α=1）；T021 若保留这些行，需要按新口径重跑或在表注中说明口径不同。"
+ ],
+ "reproduction": {
+  "commands": [
+   "python -I code/t018_q2_int.py --stage demand",
+   "python -I code/t018_q2_int.py --stage oldviol",
+   "python -I code/t018_q2_int.py --stage lp",
+   "python -I code/t018_q2_int.py --stage int",
+   "python -I code/t018_q2_int.py --stage schedule",
+   "python -I code/t018_q2_int.py --stage check",
+   "python -I code/t018_q2_int.py --stage baselines",
+   "python -I code/t018_q2_int.py --stage holdout"
+  ],
+  "seed": "none (deterministic; Gurobi default seed 0)",
+  "gurobi_version": "13.0.0",
+  "solve_times_seconds": {
+   "lp_K20": 0.383,
+   "lp_K40": 0.368,
+   "lp_K60": 0.477,
+   "lp_K80": 0.375,
+   "lp_K0": 0.01,
+   "int_K20": 6.03,
+   "int_K40": 13.411,
+   "int_K60": 23.671,
+   "int_K80": 20.825
+  },
+  "mip_gaps": {
+   "int_K20": 0.007994755419712282,
+   "int_K40": 0.009187796271377653,
+   "int_K60": 0.009917291907738874,
+   "int_K80": 0.009573966424343888
+  },
+  "input_sha256": {
+   "data/trips.parquet": "5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb",
+   "data/cells.parquet": "7606e416aa0b38519adb15b0b40d5a23bdd758ab7406a1a270a2f707846e3424",
+   "data/dist_matrix.npy": "4e3259f0a1faa173ee4f1b4b6743d2cc1973440dc9678197c7ccbeb572bceb97",
+   "data/q2_state.npz": "3e5e2a86df5f1f45c036b191910058cde00f06af921f9e33bce5c7efff5bbc89",
+   "data/q1_params.json": "58fc4065928193d19df284cb1122d34fd662ce7db465810f110aa4543e69d6f4",
+   "data/runs/T007/plans/q1_a1_K60.npz": "567481fc788ceb01767a4ced88101a432504e443cf44218f6b5ea83b7fd61f60",
+   "data/runs/T007/q2_greedy_check.json": "d8c4cb7b202cef459403d7af7683d144e98b95052c1e4b873f4a0e89dd65f70b"
+  },
+  "output_sha256": {
+   "data/runs/T018/q1_od_train.npz": "98797f4493d95c5fac891154e42cc402c2cec7f300bdb7f6274276bc36902b1d",
+   "data/runs/T018/schedule_K60.csv": "64c987d7e8e040f5bef9ebc6ea29590de455f435f89791289938ae55755ef919",
+   "data/runs/T018/constraint_check.json": "7ce62b721a2b71907568178787fb45e5fdaf1a3447f80bf32f0746a6007be85e",
+   "data/runs/T018/baselines.json": "8d84cf85f849368227cf294628ea16fede2737553b32b6c3bcba00691c3138da",
+   "data/runs/T018/holdout.json": "caa7f92a2d596acf42ca0926a6b5752584282a17f392e1125e28b98a3e38ce1c",
+   "data/runs/T018/old_violations.json": "077a1594456b8c8c566cb7663d6f9867004cdfe4e979a0c5ae9624a4e283d6e2",
+   "data/runs/T018/demand_diff.json": "1c9de9e8fa360bafd53c96420afe31f5722e8409f2f5b9eb118ae44f64ecf305",
+   "code/t018_q2_int.py": "69fc3f0da8be81029352a4de58e47436ba1bc92783b9c170316824051e565c56"
+  },
+  "solver": "Gurobi 13.0.0 via gurobipy; MIPGap=0.01, TimeLimit=600 s, Method=2"
+ },
+ "integrity": {
+  "readonly_respected": true,
+  "no_files_written_in_review_or_planning": true,
+  "no_changes_to_paper": true,
+  "no_overwrite_of_T007": true
+ }
+}
