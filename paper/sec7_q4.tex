@@ -48,9 +48,9 @@ still-uncovered arrivals --- attains at least $(1-1/e)=63.2\%$ of the optimum
 The radius is a planning threshold, not a 2017 measured walking distance; the OSM
 check below is geographic, not behavioural.
 
-The capped plan is a binary program. With $f_{ij}$ arrivals at $i$
-assigned to a fence at $j$, $u_i$ arrivals left unassigned, $a_i$ the sizing demand,
-$s_j$ the open-site indicator, $\bar s$ the per-site cap set above and $n$ the number
+The capped plan is a binary program. With $f_{ij}$ the sizing demand at $i$
+assigned to a fence at $j$, $u_i$ the sizing demand left unassigned, $a_i$ the
+sizing demand at $i$, $s_j$ the open-site indicator, $\bar s$ the per-site cap set above and $n$ the number
 of fences, the planner solves
 \begin{equation}
 \begin{aligned}
@@ -97,7 +97,8 @@ the 4,000-site solution does.
 \footnotesize
 \caption[The capped Q4 plan]{The 150-slot capped plan at $R=450$ m. Total slots are
 $4{,}000\times150=600{,}000$; coverage is the assigned share of the cell-level 95th
-percentile peak occupancy, with the arrival-weighted share in the last row. The two
+percentile peak occupancy, with the arrival-weighted share in the row labelled Arrival
+coverage. The two
 inventory scenarios are run separately.}
 \label{tab:q4plan}
 \scriptsize

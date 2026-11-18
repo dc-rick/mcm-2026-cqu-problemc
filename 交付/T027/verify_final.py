@@ -1,12 +1,13 @@
-"""T027 R1 verification.
+"""T027 R1/R1b verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
   1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
      Authorised: sec5_q2.tex gains token 12 exactly once (R1-5, TRI_NEAREST).
      ai_report.tex is excluded from the gate (R1-13) but its diff is reported.
   2. Forbidden strings: internal task ids (T0xx), revision language.
-  3. Section-6 legacy wording checks (carried from R0) and the R1-1..R1-13
-     item checks from task sheet section 8.1.
+  3. Section-6 legacy wording checks (carried from R0), the R1-1..R1-13
+     item checks from task sheet section 8.1, and the R1b-1/R1b-2 text
+     checks from section 8.4.
   4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
      from data/runs/T024/schedule_check.json and matched to the paper strings.
   5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
@@ -68,7 +69,7 @@ def norm(text):
 
 
 def main():
-    ev = {"task": "T027", "revision": "R1", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1b", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
@@ -182,7 +183,20 @@ def main():
                                and not has("sec10_evaluation.tex", "stay within a zone, which")),
     }
     ev["r1_checks"] = r1
-    ok = ok and all(checks6.values()) and all(r1.values())
+
+    # ---- 3b. R1b item checks (task sheet 8.4) --------------------------
+    r1b = {
+        "R1b-1_sizing_demand_units": (
+            has("sec7_q4.tex", "With $f_{ij}$ the sizing demand at $i$")
+            and has("sec7_q4.tex", "$u_i$ the sizing demand left unassigned")
+            and has("sec7_q4.tex", "$a_i$ the sizing demand at $i$")
+            and not has("sec7_q4.tex", "$f_{ij}$ arrivals at $i$")),
+        "R1b-2_caption_row_ref": (
+            has("sec7_q4.tex", "in the row labelled Arrival coverage")
+            and not has("sec7_q4.tex", "in the last row")),
+    }
+    ev["r1b_checks"] = r1b
+    ok = ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
 
     # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
@@ -290,6 +304,7 @@ def main():
     print(json.dumps({"all_pass": ev["all_pass"],
                       "token_gate_pass": ev["token_gate_pass"],
                       "r1_checks_pass": all(r1.values()),
+                      "r1b_checks_pass": all(r1b.values()),
                       "section6_pass": all(checks6.values()),
                       "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],

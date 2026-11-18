@@ -3,8 +3,8 @@
  "title": "终审定稿与提交包 — R1（DeepSeek 第二轮冷读 13 项文字修正）",
  "date": "2026-11-19",
  "status": "delivered",
- "revision": "R1",
- "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。",
+ "revision": "R1b",
+ "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。 R1b（任务单 §8.4，2026-11-19）：sec7_q4.tex 两处纯文字——q4cap 符号句量纲改为 sizing-demand 单位（f/u 不再写作 arrivals，a_i 不改叫 arrivals），tab:q4plan 表注改指 'Arrival coverage' 行；sec7_q4.tex 对 3209636 的数字 token 多重集与 R1 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。R1 复核两项裁决按 ① A10 附加句采纳保留、② pp11–12 公式跨页接受结案。",
  "checks": {
   "R1-1_A11_placement": "pass; paper/sec2_assumptions.tex A11（Placement and payment）改写为：改派放在原行程所在小时、目标格取自该小时亏缺表，目标不受源区限制；跨区部分经 zone_delta 进入卡车层，指向 §6 的卡车口径检验；保留 'No cross-hour rearrangement is modelled.'。旧句 'in the same zone / no cross-zone reroute' 已不存在。证据：交付/T027/verify_final.json r1_checks.R1-1_A11_scope=true。",
   "R1-1b_A12_consistency_fix": "pass; 任务单未列的第四处同类口径句（sec2 A10 末句旧文 'Because reroutes do not cross a zone boundary, the truck layer is unchanged.'）同步改为 'The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\\ref{sec:q3}.'。依据与 R1-1 同（t008_q3_pool.py:124、t020_q3_budget.py:502、T008 zone_decomposition targeted 0.0746）；属主动补漏，特此申报。证据：r1_checks.R1-1b_A12_consistency_fix=true。",
@@ -23,33 +23,171 @@
   "G1_token_gate_3209636": "pass; 13 个正文 tex 对 3209636 逐文件数字 token 多重集比对：仅 sec5_q2.tex 新增 {'12':1}（授权）；其余 12 个文件完全一致；ai_report.tex 排除在门外、其差亦仅 {'12':1}。压缩只删非数字词，889/975/1,023.76/150/5,263 等全部保留。证据：verify_final.json token_gate（token_gate_pass=true）。",
   "G2_pages_27_25": "pass; xelatex 三遍输出 'Output written on main.pdf (27 pages).'；计页 25（27−2 页 AI 报告）；正文 22 页（p3--24），References 起始 p25，Report on Use of AI Tools 起始 p26 并延至 p27；TOC 页码与正文一致（References→25、AI→26）。未改字号/页边距；公式块的页数代价由同节及邻近非数字文字压缩 + 浮动体重排承担。证据：verify_final.json pdf 段（pdf_pass=true）。",
   "G3_compile_and_regression": "pass; cd paper && xelatex -interaction=nonstopmode -halt-on-error main.tex 三遍 exit 0；main.log Overfull 0、'There were undefined references' 0、LaTeX Warning 0；PDF 全文 '??' 0、U+037E 0；data/runs/T024/schedule_check.json exec_totals 复算：n_exec=975、unmet=39984.233156118324→39,984.2332、layer_cost_fullload=533248.0076801622→533,248.01、total_fullload=617055.7515153277→617,055.7515、saving_fullload=902223.1987538643→902,223.20、share=0.5938496012164223→59.385%，论文逐一对应。证据：verify_final.json pdf 段与 regression 段（regression_pass=true）。",
-  "G4_scope": "pass; git status --porcelain 仅 paper/ 下 12 个 tex、paper/main.pdf 与 交付/T027/ 下 verify_final.py、verify_final.json（本交付另更新 T027_delivery.json 与 file_list.json）；code/、data/、审查与规划/、.claude/、.git/ 未写；未重跑任何代码；无 push，单个提交由执行方在本地建立。证据：git status 输出见 notes。"
+  "G4_scope": "pass; git status --porcelain 仅 paper/ 下 12 个 tex、paper/main.pdf 与 交付/T027/ 下 verify_final.py、verify_final.json（本交付另更新 T027_delivery.json 与 file_list.json）；code/、data/、审查与规划/、.claude/、.git/ 未写；未重跑任何代码；无 push，单个提交由执行方在本地建立。证据：git status 输出见 notes。",
+  "R1b-1_sizing_demand_units": "pass; sec7_q4.tex eq:q4cap 前符号句改为同一 sizing-demand 单位：'With $f_{ij}$ the sizing demand at $i$ assigned to a fence at $j$, $u_i$ the sizing demand left unassigned, $a_i$ the sizing demand at $i$'；f/u 不再写作 arrivals，a_i 未改称 arrivals；974,923.16 / 580,370.03 / 394,553.13 / 55.80% 等数字未动。依据 code/t019_q4_cap.py::solve_cap：a 取自 cell_demand.npz 的 a_meas343/a_fleet495（逐格 P95 峰值占用），目标 max Σf 即最大化被分配的 sizing demand。证据 verify_final.json r1b_checks.R1b-1_sizing_demand_units=true。",
+  "R1b-2_caption_row_ref": "pass; tab:q4plan caption 'with the arrival-weighted share in the last row' → 'with the arrival-weighted share in the row labelled Arrival coverage'，指向表中 'Arrival coverage' 行（55.80%/49.59%）；caption 其余未动。证据 r1b_checks.R1b-2_caption_row_ref=true。",
+  "R1b-A1_old_new_basis": "pass; 两处替换在 affected 末尾两条逐条给出 location / old / new / basis。",
+  "R1b-A2_token_gate_same_as_R1": "pass; 对基线 3209636 逐文件比对：sec7_q4.tex 数字多重集 removed={} added={} identical=true（与 R1 完全相同）；全篇仍仅 sec5_q2.tex +{'12':1}；ai_report.tex 按 §8.3 豁免。证据 verify_final.json token_gate.sec7_q4.tex、token_gate_pass=true。",
+  "R1b-A3_compile_pages": "pass; xelatex 三遍 'Output written on main.pdf (27 pages).'；计页 25；overfull 0、undefined 0、LaTeX Warning 0、'??' 0、U+037E 0；References 起始 p25、AI 报告起始 p26；TOC 页码与正文一致。证据 verify_final.json pdf 段。",
+  "R1b-A4_scope": "pass; 本轮只改 paper/sec7_q4.tex（两处纯文字）与 交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；main.tex、code/、data/、审查与规划/ 未写；未重跑任何代码。"
  },
  "affected": [
-  {"location": "paper/sec2_assumptions.tex A11（Placement and payment）", "old": "A reroute is placed in the hour of the original trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is modelled.", "new": "A reroute is placed in the hour of the original trip at a cell drawn from that hour's deficit list; the target is not restricted to the source zone, so a small share of accepted reroutes changes a zone-hour arrival total, which is the channel through which the incentive can reach the truck layer (Section~\\ref{sec:q3}). No cross-hour rearrangement is modelled.", "basis": "R1-1；code/t008_q3_pool.py:124 _hour_lp 目标不限区；code/t020_q3_budget.py:502 zone_delta；data/runs/T008/q3_results.json zone_decomposition"},
-  {"location": "paper/sec2_assumptions.tex A10（Two-tier repositioning）末句", "old": "Because reroutes do not cross a zone boundary, the truck layer is unchanged.", "new": "The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\\ref{sec:q3}.", "basis": "任务单未列的第四处同类口径句，与 R1-1 同一代码事实；主动补漏申报"},
-  {"location": "paper/sec6_q3.tex §6.5 Five limits 第一条", "old": "First, reroutes are restricted to the \\emph{same zone}, which keeps the truck layer unchanged.", "new": "First, reroutes are cell-level, not zone-level: the target cell may lie outside the source zone, so a small share of accepted reroutes changes a zone-hour arrival total. That is the only channel through which the incentive can reach the truck layer, and it is priced in the truck-caliber test above, where it does not overturn the negative ceiling.", "basis": "R1-2；同 R1-1；§6.2 已写 'only the part of the reroute that changes a zone-hour arrival total…'"},
-  {"location": "paper/sec10_evaluation.tex Weaknesses 第三条", "old": "Reroutes stay within a zone, which keeps the truck layer unchanged, so the saving replaces part of the tricycle layer and nothing else; …", "new": "The saving is measured with the truck plan held fixed: it neither credits nor charges the induced truck-layer change of the reroutes, which the truck-caliber test prices separately, so the saving replaces part of the tricycle layer and nothing else; …", "basis": "R1-3；Q3 节省按 K=60 固定卡车层计（T026）"},
-  {"location": "paper/sec5_q2.tex §5.2 约束解释句", "old": "\\eqnref{eq:q2truck}--\\eqnref{eq:q2fleet} conserve trucks and return them to their starting zones by midnight;", "new": "\\eqnref{eq:q2truck}--\\eqnref{eq:q2fleet} conserve the truck count, with $K$ at the start and at the end of the day but no per-zone requirement; end-of-day positions are matched to the start-of-day ones by the deadhead relocation reported below, outside the objective;", "basis": "R1-4；eq:q2fleet 只有总量约束；code/t018_q2_int.py:635 deadhead LP；论文已报 1,023.76 辆-公里、不入目标。token 门适配：'00:00/midnight' → 'at the start/at the end of the day'（避免新增 00 token）"},
-  {"location": "paper/sec5_q2.tex §5.4（新增公式块与整数化段落）", "old": "（无公式，仅 'The layer is solved zone by zone; the truck layer is held fixed at the $K=60$ plan.' 一句带过三轮车层的求解）", "new": "符号说明段 + eq:q2tri（min/max 与三条约束）+ 整数化与 earliest-finish 分配段：'…the smallest integer fleet that places every trip replaces the fractional count zone by zone.'", "basis": "R1-5；code/t024_q2_tier2.py:246 _tri_lp、_int_trips、_assign。token 门适配：约束 (iii) 用 θ_ab 文字定义（不写 2、2、60 常数）；窗口写 'the shift stated above'（不重写 07:00--20:00）；'12 nearest' 为唯一授权新增 token 12"},
-  {"location": "paper/sec7_q4.tex §7.2（新增 0-1 选址规划）", "old": "（贪心与 (1−1/e) 之后直接进入 'The number of fences…'，capped 计划的 MILP 未定义）", "new": "eq:q4cap（max Σf_ij；Σ_j f_ij+u_i=a_i；Σ_i f_ij≤\\bar s s_j；Σ_j s_j=n）+ 'with $f$ and $u$ non-negative and $s_j$ binary…Gurobi~\\cite{gurobi}'；并写明贪心只用于 uncapped 参考", "basis": "R1-6/R1-10；code/t019_q4_cap.py:316 solve_cap（MIPGap 0.005）；code/t009_q4.py:76 greedy_partition。token 门适配：'$s_j$ binary' 代替 \\{0,1\\}；'\\bar s the per-site cap set above' 不重复 150"},
-  {"location": "paper/sec7_q4.tex §7.1 'never mixed.' 后", "old": "（未定义 495,540 情景的空间分布）", "new": "The closed-fleet scenario spreads that total over cells in proportion to the smallest initial stock that keeps every cell non-negative under the demand model's cumulative net flow, so its spatial shape is the flow-implied one, not the proxy's.", "basis": "R1-7；code/t019_q4_cap.py:206 raw=max(0,-min_t cumsum(arr-dep))；I0_fleet=raw/raw.sum()*495540；'that total' 不重复 495,540"},
-  {"location": "paper/sec3_data.tex §3.4 初始存量代理句", "old": "…not a fleet count; it is used only as $I_0$ in Q2, Q4 and Q5.", "new": "…not a fleet count and a lower bound on the true stock, since a bicycle absent from the order file cannot appear in it; it is used only as $I_0$ in Q2, Q4 and Q5.", "basis": "R1-8；抽样事实（订单文件里没有的车不可能出现），与 §2 A 档、§7 两情景一致"},
-  {"location": "paper/sec4_q1.tex §4.6 同格份额句", "old": "…an overestimate of 3.94 percentage points}; the agreement elsewhere does not remove that bias.", "new": "…an overestimate of 3.94 percentage points} (the equality with the adjacency rate of \\S\\ref{sec:data} is a numerical coincidence; the two quantities are unrelated); the agreement elsewhere does not remove that bias.", "basis": "R1-9；data/runs/T006/q1_vs_obs.json 模型 0.128337/观测 0.088863；data/runs/T002/p_estimate.json exact 0.128280；不重复 12.83"},
-  {"location": "paper/sec3_data.tex §3.3", "old": "The wide rate, less that false-match share, scales to $p\\approx0.18$--$0.19$", "new": "The wide rate, less the false-match share, scales to $p\\approx0.18$--$0.19$", "basis": "R1-11；typo"},
-  {"location": "paper/sec10_evaluation.tex Weaknesses 第四条末", "old": "…the quoted saving a lower bound on the ideal LP saving.", "new": "…the quoted saving a lower bound on the ideal LP saving. Values are printed at the precision of the archived result files so that each printed value can be checked against its source.", "basis": "R1-12；回答 m1；七标准第 5 条（数字来自结果）"},
-  {"location": "paper/ai_report.tex 写入型常数清单（三轮车条）", "old": "…trips of at most 5 km, 300 CNY per tricycle-day, 0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift.", "new": "…trips of at most 5 km, the 12 nearest stocked donor cells per deficit cell in the tricycle stage, 300 CNY per tricycle-day, 0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift.", "basis": "R1-13；code/t024_q2_tier2.py:49 TRI_NEAREST=12；AI 报告按任务单不计 token 门"},
-  {"location": "paper/sec1_intro.tex（全节非数字压缩）", "old": "例：'Most of the analytical difficulty is not in the optimisation; it is in three quantities…' / 'The problem poses five questions, which we restate in operational terms:' / '…orders placed on 484,754 bicycles…' / roadmap 逐句展开", "new": "例：'Three quantities the dataset does not contain and a careless model would silently assume:' / '…restated operationally:' / '…orders on 484,754 bicycles…' / roadmap 紧缩", "basis": "G2 页数门：只删非数字词；token 门证明 sec1 与基线零差"},
-  {"location": "paper/sec2_assumptions.tex（压缩）", "old": "例：'Every simplification below is stated with its rationale and with the direction in which it pushes the answer, so that a reader can discount the results accordingly.' / '…8.25\\% around its mean…' / '…which is conservative and may truncate the program…' / A5 自行车类型句", "new": "例：'Each simplification below is stated with its rationale and the direction in which it pushes the answer.' / '…8.25\\%…' / '…which is conservative, while…' / 'The dataset's bicycle type is constant per bicycle and carries no information…'", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec3_data.tex（压缩）", "old": "例：'Three features matter.' / 'Two partitions are used, at different resolutions and for different purposes.' / 'We estimate $p$ from the bicycles themselves.' / 'A single day's occupancy estimator is fragile because it is sensitive…' / 'Individual bicycles sit idle…（结尾句）' / 'A true adjacency is usually visible, but not always'", "new": "相应删除或合并（'A true adjacency is not always visible'；'…inferred from its use.'）", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec4_q1.tex（压缩与浮动体重排）", "old": "例：'precisely the level of detail…' / 'The exponential form is not an arbitrary choice.' / '…and no balancing procedure is required beyond the denominator.' / 'Three readings of \\tabref{tab:q1} matter.' / '…a large $\\beta_h$ means the destination distribution is concentrated near the origin.' / §4.6 段落置于图前 / §4.7 结尾 'An intervention that flattens the peak…'", "new": "相应删除或紧缩；fig:q1 环境移至 §4.6 标题之后、正文之前；§4.7 结尾停在 commuter 句", "basis": "G2；只删非数字词；结论文本未动；token 零差"},
-  {"location": "paper/sec5_q2.tex（压缩与浮动体重排）", "old": "例：'Before optimising anything we should know what the optimisation is for.' / 'Once a zone-level truck plan is fixed…' / drift 句 / 'The plan is not a night-only shift.' / 'The integer cost of the tricycle layer is visible in the rounding.' / 'The bound is not tight, but it is small…' / fig:q2 环境在 §5.6 末", "new": "相应删除或合并；fig:q2 环境移至 §5 标题之后（§5.1 前）", "basis": "G2；只删非数字词；token 零差（仅 +12）"},
-  {"location": "paper/sec6_q3.tex（压缩）", "old": "例：'The zero-payment result is the cleanest statement.' / 'The reason is one of scale:' / 'The scheme that follows is narrow and explicit.' / '…the budget does not bind at $r^*$.'", "new": "相应删除或紧缩（'…the budget does not bind.'）", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec7_q4.tex（压缩）", "old": "例：'…a plot ten by twenty-one metres…' / 'With 5,263 cells as candidate sites' / '…without first imposing the cap.' / '…the more favourable of the two…'", "new": "相应紧缩，未动任何表值与图", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec8_q5.tex（压缩）", "old": "例：'The five questions above…' / '…isolates pooling rather than total capacity' / 'This is the most serious loss and the least visible.' / 'Four measures follow, in descending order of value; the executive summary states them to the two readers.' / 'A single platform's data recovers them…fifth of the evidence…'", "new": "相应删除或紧缩；§8.6 直接以 'Share the data, not the bicycles' 起笔；§8.7 以 'the city is the natural owner' 收束", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec9_sensitivity.tex（压缩）", "old": "例：'…and they are not uncertain in the same way.' / '…which were not identified from any data.' / 'They describe where the spread comes from.'", "new": "相应紧缩", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec10_evaluation.tex（压缩）", "old": "例：'…so the four answers are priced on the same demand surface and the same service penalty.' / '…would be overturned wholesale…' / '…reduces the operational shortfall further.' / Conclusions 措辞", "new": "相应紧缩；R1-3/R1-12 新句保留", "basis": "G2；只删非数字词；token 零差"},
-  {"location": "paper/sec5_q2.tex §5.2 公式块外层的分页控制", "old": "\\begin{align} … 8 行卡车规划 … \\end{align}（整块不可分页；在 p11 底留下 125pt 空白）", "new": "{\\allowdisplaybreaks \\begin{align} … \\end{align}}（仅此一个公式块允许在 eq:q2cap 与 eq:q2truck 之间跨页，p11/p12 各自排满）", "basis": "G2：不改变任何内容与字号/页边距；关闭该开关时全文 28 页、尾部溢出约 150pt，开启后恢复 27 总页/25 计页。如指导方不接受公式块跨页，替代方案是把该规划手工拆成两个 align 块（不改变任何符号与编号），请指导方定夺"}
+  {
+   "location": "paper/sec2_assumptions.tex A11（Placement and payment）",
+   "old": "A reroute is placed in the hour of the original trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is modelled.",
+   "new": "A reroute is placed in the hour of the original trip at a cell drawn from that hour's deficit list; the target is not restricted to the source zone, so a small share of accepted reroutes changes a zone-hour arrival total, which is the channel through which the incentive can reach the truck layer (Section~\\ref{sec:q3}). No cross-hour rearrangement is modelled.",
+   "basis": "R1-1；code/t008_q3_pool.py:124 _hour_lp 目标不限区；code/t020_q3_budget.py:502 zone_delta；data/runs/T008/q3_results.json zone_decomposition"
+  },
+  {
+   "location": "paper/sec2_assumptions.tex A10（Two-tier repositioning）末句",
+   "old": "Because reroutes do not cross a zone boundary, the truck layer is unchanged.",
+   "new": "The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\\ref{sec:q3}.",
+   "basis": "任务单未列的第四处同类口径句，与 R1-1 同一代码事实；主动补漏申报"
+  },
+  {
+   "location": "paper/sec6_q3.tex §6.5 Five limits 第一条",
+   "old": "First, reroutes are restricted to the \\emph{same zone}, which keeps the truck layer unchanged.",
+   "new": "First, reroutes are cell-level, not zone-level: the target cell may lie outside the source zone, so a small share of accepted reroutes changes a zone-hour arrival total. That is the only channel through which the incentive can reach the truck layer, and it is priced in the truck-caliber test above, where it does not overturn the negative ceiling.",
+   "basis": "R1-2；同 R1-1；§6.2 已写 'only the part of the reroute that changes a zone-hour arrival total…'"
+  },
+  {
+   "location": "paper/sec10_evaluation.tex Weaknesses 第三条",
+   "old": "Reroutes stay within a zone, which keeps the truck layer unchanged, so the saving replaces part of the tricycle layer and nothing else; …",
+   "new": "The saving is measured with the truck plan held fixed: it neither credits nor charges the induced truck-layer change of the reroutes, which the truck-caliber test prices separately, so the saving replaces part of the tricycle layer and nothing else; …",
+   "basis": "R1-3；Q3 节省按 K=60 固定卡车层计（T026）"
+  },
+  {
+   "location": "paper/sec5_q2.tex §5.2 约束解释句",
+   "old": "\\eqnref{eq:q2truck}--\\eqnref{eq:q2fleet} conserve trucks and return them to their starting zones by midnight;",
+   "new": "\\eqnref{eq:q2truck}--\\eqnref{eq:q2fleet} conserve the truck count, with $K$ at the start and at the end of the day but no per-zone requirement; end-of-day positions are matched to the start-of-day ones by the deadhead relocation reported below, outside the objective;",
+   "basis": "R1-4；eq:q2fleet 只有总量约束；code/t018_q2_int.py:635 deadhead LP；论文已报 1,023.76 辆-公里、不入目标。token 门适配：'00:00/midnight' → 'at the start/at the end of the day'（避免新增 00 token）"
+  },
+  {
+   "location": "paper/sec5_q2.tex §5.4（新增公式块与整数化段落）",
+   "old": "（无公式，仅 'The layer is solved zone by zone; the truck layer is held fixed at the $K=60$ plan.' 一句带过三轮车层的求解）",
+   "new": "符号说明段 + eq:q2tri（min/max 与三条约束）+ 整数化与 earliest-finish 分配段：'…the smallest integer fleet that places every trip replaces the fractional count zone by zone.'",
+   "basis": "R1-5；code/t024_q2_tier2.py:246 _tri_lp、_int_trips、_assign。token 门适配：约束 (iii) 用 θ_ab 文字定义（不写 2、2、60 常数）；窗口写 'the shift stated above'（不重写 07:00--20:00）；'12 nearest' 为唯一授权新增 token 12"
+  },
+  {
+   "location": "paper/sec7_q4.tex §7.2（新增 0-1 选址规划）",
+   "old": "（贪心与 (1−1/e) 之后直接进入 'The number of fences…'，capped 计划的 MILP 未定义）",
+   "new": "eq:q4cap（max Σf_ij；Σ_j f_ij+u_i=a_i；Σ_i f_ij≤\\bar s s_j；Σ_j s_j=n）+ 'with $f$ and $u$ non-negative and $s_j$ binary…Gurobi~\\cite{gurobi}'；并写明贪心只用于 uncapped 参考",
+   "basis": "R1-6/R1-10；code/t019_q4_cap.py:316 solve_cap（MIPGap 0.005）；code/t009_q4.py:76 greedy_partition。token 门适配：'$s_j$ binary' 代替 \\{0,1\\}；'\\bar s the per-site cap set above' 不重复 150"
+  },
+  {
+   "location": "paper/sec7_q4.tex §7.1 'never mixed.' 后",
+   "old": "（未定义 495,540 情景的空间分布）",
+   "new": "The closed-fleet scenario spreads that total over cells in proportion to the smallest initial stock that keeps every cell non-negative under the demand model's cumulative net flow, so its spatial shape is the flow-implied one, not the proxy's.",
+   "basis": "R1-7；code/t019_q4_cap.py:206 raw=max(0,-min_t cumsum(arr-dep))；I0_fleet=raw/raw.sum()*495540；'that total' 不重复 495,540"
+  },
+  {
+   "location": "paper/sec3_data.tex §3.4 初始存量代理句",
+   "old": "…not a fleet count; it is used only as $I_0$ in Q2, Q4 and Q5.",
+   "new": "…not a fleet count and a lower bound on the true stock, since a bicycle absent from the order file cannot appear in it; it is used only as $I_0$ in Q2, Q4 and Q5.",
+   "basis": "R1-8；抽样事实（订单文件里没有的车不可能出现），与 §2 A 档、§7 两情景一致"
+  },
+  {
+   "location": "paper/sec4_q1.tex §4.6 同格份额句",
+   "old": "…an overestimate of 3.94 percentage points}; the agreement elsewhere does not remove that bias.",
+   "new": "…an overestimate of 3.94 percentage points} (the equality with the adjacency rate of \\S\\ref{sec:data} is a numerical coincidence; the two quantities are unrelated); the agreement elsewhere does not remove that bias.",
+   "basis": "R1-9；data/runs/T006/q1_vs_obs.json 模型 0.128337/观测 0.088863；data/runs/T002/p_estimate.json exact 0.128280；不重复 12.83"
+  },
+  {
+   "location": "paper/sec3_data.tex §3.3",
+   "old": "The wide rate, less that false-match share, scales to $p\\approx0.18$--$0.19$",
+   "new": "The wide rate, less the false-match share, scales to $p\\approx0.18$--$0.19$",
+   "basis": "R1-11；typo"
+  },
+  {
+   "location": "paper/sec10_evaluation.tex Weaknesses 第四条末",
+   "old": "…the quoted saving a lower bound on the ideal LP saving.",
+   "new": "…the quoted saving a lower bound on the ideal LP saving. Values are printed at the precision of the archived result files so that each printed value can be checked against its source.",
+   "basis": "R1-12；回答 m1；七标准第 5 条（数字来自结果）"
+  },
+  {
+   "location": "paper/ai_report.tex 写入型常数清单（三轮车条）",
+   "old": "…trips of at most 5 km, 300 CNY per tricycle-day, 0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift.",
+   "new": "…trips of at most 5 km, the 12 nearest stocked donor cells per deficit cell in the tricycle stage, 300 CNY per tricycle-day, 0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift.",
+   "basis": "R1-13；code/t024_q2_tier2.py:49 TRI_NEAREST=12；AI 报告按任务单不计 token 门"
+  },
+  {
+   "location": "paper/sec1_intro.tex（全节非数字压缩）",
+   "old": "例：'Most of the analytical difficulty is not in the optimisation; it is in three quantities…' / 'The problem poses five questions, which we restate in operational terms:' / '…orders placed on 484,754 bicycles…' / roadmap 逐句展开",
+   "new": "例：'Three quantities the dataset does not contain and a careless model would silently assume:' / '…restated operationally:' / '…orders on 484,754 bicycles…' / roadmap 紧缩",
+   "basis": "G2 页数门：只删非数字词；token 门证明 sec1 与基线零差"
+  },
+  {
+   "location": "paper/sec2_assumptions.tex（压缩）",
+   "old": "例：'Every simplification below is stated with its rationale and with the direction in which it pushes the answer, so that a reader can discount the results accordingly.' / '…8.25\\% around its mean…' / '…which is conservative and may truncate the program…' / A5 自行车类型句",
+   "new": "例：'Each simplification below is stated with its rationale and the direction in which it pushes the answer.' / '…8.25\\%…' / '…which is conservative, while…' / 'The dataset's bicycle type is constant per bicycle and carries no information…'",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec3_data.tex（压缩）",
+   "old": "例：'Three features matter.' / 'Two partitions are used, at different resolutions and for different purposes.' / 'We estimate $p$ from the bicycles themselves.' / 'A single day's occupancy estimator is fragile because it is sensitive…' / 'Individual bicycles sit idle…（结尾句）' / 'A true adjacency is usually visible, but not always'",
+   "new": "相应删除或合并（'A true adjacency is not always visible'；'…inferred from its use.'）",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec4_q1.tex（压缩与浮动体重排）",
+   "old": "例：'precisely the level of detail…' / 'The exponential form is not an arbitrary choice.' / '…and no balancing procedure is required beyond the denominator.' / 'Three readings of \\tabref{tab:q1} matter.' / '…a large $\\beta_h$ means the destination distribution is concentrated near the origin.' / §4.6 段落置于图前 / §4.7 结尾 'An intervention that flattens the peak…'",
+   "new": "相应删除或紧缩；fig:q1 环境移至 §4.6 标题之后、正文之前；§4.7 结尾停在 commuter 句",
+   "basis": "G2；只删非数字词；结论文本未动；token 零差"
+  },
+  {
+   "location": "paper/sec5_q2.tex（压缩与浮动体重排）",
+   "old": "例：'Before optimising anything we should know what the optimisation is for.' / 'Once a zone-level truck plan is fixed…' / drift 句 / 'The plan is not a night-only shift.' / 'The integer cost of the tricycle layer is visible in the rounding.' / 'The bound is not tight, but it is small…' / fig:q2 环境在 §5.6 末",
+   "new": "相应删除或合并；fig:q2 环境移至 §5 标题之后（§5.1 前）",
+   "basis": "G2；只删非数字词；token 零差（仅 +12）"
+  },
+  {
+   "location": "paper/sec6_q3.tex（压缩）",
+   "old": "例：'The zero-payment result is the cleanest statement.' / 'The reason is one of scale:' / 'The scheme that follows is narrow and explicit.' / '…the budget does not bind at $r^*$.'",
+   "new": "相应删除或紧缩（'…the budget does not bind.'）",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec7_q4.tex（压缩）",
+   "old": "例：'…a plot ten by twenty-one metres…' / 'With 5,263 cells as candidate sites' / '…without first imposing the cap.' / '…the more favourable of the two…'",
+   "new": "相应紧缩，未动任何表值与图",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec8_q5.tex（压缩）",
+   "old": "例：'The five questions above…' / '…isolates pooling rather than total capacity' / 'This is the most serious loss and the least visible.' / 'Four measures follow, in descending order of value; the executive summary states them to the two readers.' / 'A single platform's data recovers them…fifth of the evidence…'",
+   "new": "相应删除或紧缩；§8.6 直接以 'Share the data, not the bicycles' 起笔；§8.7 以 'the city is the natural owner' 收束",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec9_sensitivity.tex（压缩）",
+   "old": "例：'…and they are not uncertain in the same way.' / '…which were not identified from any data.' / 'They describe where the spread comes from.'",
+   "new": "相应紧缩",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec10_evaluation.tex（压缩）",
+   "old": "例：'…so the four answers are priced on the same demand surface and the same service penalty.' / '…would be overturned wholesale…' / '…reduces the operational shortfall further.' / Conclusions 措辞",
+   "new": "相应紧缩；R1-3/R1-12 新句保留",
+   "basis": "G2；只删非数字词；token 零差"
+  },
+  {
+   "location": "paper/sec5_q2.tex §5.2 公式块外层的分页控制",
+   "old": "\\begin{align} … 8 行卡车规划 … \\end{align}（整块不可分页；在 p11 底留下 125pt 空白）",
+   "new": "{\\allowdisplaybreaks \\begin{align} … \\end{align}}（仅此一个公式块允许在 eq:q2cap 与 eq:q2truck 之间跨页，p11/p12 各自排满）",
+   "basis": "G2：不改变任何内容与字号/页边距；关闭该开关时全文 28 页、尾部溢出约 150pt，开启后恢复 27 总页/25 计页。如指导方不接受公式块跨页，替代方案是把该规划手工拆成两个 align 块（不改变任何符号与编号），请指导方定夺"
+  },
+  {
+   "location": "paper/sec7_q4.tex eq:q4cap 前符号句",
+   "old": "With $f_{ij}$ arrivals at $i$ assigned to a fence at $j$, $u_i$ arrivals left unassigned, $a_i$ the sizing demand",
+   "new": "With $f_{ij}$ the sizing demand at $i$ assigned to a fence at $j$, $u_i$ the sizing demand left unassigned, $a_i$ the sizing demand at $i$",
+   "basis": "code/t019_q4_cap.py::solve_cap：a 取自 cell_demand.npz 的 a_meas343/a_fleet495（逐格 P95 峰值占用），约束 Σ_j f_ij + u_i = a_i 要求 f/u 与 a 同为单位；Arrival coverage 55.80% 是另算口径。"
+  },
+  {
+   "location": "paper/sec7_q4.tex tab:q4plan caption",
+   "old": "with the arrival-weighted share in the last row",
+   "new": "with the arrival-weighted share in the row labelled Arrival coverage",
+   "basis": "表末行已为 MILP gap；到达口径在 'Arrival coverage' 行（55.80%/49.59%）。"
+  }
  ],
  "outputs": [
   "paper/main.pdf",
@@ -76,7 +214,11 @@
   "verify_final.py 相对 R0 的改动：BASE 8708d37→3209636；EXPECTED 改为仅 sec5_q2.tex ({},{'12':1})；新增 r1_checks（R1-1～R1-13 逐项）与 regression 段（data/runs/T024/schedule_check.json 复算并与论文串逐一匹配）；旧检查 sec5_actual_implementation 的匹配串由 'transportation program' 改为 'time-space network program'（R1-5 重写了该句，原串在 3209636 的 §5.4 中、现已不存在），'earliest finish' 仍检查；regression 匹配前去除 LaTeX 反斜杠（'59.385\\%' 归一）。",
   "页数与落点：main.pdf 27 页；p1 摘要、p2 目录（含 List of Figures/Tables）、p3--p24 正文（§1 起 p3、§10 结于 p24）、p25 References、pp26--27 AI 报告。p11--p12 之间卡车规划的一个公式块跨页（见 affected 最后一条）。",
   "本轮改动只在 paper/ 与 交付/T027*：paper/ 12 个 tex + main.pdf；交付/T027/verify_final.py、verify_final.json、file_list.json、T027_delivery.json。main.tex 未改（内容与 HEAD 一致；此前工作区里的 CRLF 差异已用 git checkout 还原）。code/、data/ 未写、未重跑；审查与规划/ 未写；未 push。",
-  "单个本地提交由执行方建立（不 push）；提交信息声明 R1 交付。file_list.json 已重算（757 个文件；paper tex 14、main.pdf 1、figs/*.pdf 8、code 99、results 633、documents 2），SHA-256 按当前磁盘字节。"
+  "单个本地提交由执行方建立（不 push）；提交信息声明 R1 交付。file_list.json 已重算（757 个文件；paper tex 14、main.pdf 1、figs/*.pdf 8、code 99、results 633、documents 2），SHA-256 按当前磁盘字节。",
+  "R1b 只动 paper/sec7_q4.tex 两处纯文字；sec7_q4.tex 对 3209636 的数字多重集与R1 完全相同（identical），页数仍 27 总 / 25 计页——两处替换合计增加约一行文字，未触发版面变化。",
+  "R1 复核结论（指导方 2026-11-19）：A10 附加句（R1-1b）采纳保留；pp11–12 的公式跨页（拆分点落在约束 (13)/(14) 之间）接受；token 门、757 文件哈希、独立编译、六数回归均复核通过。",
+  "verify_final.py 本轮追加 r1b_checks（R1b-1 / R1b-2 文本断言），revision 改为 R1b；token 门、回归门、PDF 门逻辑未改动。",
+  "file_list.json 已重算：仍 757 个文件（paper tex 14、main.pdf 1、figs PDF 8、code 99、results 633、documents 2），sec7_q4.tex / main.pdf / verify_final.* 的 SHA-256 随之更新。"
  ],
  "integrity": {
   "readonly_respected": true,
@@ -84,6 +226,7 @@
   "no_writes_in_code_or_data": true,
   "no_push": true,
   "single_commit": true,
-  "deleted_files_declared": true
+  "deleted_files_declared": true,
+  "based_on": "c8561ca (R1)"
  }
 }

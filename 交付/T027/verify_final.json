@@ -1,6 +1,6 @@
 {
  "task": "T027",
- "revision": "R1",
+ "revision": "R1b",
  "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
@@ -118,6 +118,10 @@
   "R1-13_ai_report": true,
   "no_7_46_anywhere": true,
   "no_same_zone_claim": true
+ },
+ "r1b_checks": {
+  "R1b-1_sizing_demand_units": true,
+  "R1b-2_caption_row_ref": true
  },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,
