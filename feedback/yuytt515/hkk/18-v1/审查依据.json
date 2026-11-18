@@ -1,0 +1,80 @@
+{
+  "author": "hkk",
+  "iteration": "18-v1",
+  "review_date": "2026-11-18",
+  "timezone": "Asia/Shanghai",
+  "source_pdf": {
+    "file_name": "hkk.pdf",
+    "sha256": "3a767034d9e6a9d72ba93f0bec85ef2032c229f7bcdc9a8d03a9e75642c7e1db",
+    "physical_pages": 27,
+    "included_in_page_limit": 25,
+    "ai_report_pages": 2
+  },
+  "problem_sha256": "0c2cee16a8e8cb1fd34809098163d0d0c552047748b43111ee287a5303c5439f",
+  "provided_ai_policy_sha256": "d6272d6aabeff5cccfcda0554277ed569db4e8f4d855e0dd24b8b2ecd9b32331",
+  "review_basis_repository": {
+    "repository": "yuytt515/ICM2027",
+    "base_commit": "2fe1a2a94669e227996a01566297191113506cc3",
+    "research_material_version": "1.0.0"
+  },
+  "review_kind": "read_only_pdf_review_and_local_claim_checks",
+  "models_rerun": false,
+  "manuscript_modified": false,
+  "original_data_modified": false,
+  "code_evidence": {
+    "repository": "dc-rick/mcm-2026-cqu-problemc",
+    "commit": "d8002f935d880a1859b5ae7f6d142dbe2cf706bd",
+    "pdf_at_commit": "paper/main.pdf",
+    "pdf_hash_matches": true,
+    "inspection": "static_only",
+    "files": [
+      {
+        "path": "code/21_q2_opt.py",
+        "sha256": "cf25e6c2f231ca8787a70e2564a2c555e397efd40248b4d790f6a7c2594d6280"
+      },
+      {
+        "path": "code/t007_q2_run.py",
+        "sha256": "b9f3d6934275fc1e6631430ec945abfecba6971a63ffba9e27337525ec0caca7"
+      },
+      {
+        "path": "code/t008_q3_pool.py",
+        "sha256": "4be9e494c6f30898aaa37cd921b3639440657b1e1c50cffcdab6c01979d671bd"
+      },
+      {
+        "path": "code/t009_q4.py",
+        "sha256": "728cbdba38ae7b9a4823f204458aa676f56371d3f12995733fd311109a7d4919"
+      },
+      {
+        "path": "code/run_all.py",
+        "sha256": "390775afcb284911a9e3c53f604f5ed79da337e5a61ba6d59d47cc4f3d0afcbf"
+      },
+      {
+        "path": "code/t005_return_share.py",
+        "sha256": "a674fd40bd6427361ac4a74381e3fef0c87090f6ac34da8638e7c7f7224ba489"
+      },
+      {
+        "path": "code/t005_common.py",
+        "sha256": "1d7c574a1868b43b3b934b93e21268d66bf0ccb37816568bee1c077385789720"
+      }
+    ]
+  },
+  "raw_file_identity_check": {
+    "source_file": "2026_CQU_MCM_Problem_C_DATA.csv",
+    "source_bytes": 191497836,
+    "sha256": "209ed0fbd632d01326e0991739ab22d5b2302665d13697628246b2899c3395c3",
+    "rows": 3214096,
+    "unique_orders": 3214096,
+    "users": 349693,
+    "distinct_bike_ids": 485465,
+    "scope": "Raw-file identity counts only; not a census of simultaneous fleet inventory. No end times or failed requests are observed."
+  },
+  "verification_limit": "PDF claims are reviewed; model numerical outputs were not reproduced in this review.",
+  "local_claim_checks": {
+    "q4_501_cost_at_lambda150": 471467,
+    "q4_reported_705_cost_at_lambda150": 597442,
+    "q2_night_share_percent": 39.34,
+    "q2_required_day_share_percent": 60.66,
+    "q2_reported_day_share_percent": 59.63,
+    "public_push_natural_arrivals_reward_at_r1_2_cny_approx": 120049.2
+  }
+}
