@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T016 日数口径修正（ten days → nine recorded days）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.warn{border-left-color:var(--warn)}
+.box.hi{border-left-color:var(--hi)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T016 · 日数口径修正</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18</strong>　·　前置：T014 通过　·　唯一改动：把“ten days”改为“nine recorded days”（5 处）　·　数字一律不动</p>
+
+<div class="box hi">
+<p><strong>发现（我在进度核查时抓到，L3 一直未真正关闭）。</strong>数据里 <strong>2017-05-17 完全没有记录</strong>：<code>data/trips.parquet</code> 按日计数为 05-10…05-16、05-18、05-19，各 22.5–32.2 万单，05-17 一行都没有。论文 <code>sec3_data.tex:28</code> 自己也写了 “\textbf{17 May is entirely absent} --- not sparse, absent”，而 <code>sec3_data.tex:37</code> 却写 “All estimation uses the \textbf{ten days} 10--19 May”。同一数据段里前后矛盾：10–19 是十个日历日，但只有<strong>九个有记录的日子</strong>。船队段与摘要在别处写的是 “nine complete days”，是对的。用户特征代码 <code>code/04_behaviour.py:17</code> 过滤 <code>2017-05-10..2017-05-19</code>，所以用户表的“trips per user”分母实际是九个记录日，标签不能写 ten days。</p>
+</div>
+
+<h2>1. 修改条目（逐字替换，只改这 5 处）</h2>
+<div class="tw"><table>
+<thead><tr><th style="width:6%">编号</th><th style="width:20%">文件:行</th><th style="width:37%">现文</th><th style="width:37%">改为</th></tr></thead>
+<tbody>
+<tr><td>T016-1</td><td><code>paper/sec3_data.tex:37</code></td><td>All estimation uses the <strong>ten days</strong> 10--19 May,</td><td>All estimation uses the <strong>nine recorded days</strong> of 10--19 May,</td></tr>
+<tr><td>T016-2</td><td><code>paper/sec4_q1.tex:178</code></td><td>Latent user segments (<strong>ten days</strong>).</td><td>Latent user segments (<strong>the nine recorded days of 10--19 May</strong>).</td></tr>
+<tr><td>T016-3</td><td><code>paper/sec4_q1.tex:186</code></td><td>\textbf{user (<strong>10 days</strong>)}</td><td>\textbf{user (<strong>10--19 May</strong>)}</td></tr>
+<tr><td>T016-4</td><td><code>paper/sec4_q1.tex:199</code></td><td>makes 9.18 trips over the <strong>ten-day window</strong> (1.64 per active day)</td><td>makes 9.18 trips over the <strong>nine recorded days of the 10--19 May window</strong> (1.64 per active day)</td></tr>
+<tr><td>T016-5</td><td><code>paper/sec4_q1.tex:201</code></td><td>makes 13.98 trips over <strong>ten days</strong> (2.47 per active day)</td><td>makes 13.98 trips over the <strong>nine recorded days</strong> (2.47 per active day)</td></tr>
+</tbody></table></div>
+
+<div class="box">
+<p><strong>为什么不是改数据：</strong>代码本来就用 10–19 的日期范围取数，17 日无记录，所有计数（9.18 / 13.98 / 3.71 / 2.48 / 2.25 与各份额）都是在九个记录日上算出来的，值不变。错的只是文字标签。不要重跑模型，不要改任何数值、份额、表行。</p>
+</div>
+
+<h2>2. 验收</h2>
+<ol>
+<li><code>grep -rn "ten days\|ten-day\|10 days" paper/*.tex</code> 命中 0（改完后；“ten-day window”等一律不得残留）。</li>
+<li>全 tex 数字 token 多重集与 <code>7ce233c</code> 的差异只能来自日期标签（新增 <code>10</code>/<code>19</code> 各若干），<strong>不得有数据值变化</strong>；在交付里附 diff 全量。</li>
+<li>xelatex 两遍：30 页、正文 24（3–26）、undefined 0、overfull 0、U+037E 0、分号 131、<code>??</code> 0、目录 References 第 27 页。</li>
+<li>重交 <code>交付/T016_delivery.json</code>：<code>status</code> 写 “T016 已交付”；<code>checks</code> 覆盖上表 5 条与第 1–3 项；<code>affected</code> 列出 5 个行号；<code>notes</code> 写明依据（<code>data/trips.parquet</code> 的 05-17 缺日、<code>code/04_behaviour.py:17</code> 的范围、<code>sec3_data.tex:28</code> 的原文）。</li>
+<li>单独 commit，不 push；不要动 <code>data/</code>、不要动 <code>审查与规划/</code>。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>为什么现在做：</strong>L3 在问题台账里一直挂着“ten usable days 实为 9 天”，T012 验收时没有落实，我上一轮汇报里说“只剩 L5”说错了。这是评委一眼能抓的自相矛盾（同段先说 17 May absent，再说 ten days），必须在提交前修掉。修完 T016 通过，L3 才能关闭。</p>
+</div>
+
+</main>
+</body>
+</html>
