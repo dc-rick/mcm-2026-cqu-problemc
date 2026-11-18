@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T021A 审查记录（退回 R1）2026-11-19</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T021A 审查记录 · 退回 R1</h1>
+<p class="meta">日期：2026-11-19　·　交付：<code>交付/T021A_delivery.json</code>（R0，commit 62f0b79，本地未 push）　·　返工单：<code>审查与规划/任务单/T021A_R1_论文内容整合_返工.html</code>　·　结论：<strong>退回 R1（数字与编译通过；正文合规清理）</strong></p>
+
+<div class="box hi">
+<p><strong>一句话结论：</strong>数字侧可以过——724 条锁定全部独立复算一致、编译干净、回归三数不变、禁词门为 0；但正文含 23 处内部任务编号、4 处改稿语言、内部结果字段名与写给执行方的指令式措辞，另有区 24 的 0.43% 分母写错、33.19×6 算式不成立、fig4 panel(b) 栅格从 300 dpi 降到 150 dpi。这些都是评委可见的问题，按 T012 R1 先例退回。R1 只改文字与图，不改任何数字。</p>
+</div>
+
+<h2>1. 读了什么</h2>
+<ul>
+<li>交付 JSON 全文；<code>data/runs/T021A/numbers.json</code> 的 schema 与全部条目；<code>coverage_report.txt</code>、<code>token_diff.txt</code>。</li>
+<li><code>paper/summary.tex</code> 全文；<code>sec1</code>–<code>sec10</code> 全文（重点 sec5/sec6/sec7/sec8/sec9/sec10）；<code>ai_report.tex</code> 全文；<code>main.tex</code>/<code>references.tex</code> 抽查。</li>
+<li>结果文件：<code>data/runs/T023/tornado.json</code>、<code>intervals.json</code>；<code>data/runs/T024/schedule_check.json</code>；<code>data/runs/T025/breakeven.json</code>；<code>data/runs/T026/optimum.json</code>、<code>cost_vs_r.json</code>；T022 <code>shared_beta.json</code>。</li>
+<li>图：<code>figs/fig4_q2.pdf</code>、<code>figs/fig_q3_cost_vs_r.pdf</code>、<code>figs/fig9_tornado.pdf</code>（另扫全部 <code>figs/*.pdf</code> 的栅格与字号）。</li>
+<li>基线：<code>c4be8d1</code> 的 <code>paper/*.tex</code> 与 <code>figs/fig4_q2.pdf</code>，用于回归与“是否新引入”判断。</li>
+</ul>
+
+<h2>2. 独立复算与复核</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>方法</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>数字锁定</td><td>逐条重读 numbers.json 的 file/key/scale/formula，对 708 条可解析条目独立复算；16 条 computed 按其字面公式复算（31/128、11/128、18/128、20/128、边际 1.50183/1.18714/0.26015/0.05354、uncapped median 582.7193、max 2946.5093、over150 704）</td><td>0 失败；覆盖扫描未解释 token 为 0（<code>coverage_report.txt</code>：entries=724 failed=0 uncovered=0）</td></tr>
+<tr><td>编译</td><td>在临时目录复制 paper/ + figs/，独立跑 xelatex 两遍</td><td>32 页；AI 报告 31–32 页（2 页），计页 30；undefined 0、overfull 0、<code>??</code> 0、U+037E 0、无 rerun</td></tr>
+<tr><td>回归三数</td><td>grep 计数</td><td>975：5 文件；617,055.7515：5 文件；39,984.2332：3 文件；与交付声明一致</td></tr>
+<tr><td>禁词门</td><td>grep：623.17、by minimising、170,000、60,000、885、266,327、40,357、76.86、6.83、20.83、10.40、2,883.3、480.6、1.76、total_capped</td><td>全部 0 次；0.81 仅事件序余量与付款账预算示例；2.70 仅预算不可行对照</td></tr>
+<tr><td>0.81/2.70 语境</td><td>逐处读上下文（sec5:87；sec6:166/180/199/205-211）</td><td>未作最优或推荐；H26 对照成立</td></tr>
+<tr><td>区 24 的 0.43%</td><td>26.4965 / 2,085.9826 = 1.27%；26.4965 / 6,192.4965 = 0.4279%（<code>rounding_share</code>）</td><td><strong>正文分母写错</strong>（“of the zone's unmet”）→ M19</td></tr>
+<tr><td>33.19×6</td><td>33.19×6 = 199.14；全精度 33.1936×6 = 199.1617</td><td><strong>显示算式不成立</strong> → D5</td></tr>
+<tr><td>COST_KM 排名</td><td>按 <code>tornado.json</code> 的 <code>range.q2_total</code> 排序</td><td>第 10（交付 affected 写 rank 9，notes 写 rank 10）→ L13</td></tr>
+<tr><td>图</td><td>PyMuPDF 读嵌入图与字号</td><td>新两图矢量、8 pt、无栅格；fig4 的 panel(b) 为 343×311 px/165×149 pt ≈150 dpi，旧版 642×661 px/154×159 pt ≈300 dpi → M20</td></tr>
+<tr><td>基线对照</td><td>对 <code>c4be8d1</code> 的 paper/*.tex 做同样的 T0xx/old/withdrawn 扫描</td><td>基线 0 处；R0 新引入 23 处 T0xx、4 处改稿语言 → H27</td></tr>
+</tbody></table></div>
+
+<h2>3. 退回理由（按严重程度）</h2>
+<ol>
+<li><strong>H27（高）正文内部信息泄露。</strong>23 处大写 T0xx（sec5:83/103/194/232；sec6:42/64/85/166/199/230/239/244/245；sec7:128；sec8:16/42；sec9:72/73；sec10:41/48/49/54/91）；4 处改稿语言（sec6:84-85“old cell-level analysis”、sec6:204“The old comparison”、sec8:82-85“the old zone-level control”、sec9:163-166“The earlier Chao1 value ... is withdrawn”）；sec6:245 含 <code>q3\_pure\_obj</code>/<code>q3\_ceiling</code> 与“must not be attached to 18,011.46”，sec9:72-74 含“This qualifier belongs to ...”的元语言。基线为 0，属 R0 回归。</li>
+<li><strong>M19（中）区 24 的 0.43% 口径。</strong>0.43% 是 26.4965/6,192.4965（LP 自行车流量），不是 26.4965/2,085.98（1.27%）。正文写成“of the zone's unmet”，评委除法即可推翻。</li>
+<li><strong>D5（低）33.19×6 = 199.16 的算式。</strong>显示值 33.19 乘 6 得 199.14；199.16 来自全精度 33.1936。改措辞即可，不改数值。</li>
+<li><strong>M20（低）fig4 分辨率回归。</strong>panel(b) 从 300 dpi 降到 150 dpi；其余 panel 与文字仍是矢量。</li>
+<li><strong>L13（低）交付记录自相矛盾。</strong>720 vs 724；rank 9 vs rank 10。以 724、rank 10 为准。</li>
+</ol>
+
+<h2>4. 已裁定，不返工</h2>
+<div class="box warn">
+<ul>
+<li><strong>摘要改写：</strong>接受。R0 重写摘要是为消除旧数，不是提前做 T021B 的压缩；T021B 仍负责最终摘要与执行摘要。</li>
+<li><strong>写 <code>figs/</code>：</strong>接受。任务单漏列目录是指导方起草缺陷；已把 <code>figs/</code> 补入可写（仅三图）。</li>
+<li><strong>§4 共用 β：</strong>接受。留出日重估 2.095/2.014/2.517/2.130/2.365 与配对检验同源；全样本 2.096/…/2.364 的第三位小数差异已说明。</li>
+<li><strong>0.81 / 2.70：</strong>接受其现有用法（预算示例、H26 对照），均未作最优或推荐。</li>
+<li><strong>0.0008 元：</strong>接受；未声称 0.001 元。</li>
+<li><strong>705：</strong>接受为 uncapped 参考，未与限容方案直接比覆盖率。</li>
+<li><strong>26.50：</strong>接受（全精度 26.4965）；只改分母表述。</li>
+</ul>
+</div>
+
+<h2>5. 转移到后续任务</h2>
+<ul>
+<li><strong>T021B：</strong>压缩到计页 ≤25、执行摘要、最终摘要；摘要中“the 50-zone program leaves only 432.23”建议补 “with no dispatch / at $K=0$”，避免被读成 K=60 计划仍留 432.23。</li>
+<li><strong>T027（H28）：</strong>AI 报告滞后于正文：仍写 “all six figures”（现有 8 图）、日期 “11 to 18 November 2026”（T021A 在 19 日）、“Most values ... printed by 95_numbers.py”（该脚本未读取任何 T018–T026 结果）；§10 结尾句需与重写后的报告一致。提交清单图路径应为 <code>figs/*.pdf</code>，不是 <code>paper/figs/</code>。</li>
+</ul>
+
+<h2>6. 复核边界</h2>
+<p>本次复核未修改执行方任何文件（<code>paper/</code>、<code>code/</code>、<code>data/</code>、<code>figs/</code>、<code>交付/</code>）。<code>git status --porcelain</code> 只应出现 <code>审查与规划/</code> 下的台账、任务单与本记录。R1 通过前 T021B 不得开工。</p>
+
+</main>
+</body>
+</html>

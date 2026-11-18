@@ -41,6 +41,7 @@ li{margin:3px 0}
 <h2>1. AI 报告（H9）</h2>
 <ol>
 <li>补记本轮（T018–T026）的 AI 使用：任务单下达、代码生成与修改、结果复核、论文改写，各写清工具、版本、日期与用途。</li>
+<li><strong>改准既有陈述（2026-11-19 追加）：</strong>报告现写“all six figures”，正文已有 8 张图；日期区间“11 to 18 November 2026”未含 19 日的 T021A/T026；报告称 <code>95_numbers.py</code> 打印“most values”，但该脚本未读取任何 T018–T026 结果（grep 0），新数字由 <code>code/t021a_numbers.py</code> 生成 <code>data/runs/T021A/numbers.json</code>；§10 结尾“constants ... listed in the Report on Use of AI Tools”必须与重写后的报告一致，不能夸大覆盖范围。</li>
 <li>若本轮新增了"由脚本按规则生成、非人工选择"的常数（T018 的卡车速度/装卸时间、T024 的三轮车常数、T019 的 150 位上限与 4,000 站膝点、T026 的接受函数参数），必须逐条列入并说明来源或"规划假设"。</li>
 <li>Query / Output 示例至少两组，取自本轮真实对话。</li>
 <li>保持既有格式：工具版本、日期区间、行内 <code>\cite{aiapp}</code>、参考文献条目。</li>
@@ -50,7 +51,7 @@ li{margin:3px 0}
 <ol>
 <li>最终 PDF：<code>paper/main.pdf</code>，xelatex 三遍，undefined 0、overfull 0、U+037E 0、<code>??</code> 0。</li>
 <li>页数：计页 ≤25，AI 报告独立分页；目录页码与正文一致；References 在目录中。</li>
-<li>文件清单：<code>paper/*.tex</code>、<code>paper/figs/*.pdf</code>、<code>paper/main.pdf</code>、<code>code/</code> 全量、<code>data/runs/T0xx/</code> 结果、<code>DATA.md</code>、<code>README.md</code>，逐项写进 <code>交付/T027/file_list.json</code>（路径 + SHA-256）。<strong>临时/基准脚本</strong>（如 <code>code/_bench_t023*.py</code>、<code>data/runs/*/scratch/</code>）不得混入正式清单：能删则删，需保留则归入 <code>scratch</code> 并在清单里单列一节说明“非复现路径”。</li>
+<li>文件清单：<code>paper/*.tex</code>、<code>figs/*.pdf</code>（论文以 <code>../figs/</code> 引用，不是 <code>paper/figs/</code>）、<code>paper/main.pdf</code>、<code>code/</code> 全量、<code>data/runs/T0xx/</code> 结果、<code>DATA.md</code>、<code>README.md</code>，逐项写进 <code>交付/T027/file_list.json</code>（路径 + SHA-256）。<strong>临时/基准脚本</strong>（如 <code>code/_bench_t023*.py</code>、<code>data/runs/*/scratch/</code>）不得混入正式清单：能删则删，需保留则归入 <code>scratch</code> 并在清单里单列一节说明“非复现路径”。</li>
 <li>复现说明：<code>run_all.py</code> 的完整阶段清单与预计耗时；哪些阶段依赖 T018–T026 的输入（写明），哪些可跳。</li>
 </ol>
 
