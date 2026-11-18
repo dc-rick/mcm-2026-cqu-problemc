@@ -42,7 +42,7 @@ li{margin:3px 0}
 <ol>
 <li><strong>压到计页 ≤25。</strong>计页 = 总页数 − AI 报告页数（AI 报告独立分页、不计入）。现状基准：27 页 / 计页 25（摘要 1 + 目录 1 + 正文 21 + 参考文献 2）。T021A 之后会计页上涨，本任务要压回去。</li>
 <li><strong>Executive Summary（M17）</strong>：§1.5 现为“The contributions are four.”的贡献清单，不是题面要求的执行摘要。改写为给平台运营方与北京市交通主管部门的约 0.6 页备忘录，每条带成立条件：卡车数量与时段（T018/T024）、奖励额度与目标区及预算规则（T020/T026）、围栏数量/位置类型/单站规模上限（T019）、竞争监管建议（§8.5）。</li>
-<li><strong>摘要重写</strong>：每问一个主要结果 + 必要条件；每个数字能在 <code>numbers.json</code> 找到；不再保留任何被取代的旧数。</li>
+<li><strong>摘要重写</strong>：每问一个主要结果 + 必要条件；每个数字能在 <code>numbers.json</code> 找到；不再保留任何被取代的旧数。摘要里“the 50-zone program leaves only 432.23”必须带上 <em>with no dispatch / at $K=0$</em> 的条件，否则会被读成 $K=60$ 的计划仍留 432.23（实际为 0）。</li>
 </ol>
 
 <h2>2. 压缩优先级（从高到低，按此顺序砍）</h2>
