@@ -25,7 +25,7 @@ users on 484,754 distinct bicycles.
 \figref{fig:data}a shows the daily volume. Three features matter.
 
 The volume is stable at 225,000--322,000 orders per day from 10 to 19 May, with the
-weekend dip one expects. \textbf{17 May is entirely absent} --- not sparse, absent ---
+expected weekend dip. \textbf{17 May is entirely absent} --- not sparse, absent ---
 so no interpolation is possible and we treat the day as missing.
 
 From 20 May onward the sample is \emph{truncated}, not merely quieter. The five days
@@ -68,9 +68,9 @@ only 2.30\% and 1.30\% within 250 m. Correcting the exact-match rate for that fa
 match gives $p\approx0.18$--$0.19$; we use the bracket $p\in[0.128,0.200]$ and the
 central value 0.185 in the discussion below.
 
-Following decision B7 we retain $p=0.128$ for the absolute flow quantities. This is
+We retain $p=0.128$ for the absolute flow quantities. This is
 the \emph{lower} end of the bracket, so dividing by 0.128 overstates every absolute
-flow by about $0.185/0.128=1.45$ relative to the central estimate. All absolute
+flow by a factor of about $0.185/0.128=1.45$ relative to the central estimate. All absolute
 counts in this paper are therefore \textbf{upper bounds}; ratios, shares and the fleet
 estimate (which is invariant to $p$) are unaffected. Finite-sample resampling is a
 different matter from the algebraic invariance: at a 5\% rate, 64.5\% of 200 draws
@@ -100,7 +100,7 @@ model interval we report the observed 14-day union as a hard lower bound,
 fleet estimate; it is used only as the measured initial inventory in Q2, Q4 and Q5.
 
 At 495,540 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
-\textbf{4.33 times per day}. The fleet is idle in the particular even when it is
+\textbf{4.33 times per day}. Individual bicycles sit idle even when the fleet is
 abundant in the aggregate; that is the tension the rest of the paper quantifies.
 
 \subsection{Spatial units}

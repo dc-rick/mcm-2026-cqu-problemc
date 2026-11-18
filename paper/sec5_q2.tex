@@ -123,9 +123,9 @@ $\alpha$ & $K$ & \textbf{Moved} & \textbf{Truck-km} & \textbf{Unserved} &
 $\alpha=1$, $K=60$: \textbf{24,679 bicycles relocated per day over 5,530
 truck-kilometres}, at a daily cost of 82,195 CNY including the trucks, or
 \textbf{3.33 CNY per bicycle moved}. The observed-OD baseline at the same fleet moves
-720 fewer bicycles, 89 fewer truck-kilometres and ends 675 bicycles closer to balance,
-for an objective 1,130 CNY higher; the Q1 demand surface is not a better plan, but it
-is the surface the problem requires for Q2 and Q4. Three features deserve comment.
+720 fewer bicycles, 89 fewer truck-kilometres and ends 675 bicycles farther from balance,
+for an objective 1,130 CNY higher; the Q1 demand surface is not chosen because it
+yields a cheaper plan, but because the problem requires it for Q2 and Q4. Three features deserve comment.
 
 \textbf{The plan is not a night-only shift.} \figref{fig:q2}b plots deliveries by
 zone and hour. Hours 21:00--06:00 carry 39.34\% of moved bicycles and 37.12\% of
@@ -133,7 +133,7 @@ truck-kilometres; the remaining 59.63\% and 62.88\% are moved during the day. Th
 model contains no night cost, so the timing is a consequence of the balance
 constraints, not an optimised night preference.
 
-\textbf{Trucks are not the only instrument.} The K=20 row shows what a thin truck
+\textbf{More trucks bring diminishing returns.} The K=20 row shows what a thin truck
 fleet can do: only 9,600 bicycles moved and an end-of-day deviation of 27,469.
 Doubling to K=40 doubles the moves and cuts the deviation to 8,269 at an objective of
 82,933. K=60 is simultaneously cheaper (82,195) and far better balanced (deviation

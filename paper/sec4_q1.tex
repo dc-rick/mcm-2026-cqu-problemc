@@ -14,10 +14,10 @@ interval over the seven typical days,
 \hat\lambda_{it} \;=\; \frac{1}{7}\sum_{k=1}^{7} N_{it}^{(k)},
 \end{equation}
 where $N^{(k)}_{it}$ is the number of departures from cell $i$ in interval $t$ on day
-$k$. With 5,263 cells and 96 intervals the table has $5.05\times10^{5}$ entries, which
-is precisely the level of detail the data support: the average cell-interval contains
-0.54 trips, and the profile (\figref{fig:data}b) is bimodal on weekdays, with a sharp
-8 a.m. peak, a lunchtime shoulder and an evening peak at 6 p.m., and unimodal on
+$k$. With 5,263 cells and 96 intervals the table has $5.05\times10^{5}$ entries ---
+precisely the level of detail the data support. The average cell-interval contains
+0.54 trips, and the profile (\figref{fig:data}b) is bimodal on weekdays --- a sharp
+8 a.m. peak, a lunchtime shoulder and an evening peak at 6 p.m. --- and unimodal on
 weekends.
 
 \subsection{Destination: a singly-constrained gravity model}
@@ -165,7 +165,7 @@ axis, so the difference is not flattened. (d) Top-five destination hit rate.}
 
 A single representative rider would misrepresent the system, because the hourly
 profile is the superposition of distinct behaviours. We characterise each user by six
-features computed over the ten usable days: trips per day, mean trip distance, entropy
+features computed over the nine recorded days: trips per day, mean trip distance, entropy
 of the departure-hour distribution, share of trips in peak hours, share on weekends,
 and share of trips that return to the origin cell. $k$-means \cite{lloyd1982} with the
 silhouette criterion \cite{rousseeuw1987} gives a \emph{best-run} silhouette of 0.256
@@ -201,7 +201,7 @@ four-fifths of all trips. The \emph{regular multi-purpose} user makes 9.18 trips
 the nine recorded days of the 10--19 May window (1.64 per active day) --- the profile of a short-distance commuter
 or a rider who uses the bicycle as a substitute for walking --- and accounts for
 51.8\% of trips. The \emph{heavy short-trip} user makes 13.98 trips over the nine recorded days
-(2.47 per active day) over 0.67 km; 16.5\% of their trips end in the same cell they
+(2.47 per active day), each 0.67 km on average; 16.5\% of their trips end in the same cell they
 started in, and 25.7\% return to an origin cell they had already used that day. This
 is the courier-like, errand-heavy behaviour that dominates the dense core. The
 \emph{commuter} class rides longer (1.17 km) and concentrates its trips in peak hours
