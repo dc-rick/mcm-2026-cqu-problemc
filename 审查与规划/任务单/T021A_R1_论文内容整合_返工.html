@@ -140,7 +140,7 @@ li{margin:3px 0}
 <ol>
 <li><strong>内部编号门：</strong><code>python -I -c</code> 扫描 <code>paper/*.tex</code>，区分大小写 <code>\bT0[0-9][0-9]\b</code> = 0，<code>T022-M15</code> = 0。</li>
 <li><strong>改稿语言门：</strong><code>\bold\b|\bOld\b|withdrawn|Withdrawn</code> = 0；<code>q3\_pure\_obj|q3\_ceiling</code> = 0；<code>must not be attached</code> = 0；<code>belongs to the T0</code> = 0。</li>
-<li><strong>数字不变门：</strong><code>paper/*.tex</code> 的数字 token 多重集与 R0 逐文件完全一致（D5 只换措辞，不换 token；D4 保持 0.43）。回归三数 975 / 617,055.7515 / 39,984.2332 仍为 5 / 5 / 3 个文件。</li>
+<li><strong>数字不变门：</strong><code>paper/*.tex</code> 的数字 token 多重集与 R0 逐文件完全一致（D5 只换措辞，不换 token；D4 保持 0.43）。比较时排除 <code>T0xx</code> 编号里的数字（如 T018 的 018 不算数字 token）。回归三数 975 / 617,055.7515 / 39,984.2332 仍为 5 / 5 / 3 个文件。</li>
 <li><strong>编译门：</strong>xelatex 至少两遍；undefined 0、overfull 0、<code>??</code> 0、U+037E 0；总页 ≤32（本阶段不压缩），报计页数（AI 报告 2 页不计）。</li>
 <li><strong>图门：</strong>fig4 嵌入栅格在放置尺寸下 ≥300 dpi；字号仍 ≥7 pt（mathtext 70% 可接受）；另两图不动。</li>
 <li><strong>交付门：</strong>按契约写 <code>交付/T021A_delivery.json</code>，<code>revision</code> = R1；D7 两项已更正；附 D1–D6 的 grep/编译/图像证据；单独 commit，不 push。</li>
