@@ -93,6 +93,21 @@ li{margin:3px 0}
 <h2>5. 范围与完整性</h2>
 <p><code>git show --stat 6d97c2c</code>：只含 <code>code/t022_fleet.py</code> 与 <code>交付/T022_delivery.json</code>，未碰 <code>审查与规划/</code>，未碰 <code>paper/</code>；<code>data/</code> 在 .gitignore 内，结果文件在盘上（sha256 6636c26e… 与交付一致）。脚本只写 <code>data/runs/T022/</code>。第 5 条“不许做的事”无违规。<strong>所有权与复现信息合规。</strong></p>
 
+<h2>5b. R1 验收（同日，f638d11）：<span style="color:var(--ok)">通过</span></h2>
+<p>逐条核对验收记录 §4：</p>
+<div class="tw"><table>
+<thead><tr><th>要求</th><th>交付</th><th>指导方核对</th></tr></thead>
+<tbody>
+<tr><td>1 homogeneity_benchmark</td><td>N=495,539.988，p₁=0.934118，p₂=0.669617；E[f1]=174,792.956、E[f2]=309,961.022、E[并集]=484,753.978；Chao1_homog=534,038.526，与观测差 0.0498 辆</td><td>自算 p₁=462,893/495,539.988=0.934118 ✓；比值 534,038.576/495,539.988=1.077690 ✓</td></tr>
+<tr><td>2 chao_effort_bias</td><td>1+(1−p)²：p=0.934 → 1.0044、0.801 → 1.0396、0.670 → 1.1089；观测精确因子 1.0776901</td><td>1+(1−0.934118)²=1.00434 ✓；1.0776901 与观测比值一致 ✓</td></tr>
+<tr><td>3 200 次重抽样</td><td>P5/P50/P95 = 508,839 / 520,176 / 533,736，min 502,744、max 539,180；15–19 块 494,284 低于点估计</td><td>方向与量级同指导方 30 次（503,353–533,831）；10–14 / 15–19 差 0.1–0.2%，来自日界管线，可接受 ✓</td></tr>
+<tr><td>4 affected 改写</td><td>无 “at least 534,039”“506,635 失效”；六条改为 N ≥ 484,754 → ≤4.42、4.33 为上估计、534,039 仅情景值</td><td>全文检索仅剩三处：<code>affected[2].old</code>（被替换的原文）与 <code>notes[0]</code>（说明撤回了什么），均合规 ✓</td></tr>
+<tr><td>5 新投放降为提示性</td><td>openness 保留 dN=+1.493 / +0.105，标注为提示性</td><td>✓</td></tr>
+<tr><td>6 不碰 paper/</td><td>commit 只含 <code>code/t022_fleet.py</code> 与交付 JSON</td><td><code>git show --stat f638d11</code> 核对 ✓</td></tr>
+</tbody></table></div>
+<p>复算：2,143,417.41/484,754 = <strong>4.4217</strong>（论文写 4.42）；2,143,417.41/495,540 = 4.3254；/534,039 = 4.0136。三个数与交付一致。</p>
+<p><strong>结论：M16 通过。</strong>台账：T022 记为“执行中（M16 通过；M12 待验收；M15 等 T019）”；M16 在问题台账记为“修复中”，等 T021 把文字写进论文后再关闭。</p>
+
 <h2>6. 未解决项</h2>
 <ul>
 <li>车队真实规模在本数据的两窗设计下<strong>不可识别</strong>；只能给方向（偏低）与设计无关下界（484,754）。这是结论，不是待办。</li>
