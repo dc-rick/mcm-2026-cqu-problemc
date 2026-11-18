@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T022-M16 验收：退回 R1</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T022-M16 验收：退回 R1</h1>
+<p class="meta">2026-11-18 · 交付 6d97c2c（T022_delivery.json, status=partial）· 结论：<strong>M16 退回 R1</strong>；M12 继续，M15 等 T019</p>
+
+<div class="box hi">
+<p><strong>结论：</strong>第 1、2、5 项通过；第 3、4 项（Chao 下界 534,039）<strong>不成立，必须撤回</strong>；由它导出的“至多 4.01 次/车/天”“原区间 [484,754, 506,635] 失效”一并撤回。缺陷不是算错，而是估计量选错：两窗采样强度不等，Chao1 的超出量测的是这个不等，不是异质性。</p>
+</div>
+
+<h2>1. 独立复算（指导方自己写脚本，不读执行方脚本）</h2>
+<p>从 <code>data/trips.parquet</code> 重算，窗口按 14 个记录日（05-17 缺失）划分：</p>
+<div class="tw"><table>
+<thead><tr><th>口径</th><th>n1</th><th>n2</th><th>m</th><th>并集</th><th>Chapman</th><th>Chao1</th></tr></thead>
+<tbody>
+<tr><td>指导方复算（朴素日界）</td><td>463,451</td><td>331,980</td><td>309,966</td><td>485,465</td><td>496,365.58</td><td>535,147.71</td></tr>
+<tr><td>执行方 / 论文原口径</td><td>462,893</td><td>331,822</td><td>309,961</td><td>484,754</td><td>495,539.99</td><td>534,038.6</td></tr>
+</tbody></table></div>
+<p>两者差 0.1–0.2%，来自日界约定（我的朴素日期分箱 vs 论文管线），量级一致。执行方精确复现论文的 495,540（<code>sec3_data.tex:85-94</code>），第 1 项<strong>通过</strong>。n1 分层合计 44,552+108,435+162,044+115,571+32,291 = 462,893，与汇总一致；再捕获率 0.4945→0.8039 单调上升，加权平均 309,961/462,893 = 0.6696 与总体一致，第 2 项<strong>通过</strong>。</p>
+
+<h2>2. 为什么 534,039 不是下界</h2>
+<p>用交付自己的三个数 <code>n1=462,893, n2=331,822, m=309,961</code> 反解同质两窗模型：</p>
+<ul>
+<li>Chapman N = 495,539.99，于是 p₁ = n1/N = <strong>0.9341</strong>（9 天窗口），p₂ = n2/N = <strong>0.6696</strong>（5 天窗口）。</li>
+<li>在该同质模型下，<strong>E[f1] = 174,793</strong>（观测 174,793）、<strong>E[f2] = 309,961</strong>（观测 309,961）、<strong>E[并集] = 484,754</strong>（观测 484,754）——三个数被逐辆对齐。</li>
+<li>把同质模型代入同一个 Chao1 公式：<strong>Chao1 = 534,038.5</strong>，与观测值 534,038.6 相差 0.1 辆。</li>
+</ul>
+<p>也就是说，两个窗口只有 (n1, n2, m) 三个统计量；同质模型有 (N, p₁, p₂) 三个参数，可以精确拟合；Chao1 是这三个统计量的确定函数。因此 <strong>+38,499 的超出量与异质性无关，全部由 p₁ ≠ p₂ 产生</strong>。等强度时 Chao1 的偏差因子是 1+(1−p)²（p=0.80 即 +3.9%）；这里是 p₁=0.934、p₂=0.670，正好 +7.8%。</p>
+
+<div class="box warn">
+<p><strong>追加证据（执行方需用自己的管线复跑）：</strong>指导方把第一窗口随机抽 5 天与第二窗口配对，30 次重抽样，Chao1 在 <strong>503,353–533,831</strong>（中位 520,506）之间跳；10–14 日对 20–24 日为 540,086，15–19 日对 20–24 日为 494,845（低于 Chapman）。一个“下界”在换 5 天就落到点估计之下，说明它不是下界。</p>
+</div>
+
+<h2>3. 哪些结论保留</h2>
+<div class="tw"><table>
+<thead><tr><th>交付条目</th><th>判定</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>1 复现 Chapman 495,540</td><td><strong>通过</strong></td><td>指导方复算 496,365.58（口径差 0.2%），执行方精确复现论文值</td></tr>
+<tr><td>2 分层再捕获率单调上升</td><td><strong>通过</strong></td><td>0.4945→0.8039，层内合计与总体一致；这是“异质性使 Chapman 偏低”的有效证据</td></tr>
+<tr><td>3 分层 Chapman 退化为并集</td><td><strong>通过</strong></td><td>代数结果，如实披露；不可识别层也如实标注</td></tr>
+<tr><td>4 Chao 下界 534,039</td><td><strong>退回</strong></td><td>见 §2：同质模型逐辆复现，超出量来自强度不等</td></tr>
+<tr><td>5 退役/新投放方向</td><td><strong>通过</strong></td><td>退役使 m 变小、Chapman 变大（论文原句“biases down”写反）；新投放同理；净号不可识别，如实写</td></tr>
+<tr><td>6 4.33 → 至多 4.01</td><td><strong>部分退回</strong></td><td>“4.33 是上估计”成立（Chapman 偏低 ⇒ N 更大 ⇒ 比率更小）；“至多 4.01”依赖 534,039，撤回</td></tr>
+</tbody></table></div>
+
+<h2>4. R1 要做的事（逐条）</h2>
+<ol>
+<li>撤回 <code>chao_1987</code> 作为下界的解释；在 <code>fleet_estimates.json</code> 增加 <code>homogeneity_benchmark</code>：N=Chapman、p₁=n1/N、p₂=n2/N、E[f1]、E[f2]、E[并集]、Chao1_homog，并把“与观测差 0.1 辆”写成字段。</li>
+<li>增加 <code>chao_effort_bias</code>：等强度公式 1+(1−p)² 在 p=0.934、0.801、0.670 的值；写明 Chao1 假定两窗等强度，Chapman 不需要。</li>
+<li>跑 200 次“第一窗口抽 5 天”的重抽样，报告 Chao1 的 P5/P50/P95，作为估计量不稳定的证据（指导方 30 次已见 503k–534k）。</li>
+<li>改写 <code>affected</code>：<strong>不再</strong>出现“fleet at least 534,039”“506,635 失效”。改为：
+  <ul>
+  <li>设计无关下界：N ≥ 484,754（并集），故每车每日骑行 ≤ 2,143,417/484,754 = <strong>4.42</strong>；</li>
+  <li>Chapman 495,540 因使用频次异质性偏低（分层证据），故 <strong>4.33 是上估计</strong>；</li>
+  <li>534,039 只能作为情景上限引用（“若车队达 534,039，则为 4.01”），不得称下界；</li>
+  <li>退役/新投放方向的更正保留。</li>
+  </ul>
+</li>
+<li>保留 <code>zero</code>（21,861 辆仅第二窗出现、均 1.97 次）与 <code>dN</code> 的推导，但把“新投放”结论降为“提示性”，因为它只是活动度差异，不是识别。</li>
+<li>不碰 <code>paper/</code>；换数仍归 T021。</li>
+</ol>
+
+<h2>5. 范围与完整性</h2>
+<p><code>git show --stat 6d97c2c</code>：只含 <code>code/t022_fleet.py</code> 与 <code>交付/T022_delivery.json</code>，未碰 <code>审查与规划/</code>，未碰 <code>paper/</code>；<code>data/</code> 在 .gitignore 内，结果文件在盘上（sha256 6636c26e… 与交付一致）。脚本只写 <code>data/runs/T022/</code>。第 5 条“不许做的事”无违规。<strong>所有权与复现信息合规。</strong></p>
+
+<h2>6. 未解决项</h2>
+<ul>
+<li>车队真实规模在本数据的两窗设计下<strong>不可识别</strong>；只能给方向（偏低）与设计无关下界（484,754）。这是结论，不是待办。</li>
+<li>原 506,635“未见份额上界”的方法是否仍成立，未在本次复核范围内，留待 T021 写作时用一句话交代。</li>
+<li>M6/T023 若要用车队作为不确定性来源，应按 484,754–534,039 作情景区间传播，而不是当置信区间。</li>
+</ul>
+
+</main>
+</body>
+</html>
