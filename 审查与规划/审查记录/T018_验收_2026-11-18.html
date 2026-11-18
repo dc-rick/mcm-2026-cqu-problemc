@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T018 验收：退回 R1</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T018 验收：退回 R1（装车量须为整数）</h1>
+<p class="meta">2026-11-18 · 交付 547eac6 · 结论：模型与复核全部通过，<strong>班表不可执行</strong>（115 趟装车量为小数）</p>
+
+<div class="box hi">
+<p><strong>结论：</strong>事件顺序、MILP、基线、留出回放、口径修正都成立，且指导方独立复算一致。唯一卡点：<code>schedule_K60.csv</code> 里 <strong>634 趟载货行程中有 115 趟装车量是小数</strong>（如 36.805 辆），因为 <code>x</code> 是连续流量、按 <code>x/mk</code> 分摊到每趟。外部意见要的是“整数逐车班表”，36.8 辆车装不上车。另有一项成本口径要补进对比表（期末归位空驶）。</p>
+</div>
+
+<h2>1. 指导方独立复算（自写脚本，不读执行方脚本）</h2>
+<div class="tw"><table>
+<thead><tr><th>检查</th><th>方法</th><th>结果</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>班表行数与卡车</td><td>读 CSV</td><td>1,440 行 = 60 辆 × 24 时</td><td>✓</td></tr>
+<tr><td>位置接续</td><td>相邻小时 <code>to_zone[t] == from_zone[t+1]</code></td><td>0 违反</td><td>✓</td></tr>
+<tr><td>载重与余量</td><td><code>load ≤ 40</code>、<code>load_after = load − unload</code></td><td>0 违反，最大 40.0</td><td>✓</td></tr>
+<tr><td>行驶 + 装卸时间</td><td><code>km/20×60 + (load+unload)×0.25 ≤ 60</code></td><td>0 违反，最长 46.92 min</td><td>✓</td></tr>
+<tr><td>搬运量复算</td><td>CSV 求和 vs 计划</td><td>24,725.51 = XM 合计</td><td>✓</td></tr>
+<tr><td>峰值</td><td>按小时汇总卸载量</td><td>23 时 2,180.80</td><td>✓</td></tr>
+<tr><td>事件顺序</td><td>用 <code>dep_zone×7.8125 − U</code> 与 XM 重算 <code>Σx + served − I</code></td><td>最大缺口 <strong>−1,870</strong>（有富余），0 违反</td><td>✓</td></tr>
+<tr><td>库存平衡</td><td>反解到达量</td><td>最小 0.00、最大 11,591，合计 2,116,561 + 末小时 15,981 跨日 —— 与 conserve 规则一致</td><td>✓</td></tr>
+<tr><td>整数性</td><td>每趟装车量是否整数</td><td><strong>115 / 634 趟为小数</strong>，小数部分合计 31.34 辆，最大 0.475</td><td class="hi"><strong>✗</strong></td></tr>
+</tbody></table></div>
+<p>注：指导方第一版复算出现“隐含到达为负”，原因是把 <code>dep_zone</code> 的抽样尺度当成了全尺度；乘 7.8125 后消失。这是复核方的错误，不是交付的问题。</p>
+
+<h2>2. 与论文数字的关系（重要）</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>旧（论文 / T007）</th><th>新（T018，训练日 5 日需求）</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>设计需求</td><td>2,143,417.41（7 日，含测试日）</td><td>2,132,542.19（5 日）</td><td>M11 修正：测试日不再进设计需求；日均 −0.51%，区-时 L1 1.87%、max 199.11</td></tr>
+<tr><td>LP 下界</td><td>82,194.80（旧约束）</td><td>82,968.07（事件顺序约束后）</td><td>旧 LP 在新需求上 3/1200 个区-时违反事件顺序，最大缺口 384.89、合计 717.54</td></tr>
+<tr><td>整数解</td><td>—</td><td>83,802.81，与 LP 差 834.74（1.006%）</td><td>K=20/40/60/80 → 111,997.70 / 85,026.73 / 83,802.81 / 95,095.51</td></tr>
+<tr><td>623.17</td><td>论文当作推荐方案</td><td>旧 7 日需求下的贪心基线（复现到 1e-12）</td><td>H20 的根源，已澄清</td></tr>
+</tbody></table></div>
+
+<h2>3. R1 要做的事</h2>
+<ol>
+<li><strong>装车量取整（必做）。</strong>二选一：
+  <ul>
+  <li>(a) 把 <code>x</code> 改为整数变量重解（K=60 一次即可，其余 K 可保持连续并注明）；</li>
+  <li>(b) 对现有解做取整修复：每趟向下取整，余量按“还能装、且不违反事件顺序/载重/时长”逐辆补回，直到补不动；然后重放验证。</li>
+  </ul>
+  交付要求：<code>schedule_K60.csv</code> 每列 <code>load_bikes</code>、<code>unload_bikes</code> 为整数；重放后事件顺序、载重、时长、库存非负、位置接续<strong>仍全 0 违反</strong>；报告取整前后的目标值、未服务量、车公里、峰值，取整导致的增量写进交付。</li>
+<li><strong>结果字段改名。</strong><code>result_int_*.json</code> 的 <code>"integer": true</code> 改为 <code>"truck_counts_integer": true, "bike_loads_integer": false/true</code>，避免“整数班表”与实际不符。</li>
+<li><strong>期末归位空驶进对比表。</strong>推荐方案日循环需要 60 车次空驶、968.38 km、5,810.29 元；K=0 与贪心没有这项。对比表加一列“可重复日循环附加成本”，或在推荐方案总成本下注明。目标函数可以不改，但同口径表里要看得见。</li>
+<li><strong>贪心的固定成本要拆开展示。</strong>贪心 177,892.62 vs 不调度 143,384.53，差额主要来自白付的 36,000 元固定成本（它只用 767 km、1,974 辆）。表里把固定成本单列，否则“贪心比不调度更贵”看起来像错误。</li>
+<li>留出回放的 dev 52–53k（约为 I0 的 15%）照实保留，T021 要写清这是设计日特定方案的代价；并给出改为日循环约束后的变化（可与第 3 条合并做一次）。</li>
+</ol>
+
+<h2>4. 通过的部分（不必重做）</h2>
+<ul>
+<li>事件顺序建模与旧解违反的量化（3/1200、384.89、717.54）。</li>
+<li>K 扫描、gap ≤1%、K=60 最优的结论（须写“在所比较的 0/20/40/60/80 中”）。</li>
+<li>不调度 / 贪心 / 推荐三方案的同口径表（补两项展示即可）。</li>
+<li>留出回放与信息集声明。</li>
+<li>设计需求 5 日口径的修正与差异量化。</li>
+<li>装卸时间 ±50% 敏感性（最长 56.92 min，仍 0 违反）。</li>
+</ul>
+
+<h2>5. 未解决项</h2>
+<ul>
+<li>载重 40 是题设假设；实际卡车/三轮车容量未给来源。T024 会补三轮车参数，卡车容量也应给一句来源或标“规划假设”。</li>
+<li>司机班次（3 班 8 小时）已作假设，未做敏感性；影响小于装卸时间，可接受。</li>
+</ul>
+
+</main>
+</body>
+</html>
