@@ -1,0 +1,105 @@
+{
+  "task": "T024",
+  "title": "Q2 两级调度：卡车跨区 + 三轮车区内",
+  "date": "2026-11-18",
+  "status": "delivered",
+  "revision": "R0",
+  "summary": "The T018 plan has zero zone-level unmet but leaves 239,245 cell-level departures unserved (11.2% of 2,132,542) once the zone inventory is followed cell by cell: the static arrival-surface split gives a lower bound of 115,129 (5.4%) because it re-splits each zone's bikes every hour for free, while the dynamic model with no within-zone rebalancing gives 239,245. A per-zone hourly transportation LP with tricycle time budgets then reduces cell-level unserved from 239,245 to 51,165 (188,081 fewer). The optimal integer allocation is 728 tricycles (all 50 zones, median 17, max 20 per zone), moving 142,184 bikes and 75,051 vehicle-km for 233,410 CNY/day (218,400 fixed + 15,010 mileage); residual cell unmet 51,165 (2.4%). Total cost = 83,808 truck objective + 233,410 tricycle + 306,987 unmet penalty = 624,205 vs 1,519,279 truck-only, a saving of 895,074 CNY/day (58.9%). Break-even: the layer pays for itself as long as one unserved trip is worth more than 1.24 CNY (the model uses 6), or a tricycle-day costs less than 1,530 CNY (the assumption is 300). A complete executable schedule for zone 0 (20 allocated + 2 dispatch buffer tricycles, 436 trips) has zero unassigned trips, max load 20 bikes and last completion 19.45 h inside the 07:00-20:00 shift.",
+  "checks": {
+    "1_cell_unmet": "pass; evidence=data/runs/T024/cell_unmet.json. Zone-level unmet under the T018 K=60 plan = 0.0 (result_int_K60.json); static cell-level split by the hourly Q1 arrival surface: 115,129.19 departures (5.40% of 2,132,542), per-hour peak 37,838.7 at 07:00, worst cell 2939 at 116.5175E/39.9225N with 1,226.6 shortfall over 5 hours. The 300 m walking term is inert (cell centres are 426 m x 556 m apart, so no neighbour is reachable) and walk300 equals strict. data/runs/T024/dyn_baseline.json: dynamic cell model with no within-zone rebalancing gives 239,245.20 unserved (11.22%); it stores one unmet number because the 300 m walking term reaches no neighbour and therefore changes nothing. The static number is the mandated disaggregation; the dynamic number is the operational baseline used by the tricycle model.",
+    "2_vehicle_params": "pass; evidence=data/runs/T024/vehicle_params.json. Six parameters with value, range, unit and source label: capacity 20 bikes/trip [12,30], speed 15 km/h [10,20], handling 0.5 min/bike [0.3,1.0], fixed 300 CNY/tricycle-day [200,500], distance 0.20 CNY/vehicle-km [0.10,0.40], max trip 5 km [3,8]. Every entry is labelled 'planning assumption' with its rationale; no public source was reachable in this run (web search unavailable), which the task permits. Break-even block: fixed-cost ceiling 1,529.50 CNY/tricycle-day and penalty ceiling 1.2410 CNY per unserved trip for the chosen fleet (both computed from compare.json: fixed*N + km*km < p*removed).",
+    "3_compare": "pass; evidence=data/runs/T024/compare.json. Truck-only: zone unmet 0, cell unmet 239,245.2, truck 60, truck-km 5,659.2, truck objective 83,807.74, total 1,519,278.95. Two-tier at 11 fleet sizes (0,100,...,1000): cell unmet falls monotonically to 51,164.5 and total to 624,204.9 at 728 tricycles; the DP allocation is exact integer over the per-zone cost curves (50 zones x 21 levels x 24 hours). Columns per row: fleet cap, tricycles, zones served, max per zone, cell unmet, pre-tricycle shortfall, tricycle km/bikes/cost, truck objective, total, saving vs no tricycle, marginal saving. At 728: tricycle fixed 218,400 + mileage 15,010.15 = 233,410.15, unmet penalty 306,987.04, total 624,204.93, saving 895,074.02 (58.91%).",
+    "4_schedule": "pass; evidence=data/runs/T024/schedule_check.json and schedule_sample.csv. Zone 0, 20 allocated + 2 dispatch-buffer tricycles, 436 trips, 436 scheduled, 0 unassigned; max load 20.0 = Q (max_load_ok true); last completion 19.450 h <= 20:00 (shift_ok true); max deadhead 0.714 km; across the 22 tricycles trips 14-24, bikes 129.3-226.8, km 6.9-11.9, last completion 19.07-19.45 h (zone totals 3,945.6 bikes and 221.7 km). Trips are the LP flows split into loads of at most 20 bikes, assigned to the earliest-free tricycle with deadhead included.",
+    "5_check": "pass; evidence=data/runs/T024/check.json: all_pass=true. Pcell zone match 7.69e-07, row sums 1.43e-08, dep_cell/dep_zone 1.000000004, cost identity exact, schedule unassigned 0, load and shift ok. walk_cross_zone_share=0.0 (no 300 m neighbour pairs exist on this grid).",
+    "6_repro": "pass; command=`python -I code/t024_q2_tier2.py --stage all --force`; Python 3.11.9, numpy 2.4.6, scipy 1.17.1, HiGHS; deterministic (no RNG); fleet stage 28.0 s, whole run < 90 s. Inputs: T018 plan_int_K60.npz, q1_od_train.npz, q2_state.npz, cell_sim_inputs.npz, dist_matrix.npy; SHA-256 below."
+  },
+  "repro": {
+    "commands": [
+      "python -I code/t024_q2_tier2.py --stage prep --force",
+      "python -I code/t024_q2_tier2.py --stage cellunmet --force",
+      "python -I code/t024_q2_tier2.py --stage dyn --force",
+      "python -I code/t024_q2_tier2.py --stage fleet --force",
+      "python -I code/t024_q2_tier2.py --stage schedule --force",
+      "python -I code/t024_q2_tier2.py --stage params --force",
+      "python -I code/t024_q2_tier2.py --stage check --force"
+    ],
+    "python": "3.11.9",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "outputs_sha256": {
+      "code/t024_q2_tier2.py": "09e67e715b6cee0f",
+      "data/runs/T024/cell_inputs.json": "74b1f692f011a51a",
+      "data/runs/T024/cell_unmet.json": "ea27a8c12a5da800",
+      "data/runs/T024/dyn_baseline.json": "8621a4a7ac44f0a6",
+      "data/runs/T024/compare.json": "b3072682012f3744",
+      "data/runs/T024/vehicle_params.json": "0a7cbeaffda39d3b",
+      "data/runs/T024/schedule_check.json": "61d2f48d9b81e019",
+      "data/runs/T024/schedule_sample.csv": "688e5550427acfc0",
+      "data/runs/T024/check.json": "b3aa5a84c06bdbf2"
+    }
+  },
+  "affected": [
+    {
+      "location": "paper/sec5_q2.tex:19-24",
+      "old": "At cell resolution the simulation finds unserved shares of 5.84% at 343,638 and 3.51% at 495,540 (R=450 m); these are pre-plan simulation shares, not the cell-level outcome of the recommended plan.",
+      "new": "Replace with the plan-specific cell-level statement: under the recommended K=60 plan, zone-level unserved is 0 but cell-level unserved is 239,245 (11.22%) when the zone inventory is followed cell by cell with no within-zone rebalancing, and 115,129 (5.40%) under a free hourly re-split (the static lower bound). State that walking at 300 m is inert on the 0.005-degree grid (centres 426 m x 556 m apart), so the two agree and the cell layer is the only within-zone instrument. Reconcile with the 5.84% pre-plan figure (at R=450 m) explicitly rather than leaving two different cell shares in the paper.",
+      "basis": "data/runs/T024/cell_unmet.json, dyn_baseline.json, check.json (walk_cross_zone_share=0)."
+    },
+    {
+      "location": "paper/sec5_q2.tex:143-148 (paragraph 'Service is not the binding constraint') and a new subsection after the fleet-scenario subsection",
+      "old": "At alpha=0.8 and K=80 the program leaves 448 departures unserved, 0.021% of trips, and at alpha=0.6 it leaves 59,518, or 2.78% ... conditional on the measured initial inventory.",
+      "new": "Qualify: this is zone-level service. Add 'trucks between zones, tricycles inside zones': the two-tier plan uses 728 tricycles (50 zones, median 17, max 20), moves 142,184 bikes and 75,051 tricycle-km for 233,410 CNY/day, and cuts cell-level unserved from 239,245 to 51,165 (2.4%); total cost 624,205 vs 1,519,279 truck-only at the 6 CNY service penalty, a 58.9% saving. State the two break-even numbers: 1.24 CNY per unserved trip and 1,530 CNY per tricycle-day.",
+      "basis": "data/runs/T024/compare.json rows (fleet_N=800), vehicle_params.json break_even."
+    },
+    {
+      "location": "paper/sec10_evaluation.tex:43-53 (paragraph 'The truck fleet is continuous')",
+      "old": "The Q2 evaluation treats the truck fleet as continuous and leaves the within-zone layer out; it does not state the cell-level consequence of the recommended plan.",
+      "new": "Update to the two-tier result: integer trucks (T018) plus tricycles; cell-level unserved falls from 11.22% to 2.4% at a tricycle cost of 233,410 CNY/day, and the whole comparison hinges on the 6 CNY service penalty - the break-even is 1.24 CNY per unserved trip (tricycle fixed cost break-even 1,530 CNY/day). The 300 m walking radius contributes nothing at this cell size and should not be presented as an alternative to the tricycle layer.",
+      "basis": "compare.json, vehicle_params.json, check.json."
+    },
+    {
+      "location": "paper/summary.tex:27 and :39-49 (Q2 paragraph)",
+      "old": "The summary carries the pre-plan cell-level share (5.84% at 343,638) and presents the time-space LP with K=60 as the Q2 answer.",
+      "new": "Add one sentence: under the K=60 plan the cell-level unserved share is 11.2% (5.4% under a free re-split); a two-tier scheme with 728 tricycles costs 233,410 CNY/day and cuts it to 2.4%, a 58.9% saving against the truck-only total at the 6 CNY service penalty.",
+      "basis": "data/runs/T024/compare.json."
+    },
+    {
+      "location": "paper/sec1_intro.tex:129 (Q2 row of the answers table)",
+      "old": "Q2 & Rebalancing & Time-space network LP with truck flow conservation & 24,679 bikes/day, 5,530 truck-km, 3.33 CNY/bike; K=60 dominates K=40",
+      "new": "Add 'trucks between zones, tricycles inside zones' to the model column and the two-tier outcome to the answer (728 tricycles; cell-level unserved 11.2% -> 2.4%; 58.9% saving at the 6 CNY penalty). Note that the numbers in this row are still the pre-T018 LP values and will be replaced in T021.",
+      "basis": "compare.json, vehicle_params.json."
+    }
+  ],
+  "outputs": [
+    "code/t024_q2_tier2.py",
+    "data/runs/T024/cell_inputs.npz",
+    "data/runs/T024/cell_inputs.json",
+    "data/runs/T024/cell_unmet.json",
+    "data/runs/T024/dyn_baseline.json",
+    "data/runs/T024/compare.json",
+    "data/runs/T024/vehicle_params.json",
+    "data/runs/T024/schedule_sample.csv",
+    "data/runs/T024/schedule_check.json",
+    "data/runs/T024/check.json",
+    "交付/T024_delivery.json"
+  ],
+  "notes": [
+    "Walking is inert at the cell resolution: cell centres are 426 m (E-W) by 556 m (N-S) apart, so a 300 m radius contains no other cell centre. The 300 m walking term therefore serves nothing and cell-level unmet equals the strict value. This is consistent with T004's note that at R=300 m no neighbour is reachable; the tricycle layer is the only within-zone instrument in this model. A 450 m variant (the first radius that reaches an E-W neighbour) is not run here and would reduce both the baseline and the tricycle benefit.",
+    "Two cell-level numbers are reported because they answer different questions. The static 115,129 is the task's mandated disaggregation (zone stock split by the hourly arrival surface) and is a lower bound: it re-splits the zone's bikes every hour for free. The dynamic 239,245 follows the same stock cell by cell through the day with T018's truck flows and is the operational baseline the tricycle model improves.",
+    "The cell layer reproduces T018's zone totals exactly by construction: truck pickups are taken pro-rata to stock, drops and arrivals are distributed by Pcell, whose zone sums equal T018's PZ to 7.7e-7. Cell-level lost trips do not feed back into arrivals (a lost trip would have produced an arrival in another cell); the bias is at most the unmet share, 2-11%, and is documented rather than iterated.",
+    "Tricycle parameters are planning assumptions because no public source was reachable in this run (WebSearch and the paper-search API were both unavailable). The delivery therefore reports the break-even values that make the conclusion robust: the fleet pays for itself for any fixed cost below 1,530 CNY per tricycle-day (assumed 300) and any penalty above 1.24 CNY per unserved trip (assumed 6.00).",
+    "The 6 CNY penalty is T018's zone-level service penalty, reused unchanged at cell level. It is not an estimate of welfare; the break-even penalty is the transferable number.",
+    "The optimal fleet sits at the boundary of the per-zone curve for some zones (max 20 tricycles in the densest zones), so the residual 51,165 unmet is partly a capacity limit of the per-zone grid and partly the absence of donors in fully drained zones. Extending the per-zone bound above 20 would lower the residual further; the DP is saturated at 728 because the marginal tricycle at that point saves less than its 300 CNY/day.",
+    "The compare.json column pre_tricycle_shortfall is measured along the with-tricycle stock path: it sums each hour's (departures - hour-start stock) before that hour's tricycle moves, so bikes prepositioned in earlier hours already lower it. It is a diagnostic of where the within-hour LP bites, not the no-tricycle counterfactual; that counterfactual is no_tricycle.cell_unmet = 239,245.2. The headline reduction is no_tricycle.cell_unmet - cell_unmet = 188,080.7.",
+    "The schedule sample uses a 10% dispatch buffer (22 tricycles for an allocation of 20) to absorb deadhead and load imbalance; the cost table does not include this buffer, a 600 CNY/day difference in that zone.",
+    "The comparison holds the T018 truck plan fixed (sequential two-tier). An integrated model could also re-optimise the trucks knowing the tricycles exist; that is out of scope and would lower the truck cost, strengthening the two-tier conclusion.",
+    "paper/ was not modified; affected entries are proposals for T021."
+  ],
+  "integrity": {
+    "readonly_respected": true,
+    "no_files_written_in_review_or_planning": true,
+    "paper_unmodified": true,
+    "t018_outputs_not_overwritten": true,
+    "tracked_data_unmodified": true
+  }
+}
