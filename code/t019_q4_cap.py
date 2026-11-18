@@ -229,6 +229,19 @@ def cell_demand(arr15, dep15, I0, reps=REPS, seed=SEED):
     return out
 
 
+def arrival_weights(a, arr_day):
+    """Per-cell weight turning occupancy demand into arrival volume:
+    w_i = arr_i / a_i, so unassigned arrivals = u_i * w_i and the plan's
+    arrival-share coverage is 1 - sum(u_i w_i) / sum(arr)."""
+    return np.divide(arr_day, a, out=np.zeros_like(a), where=a > 1e-12)
+
+
+def arrival_coverage(u, a, arr_day):
+    tot = float(arr_day.sum())
+    un = float((u * arrival_weights(a, arr_day)).sum())
+    return 1.0 - un / max(tot, 1e-12)
+
+
 def run_demand(force=False):
     path = os.path.join(RUN, "cell_demand.npz")
     if os.path.exists(path) and not force:
@@ -384,6 +397,8 @@ def run_solve(force=False):
         print("reuse", path)
         return load_json("frontier.json")
     out = {}
+    z = np.load(os.path.join(RUN, "cell_demand.npz"))
+    arr_day = z["arr"].sum(0)
     for level in ("meas343", "fleet495"):
         a, I0, ii, jj, D, xy = load_level(level)
         print(f"\n=== {level}: {len(a)} demand cells, {len(ii)} arcs ===")
@@ -395,7 +410,9 @@ def run_solve(force=False):
         for n in N_GRID:
             r = solve_cap(a, ii, jj, n=n, integer=True, time_limit=300,
                           mip_gap=0.005)
-            rec = dict(n=n, coverage=r["coverage"], assigned=r["assigned"],
+            rec = dict(n=n, coverage=r["coverage"],
+                       arrival_coverage=arrival_coverage(r["u"], a, arr_day),
+                       assigned=r["assigned"],
                        unassigned=r["unassigned"], slots=float(CAP * n),
                        obj=r["obj"], bound=r["bound"], gap=r["gap"],
                        runtime=r["runtime"], status=r["status"])
@@ -421,6 +438,8 @@ def run_solve(force=False):
                     rm = solve_cap(a, ii, jj, n=mid, integer=True,
                                    time_limit=300, mip_gap=0.005)
                     rec = dict(n=mid, coverage=rm["coverage"],
+                               arrival_coverage=arrival_coverage(
+                                   rm["u"], a, arr_day),
                                assigned=rm["assigned"],
                                unassigned=rm["unassigned"],
                                slots=float(CAP * mid), obj=rm["obj"],
@@ -463,10 +482,14 @@ def run_solve(force=False):
         save_plan(level, "all", a, I0, rfull)
         out[level] = dict(
             all_open_lp=dict(coverage=r_all["coverage"],
+                             arrival_coverage=arrival_coverage(
+                                 r_all["u"], a, arr_day),
                              assigned=r_all["assigned"],
                              unassigned=r_all["unassigned"],
                              bound=r_all["bound"], runtime=r_all["runtime"]),
             all_open_milp=dict(coverage=rfull["coverage"],
+                               arrival_coverage=arrival_coverage(
+                                   rfull["u"], a, arr_day),
                                assigned=rfull["assigned"],
                                unassigned=rfull["unassigned"],
                                n_open=rfull["n_open"], gap=rfull["gap"]),
@@ -477,13 +500,21 @@ def run_solve(force=False):
             selection_rule=("target plan if reachable, else Kneedle knee"),
             selected_n=int(sel),
             selected_is_knee=bool(sel == knee["n"]),
-            selected=dict(coverage=rs["coverage"], assigned=rs["assigned"],
+            selected=dict(coverage=rs["coverage"],
+                          arrival_coverage=arrival_coverage(
+                              rs["u"], a, arr_day),
+                          assigned=rs["assigned"],
                           unassigned=rs["unassigned"], slots=float(CAP * sel),
                           gap=rs["gap"], bound=rs["bound"],
                           runtime=rs["runtime"], status=rs["status"]),
             points=points,
             n_cells=int(len(a)),
             demand_sum=float(a.sum()),
+            arrival_sum=float(arr_day.sum()),
+            coverage_basis=("coverage = assigned peak-occupancy demand / "
+                            "total; arrival_coverage reweights each cell's "
+                            "unassigned share u_i/a_i by its daily arrivals "
+                            "arr_i, 1 - sum(u_i arr_i/a_i)/sum(arr_i)"),
             all_sites_capacity=float(CAP * len(a)),
         )
     dump(out, "frontier.json")
@@ -500,6 +531,8 @@ def run_radius(force=False):
         print("reuse", path)
         return load_json("radius_sweep.json")
     fr = load_json("frontier.json")
+    z = np.load(os.path.join(RUN, "cell_demand.npz"))
+    arr_day = z["arr"].sum(0)
     out = {}
     for level in ("meas343", "fleet495"):
         n = int(fr[level]["selected_n"])
@@ -509,15 +542,19 @@ def run_radius(force=False):
             r = solve_cap(a, ii, jj, n=n, integer=True, time_limit=300,
                           mip_gap=0.005)
             save_plan(level, f"R{r_lab}", a, I0, r)
+            acov = arrival_coverage(r["u"], a, arr_day)
             eff = r["coverage"] * COMPLY[r_lab]
             out[level]["radii"][r_lab] = dict(
                 R_m=float(R * 1000), n_sites=n, slots=float(CAP * n),
                 coverage=r["coverage"], assigned=r["assigned"],
                 unassigned=r["unassigned"], gap=r["gap"],
+                arrival_coverage=acov,
                 comply_zero_incentive=COMPLY[r_lab],
                 effective_coverage=eff,
                 effective_coverage_basis="(a) coverage x eq.(19) compliance",
+                effective_arrival_coverage=acov * COMPLY[r_lab],
                 mandatory_parking_coverage=r["coverage"],
+                mandatory_parking_arrival_coverage=acov,
                 mandatory_parking_basis="(b) regulated parking inside fences; "
                                         "coverage not multiplied by compliance",
                 n_arcs=int(len(ii)),
@@ -622,20 +659,56 @@ def run_replay(force=False):
         arr15 = to15(z["arr"])
         dep15 = to15(z["dep"])
         des = replay_sites(plan, arr15, dep15)
+        des60 = replay_sites(plan, z["arr"], z["dep"])
         rec = dict(design=dict(realized_coverage=des["realized_coverage"],
                                overflow_arrivals=des["overflow_arrivals"],
                                unassigned_arrivals=des["unassigned_arrivals"],
                                initial_overflow=des["initial_overflow"],
                                full_sites_ever=des["full_sites_ever"],
                                full_site_steps=des["full_site_steps"],
-                               departure_shortfall=des["departure_shortfall"]))
+                               departure_shortfall=des["departure_shortfall"],
+                               total_arrivals=des["total_arrivals"]),
+                   stride_minutes=15)
+        rec["design_1h"] = dict(
+            stride_minutes=60,
+            realized_coverage=des60["realized_coverage"],
+            overflow_arrivals=des60["overflow_arrivals"],
+            unassigned_arrivals=des60["unassigned_arrivals"],
+            initial_overflow=des60["initial_overflow"],
+            full_sites_ever=des60["full_sites_ever"],
+            full_site_steps=des60["full_site_steps"],
+            departure_shortfall=des60["departure_shortfall"],
+            total_arrivals=des60["total_arrivals"],
+            delta_realized_coverage=des60["realized_coverage"]
+            - des["realized_coverage"],
+            delta_departure_shortfall=des60["departure_shortfall"]
+            - des["departure_shortfall"],
+            delta_overflow=des60["overflow_arrivals"]
+            - des["overflow_arrivals"])
         da = replay_sites(plan_all, arr15, dep15)
+        da60 = replay_sites(plan_all, z["arr"], z["dep"])
         rec["all_sites"] = dict(
             design=dict(realized_coverage=da["realized_coverage"],
                         overflow_arrivals=da["overflow_arrivals"],
                         unassigned_arrivals=da["unassigned_arrivals"],
+                        initial_overflow=da["initial_overflow"],
                         full_sites_ever=da["full_sites_ever"],
-                        full_site_steps=da["full_site_steps"]))
+                        full_site_steps=da["full_site_steps"],
+                        departure_shortfall=da["departure_shortfall"]),
+            design_1h=dict(
+                stride_minutes=60,
+                realized_coverage=da60["realized_coverage"],
+                overflow_arrivals=da60["overflow_arrivals"],
+                unassigned_arrivals=da60["unassigned_arrivals"],
+                full_sites_ever=da60["full_sites_ever"],
+                full_site_steps=da60["full_site_steps"],
+                departure_shortfall=da60["departure_shortfall"],
+                delta_realized_coverage=da60["realized_coverage"]
+                - da["realized_coverage"],
+                delta_departure_shortfall=da60["departure_shortfall"]
+                - da["departure_shortfall"],
+                delta_overflow=da60["overflow_arrivals"]
+                - da["overflow_arrivals"]))
         np.savez(os.path.join(RUN, f"spare_{level}.npz"),
                  spare=des["spare"], sites=des["open_sites"],
                  time_index=np.arange(arr15.shape[0]))
@@ -643,6 +716,7 @@ def run_replay(force=False):
             arr15d = to15(td[f"arr_{k}"])
             dep15d = to15(td[f"dep_{k}"])
             r = replay_sites(plan, arr15d, dep15d)
+            r60 = replay_sites(plan, td[f"arr_{k}"], td[f"dep_{k}"])
             rec[day] = dict(realized_coverage=r["realized_coverage"],
                             overflow_arrivals=r["overflow_arrivals"],
                             unassigned_arrivals=r["unassigned_arrivals"],
@@ -650,17 +724,30 @@ def run_replay(force=False):
                             full_sites_ever=r["full_sites_ever"],
                             full_site_steps=r["full_site_steps"],
                             departure_shortfall=r["departure_shortfall"],
-                            total_arrivals=r["total_arrivals"])
+                            total_arrivals=r["total_arrivals"],
+                            stride_minutes=15,
+                            hourly=dict(
+                                stride_minutes=60,
+                                realized_coverage=r60["realized_coverage"],
+                                overflow_arrivals=r60["overflow_arrivals"],
+                                departure_shortfall=r60["departure_shortfall"],
+                                delta_realized_coverage=r60["realized_coverage"]
+                                - r["realized_coverage"],
+                                delta_departure_shortfall=r60[
+                                    "departure_shortfall"]
+                                - r["departure_shortfall"]))
             ra = replay_sites(plan_all, arr15d, dep15d)
             rec["all_sites"][day] = dict(
                 realized_coverage=ra["realized_coverage"],
                 overflow_arrivals=ra["overflow_arrivals"],
                 unassigned_arrivals=ra["unassigned_arrivals"],
                 full_sites_ever=ra["full_sites_ever"],
-                full_site_steps=ra["full_site_steps"])
+                full_site_steps=ra["full_site_steps"],
+                departure_shortfall=ra["departure_shortfall"])
             print(f"{level} {day}: realized cov={100*r['realized_coverage']:.2f}% "
                   f"overflow={r['overflow_arrivals']:.1f} "
-                  f"(all sites {100*ra['realized_coverage']:.2f}%)")
+                  f"(all sites {100*ra['realized_coverage']:.2f}%) "
+                  f"shortfall={r['departure_shortfall']:.1f}")
         out[level] = rec
     dump(out, "replay.json")
     return out
@@ -816,6 +903,68 @@ def run_check(force=False):
 
 
 # --------------------------------------------------------------------------
+# denominator conservativeness
+# --------------------------------------------------------------------------
+def run_denominator(force=False):
+    """How conservative is sum_i a_i as a system-level demand?
+
+    a_i is the 95th percentile (over 300 Poisson replays) of each cell's
+    own peak 15-min occupancy.  The sum of those percentiles equals the
+    95th percentile of the system total only if every cell peaks in the
+    same replay at the same step.  This stage re-runs the identical 300
+    replays (same per-cell seeds and draw order as cell_demand), forms the
+    system total occupancy at every 15-min step, takes each replay's peak
+    of that total, and reports
+        ratio = P95_r( max_t sum_i occ_ir(t) ) / sum_i a_i.
+    """
+    path = os.path.join(RUN, "denominator.json")
+    if os.path.exists(path) and not force:
+        print("reuse", path)
+        return load_json("denominator.json")
+    z = np.load(os.path.join(RUN, "cell_demand.npz"))
+    arr15 = to15(z["arr"])
+    dep15 = to15(z["dep"])
+    C = len(z["a_meas343"])
+    T = arr15.shape[0]
+    sysm = np.zeros((T, REPS))
+    sysf = np.zeros((T, REPS))
+    for i in range(C):
+        rng = np.random.default_rng(SEED + i)
+        A = rng.poisson(arr15[:, i], size=(REPS, T))
+        Dp = rng.poisson(dep15[:, i], size=(REPS, T))
+        for I0, sys in ((z["I0_meas"], sysm), (z["I0_fleet"], sysf)):
+            occ = np.full(REPS, float(I0[i]))
+            for t in range(T):
+                occ = np.maximum(0.0, occ + A[:, t] - Dp[:, t])
+                sys[t] += occ
+        if (i + 1) % 1000 == 0:
+            print(f"  {i+1}/{C} cells")
+    out = dict(reps=REPS, seed=SEED, step_minutes=15, cells=int(C),
+               definition=("ratio = P95 over replays of max_t sum_i occ_ir(t) "
+                           "(system total occupancy) / sum_i a_i, with a_i = "
+                           "P95 over the same replays of max_t occ_ir(t); "
+                           "same per-cell seeds and draw order as the demand "
+                           "stage"),
+               note=("ratio < 1 measures how much sum_i a_i overstates a "
+                     "system total: per-cell peaks are not simultaneous."))
+    for lvl in ("meas343", "fleet495"):
+        sysm_ = sysm if lvl == "meas343" else sysf
+        peak_sys = sysm_.max(0)
+        p95 = float(np.percentile(peak_sys, 95))
+        a = z[f"a_{lvl}"]
+        out[lvl] = dict(
+            sum_cell_p95=float(a.sum()),
+            system_p95_total_occupancy=p95,
+            ratio=p95 / float(a.sum()),
+            system_max_replay=float(peak_sys.max()),
+            system_mean_replay=float(peak_sys.mean()))
+        print(f"{lvl}: sum cell P95 {a.sum():.1f}, system P95 {p95:.1f}, "
+              f"ratio {out[lvl]['ratio']:.4f}")
+    dump(out, "denominator.json")
+    return out
+
+
+# --------------------------------------------------------------------------
 # summary
 # --------------------------------------------------------------------------
 def run_summary(force=False):
@@ -842,8 +991,13 @@ def run_summary(force=False):
         site_cells.append(int(np.argmin(d2)))
     site_cells = np.array(site_cells)
     z = np.load(os.path.join(RUN, "cell_demand.npz"))
+    arr_day = z["arr"].sum(0)
     D = np.load(os.path.join(DATA, "dist_matrix.npy"))
     diff = load_json_any(os.path.join(RUN, "arr_train_diff.json"))
+    den = (load_json("denominator.json")
+           if os.path.exists(os.path.join(RUN, "denominator.json")) else None)
+    rep = (load_json("replay.json")
+           if os.path.exists(os.path.join(RUN, "replay.json")) else None)
     out = {"settings": dict(cap=CAP, radii_m={k: float(v * 1000) for k, v in
                                               RADII.items()},
                             demand="cell-level MC 95th percentile peak "
@@ -860,9 +1014,16 @@ def run_summary(force=False):
                             target=TARGET, target_source="T009 705-fence "
                                    "arrival coverage",
                             comply=COMPLY,
-                            note="coverage here is assigned demand / total "
-                                 "cell demand (occupancy), not the "
-                                 "arrival-share coverage of T009."),
+                            note=("two coverage rulers are reported side by "
+                                  "side.  occupancy_coverage = assigned "
+                                  "peak-occupancy demand / total cell demand.  "
+                                  "arrival_coverage = 1 - sum_i u_i*arr_i/a_i "
+                                  "/ sum_i arr_i, i.e. the same assignment "
+                                  "reweighted to daily arrivals; this is the "
+                                  "ruler on which T009's 76.86% was "
+                                  "computed and is the one to quote in "
+                                  "comparisons with T009.")),
+           "denominator_conservativeness": den,
            "levels": {}}
     for level in ("meas343", "fleet495"):
         a = z[f"a_{level}"]
@@ -878,20 +1039,51 @@ def run_summary(force=False):
             selection_rule=fr[level]["selection_rule"],
             knee=fr[level]["knee"],
             slots=float(CAP * fr[level]["selected_n"]),
+            occupancy_coverage=fr[level]["selected"]["coverage"],
+            arrival_coverage=fr[level]["selected"]["arrival_coverage"],
             coverage=fr[level]["selected"]["coverage"],
             assigned=fr[level]["selected"]["assigned"],
             unassigned=fr[level]["selected"]["unassigned"],
             target_reached=fr[level]["target_reached"],
+            max_occupancy_coverage_all_sites=fr[level]["all_open_milp"]["coverage"],
+            max_arrival_coverage_all_sites=fr[level]["all_open_milp"][
+                "arrival_coverage"],
             max_coverage_all_sites=fr[level]["all_open_milp"]["coverage"],
             max_coverage_all_sites_n=int(fr[level]["n_cells"]),
             all_open_lp_coverage=fr[level]["all_open_lp"]["coverage"],
+            all_open_lp_arrival_coverage=fr[level]["all_open_lp"][
+                "arrival_coverage"],
             demand_sum=float(a.sum()),
+            arrival_sum=float(arr_day.sum()),
             cells_over_150=int((a > CAP).sum()),
             t009_705_sites_cap150=dict(
                 n=705, slots=float(CAP * 705), coverage=r705["coverage"],
+                arrival_coverage=arrival_coverage(r705["u"], a, arr_day),
                 unassigned=r705["unassigned"]),
             csv=f"fences_cap150_{level}.csv",
         )
+        if rep is not None and level in rep:
+            rd = rep[level]["design"]
+            r1h = rep[level].get("design_1h", {})
+            out["levels"][level]["replay_design"] = dict(
+                step_minutes=rd.get("stride_minutes", 15),
+                realized_coverage=rd["realized_coverage"],
+                unassigned_arrivals=rd["unassigned_arrivals"],
+                overflow_arrivals=rd["overflow_arrivals"],
+                full_sites_ever=rd["full_sites_ever"],
+                full_site_steps=rd["full_site_steps"],
+                departure_shortfall=rd["departure_shortfall"],
+                hour_step=dict(realized_coverage=r1h.get("realized_coverage"),
+                               departure_shortfall=r1h.get(
+                                   "departure_shortfall"),
+                               overflow_arrivals=r1h.get("overflow_arrivals"),
+                               delta_realized_coverage=r1h.get(
+                                   "delta_realized_coverage")),
+                note=("full sites and departure shortfall are two different "
+                      "service failures: a full fence turns away arriving "
+                      "bikes (overflow), an empty fence cannot lend bikes "
+                      "(departure_shortfall).  The design replay has zero "
+                      "overflow but a large shortfall."))
         df = pd.DataFrame(dict(
             site_cell=open_sites,
             x=xy[open_sites, 0],
@@ -909,6 +1101,32 @@ def run_summary(force=False):
         standing_fleet495=float(q1["fleet495"]["standing_total"]),
         note="T009 Kneedle knee, arrival-share coverage, per-fence 95th "
              "percentile with no hard cap; kept as the reference row only.")
+    out["reconciliation_7686"] = dict(
+        old_T009_coverage=float(q1["coverage_selected"]),
+        old_basis="arrival share, uncapped per-fence 95th percentile",
+        capped_all_sites_arrival=dict(
+            meas343=out["levels"]["meas343"][
+                "max_arrival_coverage_all_sites"],
+            fleet495=out["levels"]["fleet495"][
+                "max_arrival_coverage_all_sites"]),
+        capped_knee_arrival=dict(
+            meas343=out["levels"]["meas343"]["arrival_coverage"],
+            fleet495=out["levels"]["fleet495"]["arrival_coverage"]),
+        capped_all_sites_occupancy=dict(
+            meas343=out["levels"]["meas343"]["max_occupancy_coverage_all_sites"],
+            fleet495=out["levels"]["fleet495"][
+                "max_occupancy_coverage_all_sites"]),
+        capped_knee_occupancy=dict(
+            meas343=out["levels"]["meas343"]["occupancy_coverage"],
+            fleet495=out["levels"]["fleet495"]["occupancy_coverage"]),
+        note=("the old and the new numbers are different rulers.  Compared "
+              "on T009's arrival-share ruler the capped plans reach "
+              "56.75% (all 5,263 sites) and 55.80% (4,000-site knee) under "
+              "the 343,638 inventory; occupancy shares are higher "
+              "(61.10%/59.53%) because capacity shortfalls sit in cells "
+              "whose peaks are large relative to their daily arrivals.  "
+              "Quote the arrival-share figure whenever the 76.86% reference "
+              "is in the same sentence."))
     dump(out, "summary.json")
     # marginal curve
     curve = {}
@@ -919,14 +1137,21 @@ def run_summary(force=False):
         eff = np.gradient(cc, nn) * 10000.0 if len(pts) > 2 else None
         curve[level] = dict(
             n=[p["n"] for p in pts], coverage=[p["coverage"] for p in pts],
+            arrival_coverage=[p["arrival_coverage"] for p in pts],
             slots=[p["slots"] for p in pts],
             unassigned=[p["unassigned"] for p in pts],
             marginal_pp_per_100_sites=None if eff is None else
             [float(v) for v in eff],
             knee=fr[level]["knee"],
+            knee_arrival_coverage=fr[level]["selected"][
+                "arrival_coverage"] if fr[level]["selected_is_knee"] else None,
             selected_n=fr[level]["selected_n"],
+            selected_arrival_coverage=fr[level]["selected"][
+                "arrival_coverage"],
             target=TARGET, target_reached=fr[level]["target_reached"],
-            max_coverage_all_sites=fr[level]["all_open_milp"]["coverage"])
+            max_coverage_all_sites=fr[level]["all_open_milp"]["coverage"],
+            max_arrival_coverage_all_sites=fr[level]["all_open_milp"][
+                "arrival_coverage"])
     dump(curve, "marginal_curve.json")
     # spare capacity bundle (both levels)
     sp = {}
@@ -947,7 +1172,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", default="demand",
                     choices=("demand", "solve", "radius", "replay", "walk",
-                             "check", "summary", "all"))
+                             "denominator", "check", "summary", "all"))
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
     if args.stage in ("demand", "all"):
@@ -961,6 +1186,8 @@ if __name__ == "__main__":
         run_replay(force=args.force)
     if args.stage in ("walk", "all"):
         run_walk(force=args.force)
+    if args.stage in ("denominator", "all"):
+        run_denominator(force=args.force)
     if args.stage in ("summary", "all"):
         run_summary(force=args.force)
     if args.stage in ("check", "all"):

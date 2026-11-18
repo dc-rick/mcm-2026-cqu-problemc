@@ -3,66 +3,76 @@
  "title": "Q4 限容围栏：选址、分配、容量联合求解",
  "date": "2026-11-18",
  "status": "delivered",
- "revision": "R0",
- "summary": "把 705 处方案降级为“无硬容量上限的参考方案（Kneedle 折中点，λ=150）”，另行求解限容联合模型：候选站点为 5,263 个格中心，需求格 i 的停车量 a_i 为同一 MC 95 分位峰值占用（300 次，期初库存计入 t=0），单次分配、只允许 450 m 内、站点容量 150，未分配量显式。需求面按 M11 改用训练日（05-10/11/15/16/18）；与 T006 的 7 日口径相比总量比 0.994926、格-小时 L1 相对差 2.93%，arr7 复现 T006（最大绝对差 4.96e-5）。限容后 76.86% 不可达：全开 5,263 站时保障覆盖率上限为 61.10%（meas343）/ 54.02%（fleet495）；边际曲线 20 个点，Kneedle 折点在 4,000 站（59.53% / 52.18%，600,000 车位）。同一 705 处加 150 位上限只剩 10.85% / 9.41%。回放（15 分钟，训练日定型，测试日 12/19）：折点方案测试日实现覆盖率 50.33% / 50.35%（meas343）与 44.21% / 44.05%（fleet495），满位站点 1,007/1,110 与 1,332/1,415，满位站点-时段 16,755/19,047 与 20,449/22,570，溢出到达 104,551/126,921 与 86,985/104,047。步行：未分配到达的 98.35%（meas343）在 450 m 内（多为本格站点已满），严格超出 450 m 的仅 15,524 辆/日，P50 0.700 km、P90 1.749 km、最大 12.816 km。",
+ "revision": "R1",
+ "summary": "把 705 处方案降级为“无硬容量上限的参考方案（Kneedle 折中点，λ=150）”，另行求解限容联合模型：候选站点为 5,263 个格中心，需求格 i 的停车量 a_i 为同一 MC 95 分位峰值占用（300 次，期初库存计入 t=0），单次分配、只允许 450 m 内、站点容量 150，未分配量显式。需求面按 M11 改用训练日（05-10/11/15/16/18）；与 T006 的 7 日口径相比总量比 0.994926、格-小时 L1 相对差 2.93%，arr7 复现 T006（最大绝对差 4.96e-5）。限容后 76.86% 不可达：占用口径全开 5,263 站时上限 61.10%（meas343）/ 54.02%（fleet495），折点 4,000 站 59.53% / 52.18%；按 T009 的到达份额口径（R1 新增）分别只有 56.75% / 51.69%（全开）与 55.80% / 49.59%（折点），同一 705 站加 150 位上限为 14.66% / 13.08%（占用口径 10.85% / 9.41%）。分母保守性（R1 新增）：同一批 300 次重复里系统总占用 95 分位 ÷ 逐格 95 分位之和 = 0.6462 / 0.4681，即 Σa 比系统级峰值高约 1.55× / 2.14×。回放（15 分钟，训练日定型，测试日 12/19）新增 departure_shortfall 列：design 132,251 / 4,277；测试日实现覆盖率 50.33% / 50.35% 与 44.21% / 44.05%，满位站点 1,007/1,110 与 1,332/1,415，溢出 104,551/126,921 与 86,985/104,047；60 分钟步长对照（R1 新增）设计日覆盖率 −0.08~−0.13 pp、测试日 −0.19~−0.41 pp，离场短缺 +26,006~+34,552 / +20,328~+35,096。步行：未分配到达的 98.35%（meas343）在 450 m 内（多为本格站点已满），严格超出 450 m 的仅 15,524 辆/日，P50 0.700 km、P90 1.749 km、最大 12.816 km。",
  "checks": {
   "1_site_lists_csv": "pass; data/runs/T019/fences_cap150_meas343.csv 与 fences_cap150_fleet495.csv，列 site_cell,x,y,capacity,assigned_demand，各 4,000 行（= 选定折点方案站点数）；capacity 最大值 150.0（≤150），assigned_demand 最大值 150.00000000000156（1.6e-12 为求解器容差），逐行 assigned_demand ≤ capacity 成立。证据：data/runs/T019/check.json -> {meas343,fleet495}.{csv_rows,csv_capacity_ok,csv_assigned_le_capacity,csv_assigned_matches_plan}。",
   "2_assignment_consistency": "pass; 每个需求格 Σ_j f_ij + u_i − a_i 的最大绝对误差 meas343 2.70e-13、fleet495 5.68e-13（阈值 1e-6）；有流量的弧 5,988 / 5,818 条，非自环最大距离 0.426 km（网格东西向间距），>450 m 的分配 0 条；站点超容最大 1.56e-12（150 位口径）；s 取整偏差 0。证据：check.json -> assignment_consistency_max_abs、distance_violations、max_distance_km_nonself、site_over_capacity_max、s_integrality_max_dev、all_pass=true。",
-  "3_summary_table": "pass; data/runs/T019/summary.json：两种库存 × {selected_n, slots, coverage, assigned, unassigned, max_coverage_all_sites}，旧 705 处无上限方案作 old_705_uncapped_reference 参照行（coverage_arrivals 0.768585，slots 491,691.94 / 621,003.85，standing 236,432.58 / 366,861.79）。同一 705 处加 150 位：10.847% / 9.411%。折点 4,000 站：59.530% / 52.182%，未分配 394,553.13 / 537,333.64。全开：61.098% / 54.015%。",
-  "4_marginal_curve": "pass; data/runs/T019/marginal_curve.json 含 20 个站点数点（100 … 5,263），每点 {n, coverage, slots, unassigned, marginal_pp_per_100_sites}；76.86% 在 450 m + 150 位 + 单次分配下 不可达，最高 61.098%（meas343，全开 5,263 站）与 54.015%（fleet495）；4,000 站前每 100 站约 +1.49 个百分点，4,000→5,263 每 100 站 +0.12 个百分点。Kneedle 折点（归一化 (n, coverage) 离弦最远，与 eq. (29) 同规则）为 4,000 站。",
-  "5_replay": "pass; data/runs/T019/replay.json，15 分钟步长、期初库存按分配份额落到站点（5/16 00:00 快照，Plan 定型只用训练日 Q1 面与快照，测试日到场/离场只用于评估）。meas343 折点方案：设计日满位 0、溢出 0、实现覆盖率 55.804%；05-12 满位站点 1,007、满位站点-时段 16,755、溢出 104,551、实现覆盖率 50.333%、总到达 1,981,383；05-19 满位 1,110、19,047、溢出 126,921、50.353%、总到达 2,359,828。fleet495：设计日 49.587%、满位 0、溢出 0；05-12 44.206%、1,332、20,449、86,985；05-19 44.049%、1,415、22,570、104,047。全开 5,263 站的实现覆盖率：meas343 设计 56.754%、05-12 51.381%、05-19 51.343%；fleet495 51.692%、46.553%、46.484%。设计日无满位是模型口径的预期：a_i 是 MC 95 分位，确定性均值轨迹低于该分位；离场短缺（meas343 设计日 132,251）是“站点按停车份额分配、早高峰取车需求超过在场车辆”的调度问题，不是容量违约，见 notes。",
-  "6_eq29_replacement": "pass; data/runs/T019/eq29_replacement.tex 给出可直接替换 paper/sec7_q4.tex:48-61 的英文段落：选取规则是“把 cost(n)=slots(n)+150n 与覆盖率 c(n) 各自归一化到 [0,1]，取归一化 (cost,c) 曲线上离首末点连线最远的点（Kneedle）”，并明确说明 cost(n) 随 n 单调增、没有内点最小值，因此不是“最小化”；705 处标记为“uncapped reference plan (Kneedle knee at λ=150)”。",
-  "7_reproduction": "pass; command=`python -I code/t019_q4_cap.py --stage all --force`（分阶段也可：demand|solve|radius|replay|walk|summary|check）；随机种子 20261118（每格 MC 用 seed+i，rng=default_rng）；求解器 Gurobi 13.0.0，MIPGap 0.005、TimeLimit 300 s，实际最大 gap 0.499%（各点 gap 见 frontier.json -> points[*].gap），折点 4,000 站 meas343 gap 0.491%、fleet495 gap 0.498%；模型规模 5,263 需求格、13,861 条 ≤450 m 弧、约 2.4 万个变量。输入 SHA-256 与输出 SHA-256 见 reproduction。",
-  "M18.a_radius_sweep": "pass; data/runs/T019/radius_sweep.json：两种库存 × R∈{150,300,450} × {n_sites, slots, coverage, unassigned, effective_coverage, mandatory_parking_coverage}。折点 4,000 站：meas343 覆盖率 R150=52.424%、R300=52.424%、R450=59.530%，有效覆盖率（×式(19) 零奖励合规率）7.622% / 3.172% / 1.417%；fleet495 46.020% / 46.020% / 52.182%，有效 6.691% / 2.784% / 1.242%。R=150 与 R=300 数值相同，因为网格东西向间距 0.426 km、南北向 0.556 km，300 m 内只有自格（自环距离按 0 处理；data/dist_matrix.npy 对角线 0.2475 km 是重力模型的格内平均偏移，不是选址距离）。同时给出 (a) 有效覆盖率与 (b) 强制停车口径两个数列。",
+  "3_summary_table": "pass; data/runs/T019/summary.json：两种库存 × {selected_n, slots, occupancy_coverage, arrival_coverage, assigned, unassigned, max_*_coverage_all_sites}，旧 705 处无上限方案作 old_705_uncapped_reference 参照行（coverage_arrivals 0.768585，slots 491,691.94 / 621,003.85，standing 236,432.58 / 366,861.79）。折点 4,000 站：occupancy 59.530% / 52.182%，arrival 55.805% / 49.587%；全开：occupancy 61.098% / 54.015%，arrival 56.754% / 51.692%；同一 705 处加 150 位：occupancy 10.847% / 9.411%，arrival 14.662% / 13.078%。R1 新增 reconciliation_7686 块并列两把尺子。",
+  "4_marginal_curve": "pass; data/runs/T019/marginal_curve.json 含 20 个站点数点（100 … 5,263），每点 {n, coverage, arrival_coverage, slots, unassigned, marginal_pp_per_100_sites}；76.86% 在 450 m + 150 位 + 单次分配下 不可达，占用口径最高 61.098%（meas343，全开 5,263 站）与 54.015%（fleet495），到达口径最高 56.754% / 51.692%；4,000 站前每 100 站约 +1.49 个百分点，4,000→5,263 每 100 站 +0.12 个百分点。Kneedle 折点（归一化 (n, coverage) 离弦最远，与 eq. (29) 同规则）为 4,000 站。",
+  "5_replay": "pass; data/runs/T019/replay.json，15 分钟步长、期初库存按分配份额落到站点（5/16 00:00 快照，Plan 定型只用训练日 Q1 面与快照，测试日到场/离场只用于评估）。meas343 折点方案：设计日满位 0、溢出 0、实现覆盖率 55.804%、departure_shortfall 132,250.8；05-12 满位站点 1,007、满位站点-时段 16,755、溢出 104,551、实现覆盖率 50.333%、departure_shortfall 123,832.5、总到达 1,981,383；05-19 满位 1,110、19,047、溢出 126,921、50.353%、departure_shortfall 152,736.7、总到达 2,359,828。fleet495：设计日 49.587%、departure_shortfall 4,277.3、满位 0、溢出 0；05-12 44.206%、1,332、20,449、86,985、departure_shortfall 83,071.1；05-19 44.049%、1,415、22,570、104,047、departure_shortfall 103,149.1。全开 5,263 站的实现覆盖率：meas343 设计 56.754%、05-12 51.381%、05-19 51.343%；fleet495 51.692%、46.553%、46.484%（设计日零溢出，故与 frontier 的 arrival_coverage 逐位一致）。设计日无满位是模型口径的预期：a_i 是 MC 95 分位，确定性均值轨迹低于该分位；离场短缺是“空站借不到车”，不是容量违约——满位率与借车成功率是两个方向的服务失效，见 notes。",
+  "6_eq29_replacement": "pass; data/runs/T019/eq29_replacement.tex 给出可直接替换 paper/sec7_q4.tex:48-61 的英文段落：选取规则是“把 cost(n)=slots(n)+150n 与覆盖率 c(n) 各自归一化到 [0,1]，取归一化 (cost,c) 曲线上离首末点连线最远的点（Kneedle）”，并明确说明 cost(n) 随 n 单调增、没有内点最小值，因此不是“最小化”；705 处标记为“uncapped reference plan (Kneedle knee at λ=150)”。R1 追加三段可直接插入的英文：口径段（76.86% 为到达份额，限容方案到达口径 55.80%/56.75%，同 705 站限容 14.66%）、回放段（满位率与借车成功率两个方向、15 分钟 vs 60 分钟差异）、M18 段（强制停车与自愿合规两个口径并列）。",
+  "7_reproduction": "pass; command=`python -I code/t019_q4_cap.py --stage all --force`（分阶段也可：demand|solve|radius|replay|walk|denominator|summary|check）；随机种子 20261118（每格 MC 用 seed+i，rng=default_rng）；求解器 Gurobi 13.0.0，MIPGap 0.005、TimeLimit 300 s，实际最大 gap 0.499%（各点 gap 见 frontier.json -> points[*].gap），折点 4,000 站 meas343 gap 0.491%、fleet495 gap 0.498%；模型规模 5,263 需求格、13,861 条 ≤450 m 弧、约 2.4 万个变量。输入 SHA-256 与输出 SHA-256 见 reproduction。",
+  "8_arrival_share_column": "pass; frontier.json 每个站点数点（20 点/档）、all_open_lp、all_open_milp、selected 全部新增 arrival_coverage；summary.json 每个 level 的 occupancy_coverage / arrival_coverage / max_*_all_sites / t009_705_sites_cap150.arrival_coverage；radius_sweep.json 每个半径的 arrival_coverage 与 effective_arrival_coverage；marginal_curve.json 新增 arrival_coverage 序列。复算定义 1−Σ_i u_i·(arr_i/a_i)/Σ_i arr_i（arr_i 为训练日日均到达），独立复现指导方的 56.75%（全开 5,263 站）与 55.80%（折点 4,000 站），fleet495 为 51.69% / 49.59%。注意 LP 全开解（分数站点）的 arrival_coverage 58.970% 不是可执行方案数字，方案一律取 MILP。",
+  "9_denominator_conservativeness": "pass; data/runs/T019/denominator.json，用与 demand 阶段逐格同一随机种子和抽样顺序重放 300 次：每 rep 先取系统总占用 max_t Σ_i occ_ir(t)，再对 300 个峰值取 95 分位。meas343：Σ_i a_i=974,923.2，系统 95 分位峰值 630,002.8，ratio=0.6462；fleet495：1,123,702.6 vs 525,987.2，ratio=0.4681。即逐格 95 分位求和比系统级同分位高约 1/0.6462−1=54.8% 与 113.6%。定义与口径写在该文件 definition/note 字段。",
+  "10_replay_shortfall_column": "pass; replay.json 的每一档每一日都含 departure_shortfall：折点方案 meas343 design 132,250.8、05-12 123,832.5、05-19 152,736.7；fleet495 4,277.3 / 83,071.1 / 103,149.1。R1 同时给全开方案（all_sites.design 与测试日）补了该列。summary.json -> levels.*.replay_design 把满位（full_sites_ever、full_site_steps）、溢出、离场短缺并列，并写明两个方向的服务失效。",
+  "11_hourly_step_difference": "pass; replay.json -> design_1h 与每天 hourly 块。折点方案 60 分钟步长 vs 15 分钟：meas343 设计日实现覆盖率 55.729% vs 55.804%（−0.076 pp），departure_shortfall 158,257.2 vs 132,250.8（+26,006.4），溢出 1,617.9 vs 0，满位站点 95 vs 0；05-12 −0.252 pp（短缺 +22,736.6）、05-19 −0.412 pp（+35,096.4）。fleet495 设计日 −0.127 pp（+34,552.1），05-12 −0.188 pp（+20,327.9）、05-19 −0.279 pp（+29,695.1）。更细步长更宽松，结论不依赖步长。",
+  "M18.a_radius_sweep": "pass; data/runs/T019/radius_sweep.json：两种库存 × R∈{150,300,450} × {n_sites, slots, coverage, arrival_coverage, unassigned, effective_coverage, effective_arrival_coverage, mandatory_parking_coverage}。折点 4,000 站 meas343：占用覆盖率 R150=52.424%、R300=52.424%、R450=59.530%；到达覆盖率 56.995% / 56.995% / 55.805%；有效覆盖率（×式(19) 零奖励合规率）7.622% / 3.172% / 1.417%（到达口径 8.287% / 3.448% / 1.328%）。fleet495：占用 46.020% / 46.020% / 52.182%，有效 6.691% / 2.784% / 1.242%（到达口径 7.831% / 3.258% / 1.180%）。R=150 与 R=300 数值相同，因为网格东西向间距 0.426 km、南北向 0.556 km，300 m 内只有自格（自环距离按 0 处理；data/dist_matrix.npy 对角线 0.2475 km 是重力模型的格内平均偏移，不是选址距离）。注意：强制停车口径下 R=450 最高，自愿合规口径下 R=150 最高，且到达口径下 R=450 连原始覆盖率都低于 150/300——两个口径必须并列写。",
   "M18.b_uncovered_walk": "pass; data/runs/T019/uncovered_walk.json。折点方案下未分配到达：meas343 942,487 辆/日，98.353% 在 450 m 内（多数是本格站点已满，距离 0）、1.647% 超出；严格超出 450 m 的子群 489 格、15,524 辆/日，P50 0.700 km、P90 1.749 km、最大 12.816 km。fleet495：未分配 1,075,073 辆/日，超出 1.692%；子群 539 格、18,186 辆/日，P50 0.700 km、P90 2.805 km、最大 12.816 km。另给 a_i>0 且无任何分配弧的格子（1,008 / 1,221 个）的未加权距离分布。"
  },
  "affected": [
   {
    "location": "paper/sec7_q4.tex:48-61",
    "old": "The number of fences is chosen on the capacity--coverage frontier by minimising cost(n)=slots(n)+λn ... The 626-fence plan is not a knee; it is only a point on the frontier, retained for comparison.",
-   "new": "全文替换为 data/runs/T019/eq29_replacement.tex 的段落：knee 选取规则（归一化 (cost, coverage) 离弦最远），明确不是最小化（cost(n) 单调增），并把 705 处称为 uncapped reference。",
-   "basis": "H21：code/t009_q4.py:130-138 的 knee() 是离弦最远点；cost(n) 随 n 单调增，原式 (29) 的“最小化”无内点解。"
+   "new": "全文替换为 data/runs/T019/eq29_replacement.tex 的段落：knee 选取规则（归一化 (cost, coverage) 离弦最远），明确不是最小化（cost(n) 单调增），并把 705 处称为 uncapped reference。R1 在该段之后追加“口径段”：76.86% 是到达份额，限容方案到达口径 55.80%（折点）/56.75%（全开）/14.66%（同 705 站限容），占用口径 59.53%/61.10%/10.85% 只作并列补充。",
+   "basis": "H21：code/t009_q4.py:130-138 的 knee() 是离弦最远点；cost(n) 随 n 单调增，原式 (29) 的“最小化”无内点解；summary.json -> reconciliation_7686。"
   },
   {
    "location": "paper/sec7_q4.tex:68-94",
    "old": "tab:fence 的 705 行标为 Knee, λ=150；正文“tab:fence is the answer. The recommended layout has 705 fences, covers 76.86%...”",
-   "new": "把该表与 705 行改标为“uncapped reference plan (Kneedle knee, λ=150; 每处按自身 MC 95 分位定容，无 150 位上限)”；76.86% 明示为到达口径、不含容量约束。新增限容段与前沿表：4,000 站（600,000 车位）覆盖 59.530%（meas343）/ 52.182%（fleet495）；全开 5,263 站 61.098% / 54.015%；同 705 处加 150 位 10.847% / 9.411%；76.86% 在限容模型下不可达。",
+   "new": "把该表与 705 行改标为“uncapped reference plan (Kneedle knee, λ=150; 每处按自身 MC 95 分位定容，无 150 位上限)”；76.86% 明示为到达口径、不含容量约束。新增限容段与前沿表（同一到达口径）：折点 4,000 站（600,000 车位）覆盖 55.80%（meas343）/49.59%（fleet495）；全开 5,263 站 56.75% / 51.69%；同 705 处加 150 位 14.66% / 13.08%；对应占用口径 59.53%/52.18%、61.10%/54.02%、10.85%/9.41% 以括号并列。76.86% 在限容模型下不可达。",
    "basis": "data/runs/T019/summary.json, frontier.json, marginal_curve.json"
   },
   {
    "location": "paper/sec7_q4.tex:122-129",
    "old": "We therefore recommend a capped layout ... The capped plan is not solved here as a separate optimisation; it is the operational reading of a capacity distribution that no uncapped plan can avoid.",
-   "new": "We therefore solve the capped layout directly. A corner can plausibly hold 150 slots --- about 210 m^2 ... With sites at cell centres, R=450 m and 150 slots per site, the capped model maximises the parking demand that can be assigned with capacity guaranteed. At the Kneedle knee of its frontier (4,000 sites, 600,000 slots) it covers 59.53% of the cell-level 95th-percentile demand at 343,638 bicycles and 52.18% at 495,540; opening all 5,263 sites raises this only to 61.10% and 54.02%, so the 76.86% arrival coverage does not survive the cap. The binding constraint is capacity per cell: 2,306 cells (meas343) have a 95th-percentile peak occupancy above 150, and the sum of cell-level percentiles is 974,923, 2.84 times the fleet, because percentiles are not additive. Coverage is therefore a conservative demand-envelope measure, not a share of bicycles.",
-   "basis": "summary.json；demand_stats.json；marginal_curve.json"
+   "new": "We therefore solve the capped layout directly. A corner can plausibly hold 150 slots --- about 210 m^2 ... With sites at cell centres, R=450 m and 150 slots per site, the capped model maximises the parking demand that can be assigned with capacity guaranteed. At the Kneedle knee of its frontier (4,000 sites, 600,000 slots) it covers 55.80% of arrivals (59.53% of peak-occupancy demand) at 343,638 bicycles and 49.59% (52.18%) at 495,540; opening all 5,263 sites raises this only to 56.75% (61.10%), so the 76.86% arrival coverage does not survive the cap. The binding constraint is capacity per cell: 2,306 cells (meas343) have a 95th-percentile peak occupancy above 150, and the sum of cell-level percentiles is 974,923, 2.84 times the fleet, because percentiles are not additive; a system-level check puts the 95th percentile of total occupancy at 0.646 of that sum (0.468 at 495,540), so the demand denominator is conservative either way. Coverage is therefore a demand-envelope measure, not a share of bicycles.",
+   "basis": "summary.json；demand_stats.json；denominator.json；marginal_curve.json"
   },
   {
    "location": "paper/sec7_q4.tex:106-110",
    "old": "Of the 705 knee fences, 704 (99.86%) exceed 150 slots at the measured inventory, and all 705 exceed it at the closed fleet.",
-   "new": "加限定语“Of the 705 uncapped-reference fences, ...”；并接一句限容后的对照：same 705 sites with a 150-slot cap cover 10.85% / 9.41%。",
+   "new": "加限定语“Of the 705 uncapped-reference fences, ...”；并接一句同口径对照：same 705 sites with a 150-slot cap cover 14.66% of arrivals (10.85% of peak-occupancy demand) at the measured inventory and 13.08% (9.41%) at the closed fleet。",
    "basis": "summary.json -> levels.*.t009_705_sites_cap150"
   },
   {
    "location": "paper/sec7_q4.tex:39-46",
    "old": "A fence at cell c with walking radius R=450 m serves every arrival whose destination lies within R of c",
-   "new": "保留覆盖定义，但补一句口径说明：这是“围栏覆盖”口径；若按式 (19) 的自愿绕行口径，零奖励接受概率在 450/300/225/150 m 为 0.0238/0.0605/0.0948/0.1454（κ=2.0、ρ=0.35、c0=0.8，均为假设值），限容折点方案的有效覆盖率相应为 1.417%/3.172%/—/7.622%（meas343），即半径越小、合规越高，有效覆盖率反而上升；监管强制停车口径下不乘合规率，覆盖率即 59.530%/52.424%/—/52.424%。",
+   "new": "保留覆盖定义，但补一句口径说明：这是“围栏覆盖”口径；若按式 (19) 的自愿绕行口径，零奖励接受概率在 450/300/225/150 m 为 0.0238/0.0605/0.0948/0.1454（κ=2.0、ρ=0.35、c0=0.8，均为假设值），限容折点方案的有效覆盖率相应为 1.417%/3.172%/—/7.622%（占用口径，meas343），即半径越小、合规越高，有效覆盖率反而上升；监管强制停车口径下不乘合规率，覆盖率即 59.530%/52.424%/—/52.424%。R1 补充：到达口径下有效覆盖率为 1.328%/3.448%/—/8.287%，且原始到达覆盖率 R=150/300 的 56.995% 已高于 R=450 的 55.805%——强制口径下大半径占优、自愿口径下小半径占优，两个口径必须并列写。",
    "basis": "radius_sweep.json；合规率由指导方按式 (19) 复算并锁定"
+  },
+  {
+   "location": "paper/sec7_q4.tex（限容段之后新增回放段）",
+   "old": "（原文没有限容回放段）",
+   "new": "插入 eq29_replacement.tex 的回放段：设计日满位 0、溢出 0，但 departure_shortfall 132,251（343,638 库存）——“满位率与借车成功率是两个方向的服务失效”；实现到达覆盖率 55.80% vs 静态占用覆盖 59.53%；回放 15 分钟步长，60 分钟步长下覆盖率 −0.08~−0.13 pp（设计日）/ −0.19~−0.41 pp（测试日），短缺 +26,006~+34,552 / +20,328~+35,096，结论不依赖步长。",
+   "basis": "replay.json；summary.json -> levels.*.replay_design"
   },
   {
    "location": "paper/sec1_intro.tex:131",
    "old": "705 fences at 450 m cover 76.86%; 491,692 slots at 343,638, 621,004 at 495,540",
-   "new": "705-fence uncapped reference (Kneedle knee at λ=150) covers 76.86% of arrivals with 491,692 slots; with a 150-slot cap the same 705 sites cover 10.85%, and the capped frontier peaks at 61.10% with all 5,263 sites",
-   "basis": "summary.json"
+   "new": "705-fence uncapped reference (Kneedle knee at λ=150) covers 76.86% of arrivals with 491,692 slots; with a 150-slot cap the same 705 sites cover 14.66% of arrivals (10.85% occupancy), and the capped frontier peaks at 56.75% of arrivals (61.10% occupancy) with all 5,263 sites",
+   "basis": "summary.json（到达口径与 76.86% 同一把尺子）"
   },
   {
    "location": "paper/sec10_evaluation.tex:96-97",
    "old": "The fence analysis places 705 fences, covering 76.86% of arrivals at 491,692 slots ...",
-   "new": "改标 uncapped reference，并补限容结论（同 705 处 10.85%；全开 61.10%；76.86% 不可达）",
+   "new": "改标 uncapped reference，并补限容结论（同 705 站限容到达口径 14.66%；全开 56.75%；76.86% 不可达）；占用口径 10.85% / 61.10% 仅作括号补充。",
    "basis": "summary.json"
   },
   {
    "location": "paper/summary.tex:58",
    "old": "λ=150 knee at 705 fences, covering 76.86% of arrivals with ...",
-   "new": "uncapped reference at 705 fences (Kneedle knee, λ=150), covering 76.86% of arrivals; under the 150-slot cap the same sites give 10.85% and the capped frontier peaks at 61.10%",
+   "new": "uncapped reference at 705 fences (Kneedle knee, λ=150), covering 76.86% of arrivals; under the 150-slot cap the same sites give 14.66% of arrivals (10.85% occupancy) and the capped frontier peaks at 56.75% of arrivals (61.10% occupancy)",
    "basis": "summary.json"
   }
  ],
@@ -77,6 +87,7 @@
   "data/runs/T019/radius_sweep.json",
   "data/runs/T019/replay.json",
   "data/runs/T019/uncovered_walk.json",
+  "data/runs/T019/denominator.json",
   "data/runs/T019/summary.json",
   "data/runs/T019/check.json",
   "data/runs/T019/fences_cap150_meas343.csv",
@@ -89,21 +100,25 @@
   "data/runs/T019/eq29_replacement.tex"
  ],
  "notes": [
+  "R1（2026-11-18，按指导方有条件通过意见）补四项，均不重解主模型：(1) frontier.json 每个站点数点、all_open_lp/all_open_milp/selected，summary.json 每档、radius_sweep.json 每个半径、marginal_curve.json 全部新增 arrival_coverage；定义 1−Σu_i(arr_i/a_i)/Σarr_i，用各方案已存的 u 直接算，复现指导方的 56.75%（全开 5,263 站）/ 55.80%（折点 4,000 站），fleet495 为 51.69%/49.59%。(2) denominator.json：同一批 300 次 MC 重复、同一随机种子与抽样顺序，系统总占用峰值 95 分位 ÷ 逐格 95 分位之和 = 0.6462（meas343）/ 0.4681（fleet495），即逐格求和保守约 1.55× / 2.14×。(3) replay.json 每个方案、每一日新增 departure_shortfall 列（含全开方案），summary.json 的 replay_design 并列满位/溢出/短缺。(4) 60 分钟步长回放对照：设计日覆盖率 −0.08~−0.13 pp、测试日 −0.19~−0.41 pp；离场短缺 +26,006~+34,552（设计）/ +20,328~+35,096（测试）。",
+  "口径提醒（R1）：76.86% 是 T009 的到达份额，限容结果必须用同一把尺子对比：到达口径 56.75%（全开）/55.80%（折点）/14.66%（同 705 站限容），meas343；fleet495 51.69%/49.59%/13.08%。占用口径 61.10%/59.53%/10.85% 只作补充列。两种口径都说明 76.86% 在限容下不可达，且到达口径更低、更保守。",
+  "T018-R1 已由指导方通过（2026-11-18）：给 T021 的口径是两套班表都报、主推日循环版（目标+空驶 88,014.51 < 89,950.32，省 1,935.81 元/天，可重复），并写一句峰值移到 0 时是 60 车集中夜调、属夜间常规但为全员夜班出车。",
+  "LP 参照值：全开 LP 的 occupancy 覆盖与 MILP 相同（61.098%/54.015%），但分数站点允许超配，其 arrival_coverage 58.970%/53.626% 高于任何可执行方案，不得当作方案数字；方案一律取 MILP 的 56.754%/51.692%。",
   "M11 口径：设计需求面已改为训练日（05-10/11/15/16/18）重建；arr7（7 日）复现 T006 arr_q1_cell 的最大绝对差 4.96e-5，说明重建正确。train5 与 typ7 的总到达比 0.994926、格-小时 L1 相对差 2.93%、最大绝对差 1.538 辆/时-格。I0 仍用 5/16 00:00 快照（期初条件，不是设计需求）。",
-  "需求定义与 T009 可比：a_i 是“从该格站立库存出发、300 次泊松重放、取峰值 15 分钟占用的 95 分位”，t=0 计入峰值。与 T009 的差别只在需求面口径（训练日 vs 7 日）与格级 vs 围栏级。格级 95 分位不可加：705 覆盖格求和 676,613，是 T009 围栏级容量 491,692 的 1.376 倍，所以本任务的覆盖率分母偏保守。",
-  "76.86% 不可达的原因不是站点数，而是“每格 150 位 + 单次分配 + 450 m”三者的联合：2,306 格（meas343）的 a_i>150；全部 5,263 站开放时总车位 789,450 仍小于 Σa=974,923（车位上限 81.0%），而 450 m 内只有本格与东西向邻格（南北向 0.556 km），高需求格的溢出无法被远处空位吸收，故上限只有 61.10%。R 放宽到 0.56 km 时为 63.99%，0.90 km 为 66.11%，1.20 km 为 67.94%（诊断值，未写入 radius_sweep.json）。",
-  "回放的离场规则与局限：离场需求按与到达相同的分配份额落到站点（即每个站点服务固定的一份用户），若在场车辆不足则记为 departure_shortfall，并假定运营方补车；因此该短缺不是容量违约，而是“早高峰取车需求超过在场车辆”的调度问题（meas343 设计日 132,251，占 6.2%）。备用规则“按当前在场车辆比例抽车”会把短缺放大到 854k 并产生不真实的连锁，未采用。设计日满位 0、溢出 0 是 MC 95 分位口径的预期（确定性均值轨迹低于 95 分位）；测试日的满位与溢出才是容量压力。",
+  "需求定义与 T009 可比：a_i 是“从该格站立库存出发、300 次泊松重放、取峰值 15 分钟占用的 95 分位”，t=0 计入峰值。与 T009 的差别只在需求面口径（训练日 vs 7 日）与格级 vs 围栏级。格级 95 分位不可加：705 覆盖格求和 676,613，是 T009 围栏级容量 491,692 的 1.376 倍，所以本任务的覆盖率分母偏保守；R1 的系统级对照给出 0.646/0.468 的保守倍数。",
+  "76.86% 不可达的原因不是站点数，而是“每格 150 位 + 单次分配 + 450 m”三者的联合：2,306 格（meas343）的 a_i>150；全部 5,263 站开放时总车位 789,450 仍小于 Σa=974,923（车位上限 81.0%），而 450 m 内只有本格与东西向邻格（南北向 0.556 km），高需求格的溢出无法被远处空位吸收，故占用口径上限只有 61.10%。R 放宽到 0.56 km 时为 63.99%，0.90 km 为 66.11%，1.20 km 为 67.94%（诊断值，未写入 radius_sweep.json）。",
+  "回放的离场规则与局限：离场需求按与到达相同的分配份额落到站点（即每个站点服务固定的一份用户），若在场车辆不足则记为 departure_shortfall，并假定运营方补车；因此该短缺不是容量违约，而是“空站借不到车”的调度问题（meas343 设计日 132,251，占 6.2%）。备用规则“按当前在场车辆比例抽车”会把短缺放大到 854k 并产生不真实的连锁，未采用。设计日满位 0、溢出 0 是 MC 95 分位口径的预期（确定性均值轨迹低于 95 分位）；测试日的满位与溢出才是容量压力。R1 已按指导方要求把该项单列，并把“满位率与借车成功率是两个方向的服务失效”写进回放段。",
   "150 位是规划情景，不是工程上限：来源为论文 ~210 m² 的推算（10 m × 21 m）。本任务没有把它当作已证实容量。",
   "大型站点情景（可选）未做：T009 的 OSM 数据只有地铁口点位，没有每个候选格的用地/广场面积，无法给“有大站依据”的逐站容量；强行加大会变成无依据的参数扫描，故不做。",
   "T020 接口：data/runs/T019/spare_capacity.npz 含 spare_meas343 (96×4,000)、sites_meas343、spare_fleet495、sites_fleet495（选定折点方案的 15 分钟剩余容量；顺序与 sites 数组一致）。plan_*_main.npz 另存 s/f/u/ii/jj/a/I0，可直接重放。",
   "R=150 与 R=300 结果相同不是程序错误：网格 0.426 km（东西）× 0.556 km（南北），300 m 内没有邻格；自环按距离 0 计入。dist_matrix.npy 对角线 0.2475 km 是重力模型的格内平均偏移，选址时已重置为 0。",
-  "N 口径：站点数 n 指开放的格中心站点数；总车位 = 150n。折点方案 4,000 站的覆盖率 59.530% 与全开 61.098% 的差为 1.57 个百分点，最后 1,263 站只买 0.12 个百分点/100 站，边际曲线本身即结论。",
+  "N 口径：站点数 n 指开放的格中心站点数；总车位 = 150n。折点方案 4,000 站的占用覆盖率 59.530% 与全开 61.098% 的差为 1.57 个百分点，最后 1,263 站只买 0.12 个百分点/100 站，边际曲线本身即结论。",
   "未改 paper/、data/ 已有文件、审查与规划/；未覆盖 data/runs/T009/。所有新结果只写 data/runs/T019/ 与 交付/T019_delivery.json。"
  ],
  "reproduction": {
   "command": "python -I code/t019_q4_cap.py --stage all --force",
-  "stages": "demand -> solve -> radius -> replay -> walk -> summary -> check",
-  "runtime_seconds_approx": {"demand": 60, "solve": 7, "radius": 6, "replay": 35, "walk": 5, "summary": 8, "check": 2},
+  "stages": "demand -> solve -> radius -> replay -> walk -> denominator -> summary -> check",
+  "runtime_seconds_approx": {"demand": 60, "solve": 7, "radius": 8, "replay": 40, "walk": 5, "denominator": 150, "summary": 8, "check": 2},
   "seed": 20261118,
   "solver": "Gurobi 13.0.0; MIPGap 0.005, TimeLimit 300 s; max observed gap 0.499%",
   "input_sha256": {
@@ -116,16 +131,18 @@
    "data/runs/T009/q4_fences.csv": "fdd2e789a761df3f42b63254f9e405bdd3e6887df08d8136e676a7faaeb1dbca"
   },
   "output_sha256": {
-   "data/runs/T019/summary.json": "5f9ce4bd1ef78672439159f352211323835ab1cb8e9ece3ee7f87a6e52e9ae84",
-   "data/runs/T019/frontier.json": "d5fbd885409f6fcd3fd1a09828577c00b24389984fe20574b3c56526929d20c2",
-   "data/runs/T019/marginal_curve.json": "117886fc7611f31bca6b63501dacdba9f28b3d562ffd04382264c687464969ff",
-   "data/runs/T019/radius_sweep.json": "a93a5ae0ffe8e1d99b26d8a406aa56ab7eb898d91c7f7f49e18628af08d3fb5c",
-   "data/runs/T019/replay.json": "d041a9a111f982b97243734651c5b4721c4be83a7a34f7833c824ecc514f6f4b",
+   "data/runs/T019/summary.json": "8d7d4e87b36036ac3f008fcc80de124b8e05e12a3736ef9b543ff0c9b65a762e",
+   "data/runs/T019/frontier.json": "932857fb1d921b9a47e49869975d1f63537d9d6df83c1d796fc08728a05f5946",
+   "data/runs/T019/marginal_curve.json": "78ff3dfca7bfef16922fc3c3054c4ac994414201cf9c763b6da20b1a0a6ed960",
+   "data/runs/T019/radius_sweep.json": "3148138e3fae5c5d2978a7e0125c784cc364d423b75c950a12fb96a731164e87",
+   "data/runs/T019/replay.json": "db5b80394406fe300ba5cf908d2b65318b73df55c2d62cc24b3709097d3b82b4",
    "data/runs/T019/uncovered_walk.json": "27a0b514efed3cab0e63d94dca6741e9e39b685a2534fa79367803315d69379a",
+   "data/runs/T019/denominator.json": "4d152853b471a5fb855fe6647a8328d39077f9d4badea3461594d17c50e1a8e0",
    "data/runs/T019/check.json": "8f2ce2c5a89c3b13d423cc5e733ab6fffbf4986482a1240057751b8a76320ec1",
    "data/runs/T019/fences_cap150_meas343.csv": "d7ac29c17cc63da9359c0a3d29b01a81314580ae745ea45cf3c185852b852c04",
    "data/runs/T019/fences_cap150_fleet495.csv": "53c32870485a9d756bb50a64e976414319d00f8ede4bd3b2a8f3043854ce32cc",
-   "code/t019_q4_cap.py": "7c12a83d3dde96834eb61249d7b58de7af2ef3d4ed4a1379b5e7402419970dcb"
+   "data/runs/T019/eq29_replacement.tex": "38574b12c585710f3fd67b8a2711f6c6bd67d82c3573638e950401ae5ca608ed",
+   "code/t019_q4_cap.py": "1f5200a291c40a48d8998025a4e899545ebafc4d2d1faa397584ce270319f05f"
   }
  },
  "integrity": {
