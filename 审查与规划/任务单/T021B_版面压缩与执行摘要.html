@@ -32,7 +32,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T021B · 版面压缩、执行摘要与摘要</h1>
-<p class="meta">状态：<strong>已下达 2026-11-18（T021A 通过后开工）</strong>　·　问题：H19（计页）、M17（执行摘要）　·　可写：<code>paper/</code>、<code>交付/T021B_delivery.json</code>　·　不改 <code>code/</code>、<code>data/</code></p>
+<p class="meta">状态：<strong>可开工 2026-11-19（T021A-R1 已通过，数字基线 <code>7105b07</code>）</strong>　·　问题：H19（计页）、M17（执行摘要）、L15（两处措辞）　·　可写：<code>paper/</code>、<code>交付/T021B_delivery.json</code>　·　不改 <code>code/</code>、<code>data/</code></p>
 
 <div class="box hi">
 <p><strong>本任务只负责“装得下”，不改数。</strong>唯一允许新增数字的地方是摘要与 Executive Summary，且其中每个数字必须能在 <code>data/runs/T021A/numbers.json</code> 里查到。<strong>正文 §3–§10 的数字 token 多重集必须与 T021A 通过版完全一致</strong>——这是硬门，也是本任务最重要的验收项。</p>
@@ -40,7 +40,7 @@ li{margin:3px 0}
 
 <h2>1. 三件事</h2>
 <ol>
-<li><strong>压到计页 ≤25。</strong>计页 = 总页数 − AI 报告页数（AI 报告独立分页、不计入）。现状基准：27 页 / 计页 25（摘要 1 + 目录 1 + 正文 21 + 参考文献 2）。T021A 之后会计页上涨，本任务要压回去。</li>
+<li><strong>压到计页 ≤25。</strong>计页 = 总页数 − AI 报告页数（AI 报告独立分页、不计入）。现状基准（<code>7105b07</code>）：<strong>32 总页 / 计页 30</strong>（摘要 1 + 目录 1 + 正文 26 + 参考文献 2；AI 报告 31–32 共 2 页不计）。目标 ≤25，<strong>需砍 ≥5 页</strong>。T021A 新增的表与图已计入此基准。</li>
 <li><strong>Executive Summary（M17）</strong>：§1.5 现为“The contributions are four.”的贡献清单，不是题面要求的执行摘要。改写为给平台运营方与北京市交通主管部门的约 0.6 页备忘录，每条带成立条件：卡车数量与时段（T018/T024）、奖励额度与目标区及预算规则（T020/T026）、围栏数量/位置类型/单站规模上限（T019）、竞争监管建议（§8.5）。</li>
 <li><strong>摘要重写</strong>：每问一个主要结果 + 必要条件；每个数字能在 <code>numbers.json</code> 找到；不再保留任何被取代的旧数。摘要里“the 50-zone program leaves only 432.23”必须带上 <em>with no dispatch / at $K=0$</em> 的条件，否则会被读成 $K=60$ 的计划仍留 432.23（实际为 0）。</li>
 </ol>
@@ -56,11 +56,11 @@ li{margin:3px 0}
 <tr><td>5</td><td>§3 数据段</td><td>字段描述压缩，指向 DATA.md</td><td>−0.3 页</td><td>可复现信息仍在仓库</td></tr>
 <tr><td>6</td><td>表 2 符号表</td><td>只留正文用到的符号</td><td>−0.3 页</td><td>未用符号不承重</td></tr>
 </tbody></table></div>
-<p class="meta">合计约 −2.9 页；不够时再动版式参数（表字号、浮动体间距、图宽），版式改动不得造成裁切或字号低于 7 pt。</p>
+<p class="meta">第一阶段（内容压缩）合计约 −2.9 页，离 ≥5 页仍有约 2 页缺口。第二阶段按下列顺序动版式，直到计页 ≤25：①图片高度压缩 10–15%（坐标轴仍可读、不裁切）；②表格字号降到 7 pt 下限（正文不得低于 7 pt）；③浮动体间距（<code>\textfloatsep</code>、<code>\intextsep</code>、<code>\abovedisplayskip</code> 等）收紧；④§9 与 §2 的重复段再合并。两阶段都不得删 §5–§8 的核心结果表与图；若全部用尽仍 &gt;25 页，交 <code>blocked</code> 并附逐节页数账，不要自行取舍。</p>
 
 <h2>3. 验收（缺一不可）</h2>
 <ol>
-<li><strong>数字门</strong>：正文 §3–§10 的数字 token 多重集与 T021A 通过版<strong>完全一致</strong>（允许的唯一差异是本单列出的删除段落里的数字，且逐条列出）；摘要与 §1.5 的每个数字都能在 <code>numbers.json</code> 查到。</li>
+<li><strong>数字门</strong>：正文 §3–§10 的数字 token 多重集与 T021A 通过版 <code>7105b07</code> <strong>完全一致</strong>（允许的唯一差异是本单列出的删除段落里的数字，且逐条列出）；摘要与 §1.5 的每个数字都能在 <code>numbers.json</code> 查到。另：顺手修 L15 两处措辞（sec10:31 “would answer the second but requires” → “but would require”；sec6:77 “rather than the 33.19” → “rather than the 33.19 bicycles”），不改数字 token。</li>
 <li><strong>页数</strong>：计页 ≤25；AI 报告独立分页且不计入；目录页码与正文一致。</li>
 <li><strong>编译</strong>：undefined 0、overfull 0、U+037E 0、<code>??</code> 0、两遍以上。</li>
 <li><strong>图</strong>：目检无裁切、无重叠；正文字号 ≥7 pt。</li>

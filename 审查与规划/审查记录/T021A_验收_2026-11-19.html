@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T021A 验收记录（R1 通过）2026-11-19</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T021A 验收记录 · R1 通过</h1>
+<p class="meta">日期：2026-11-19　·　交付：<code>交付/T021A_delivery.json</code>（revision R1，commit <code>7105b07</code>）　·　返工单：<code>审查与规划/任务单/T021A_R1_论文内容整合_返工.html</code>　·　结论：<strong>通过</strong></p>
+
+<div class="box ok">
+<p><strong>一句话结论：</strong>R1 把 R0 的五类缺陷全部修掉且没有再引入新数：23 处内部任务编号、4 处改稿语言、2 处内部变量名/指令式措辞全部为 0；区 24 的 0.43% 分母改为 LP 自行车流（26.4965/6,192.4965 = 0.4279%）；33.19×6 的假算式改为 6 元/单、199.16 元合计；fig4 panel(b) 恢复到 300 dpi；交付记录改为 724 条、rank 10。正文数字 token 多重集与 R0（62f0b79）逐文件完全一致，独立编译 32 页 / 计页 30，undefined、overfull、<code>??</code>、U+037E 全为 0。R1 的三处“与返工单字面不同”的处理是闸门自洽所必需，予以追认（§3）。</p>
+</div>
+
+<h2>1. 读了什么</h2>
+<ul>
+<li>R1 交付 JSON 全文；<code>git show 7105b07</code> 的完整 diff；<code>git diff --stat 62f0b79..7105b07</code>。</li>
+<li><code>paper/summary.tex</code>、<code>sec1</code>–<code>sec10</code>、<code>ai_report.tex</code>、<code>main.tex</code>、<code>references.tex</code> 的 R1 全文；R1 diff 涉及的 sec5–sec10 逐段读。</li>
+<li><code>data/runs/T021A/numbers.json</code>（724 条、verification、coverage）、<code>coverage_report.txt</code>、<code>token_diff_r1.txt</code>、<code>r1_pass5.log</code>、<code>r1_pass6.log</code>、<code>_r1_delivery.py</code>（check 1 的 <code>required</code> 来源）。</li>
+<li><code>figs/fig4_q2.pdf</code> 的嵌入栅格与字号；<code>figs/fig_q3_cost_vs_r.pdf</code>、<code>figs/fig9_tornado.pdf</code> 是否被改动；<code>code/t021a_figs.py</code> 的 savefig 参数。</li>
+<li>在临时目录用 R1 的 <code>paper/</code> + <code>figs/</code> 独立跑 xelatex 两遍，检查页数、日志与 PDF 文本。</li>
+</ul>
+
+<h2>2. 独立复核</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>方法</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>D1–D3 禁词门</td><td>对 R1 的 <code>paper/*.tex</code> 做区分大小写 grep：<code>\bT0[0-9][0-9]\b</code>、<code>T022-M15</code>、<code>old</code>/<code>Old</code>/<code>withdrawn</code>、<code>q3\_pure\_obj</code>/<code>q3\_ceiling</code>、<code>must not be attached</code>、<code>belongs to the T0</code></td><td>全部 0 次；基线 c4be8d1 亦为 0，R1 未留下任何内部编号或改稿语言</td></tr>
+<tr><td>数字不变门</td><td>用边界感知正则 <code>(?&lt;![A-Za-z0-9])\d[\d,]*(?:\.\d+)?</code>（不吞 T0xx 内的数字）对 R0（62f0b79）与 R1 的 14 个 <code>paper/*.tex</code> 逐文件取 token 多重集并比较</td><td>R0 = R1 = 2,161 token；14 个文件逐文件完全一致，mismatched = 0（与执行方 <code>token_diff_r1.txt</code> 结论相同）</td></tr>
+<tr><td>区 24 的 0.43%（D4）</td><td>从 <code>data/runs/T024/schedule_check.json</code> 独立复算：26.4965 / 6,192.4965</td><td>0.0042788 = 0.4279% → 0.43 保留正确；正文已改为 “0.43\% of the bicycle flows the LP assigns in the zone”，未用 2,085.98 作分母</td></tr>
+<tr><td>33.19×6（D5）</td><td>33.19 × 6 = 199.14；全精度 33.1936 × 6 = 199.1616</td><td>假算式已删；现文为 “(6 CNY per departure, 199.16 CNY in total)”，与全精度一致；两个 33.19 token 都保留（第二个在 “rather than the 33.19” 的上界句）</td></tr>
+<tr><td>编译</td><td>临时目录独立 xelatex 两遍</td><td>32 页；AI 报告位于 31–32 页（2 页），计页 30；undefined 0、overfull 0、<code>??</code> 0、U+037E 0；无 rerun 警告（日志只有 rerunfilecheck 宏包横幅）；PDF 文本抽查可见 “Section 9”</td></tr>
+<tr><td>fig4 分辨率（D6）</td><td>PyMuPDF 读 <code>figs/fig4_q2.pdf</code> 的嵌入图</td><td>panel(b) 685×623 px，放置 164.4×149.5 pt = 300 dpi；两条色条 31×623 px 放置 7.4×149.5 pt = 300 dpi；字号 8.0 / 5.6 pt（mathtext），与 R0 相同</td></tr>
+<tr><td>其余两图</td><td>与 62f0b79 的 blob 比较</td><td><code>fig_q3_cost_vs_r.pdf</code>、<code>fig9_tornado.pdf</code> 未改动；<code>code/t021a_figs.py</code> 只改了 fig_q2 的 <code>savefig(..., dpi=300)</code></td></tr>
+<tr><td>交付记录（D7）</td><td>重读 numbers.json 与 tornado.json</td><td>entries = 724、n_failed = 0、n_uncovered = 0；COST_KM 在 31 个输入中排第 10（33,534.39；前九为 TRI_SHIFT、day、TRI_FIXED、PENALTY、TRI_HANDLE、TRI_Q、TRI_V、Q_TRUCK、FIXED_K），与 R1 交付一致</td></tr>
+<tr><td>范围</td><td><code>git diff --stat 62f0b79..7105b07</code>；逐文件确认</td><td>仅 <code>paper/sec5</code>–<code>sec10</code>、<code>paper/main.pdf</code>、<code>paper/main_txt_check.txt</code>、<code>figs/fig4_q2.pdf</code>、<code>code/t021a_figs.py</code>、<code>交付/T021A_delivery.json</code> 变化；summary、sec1–sec4、ai_report、main.tex、references.tex 与 R0 零差异；<code>data/runs/T021A/</code> 为 gitignore 的证据目录</td></tr>
+<tr><td>问题落地抽查</td><td>按 H20/H22/H23/H25/M11/M16/M18 的验收标准在正文找对应段落</td><td>均已在 R1 正文落地（见 §5）</td></tr>
+</tbody></table></div>
+
+<h2>3. R1 提出裁定的三处处理</h2>
+<div class="box warn">
+<ol>
+<li><strong>“Section 9” 写成 <code>Section~\ref{sec:sens}</code>：追认。</strong>返工单 D1 的字面替换会新增一个“9”数字 token，反而不满足同一张单子的数字不变门；用交叉引用后 PDF 仍显示 “Section 9”，正文可读性不变。这是唯一能让两道门同时成立的形式。</li>
+<li><strong>D3 用 “this 18,011.46 saving”、D5 用 “rather than the 33.19”：追认。</strong>返工单的字面文本会各少一个数字 token（18,011.46 与 33.19），与数字不变门冲突；执行方保留 token 的写法语义正确，且把第二个 33.19 放进上界句后读起来仍然成立。措辞可再顺（见 L15），但不是缺陷。</li>
+<li><strong>D8 的纯文字压缩（33 → 32 页）：追认，记为返工单授权范围内的必要增补。</strong>R1 的措辞使 §10 结尾三行溢出到末页；执行方删了 2 句重复句、1 句图注、§10 若干冗词，全部是词句层面。我逐条比对了这些删除：均为重复表述，不承载结果，且数字不变门证明 token 多重集未变。若不压缩则必须报告 33 页，反而破坏 T021A 的页数门；两害相权取此。</li>
+</ol>
+</div>
+
+<h2>4. 交付记录的两点澄清（不阻塞）</h2>
+<ul>
+<li><strong>check 1 的 <code>required=11</code>：</strong>读 <code>data/runs/T021A/_r1_delivery.py:41</code> 后确认，<code>REQUIRED</code> 是脚本内的 11 个抽查 token（R0 版为 55 个），<code>required</code> 只是这个列表的长度，不是回归。真正的门是 numbers.json 的 724 条（failed=0、uncovered=0）和 §2 的逐文件多重集比较，两者都通过。不要求改。</li>
+<li><strong><code>paper/main_txt_check.txt</code>：</strong>1,638 行，是 R1 的 PDF 文本转储，不含 T0xx，但属于工作稿；它现在被提交进了 <code>paper/</code>。不影响本轮验收，转 L14 由 T027 在生成提交包前删除或移出 <code>paper/</code>。</li>
+</ul>
+
+<h2>5. 问题台账落账（2026-11-19）</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>结论</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>H20</td><td>关闭</td><td>§5 的班表来自 T018/T024 的整数解（534/13,775 趟排不进只作 LP 上界说明；975 辆逐区不动点 0 未分配）；623.17 全文 0 次；Q2 schemes 表同一目标函数、K=0 与 K=60 两口径分列</td></tr>
+<tr><td>H22</td><td>关闭</td><td>§6 写入两本账（increment / payment）、30,000 预算、reservation rule；付款上限、150.6×、1,532 元/日、2.2578× 均在正文；10.4 的符号不可分辨已说明，不写“可测量移除”</td></tr>
+<tr><td>H23</td><td>关闭</td><td>全文统一 “initial-inventory proxy 343,638 / closed fleet 495,540”，§7 明写两口径不混用，供给过剩结论带空间尺度</td></tr>
+<tr><td>H25</td><td>关闭</td><td>T026（a0b4c22）已满足验收（r=0 逐位复现 T024-R3、61 档×2 口径、r*=0.60、r_cross 1.038/1.627、与平均成本上界对照）；T021A-R1 将其写入 §6/§9</td></tr>
+<tr><td>H27</td><td>关闭</td><td>D1–D3 完成；六类禁词全 0；数字 token 与 R0 完全一致；编译不变</td></tr>
+<tr><td>M11</td><td>关闭</td><td>§5 明写方案在五个训练日固定、在 12/19 两个留出日以观测需求回放（50.33%、50.35%）</td></tr>
+<tr><td>M16</td><td>关闭</td><td>§3 改为 4.33 为上估计、4.42 为 N≥484,754 的设计无关上限、区间 [484,754, 506,635]；§9 说明 534,039 不作下界</td></tr>
+<tr><td>M18</td><td>关闭</td><td>§7 有半径小节与表（150/300/450 m 有效覆盖 7.62/3.17/1.42%），明写 450 m 是规划阈值而非 2017 实测</td></tr>
+<tr><td>M19 / M20 / L13</td><td>关闭</td><td>分别见 §2 的 0.43%、fig4 300 dpi、724 与 rank 10</td></tr>
+<tr><td>L14（新增）</td><td>打开 → T027</td><td><code>paper/main_txt_check.txt</code> 为工作稿文本转储，提交前删除或移出 <code>paper/</code></td></tr>
+<tr><td>L15（新增）</td><td>打开 → T021B</td><td>纯措辞：sec10:31 “would answer the second but requires” → “but would require”；sec6:77 “rather than the 33.19” → “rather than the 33.19 bicycles”。不改数字 token</td></tr>
+</tbody></table></div>
+<p class="meta">M17（Executive Summary）与 H28（AI 报告）按计划分别留给 T021B 与 T027，本轮不动。</p>
+
+<h2>6. 转移到 T021B</h2>
+<ul>
+<li>基线改为 <code>7105b07</code>：计页 30（32 总页 − AI 报告 2 页），目标 ≤25，要砍 ≥5 页；任务单 §2 的 −2.9 页不够，已把任务单的现状基准与压缩手段更新为“内容压缩 + 版式压缩”两段式，核心结果表/图仍不得删。</li>
+<li>摘要与执行摘要的每个数字必须能在 <code>data/runs/T021A/numbers.json</code> 查到；“the 50-zone program leaves only 432.23” 必须带 <em>with no dispatch / at K=0</em> 的条件。</li>
+<li>正文 §3–§10 的数字 token 多重集以 7105b07 为基线；允许的差异只能是任务单逐条列出的被删段落中的数字，且必须逐条列出。</li>
+<li>顺手处理 L15 的两处措辞；不新增内部编号或改稿语言。</li>
+</ul>
+
+<h2>7. 复核边界</h2>
+<p>本次复核未修改执行方任何文件（<code>paper/</code>、<code>code/</code>、<code>data/</code>、<code>figs/</code>、<code>交付/</code>）。所有独立检查在临时目录或只读读取中完成；<code>git status --porcelain</code> 只应出现 <code>审查与规划/</code> 下的台账、任务单与本记录。T021A 通过，T021B 可以开工。</p>
+
+</main>
+</body>
+</html>
