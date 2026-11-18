@@ -114,16 +114,58 @@ zero["recaptured_w2_trips_share_ge4"] = float((c2_both >= 4).mean())
 
 strat_sum = sum(s["chapman_within"] for s in strata) + zero["chapman_within"]
 
-# ---------------------------------------------------------------- Chao 1987
+# ------------------------------------------------- Chao1 and effort benchmark
+# Two windows give only (n1, n2, m).  A homogeneous model (N, p1, p2) fits
+# those three statistics exactly, so the raw Chao1 value is a deterministic
+# function of the same three numbers; with p1 != p2 it is NOT a lower bound.
 f1 = n1 + n2 - 2 * m          # seen in exactly one window
 f2 = m                        # seen in both
-f0_hat = f1 ** 2 / (2 * f2)
-N_chao = union + f0_hat
-var_c = f2 * (0.5 * (f1 / f2) ** 2 + (f1 / f2) ** 3
-              + 0.25 * (f1 / f2) ** 4)
-se_log = float(np.sqrt(np.log(1 + var_c / f0_hat ** 2)))
-chao_lo = union + f0_hat * np.exp(-1.96 * se_log)
-chao_hi = union + f0_hat * np.exp(1.96 * se_log)
+f0_raw = f1 ** 2 / (2 * f2)
+chao1_raw = union + f0_raw
+
+N_h = chap
+p1_h = n1 / N_h
+p2_h = n2 / N_h
+E_f1 = N_h * (p1_h * (1 - p2_h) + (1 - p1_h) * p2_h)
+E_f2 = N_h * p1_h * p2_h
+E_union = N_h * (p1_h + p2_h - p1_h * p2_h)
+chao1_homog = E_union + E_f1 ** 2 / (2 * E_f2)
+effort_factor_obs = chao1_raw / N_h
+exact_factor = (p1_h + p2_h - p1_h * p2_h
+                + (p1_h + p2_h - 2 * p1_h * p2_h) ** 2
+                / (2 * p1_h * p2_h))
+
+
+def equal_effort_factor(p):
+    """Chao1/N under equal effort p in both windows."""
+    return 1.0 + (1.0 - p) ** 2
+
+
+# 200 draws of five first-window days, second window fixed.
+w1_days = sorted(set(int(d) for d in day[W1]))
+per_day = {d: np.unique(bike[day == d]) for d in w1_days}
+rng = np.random.default_rng(20261118)
+boot = []
+for _ in range(200):
+    sub = rng.choice(w1_days, 5, replace=False)
+    u = np.unique(np.concatenate([per_day[int(d)] for d in sub]))
+    mr = int(np.intersect1d(u, u2).size)
+    dr = len(u) + n2 - mr
+    f1r = len(u) + n2 - 2 * mr
+    boot.append(dr + f1r ** 2 / (2 * mr))
+boot = np.array(boot)
+
+
+def chao_split(days):
+    u = np.unique(np.concatenate([per_day[d] for d in days]))
+    mr = int(np.intersect1d(u, u2).size)
+    dr = len(u) + n2 - mr
+    f1r = len(u) + n2 - 2 * mr
+    return dict(n1=int(len(u)), m=mr, chao1=float(dr + f1r ** 2 / (2 * mr)))
+
+
+named = {"10-14": chao_split([0, 1, 2, 3, 4]),
+         "15-19": chao_split([5, 6, 8, 9])}
 
 # ---------------------------------------------------------------- openness
 # Marginal effects on the Chapman estimate, evaluated at the observed counts.
@@ -185,18 +227,6 @@ out = dict(
                     "m larger than the independence model predicts, so the "
                     "pooled Chapman estimate is biased DOWN.  The paper's "
                     "'heterogeneity biases it up' is reversed.")),
-    chao_1987=dict(
-        f1=int(f1), f2=int(f2), f0_hat=float(f0_hat), N_hat=float(N_chao),
-        ci95=[float(chao_lo), float(chao_hi)],
-        var=float(var_c), se_log=float(se_log),
-        status=("lower bound for a heterogeneous population under closure "
-                "(two-occasion Mth / sample-coverage bound).  The bound lies "
-                "above the pooled Chapman point, so the point estimate is "
-                "inconsistent with a heterogeneous fleet."),
-        caveat=("the formula assumes a common per-bicycle detection "
-                "propensity in the two windows; the second window has 30.3% "
-                "of the first window's exposure (5 days x 0.545 volume over "
-                "9 days), so the bound is indicative, not exact.")),
     openness=dict(
         new_deployment_captured=dict(
             dN_per_bike=float(dN_new_captured),
@@ -220,7 +250,8 @@ out = dict(
         consequence=("retirement can only bias the estimate up or leave it "
                      "unchanged, never down; new deployment likewise.  The "
                      "paper's 'retired between them biases the estimate "
-                     "down' is wrong for this data definition."),
+                     "down' is wrong for this data definition.  The net sign "
+                     "of the openness terms is not identified here."),
         w2_only_usage=dict(
             mean=zero["w2_trips_mean"],
             recaptured_mean=zero["recaptured_w2_trips_mean"],
@@ -228,31 +259,80 @@ out = dict(
             recaptured_share_ge4=zero["recaptured_w2_trips_share_ge4"],
             note=("first-seen-in-window-2 bicycles are only 13% less used in "
                   "window 2 than recaptured bicycles; a pure zero-window-1 "
-                  "tail would be far less active, so part of the 21,861 are "
-                  "new deployments, which bias the estimate up")),
+                  "tail would be far less active.  This is suggestive of some "
+                  "new deployment, but it is an activity difference, not an "
+                  "identification of a deployment flow: treat it as a hint, "
+                  "not a measured quantity")),
         w1_only_usage=dict(
             mean=float(c1_only.mean()), recaptured_mean=float(c1_both.mean()),
             note="all possible retirees are inside the window-1-only group")),
+    chao1_raw=dict(
+        value=float(chao1_raw), f1=int(f1), f2=int(f2),
+        status=("withdrawn as a lower bound.  Two windows reduce the data to "
+                "(n1,n2,m); the homogeneous model (N,p1,p2) fits all three "
+                "exactly, and Chao1 is the same deterministic function of "
+                "them.  The excess over the Chapman point measures the "
+                "unequal window effort (p1=0.934 vs p2=0.670), not "
+                "heterogeneity."),
+        note="reported as a number only; not used as a bound anywhere"),
+    homogeneity_benchmark=dict(
+        N=float(N_h), p1=float(p1_h), p2=float(p2_h),
+        E_f1=float(E_f1), E_f2=float(E_f2), E_union=float(E_union),
+        observed_f1=int(f1), observed_f2=int(f2), observed_union=int(union),
+        chao1_homog=float(chao1_homog), chao1_observed=float(chao1_raw),
+        diff_chao1=float(chao1_raw - chao1_homog),
+        max_stat_diff=float(max(abs(E_f1 - f1), abs(E_f2 - f2),
+                                abs(E_union - union))),
+        note=("the homogeneous model reproduces the three observed statistics "
+              "and the Chao1 value to within 0.05 bicycles, so the raw Chao1 "
+              "excess is an effort artefact")),
+    chao_effort_bias=dict(
+        equal_effort_formula="Chao1/N = 1 + (1-p)^2",
+        at_p=dict(p_0934=equal_effort_factor(0.934),
+                  p_0801=equal_effort_factor(0.801),
+                  p_0670=equal_effort_factor(0.670)),
+        exact_at_observed=float(exact_factor),
+        observed_factor=float(effort_factor_obs),
+        statement=("Chao1 assumes equal per-bicycle capture propensity in the "
+                   "two windows; Chapman does not.  With p1=0.934 and "
+                   "p2=0.670 the homogeneous model alone produces the +7.8% "
+                   "excess, so Chao1 cannot separate heterogeneity from the "
+                   "9-day vs 5-day effort difference")),
+    resample_5day=dict(
+        draws=200, seed=20261118,
+        design="five of the nine recorded first-window days, second window fixed",
+        p5=float(np.percentile(boot, 5)),
+        p50=float(np.percentile(boot, 50)),
+        p95=float(np.percentile(boot, 95)),
+        min=float(boot.min()), max=float(boot.max()),
+        share_below_chapman=float((boot < chap).mean()),
+        distinct_values=int(len(set(np.round(boot, 6)))),
+        named_splits=named,
+        named_note=("reviewer's 30-draw check quoted 540,086 (10-14) and "
+                    "494,845 (15-19); this pipeline gives 539,180 and "
+                    "494,284, a 0.1-0.2% day-boundary offset, same sign and "
+                    "same crossing below the Chapman point"),
+        note=("the spread and the 15-19 block falling below 495,540 show that "
+              "Chao1 is not a stable lower bound in this design")),
     interval=dict(
+        design_independent_lower=484754.0,
+        chao1_scenario=float(chao1_raw),
         old=[484754.0, 506635.0],
-        new_lower=float(N_chao),
-        note=("the old upper reference 506,635 lies below the heterogeneity "
-              "lower bound 534,039, so the interval [484,754, 506,635] is "
-              "too narrow and its upper end is invalid; the defensible "
-              "statement is a heterogeneity-corrected lower bound, with the "
-              "observed union 484,754 as the hard floor")),
+        note=("M16 does not revise the paper's model interval.  The only "
+              "design-independent statement is N >= the observed 14-day "
+              "union 484,754.  534,039 is a scenario reference, not a lower "
+              "bound")),
     rides_per_bike_day=dict(
         numerator=RIDES_DAY,
         numerator_source="q1_params.json daily_trips / 0.128",
         values={
+            "F_484754_ceiling": float(RIDES_DAY / 484754.0),
             "F_495540": float(old_rate),
-            "F_534039": float(RIDES_DAY / N_chao),
-            "F_chao_ci_low": float(RIDES_DAY / chao_lo),
-            "F_chao_ci_high": float(RIDES_DAY / chao_hi)},
-        conclusion=("4.33 corresponds to the downward-biased Chapman point; "
-                    "with F >= 534,039 the rate is at most about 4.01, so "
-                    "4.33 must be reported as an upper estimate, not a "
-                    "central one")),
+            "F_534039_scenario": float(RIDES_DAY / chao1_raw)},
+        conclusion=("4.33 is an upper estimate because the Chapman fleet is "
+                    "biased low; the design-independent ceiling is 4.42 "
+                    "(N >= 484,754).  The 4.01 figure holds only in the "
+                    "scenario F = 534,039")),
 )
 
 with open(os.path.join(OUT, "fleet_estimates.json"), "w", encoding="utf-8") as fh:
@@ -264,8 +344,12 @@ print(json.dumps(dict(
             for s in strata],
     zero=(zero["n2"], zero["w2_trips_mean"], zero["recaptured_w2_trips_mean"]),
     trend=(round(z_trend, 1), f"{p:.3g}"),
-    chao=(round(f0_hat, 1), round(N_chao, 1),
-          [round(chao_lo, 1), round(chao_hi, 1)]),
+    homogeneity=(round(N_h, 1), round(p1_h, 4), round(p2_h, 4),
+                 round(chao1_homog, 1), round(chao1_raw - chao1_homog, 2)),
+    resample=(round(float(np.percentile(boot, 5)), 0),
+              round(float(np.percentile(boot, 50)), 0),
+              round(float(np.percentile(boot, 95)), 0),
+              int((boot < chap).sum())),
     dN=(round(dN_new_captured, 3), round(dN_retire_recaptured, 3)),
     rates={k: round(v, 4) for k, v in out["rides_per_bike_day"]["values"].items()},
 ), ensure_ascii=False, indent=1))

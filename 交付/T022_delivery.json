@@ -1,62 +1,58 @@
 {
  "task": "T022",
- "title": "P1 补强实验：M16 车队估计偏差方向（M12/M15 尚未完成）",
+ "title": "P1 补强实验：M16 车队估计偏差方向 R1（M12/M15 尚未完成）",
  "date": "2026-11-18",
  "status": "partial",
- "revision": "R0",
- "summary": "M16 完成：从 data/trips.parquet 精确复现 Chapman 495,540（495,539.99）；按第一窗口使用频次分 5 层，再捕获率从 0.4945 单调升到 0.8039（Cochran-Armitage z=121.6），证明捕获概率异质使 Chapman 偏低；Chao (1987) 下界为 534,038.6（95% CI 533,385–534,701），高于 495,540，故原上界参考 506,635 失效；退役只会抬高或不变（每个可再捕获退役车 +0.105），新投放抬高（每辆被使用的新车 +1.493）。4.33 次/车/天按新下界重算为 ≤4.01。T022 整体 status=partial：M12 下一步做，M15 待 T019 通过。",
+ "revision": "R1",
+ "summary": "M16 R1：撤回 Chao1 作为下界的解释。两窗只有 (n1,n2,m) 三个统计量，同质模型 (N,p1,p2) 逐辆复现 E[f1]=174,793、E[f2]=309,961、E[并集]=484,754，Chao1_homog=534,038.5 与观测 534,038.6 只差 0.05 辆；+7.8% 来自 p1=0.934 与 p2=0.670 的强度不等，不是异质性。等强度公式 1+(1-p)^2 在 p=0.934/0.801/0.670 给出 1.0044/1.0396/1.1089。200 次“第一窗口抽 5 天”重抽样 Chao1 的 P5/P50/P95 = 508,839/520,176/533,736，15–19 对 20–24 为 494,284，低于 Chapman 点。保留的结论：设计无关下界 N ≥ 484,754（并集），故每车每日 ≤ 4.42；Chapman 495,540 因使用频次异质性偏低，故 4.33 是上估计；534,039 只作情景值（若车队达 534,039 则为 4.01）。退役/新投放方向更正保留，新投放证据降为提示性。M12 下一步，M15 等 T019。",
  "checks": {
-  "M16.a_reproduce_495540": "pass; command=`python -I code/t022_fleet.py`; output n1=462,893, n2=331,822, m=309,961, union=484,754, Chapman=495,539.9881 (paper 495,540); SE=131.315, 95% CI [495,282.61, 495,797.37], matching paper/sec3_data.tex:94. Evidence: data/runs/T022/fleet_estimates.json -> chapman_pooled.",
-  "M16.b_stratified_chapman_5_layers": "pass; strata rule = sampled trips in window 1 (1, 2-3, 4-6, 7-10, 11+; cut points at observed P25/P50/P75/P90, 21+ merged because only 90 bicycles). Per stratum (n1,n2,m): (44,552, 22,030, 22,030), (108,435, 64,482, 64,482), (162,044, 110,850, 110,850), (115,571, 86,641, 86,641), (32,291, 25,958, 25,958); recapture rates 0.4945/0.5947/0.6841/0.7497/0.8039. m=n2 by construction, so the within-stratum Chapman equals n1 and the stratified sum equals the 14-day union 484,754 (degeneracy reported, not hidden). Evidence: fleet_estimates.json -> strata, zero_stratum, stratified_chapman.",
-  "M16.c_chao_1987_lower_bound": "pass; f1=n1+n2-2m=174,793; f2=m=309,961; f0=f1^2/(2f2)=49,284.58; N=union+f0=534,038.58; 95% CI [533,385.0, 534,701.0] (log-normal, same variance form as code/audit/t001_fleet.py chao1_set). The bound is 38,499 (7.8%) above the Chapman point. Evidence: fleet_estimates.json -> chao_1987.",
-  "M16.d_retirement_deployment_direction": "pass; heterogeneity direction: recapture rate rises monotonically across strata, chi2(4)=15,063.6, Cochran-Armitage z=121.57, p<1e-300, rate ratio 1.626 -> positive dependence between windows -> m inflated -> Chapman biased DOWN (paper text reversed). Retirement: dN/d(recapturable retiree)=+0.105, dN/d(unused retiree)=0 -> up or unchanged, never down. New deployment: dN/d(used new bicycle)=+1.493, unused=0 -> up or unchanged. Net sign of openness not identified from this file; deployment evidence: first-seen-in-window-2 bicycles average 1.974 window-2 trips vs 2.271 for recaptured (12% lower), too active to be a pure zero-window-1 tail. Evidence: fleet_estimates.json -> heterogeneity, openness.",
-  "M16.e_rides_per_bike_recalculated": "pass; numerator = q1_params.json daily_trips/0.128 = 2,143,417.41. Values: F=495,540 -> 4.3254; F=534,038.6 -> 4.0136; F=533,385 -> 4.0185; F=534,701 -> 4.0086. Statement for T021: 4.33 is an upper estimate; with F>=534,039 the rate is at most about 4.01. Evidence: fleet_estimates.json -> rides_per_bike_day.",
-  "M16.f_output_file": "pass; data/runs/T022/fleet_estimates.json written (7,881 bytes, sha256 6636c26e085bca2487e86aeb4d37a4cebcfac5b700c03988bf63a282f8d6c525); run log data/runs/T022/m16_run.log; script code/t022_fleet.py (sha256 5f72665a05e9a03c89e0d4a66a4d07218d7ffc51e13a9117ec4b089e0d563250); input data/trips.parquet sha256 5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb.",
-  "M12.shared_beta_baseline": "pending; not in this delivery.",
+  "M16.a_reproduce_495540": "pass; command=`python -I code/t022_fleet.py`; n1=462,893, n2=331,822, m=309,961, union=484,754; Chapman=495,539.9881 (paper 495,540); SE=131.315, 95% CI [495,282.61, 495,797.37], matching paper/sec3_data.tex:94. Evidence: data/runs/T022/fleet_estimates.json -> chapman_pooled.",
+  "M16.b_stratified_chapman_5_layers": "pass; 5 strata by window-1 trips (1, 2-3, 4-6, 7-10, 11+); (n1,n2,m) = (44,552,22,030,22,030), (108,435,64,482,64,482), (162,044,110,850,110,850), (115,571,86,641,86,641), (32,291,25,958,25,958); recapture rates 0.4945/0.5947/0.6841/0.7497/0.8039; within-stratum Chapman equals n1 and the sum equals the union 484,754 (degeneracy disclosed). Evidence: fleet_estimates.json -> strata, stratified_chapman.",
+  "M16.c_chao_withdrawn_homogeneity_benchmark": "pass; `chao1_raw.status` now says withdrawn as a lower bound. `homogeneity_benchmark`: N=495,539.988, p1=0.934118, p2=0.669617, E[f1]=174,792.956 (obs 174,793), E[f2]=309,961.022 (obs 309,961), E[union]=484,753.978 (obs 484,754), chao1_homog=534,038.526 vs observed 534,038.576, diff=0.0498, max_stat_diff=0.0435. Evidence: fleet_estimates.json -> homogeneity_benchmark, chao1_raw.",
+  "M16.d_chao_effort_bias": "pass; equal-effort formula 1+(1-p)^2 at p=0.934/0.801/0.670 gives 1.004356/1.039601/1.108900; exact unequal-effort factor at observed (p1,p2)=1.0776901, observed ratio chao1/Chapman=1.0776902. Statement in file: Chao1 assumes equal per-bicycle capture propensity across windows; Chapman does not. Evidence: fleet_estimates.json -> chao_effort_bias.",
+  "M16.e_resample_200x5day": "pass; 200 draws, seed 20261118, five of the nine recorded first-window days, second window fixed; Chao1 P5/P50/P95 = 508,838.9/520,176.0/533,735.8; min 502,743.9, max 539,179.9; 104 distinct values. Named blocks: 10-14 -> 539,179.9; 15-19 -> 494,283.6, below the Chapman point. Reviewer's 30-draw values 540,086/494,845 differ by 0.1-0.2% (day-boundary pipeline offset), same sign and same crossing. Evidence: fleet_estimates.json -> resample_5day.",
+  "M16.f_direction": "pass; heterogeneity biases Chapman DOWN: recapture rates rise monotonically 0.4945->0.8039, Cochran-Armitage z=121.57, p<1e-300, rate ratio 1.626. Retirement: +0.105 per recapturable retiree, 0 per unused retiree -> up or unchanged, never down. New deployment: +1.493 per used new bicycle -> up or unchanged. Net sign of openness not identified. Evidence: fleet_estimates.json -> heterogeneity, openness.",
+  "M16.g_rides": "pass; numerator 2,143,417.41. Values: F=484,754 (design-independent lower bound) -> 4.4217; F=495,540 (Chapman, biased low) -> 4.3254; F=534,039 (scenario only) -> 4.0136. Statement: 4.33 is an upper estimate; the design-independent ceiling is 4.42; 4.01 holds only in the 534,039 scenario. Evidence: fleet_estimates.json -> rides_per_bike_day.",
+  "M16.h_output": "pass; data/runs/T022/fleet_estimates.json (9,759 bytes, sha256 363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5); run log data/runs/T022/m16_run.log; script code/t022_fleet.py (sha256 0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24); input data/trips.parquet sha256 5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb.",
+  "M12.shared_beta_baseline": "pending; separate commit and message.",
   "M15.q5_spatial_mismatch": "pending; waits for T019 acceptance per the task sheet."
  },
  "affected": [
   {
-   "location": "paper/summary.tex:24",
-   "old": "495,540 bicycles (model interval 484,754--506,635), serving 4.33 rides per bicycle per day",
-   "new": "fleet at least 534,039 (heterogeneity-corrected lower bound); 4.33 becomes an upper estimate, at most about 4.01 rides per bicycle per day",
-   "basis": "T022-M16: Chao (1987) lower bound 534,038.6; old upper reference 506,635 lies below it, so the interval is invalid"
-  },
-  {
    "location": "paper/sec3_data.tex:95-96",
    "old": "a bicycle retired between them biases the estimate down, and heterogeneity biases it up",
    "new": "heterogeneity biases the estimate down; retirement and new deployment can only bias it up or leave it unchanged",
-   "basis": "T022-M16: monotone recapture rates (0.4945 to 0.8039) and the marginal-effect derivation in fleet_estimates.json -> openness"
-  },
-  {
-   "location": "paper/sec3_data.tex:97-99",
-   "old": "model interval ... 484,754 ... 506,635",
-   "new": "hard floor 484,754; heterogeneity-corrected lower bound 534,039; the former 506,635 upper reference is below the new bound and cannot be retained",
-   "basis": "T022-M16: chao_1987 N=534,038.6, CI [533,385.0, 534,701.0]"
+   "basis": "T022-M16 R1: monotone recapture rates 0.4945-0.8039 and the marginal-effect derivation in fleet_estimates.json -> openness"
   },
   {
    "location": "paper/sec3_data.tex:102-103",
    "old": "At 495,540 bicycles and 2.14e6 rides per day ... 4.33 times per day",
-   "new": "at least 534,039 bicycles and 2.14e6 rides per day, at most about 4.01 rides per bicycle per day",
-   "basis": "T022-M16: rides_per_bike_day values 4.3254 (old F) and 4.0136 (new lower bound)"
+   "new": "4.33 is an upper estimate (the Chapman fleet is biased low by usage heterogeneity); the design-independent ceiling is 4.42, from N >= 484,754",
+   "basis": "T022-M16 R1: design-independent lower bound = observed 14-day union 484,754; 2,143,417/484,754 = 4.4217"
   },
   {
    "location": "paper/sec3_data.tex:146-147",
    "old": "Closed fleet & 495,540 & Eq. (fleet), interval [484,754, 506,635]; Rides per bicycle per day & 4.33",
-   "new": "Closed fleet & Chapman 495,540 (biased low) & heterogeneity lower bound 534,039, hard floor 484,754; Rides per bicycle per day & at most about 4.01",
-   "basis": "T022-M16"
+   "new": "Closed fleet & 495,540 (Chapman point, biased low) & existing interval unchanged; Rides per bicycle per day & 4.33, an upper estimate (ceiling 4.42 at N=484,754)",
+   "basis": "T022-M16 R1: direction correction only; the paper's model interval is not revised by M16"
   },
   {
-   "location": "paper/sec9_sensitivity.tex:17-20",
-   "old": "A bicycle retired between the windows biases the estimate down; heterogeneity in use biases it up. We therefore report a model interval [484,754, 506,635]",
-   "new": "heterogeneity biases the estimate down; retirement and new deployment bias it up or leave it unchanged; the interval [484,754, 506,635] is too narrow and its upper end is below the heterogeneity lower bound 534,039",
-   "basis": "T022-M16"
+   "location": "paper/sec9_sensitivity.tex:17-18",
+   "old": "A bicycle retired between the windows biases the estimate down; heterogeneity in use biases it up",
+   "new": "heterogeneity biases the estimate down; retirement and new deployment bias it up or leave it unchanged",
+   "basis": "T022-M16 R1"
   },
   {
    "location": "paper/sec9_sensitivity.tex:104",
    "old": "with 495,540 bicycles and 4.33 rides per bicycle per day",
-   "new": "with at least 534,039 bicycles and at most about 4.01 rides per bicycle per day",
-   "basis": "T022-M16"
+   "new": "with 495,540 bicycles at the Chapman point and 4.33 rides per bicycle per day as an upper estimate (ceiling 4.42)",
+   "basis": "T022-M16 R1"
+  },
+  {
+   "location": "paper/summary.tex:24",
+   "old": "serving 4.33 rides per bicycle per day",
+   "new": "serving at most about 4.4 rides per bicycle per day (4.33 at the Chapman point, an upper estimate)",
+   "basis": "T022-M16 R1: N >= 484,754, so the rate cannot exceed 4.42"
   }
  ],
  "outputs": [
@@ -65,23 +61,24 @@
   "data/runs/T022/m16_run.log"
  ],
  "notes": [
-  "T022 整体仍为 partial：M16 完成；M12 是本批第 4 项，下一步做；M15 按任务单等 T019 通过。",
-  "495,540 仍是 T018–T024 的锁定库存情景值；本交付不改变任何下游输入，等指导方验收新估计后再决定是否换口径。论文中作为情景值使用 495,540 的位置（sec5_q2.tex、sec7_q4.tex、sec10_evaluation.tex、summary.tex:28/59）本次不列入 affected。",
-  "分层 Chapman 退化为观测并集是数学结果，不是程序缺陷：层内 m=n2，因为进入某层就要求第一窗口被观测到。不可见的零使用层无法由两窗设计识别，纠偏只能靠下界（Chao）或参数模型。",
-  "Chao (1987) 下界假定两窗对同一辆车的检测倾向同尺度；第二窗口只有第一窗口曝光的 30.3%（5 天 × 0.545 单量 / 9 天），所以下界是指示性的，不是精确的。",
-  "脚本第一版用 Python set 做成员判断，在机器可用内存 0.86 GB 时 MemoryError；改为 np.isin(assume_unique=True) 后 2.2 s 跑完，数值完全不变（同一 n1/n2/m/Chapman）。",
-  "4.33 的分子用 q1_params.json daily_trips/0.128 = 2,143,417.41，与论文 2.14e6 的既有口径一致；本次只换分母。"
+  "R1 逐条对应验收记录 §4：1) homogeneity_benchmark 已加；2) chao_effort_bias 已加；3) 200 次重抽样已跑；4) affected 已改写，不再出现“fleet at least 534,039”和“506,635 失效”；5) 新投放证据已降为提示性；6) paper/ 未动。",
+  "Chao1 值 534,038.6 保留在 chao1_raw 里只作数字记录，不承担任何下界功能。534,039 只作情景值引用：若车队达 534,039，则每车每日 4.01。",
+  "设计无关下界是观测 14 天并集 484,754：任何在役过至少一次的车都在并集里，故 N ≥ 484,754；由此每车每日 ≤ 4.42。",
+  "200 次 5 天重抽样中 0 次低于 Chapman 点，但 5 天块的 Chao1 在 502,744-539,180 间跳动（104 个不同值），且 15-19 的四天块给出 494,284，低于点估计。这与指导方 30 次的 503k-534k 量级一致；差异来自日界管线（0.1-0.2%）。",
+  "M6/T023 若把车队当不确定性来源，应按 484,754-534,039 作情景区间传播，不得当置信区间；这是验收记录 §6 的口径。",
+  "495,540 仍是 T018-T024 的锁定库存情景值，本交付不改任何下游输入。",
+  "脚本第一版在可用内存 0.86 GB 时 MemoryError；改用 np.isin(assume_unique=True) 后 48 s 跑完（含 200 次重抽样），数值不变。"
  ],
  "reproduction": {
   "command": "python -I code/t022_fleet.py",
-  "runtime_seconds": 2.2,
-  "solver": "none (closed-form estimators)",
+  "runtime_seconds": 48,
+  "solver": "none (closed-form estimators + 200-draw day resampling)",
   "input_sha256": {
    "data/trips.parquet": "5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb"
   },
   "output_sha256": {
-   "data/runs/T022/fleet_estimates.json": "6636c26e085bca2487e86aeb4d37a4cebcfac5b700c03988bf63a282f8d6c525",
-   "code/t022_fleet.py": "5f72665a05e9a03c89e0d4a66a4d07218d7ffc51e13a9117ec4b089e0d563250"
+   "data/runs/T022/fleet_estimates.json": "363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5",
+   "code/t022_fleet.py": "0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24"
   }
  },
  "integrity": {
