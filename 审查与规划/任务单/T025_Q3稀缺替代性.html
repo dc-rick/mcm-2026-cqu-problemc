@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T025 Q3 稀缺工况替代性</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:26px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T025 · Q3 激励在稀缺工况下的替代性</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（T020 通过后开工，可与 T024 并行）</strong>　·　问题：H22　·　可写：<code>code/</code>、<code>data/runs/T025/</code>、<code>交付/T025_delivery.json</code>　·　不改 <code>paper/</code></p>
+
+<div class="box hi">
+<p><strong>为什么：</strong>T020 证明在 60 辆卡车（未服务 0）下激励是净支出。这让 Q3 只剩“设计了但没用”。题面要的是“提出你的激励方案”，方案需要一个<strong>成立条件</strong>。卡车不是唯一稀缺：不调度时未服务 432 辆、日末偏差 46,930；车队越小越缺。所以问一句：<strong>卡车少到什么程度，激励开始划算？</strong></p>
+</div>
+
+<h2>1. 要做什么</h2>
+<ol>
+<li><strong>车队扫描（纯卡车）。</strong>K ∈ {0, 2, 5, 10, 20}，用 T018 的整数 MILP（其余设定不变：训练日 5 日需求、事件顺序、I0=343,638、成本参数），记录未服务、偏差、车公里、搬运量、目标值。找出未服务首次大于 0 的 K，以及偏差开始明显上升的 K。</li>
+<li><strong>混合方案（同 K）。</strong>对至少 3 个 K（含未服务大于 0 的最小 K、其上一档、K=0），跑 T020 的混合流程：激励 LP（surplus 与 arrivals 两个来源，预算 B ∈ {30k, 60k, 100k, 无}）→ IPF 重拟 PZ → T018 整数 MILP → 加付款。<strong>口径与 T020 完全一致</strong>，否则不可比。</li>
+<li><strong>盈亏平衡。</strong>给出“激励开始划算”的条件：按 K 画一条曲线（总成本：纯卡车 vs 混合），找出交点；若在 K∈[0,20] 内始终不划算，写明“在本文比较的车队规模内激励始终不划算”，并给出使激励划算所需的付款上限（即付款需低于多少才能在某个 K 上有净收益）。</li>
+<li><strong>解释机制。</strong>用两个数说明为什么：激励替代的是“卡车能到达的区-时缺车”，而本系统缺车集中在少数时段/区；给出激励覆盖的未服务量与卡车覆盖的未服务量之比。</li>
+</ol>
+
+<h2>2. 验收（缺一不可）</h2>
+<ol>
+<li><code>data/runs/T025/fleet_scan.json</code>：K × {unmet, dev, truck_km, moved, obj}，与 T018 的 K=20/40/60 数值一致（回归检查）。</li>
+<li><code>data/runs/T025/hybrid_by_K.json</code>：K × 来源 × 预算 × {unmet, dev, 卡车目标, 付款, 总额, 相对纯卡车差值}。</li>
+<li>盈亏平衡表或“始终不划算”的结论 + 所需付款上限的算式。</li>
+<li>口径声明：与 T020 相同的 PZ 重拟方法、事件顺序、成本；任何偏离要写明并给差值。</li>
+<li>复现信息（种子、命令、输入 SHA-256）；交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+<div class="box warn">
+<p><strong>可能的结论是“始终不划算”。</strong>那也是有效结论：Q3 的方案价值在设计与预算规则，而不在节省。照实写，并给出“若未来车队缩减到 K 以下则划算”的阈值，这是论文的贡献而不是缺陷。</p>
+</div>
+
+<h2>3. 与 T024 的分工</h2>
+<p>T024 处理<strong>区内</strong>格级失衡（三轮车、小批量）；T025 处理<strong>车队规模</strong>维度的替代关系。两者都用 T018 的班表做衔接，但不要互相等待；结果若冲突（例如 T024 发现三轮车已能补格级缺口），由指导方在 T021 统一口径。</p>
+
+</main>
+</body>
+</html>
