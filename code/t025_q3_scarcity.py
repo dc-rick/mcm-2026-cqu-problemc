@@ -28,10 +28,14 @@ os.makedirs(RUN, exist_ok=True)
 
 K_SCAN = [0, 2, 5, 10, 20]
 K_REG = [20, 40, 60]
+# R1: the pure-truck unmet at K=10/20 (64.4 / 95.0) sat inside the 1% MIP gap,
+# so K=5/10/20 are re-solved at 0.1% for both the pure and the hybrid models.
+K_TIGHT = [5, 10, 20]
 SOURCES = ["surplus", "arrivals"]
 BUDGETS = [30000.0, 60000.0, 100000.0, None]
 TIME_LIMIT = 300
 MIP_GAP = 0.01
+MIP_GAP_TIGHT = 0.001
 
 
 def dump(obj, name):
@@ -83,18 +87,72 @@ def run_fleet(force=False):
         reg[K] = {k: dict(t018=float(old[k]), t025=float(new[k]),
                           abs_diff=float(abs(old[k] - new[k])))
                   for k in ("obj", "unmet", "dev", "truck_km", "moved")}
+
+    # R1: tight-gap re-solve of the non-monotone pure-truck points.  K=0 is an
+    # LP and K=2 stays at the coarse gap per the review, so only K=5/10/20 are
+    # re-solved here.  Both sets are kept: the 1% unmet is the upper bound the
+    # solver returned, the 0.1% value is the one the paper should quote.
+    tight = {}
+    keys = ("obj", "unmet", "dev", "truck_km", "moved",
+            "trucks_used", "peak_moved", "gap", "status")
+    for K in K_TIGHT:
+        t0 = time.time()
+        res = t18.solve(DEP, t18.ARR, PZ, NET, I0, K=K, integer=True,
+                        time_limit=TIME_LIMIT, mip_gap=MIP_GAP_TIGHT,
+                        event_order=True, bike_integer=True)
+        coarse = next(r for r in rows if r["K"] == K)
+        coarse_sub = {k: coarse[k] for k in
+                      keys + ("variable", "peak_hour")}
+        if res is None:
+            tight[str(K)] = dict(coarse=coarse_sub, tight=None,
+                                 status="solve_failed")
+            continue
+        tr = {k: float(res[k]) for k in keys}
+        tr["variable"] = float(res["obj_variable"])
+        tr["peak_hour"] = int(res["peak_hour"])
+        tr["status"] = int(res["status"])
+        tr["runtime"] = float(time.time() - t0)
+        tight[str(K)] = dict(
+            coarse=coarse_sub, tight=tr,
+            unmet_upper_bound_1pct=float(coarse["unmet"]),
+            unmet_tight=float(res["unmet"]),
+            obj_delta=float(res["obj"] - coarse["obj"]),
+            gap_achieved=float(res["gap"]),
+            gap_was_inside_coarse_gap=bool(
+                abs(res["obj"] - coarse["obj"])
+                <= coarse["gap"] * max(abs(coarse["obj"]), 1.0) + 1e-6))
+        print(f"tight K={K}: obj {tr['obj']:.4f} (coarse {coarse['obj']:.4f}) "
+              f"unmet {tr['unmet']:.4f} (coarse {coarse['unmet']:.4f}) "
+              f"gap {100 * tr['gap']:.3f}% in {tr['runtime']:.1f}s")
+
     scan = [r for r in rows if r["K"] in K_SCAN]
-    positive = [r["K"] for r in scan if r["unmet"] > 1e-6]
+    unmet_by_K = {r["K"]: r["unmet"] for r in scan}
+    for K in K_TIGHT:
+        t = tight.get(str(K))
+        if t and t.get("tight") is not None:
+            unmet_by_K[K] = t["tight"]["unmet"]
+    positive = [K for K in K_SCAN if unmet_by_K[K] > 1e-6]
     out = dict(
         ks=K_SCAN, rows=rows, regression_t018=reg,
         first_positive_unmet_K=int(min(positive)) if positive else None,
+        first_positive_unmet_K_tight=(
+            int(min(positive)) if positive else None),
         dev_share_at_first_positive=(
             float(next(r for r in scan
                        if r["K"] == min(positive))["dev"]) if positive else None),
+        gap_tight=dict(
+            gap=MIP_GAP_TIGHT, K=tight,
+            note=("K in K_TIGHT re-solved at the tight gap; coarse is the 1% "
+                  "gap row in rows. unmet_upper_bound_1pct is what the 1% "
+                  "solve returned; unmet_tight is the 0.1% value. K=0 is an "
+                  "LP (gap 0) and K=2 stays at 1%.")),
         note=("T018 integer MILP, K in {0,2,5,10,20}; K=40/60 re-run only for "
               "the regression check against data/runs/T018. Same demand, I0, "
               "event order, bike_integer loads and costs as T018."),
-        runtime_s=float(sum(r.get("runtime", 0.0) for r in rows)))
+        runtime_s=float(sum(r.get("runtime", 0.0) for r in rows)
+                        + sum(t.get("tight", {}).get("runtime", 0.0)
+                              for t in tight.values()
+                              if t.get("tight") is not None)))
     dump(out, "fleet_scan.json")
     return out
 
@@ -187,14 +245,61 @@ def run_hybrid(force=False):
                 payment_per_unmet_removed=(
                     float(f["payment"] / removed) if removed > 1e-9 else None),
                 ipf_row_err_max=f["ipf_row_err_max"],
-                ipf_col_err_max=f["ipf_col_err_max"]))
+                ipf_col_err_max=f["ipf_col_err_max"],
+                gap_mode="coarse", gap=float(res["gap"])))
             print(f"hybrid K={K} {f['source_cap']} B={f['budget']}: "
                   f"truck={res['obj']:.1f} pay={f['payment']:.1f} "
                   f"total={total:.1f} pure={base['obj']:.1f} "
                   f"diff={base['obj'] - total:.1f}")
 
+    # R1: same eight policies at the tight gap for K=5/10/20, compared against
+    # the pure-truck tight-gap objective.  Coarse rows stay for the record.
+    for K in K_TIGHT:
+        t = fleet["gap_tight"]["K"].get(str(K))
+        if not t or t.get("tight") is None:
+            print(f"tight hybrid K={K}: no tight pure row, skipped")
+            continue
+        base_t = dict(obj=float(t["tight"]["obj"]),
+                      unmet=float(t["tight"]["unmet"]),
+                      dev=float(t["tight"]["dev"]))
+        for f in frames:
+            res = t18.solve(DEP, ARR, f["PZ2"], NET, I0, K=K, integer=True,
+                            time_limit=TIME_LIMIT, mip_gap=MIP_GAP_TIGHT,
+                            event_order=True, bike_integer=True)
+            if res is None:
+                rows.append(dict(K=K, source_cap=f["source_cap"],
+                                 budget=f["budget"], gap_mode="tight",
+                                 status="solve_failed"))
+                continue
+            total = float(res["obj"]) + f["payment"]
+            removed = float(base_t["unmet"] - res["unmet"])
+            rows.append(dict(
+                K=K, source_cap=f["source_cap"], budget=f["budget"],
+                r=f["r"], q=f["q"], P=f["P"], invited=f["invited"],
+                payment=f["payment"], truck_obj=float(res["obj"]),
+                truck_unmet=float(res["unmet"]), truck_dev=float(res["dev"]),
+                truck_km=float(res["truck_km"]), truck_moved=float(res["moved"]),
+                total=total, pure_obj=base_t["obj"],
+                pure_unmet=base_t["unmet"], pure_dev=base_t["dev"],
+                diff=float(base_t["obj"] - total),
+                diff_pct=float(100.0 * (base_t["obj"] - total)
+                               / base_t["obj"]),
+                unmet_removed=removed,
+                payment_ceiling=float(base_t["obj"] - res["obj"]),
+                payment_per_unmet_removed=(
+                    float(f["payment"] / removed) if removed > 1e-9 else None),
+                ipf_row_err_max=f["ipf_row_err_max"],
+                ipf_col_err_max=f["ipf_col_err_max"],
+                gap_mode="tight", gap=float(res["gap"])))
+            print(f"tight hybrid K={K} {f['source_cap']} B={f['budget']}: "
+                  f"truck={res['obj']:.1f} pay={f['payment']:.1f} "
+                  f"total={total:.1f} pure={base_t['obj']:.1f} "
+                  f"diff={base_t['obj'] - total:.1f} gap={100*res['gap']:.3f}%")
+
     out = dict(
         ks=kset, k_first_positive_unmet=k0, rows=rows,
+        gap_coarse=MIP_GAP, gap_tight=MIP_GAP_TIGHT, K_TIGHT=K_TIGHT,
+        n_rows=len(rows),
         caliber=dict(
             truck_model="T018 integer MILP, event_order, bike_integer, K as "
                         "in fleet_scan",
@@ -206,7 +311,10 @@ def run_hybrid(force=False):
                        FIXED_K=t18.FIXED_K, Q_TRUCK=t18.Q_TRUCK),
             note=("total = T018 objective (including 600*K fixed) + payment; "
                   "payment_ceiling is the largest payment at which the mixed "
-                  "policy would still beat pure truck at this K")),
+                  "policy would still beat pure truck at this K. Rows with "
+                  "gap_mode=tight re-solve the same policy at 0.1% and use "
+                  "the pure-truck 0.1% objective as the baseline; coarse rows "
+                  "use the 1% gap on both sides.")),
         runtime_s=None)
     dump(out, "hybrid_by_K.json")
     return out
@@ -293,25 +401,47 @@ def run_breakeven(force=False):
     pure = {r["K"]: r for r in fleet["rows"]}
     per_k = []
     for K in hyb["ks"]:
-        rows = [r for r in hyb["rows"]
-                if r["K"] == K and r.get("status") != "solve_failed"]
+        rows_all = [r for r in hyb["rows"]
+                    if r["K"] == K and r.get("status") != "solve_failed"]
+        tight_rows = [r for r in rows_all if r.get("gap_mode") == "tight"]
+        rows = tight_rows if tight_rows else rows_all
+        gap_mode = "tight" if tight_rows else "coarse"
+        if gap_mode == "tight":
+            t = fleet["gap_tight"]["K"][str(K)]["tight"]
+            pure_obj = float(t["obj"])
+            pure_unmet = float(t["unmet"])
+            pure_dev = float(t["dev"])
+            gap_used = MIP_GAP_TIGHT
+        else:
+            pure_obj = float(pure[K]["obj"])
+            pure_unmet = float(pure[K]["unmet"])
+            pure_dev = float(pure[K]["dev"])
+            gap_used = MIP_GAP
         best = max(rows, key=lambda r: r["diff"]) if rows else None
         ceilings = [r["payment_ceiling"] for r in rows]
+        max_ceiling = float(max(ceilings)) if ceilings else None
+        tol = float(gap_used * pure_obj)
         per_k.append(dict(
-            K=K, pure_obj=float(pure[K]["obj"]),
-            pure_unmet=float(pure[K]["unmet"]), pure_dev=float(pure[K]["dev"]),
+            K=K, gap_mode=gap_mode, gap_used=gap_used,
+            pure_obj=pure_obj, pure_unmet=pure_unmet, pure_dev=pure_dev,
             best_policy=dict(source_cap=best["source_cap"],
                              budget=best["budget"], payment=best["payment"],
                              truck_obj=best["truck_obj"],
                              total=best["total"], diff=best["diff"],
-                             unmet_removed=best["unmet_removed"]) if best else None,
-            max_payment_ceiling=float(max(ceilings)) if ceilings else None,
+                             unmet_removed=best["unmet_removed"],
+                             payment_ceiling=best["payment_ceiling"],
+                             gap=best.get("gap")) if best else None,
+            max_payment_ceiling=max_ceiling,
+            ceiling_tolerance=tol,
+            ceiling_zero_within_tolerance=(
+                bool(max_ceiling is not None and max_ceiling <= tol)),
+            n_policies=len(rows),
             min_payment=float(min(r["payment"] for r in rows)) if rows else None,
             all_negative=bool(all(r["diff"] < 0 for r in rows)) if rows else None,
             coverage_ratio=(float(best["unmet_removed"] /
-                                  max(pure[K]["unmet"], 1e-9))
+                                  max(pure_unmet, 1e-9))
                             if best else None),
-            q_over_unmet=(float(best["q"] / max(pure[K]["unmet"], 1e-9))
+            q_over_unmet=(float(best["q"] / max(pure_unmet, 1e-9))
                           if best else None)))
     any_positive = any(p["max_payment_ceiling"] is not None
                        and p["max_payment_ceiling"] > 0 for p in per_k)
@@ -337,6 +467,13 @@ def run_breakeven(force=False):
     out = dict(
         per_K=per_k,
         any_K_worthwhile=bool(any_positive),
+        gap_modes={str(p["K"]): p["gap_mode"] for p in per_k},
+        ceiling_statement=(
+            "the payment ceiling pure_obj(K) - hybrid_truck_obj(K) is 0 or "
+            "negative within solver tolerance at every K in the scan"
+            if all(p["ceiling_zero_within_tolerance"] for p in per_k)
+            else "at least one K has a positive payment ceiling outside the "
+                 "solver tolerance"),
         conclusion=("incentive is worthwhile at some K in the scan"
                     if any_positive else
                     "within the fleet sizes compared (K = "
@@ -347,7 +484,9 @@ def run_breakeven(force=False):
         ceiling_formula=("payment < pure_obj(K) - truck_obj_hybrid(K); "
                          "payment_ceiling in hybrid_by_K.json is the "
                          "right-hand side. A negative ceiling means no "
-                         "non-negative payment can break even at that K."),
+                         "non-negative payment can break even at that K. "
+                         "K=5/10/20 use the 0.1% re-solve on both sides; "
+                         "K=0/2 stay at 1%."),
         mechanism=None)
     # mechanism numbers at the first scarce K
     k0 = hyb["k_first_positive_unmet"]
@@ -389,6 +528,25 @@ def run_check(force=False):
                     for r in hyb["rows"] if r.get("status") != "solve_failed")
     diff_ok = all(abs(r["diff"] - (r["pure_obj"] - r["total"])) < 1e-6
                   for r in hyb["rows"] if r.get("status") != "solve_failed")
+    # R1 tight-gap checks
+    tight_pure = fleet.get("gap_tight", {}).get("K", {})
+    tight_pure_ok = all(
+        tight_pure.get(str(K), {}).get("tight") is not None
+        and tight_pure[str(K)]["tight"]["gap"] <= MIP_GAP_TIGHT + 1e-9
+        for K in K_TIGHT)
+    tight_unmet = {K: tight_pure[str(K)]["tight"]["unmet"]
+                   if tight_pure.get(str(K), {}).get("tight") else None
+                   for K in K_TIGHT}
+    tight_hyb = [r for r in hyb["rows"]
+                 if r.get("gap_mode") == "tight"
+                 and r.get("status") != "solve_failed"]
+    tight_hyb_ok = all(
+        sum(1 for r in tight_hyb if r["K"] == K) == len(SOURCES) * len(BUDGETS)
+        and all(r["gap"] <= MIP_GAP_TIGHT + 1e-9
+                for r in tight_hyb if r["K"] == K)
+        for K in K_TIGHT)
+    ceiling_ok = all(p["ceiling_zero_within_tolerance"]
+                     for p in be["per_K"])
     out = dict(regression_t018_ok=bool(reg_ok),
                regression_max_abs_diff=float(max(
                    v["abs_diff"] for K in reg for v in reg[K].values())),
@@ -396,7 +554,14 @@ def run_check(force=False):
                total_identity_ok=bool(totals_ok),
                diff_identity_ok=bool(diff_ok),
                conclusion_any_worthwhile=bool(be["any_K_worthwhile"]),
-               all_pass=bool(reg_ok and budgets_ok and totals_ok and diff_ok))
+               gap_tight_pure_ok=bool(tight_pure_ok),
+               gap_tight_hybrid_ok=bool(tight_hyb_ok),
+               gap_tight_hybrid_rows=int(len(tight_hyb)),
+               tight_unmet_by_K=tight_unmet,
+               ceiling_zero_within_tolerance=bool(ceiling_ok),
+               ceiling_statement=be["ceiling_statement"],
+               all_pass=bool(reg_ok and budgets_ok and totals_ok and diff_ok
+                             and tight_pure_ok and tight_hyb_ok and ceiling_ok))
     dump(out, "check.json")
     return out
 
