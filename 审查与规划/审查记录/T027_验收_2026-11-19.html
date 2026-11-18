@@ -36,7 +36,7 @@ li{margin:3px 0}
 <p class="meta">2026-11-19 · R0 交付 commit <code>3209636</code>（<code>交付/T027_delivery.json</code>）· 13 项自报 check 全部复核 · 独立编译、token 门、757 文件哈希、回归、25 项数字溯源 · DeepSeek 两轮冷读逐条裁决</p>
 
 <div class="box hi">
-<p><strong>结论：暂不可提交，退回 R1。</strong>R0 的交付质量与数字一致性通过：独立编译 <strong>27 总 / 25 计页</strong>，overfull / undefined / <code>??</code> / U+037E 均为 0；正文 token 与 <code>8708d37</code> 的差异恰为授权的五项；<strong>757</strong> 个文件逐个 SHA-256 复算全对；回归 975 / 617,055.7515 / 39,984.2332 一致；25 项溯源全部落到结果文件键。但 DeepSeek 第二轮冷读的两条阻塞成立：<strong>B2</strong>——A11、§6.3、§10 写“同区改派、卡车层不变”，与 §6.2 自己的分析及 <code>t008_q3_pool.py</code> 的跨区实现矛盾（结果无误，是假设写错）；<strong>B1</strong>——产生 59.385% 节省的三轮车层没有公式。另有 M3、M4、M5、M2、m2、m3 成立。按任务单 <strong>§8 的 13 项</strong>返工后复验，第三轮冷读无阻塞才写最终结论。</p>
+<p><strong>结论：暂不可提交，退回 R1。</strong>R0 的交付质量与数字一致性通过：独立编译 <strong>27 总 / 25 计页</strong>，overfull / undefined / <code>??</code> / U+037E 均为 0；正文 token 与 <code>8708d37</code> 的差异恰为授权的五项；<strong>757</strong> 个文件逐个 SHA-256 复算全对；回归 975 / 617,055.7515 / 39,984.2332 一致；25 项溯源全部落到结果文件键。但 DeepSeek 第二轮冷读的两条阻塞成立：<strong>B2</strong>——A12、§6.6、§10 写“同区改派、卡车层不变”，与 §6.3 自己的卡车口径分析及 <code>t008_q3_pool.py</code> 的跨区实现矛盾（结果无误，是假设写错）；<strong>B1</strong>——产生 59.385% 节省的三轮车层没有公式。另有 M3、M4、M5、M2、m2、m3 成立。按任务单 <strong>§8 的 13 项</strong>返工后复验，第三轮冷读无阻塞才写最终结论。</p>
 </div>
 
 <h2>1. 我读了什么、独立跑了什么（R0 = 3209636）</h2>
@@ -54,7 +54,7 @@ li{margin:3px 0}
 <div class="tw"><table>
 <thead><tr><th>#</th><th>标准</th><th>结论</th><th>证据</th></tr></thead>
 <tbody>
-<tr><td>1</td><td>显式假设</td><td><b>不通过</b>（R1 修）</td><td>A1–A11 齐备；写入型常数逐条列出（卡车 20 km/h、0.5 CNY/辆、600 CNY/车·日、6 CNY/km；三轮车 20 辆/趟、15 km/h、0.5 min/辆、≤5 km、300 CNY/日、0.20 CNY/km、07:00–20:00；κ=2、ρ=0.35、c₀=0.8；30,000 预算）；时长模型在 §4.6 明说为规划假设。但 <b>A11 的“same zone / no cross-zone reroute”是假陈述</b>（见 §6 B2），且与 §6.2 矛盾。</td></tr>
+<tr><td>1</td><td>显式假设</td><td><b>不通过</b>（R1 修）</td><td>A1–A12 齐备；写入型常数逐条列出（卡车 20 km/h、0.5 CNY/辆、600 CNY/车·日、6 CNY/km；三轮车 20 辆/趟、15 km/h、0.5 min/辆、≤5 km、300 CNY/日、0.20 CNY/km、07:00–20:00；κ=2、ρ=0.35、c₀=0.8；30,000 预算）；时长模型在 §4.6 明说为规划假设。但 <b>A12 的“same zone / no cross-zone reroute”是假陈述</b>（见 §6 B2），且与 §6.3 的卡车口径分析矛盾。</td></tr>
 <tr><td>2</td><td>物理严谨</td><td>通过（R1 补公式）</td><td>自行车守恒（T007 城市残差 1.16e-10）、事件顺序（每区-小时最少 0.81 辆松弛）、装载 ≤40、单趟 46.92 min &lt; 60 min、库存非负（最小 1,891.36）；Q4 容量 150×站点；三轮车 LP 的时间预算按“2d/(vQ)+2h/60”逐辆计。R1 把后两者写成公式。</td></tr>
 <tr><td>3</td><td>边界条件</td><td><b>部分不通过</b>（R1 修）</td><td>两个存量情景、10–19 May 九日、07:00–20:00、K∈{0,20,40,60,80}、p∈[0.128,0.200]、450 m 半径、5 km 行程、150 位上限都写明。但 §5 的“return them to their starting zones by midnight”超出 eq:q2fleet（只有总量守恒），已列 M22，R1-4 改写。</td></tr>
 <tr><td>4</td><td>数据范围 = 有效范围</td><td>通过</td><td>p 用 0.128（下界）并声明所有绝对流量是上界；20–24 May 为截断样本、只用于扩张估计；495,540 给区间 [484,754, 506,635] 并说明偏差方向；4.33 标为上限；§10 列明未建模因素（天气、土地使用、新投放）。密度图/曲线外推区在图上以灰带标出。</td></tr>
@@ -131,7 +131,7 @@ li{margin:3px 0}
 <thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据与去向</th></tr></thead>
 <tbody>
 <tr><td>B1</td><td>三轮车层（59.385% 节省）只有散文</td><td><b>部分接受</b></td><td>真缺口。按 <code>t024_q2_tier2.py:246</code> 的 <code>_tri_lp</code> 补紧凑公式 + 整数化/分配说明（R1-5）；不加区级班表（页数无余量），以 §5.4 区 24 数字与归档 schedule CSV 作证据</td></tr>
-<tr><td>B2</td><td>A11/§6.3 的 same-zone 与 §6.2 矛盾</td><td><b>接受</b></td><td>真矛盾。<code>t008_q3_pool.py:124</code> 目标不限区；<code>t020_q3_budget.py:502</code> <code>zone_delta</code> 把跨区到达变化送进 T018；T008 <code>cross_zone_share</code> 记录跨区份额。<b>结果无误，三处文字改模型事实</b>（R1-1～R1-3）；不写 7.46%（那是 T008 自己 r 的份额，不是 r*=0.60）</td></tr>
+<tr><td>B2</td><td>A12/§6.6 的 same-zone 与 §6.3 矛盾</td><td><b>接受</b></td><td>真矛盾。<code>t008_q3_pool.py:124</code> 目标不限区；<code>t020_q3_budget.py:502</code> <code>zone_delta</code> 把跨区到达变化送进 T018；T008 <code>cross_zone_share</code> 记录跨区份额。<b>结果无误，三处文字改模型事实</b>（R1-1～R1-3）；不写 7.46%（那是 T008 自己 r 的份额，不是 r*=0.60）</td></tr>
 <tr><td>M1</td><td>未联合优化</td><td>驳回</td><td>同第一轮 M2；论文不声称联合最优</td></tr>
 <tr><td>M2</td><td>I0 未按抽样放大</td><td>部分接受</td><td>343,638 是代理、论文已在两个存量下跑；补“真存量下界”半句（R1-8）</td></tr>
 <tr><td>M3</td><td>“return to starting zones” 超出 eq:q2fleet；deadhead 不在目标</td><td>接受（文字）</td><td>eq:q2fleet 只有总量；<code>t018_q2_int.py:635</code> 的 deadhead LP 另行配空驶、论文已声明不入目标；R1-4 改写</td></tr>
@@ -156,6 +156,113 @@ li{margin:3px 0}
 <div class="box warn">
 <p><strong>给提交方的口径</strong>：R0 是一份“数字全对、排版合规、但模型表述有漏”的稿子——这也是终审阶段才会暴露的类型。R1 只动文字与两条推导公式，不动任何结果；因此回归与 token 门仍是硬门，任何表值、图或结论的变化都视为新缺陷。</p>
 </div>
+
+<h2>8. R1 复核（<code>c8561ca</code>，2026-11-19）</h2>
+<p>复核对象：执行方 R1 交付（<code>c8561ca</code>，基于 <code>3f2e08f</code> 的单一本地提交），覆盖任务单 §8.1 的 13 项、§8.2 的两个公式块与 §8.3 的数字门/页数/回归。指导方逐项独立复算，不采信交付自报。</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>方法</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td><code>git status --porcelain</code>、<code>git log --stat</code></td><td>通过：工作树干净，<code>c8561ca</code> 仅动 <code>paper/</code> 与 <code>交付/T027*</code></td></tr>
+<tr><td>数字门</td><td>指导方自写脚本：13 个正文 tex + ai_report 对基线 <code>3209636</code> 逐文件数字 token 多重集比对</td><td>通过：12 个文件完全一致；<code>sec5_q2.tex</code> 唯一新增 <code>12</code>×1（<code>TRI_NEAREST=12</code>）；ai_report 的 +1 属 §8.3 豁免</td></tr>
+<tr><td>哈希</td><td><code>交付/T027/file_list.json</code> 六节共 757 条，逐文件 SHA-256 复算</td><td>通过：0 缺失、0 差异（475.4 MB）</td></tr>
+<tr><td>独立编译</td><td>指导方在干净目录跑三遍 xelatex</td><td>通过：27 总页 / 25 计页；overfull 0、underfull 7、undefined 0、<code>??</code> 0、U+037E 0；目录 References p25、AI 报告 p26 与正文一致</td></tr>
+<tr><td>回归</td><td>由 <code>data/runs/T024/schedule_check.json :: exec_totals</code> 独立复算六个打印值</td><td>通过：975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385% 全部一致（<code>n_exec</code>、<code>layer_cost_fullload</code>、<code>total_fullload</code>、<code>unmet</code>、<code>saving_fullload</code>、<code>saving_fullload_share</code>）</td></tr>
+<tr><td>公式块</td><td>逐符号对 <code>t024_q2_tier2.py::_tri_lp/_int_trips/_assign</code> 与 <code>t019_q4_cap.py::solve_cap</code></td><td>通过：eq:q2tri（式 17）三条约束、θ 定义、整数化顺序、earliest finish、逐区最小整数一致；eq:q4cap（式 23）四行与 <code>solve_cap</code> 一致，<code>$s_j$ binary</code> 已写</td></tr>
+<tr><td>版式</td><td>逐页目检 p11/p12/p13/p17/p18</td><td>通过：pp11–12 跨页拆分落在约束 (13)/(14) 之间，无孤行；两新公式渲染清晰</td></tr>
+<tr><td>禁用串</td><td>grep 全 <code>paper/*.tex</code></td><td>通过：“same zone” 仅剩 §5.2 的 “re-split of the same zone stocks”（与三轮车层无关）；“do not cross / within the source zone / cross a zone” 0 命中；“T0xx / T021 / T024 / T027 / earlier version / six|seven|eight figures” 0 命中；三处 “same-zone tricycle layer”（summary/intro/ai_report）经 <code>t024_q2_tier2.py</code> 证实为真（三轮车层逐区求解，donor 限于区内）</td></tr>
+</tbody></table></div>
+
+<h3>8.1 执行方两问的裁决</h3>
+<ul>
+<li><strong>① A10 附加句（R1-1b）——采纳，保留。</strong>执行方在 R1-1 之外自行补了 A10 末句：“The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\ref{sec:q3}.” 它清掉第四条同区错误陈述（原文 “Because reroutes do not cross a zone boundary, the truck layer is unchanged.”），与 A12 改写一致，不加数字 token，属同一事实的收尾。按 R1-1b 记入验收。</li>
+<li><strong>② pp11–12 公式跨页——接受。</strong>执行方仅对一个 align 块使用 <code>{\allowdisplaybreaks …}</code>，并在交付 notes 披露；实际拆分点落在约束 (13) 与 (14) 之间（eq:q2cap 与 eq:q2truck 之间），是干净的约束边界，不是式中间断行。接受现状，不改版式。</li>
+</ul>
+
+<h3>8.2 复核中新发现的两处文字缺陷（R1b）</h3>
+<ul>
+<li><strong>R1b-1 量纲：</strong><code>eq:q4cap</code> 前符号句把 <code>$f_{ij}$</code>、<code>$u_i$</code> 写成 “arrivals”，但约束 <code>$\sum_j f_{ij}+u_i=a_i$</code> 的 <code>$a_i$</code> 是逐格 95 分位峰值占用（sizing demand；<code>t019_q4_cap.py::solve_cap</code> 的 <code>a</code> 取自 <code>cell_demand.npz</code> 的 <code>a_meas343</code>/<code>a_fleet495</code>）。<code>$f,u$</code> 必须同单位，否则与 <code>tab:q4plan</code> 的 “Arrival coverage 55.80%”（另算口径）混淆——这正是 M5 之后仍残留的同类问题（表行名已改，符号句未改）。</li>
+<li><strong>R1b-2 表注指代：</strong><code>tab:q4plan</code> caption 的 “with the arrival-weighted share in the last row” 已失效：表最后一行是 “MILP gap”，到达口径在 “Arrival coverage” 行。R0 时代遗留，R1 未触及，复核发现。</li>
+</ul>
+<p>两项均为纯文字替换，不新增、不删除任何数字 token；已按任务单 §8.4 发 R1b，要求只改 <code>paper/sec7_q4.tex</code>，重建后仍须 27 总 / 25 计页。</p>
+
+<h3>8.3 阶段结论</h3>
+<p>R1 复核结论：<strong>主体通过，两项文字微修后进入第三轮冷读</strong>。第三轮（<code>review/review_r3.json</code>）须无阻塞，且 B1/B2/M3/M4/M5 的对应项确认消失，才写“可提交”；在 R1b 交付前不写最终判决。</p>
+
+<h2>9. R1b 复核（<code>fcde640</code>，2026-11-19）</h2>
+<p>R1b 是对 §8.2 两处文字缺陷的微修。指导方独立复验：</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td>通过：<code>fcde640</code> 仅动 <code>paper/sec7_q4.tex</code>、<code>paper/main.pdf</code> 与 <code>交付/T027</code> 四个文件；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code> 未触碰</td></tr>
+<tr><td>两处替换</td><td>通过（diff 恰为两处）：① eq:q4cap 符号句改为 “With <code>$f_{ij}$</code> the sizing demand at <code>$i$</code> assigned to a fence at <code>$j$</code>, <code>$u_i$</code> the sizing demand left unassigned, <code>$a_i$</code> the sizing demand at <code>$i$</code>”，<code>$a_i$</code> 未改叫 arrivals；② <code>tab:q4plan</code> caption 的 “in the last row” 改为 “in the row labelled Arrival coverage”。974,923.16 / 580,370.03 / 394,553.13 / 55.80% 均未动</td></tr>
+<tr><td>数字门</td><td>通过：<code>sec7_q4.tex</code> 数字 token 多重集对 <code>3209636</code> 完全一致；全篇仍只有 <code>sec5_q2.tex</code> 新增 <code>12</code>×1；ai_report 按 §8.3 豁免</td></tr>
+<tr><td>独立编译</td><td>通过：三遍 xelatex，27 总 / 25 计页；overfull 0、underfull 7、undefined 0、<code>??</code> 0、U+037E 0；页图不变（摘要 p1、目录 p2、正文 p3–24、References p25、AI p26–27）；目录 References→25、AI 报告→26</td></tr>
+<tr><td>哈希</td><td>通过：<code>file_list.json</code> 757 个文件逐一 SHA-256 复算，0 缺失、0 差异</td></tr>
+<tr><td>回归</td><td>通过：<code>verify_final.json</code> <code>all_pass=true</code>，975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385% 与 <code>T024/schedule_check.json :: exec_totals</code> 复算一致</td></tr>
+<tr><td>渲染</td><td>通过：新符号句在 p17、caption 在 p18 正确排印；<code>p17</code> 文句读作 “…the sizing demand at <code>$i$</code>assigned to a fence at <code>$j$</code>…”（数学模式间距正常）</td></tr>
+</tbody></table></div>
+<p><strong>结论：R1b 通过。</strong>至此 R1 的 13 项 + R1-1b + R1b 两项全部落地；唯一剩余的门是 DeepSeek 第三轮冷读（<code>review/review_r3.json</code>），第三轮无阻塞且 B1/B2/M3/M4/M5 对应项确认消失，才写“可提交”。</p>
+
+<h2>10. DeepSeek 第三轮裁决（<code>R1b</code>；F，0/6/4）与 R1c</h2>
+<p>第三轮对 R1b 的 PDF 源（<code>review/review_r3.json</code>，model deepseek-v4-pro，input 39,791 / output 21,827 tokens）：<b>阻塞 0</b>，中 6，低 4。上一轮整改状态：B1 fixed（q2tri 已有变量/目标/约束/整数化）、B2 fixed（A12 允许跨区）、M4 fixed（eq:q4cap + Gurobi gap）；M1/M2/M3/M5 partial、M6 not_fixed，均为“希望更深建模”的偏好，不是文字-模型矛盾。</p>
+
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>卡车只扫 5 点、三轮车在 K=60 之后解；层间序贯</td><td>部分接受（已披露）</td><td>§5.3 明写 K=60 只是 compared grid 的最小、非全局最优；§6.4/§10 明写“卡车层固定时求解三轮车层”。这是模型结构，不是可在一轮内消除的文字缺陷；§9 给 K* 分布</td></tr>
+<tr><td>M2</td><td>1/p 缩放流量与未缩放的 I0 混用</td><td>部分接受（已披露）</td><td>343,638 是 initial-inventory proxy，非实测存量；§3 写“下界”、§7.1 写两个存量情景分开跑。该 proxy 的形成（5/16 00:00 快照按总量归一）在 §3/§7 已写；不重算模型</td></tr>
+<tr><td>M3</td><td>三轮车层逐区-小时静态、无跨时库存状态</td><td>部分接受（已披露）</td><td>与 M1 同源；§5.4 明确“For each zone-hour”的静态 LP + earliest-finish，§10 列入局限。R1 的 M3 文字项已修（“no per-zone requirement” + deadhead 单列）</td></tr>
+<tr><td>M4</td><td>行程时长由 3 个假设常数生成、无外部验证</td><td>驳回</td><td>同第二轮 M6：<code>data/trips.parquet</code> 无 endtime，无法验证；§4.6 逐字写 “explicit assumption … no end time … not swept … inherits that limitation”；这些常数已在 AI 报告写入型常数清单</td></tr>
+<tr><td>M5</td><td>逐站 95 分位容量约定过保守</td><td>部分接受（已披露）</td><td>§7.1 明写不可加性（974,923.16 vs 630,002.78，比值 0.646；495,540 下 0.468）并称其为 required-capacity sizing convention；系统级 chance constraint 是另一种规划标准，不在本稿范围内</td></tr>
+<tr><td>M6</td><td>κ、ρ 假设未做全局敏感性</td><td>部分接受（已披露）</td><td>2017 年 5 月无奖励数据，κ/ρ 不可识别；§6.2 明说 assumed；§6.4 表给 c₀×{0.8,1.0,1.2} 的重优化，摘要称 pilot design</td></tr>
+<tr><td>m1</td><td>tab:q1shared 表头未标 log-loss/top-5</td><td>驳回</td><td>表头有两行：第二行即 “log-loss / top-5 / log-loss / top-5”（<code>sec4_q1.tex:137</code>），PDF 中逐列可读；DeepSeek 只读了 LaTeX 源码的换行</td></tr>
+<tr><td>m2</td><td>摘要 4.33 缺 “upper estimate”</td><td><b>接受</b></td><td>§3.4 已写 “because the fleet estimate is biased low, 4.33 is an upper estimate”；摘要未带此限定。R1c-5 修正</td></tr>
+<tr><td>m3</td><td>OSM 2026 数据用于 2017 需求面</td><td>驳回</td><td>§7.7 已写查询日期 11 November 2026，并明写该检查 “validates the geography of the demand surface… cannot validate the magnitudes”；§7.2 亦写 “geographic, not behavioural”。时间错位已公开披露</td></tr>
+<tr><td>m4</td><td>617,055.7515 / 39,984.2332 小数过多</td><td>驳回</td><td>同第二轮 m1：精度是溯源约定（每个印刷值可回查结果文件），§10 有精度句；改舍入会破坏 token 门与回归</td></tr>
+</tbody></table></div>
+
+<h3>10.1 指导方复核中新发现的同区口径矛盾（R1c）</h3>
+<p>第三轮本身未报此项。指导方核对 §6.4 数字来源时发现：<code>code/t026_incentive_tricycle.py::zone_edges</code> 只建<b>区内</b>改派边（docstring “Per-hour reroute edges within one zone”），文件头写 “same zone so that T018's zone totals and the truck layer are untouched”；因此 <b>18,011.46 / r*=0.60 这组 Q3 数字是在“同区改派”变体下算的</b>。R1 把 A12 改成“目标不限区”（对 §6.3 卡车口径测试为真），但 §6.4 从未说明重演用同区变体，摘要 p1 又写 “reroutes stay within a zone”——p1 与 A12 直接矛盾。这是 B2 修正在另一方向的遗漏，属高严重度文字-模型不一致；修法是把两个口径写明（一般规则用于卡车口径测试；三轮车口径重演限制在区内、故卡车层按构造固定），不是回退 A12。任务单 §8.5 的 R1c-1～R1c-5 已下达，五处纯文字、零数字 token 变化；R1c 交付后跑第四轮冷读（<code>--prev review_r3.json</code>）。</p>
+
+<h3>10.2 阶段结论</h3>
+<p>第三轮满足“0 阻塞”，B1/B2/M4 判 fixed；M1/M2/M3/M5/M6 的 partial/not_fixed 是已披露的建模深度限制，不构成文字-模型矛盾。但指导方自查发现的同区口径矛盾必须先修，故本记录暂不写最终“可提交”，待 R1c 复核与第四轮冷读后落终判。</p>
+
+<h2>11. R1c 复核（<code>b17cc8b</code>，2026-11-19）</h2>
+<p>R1c 是对 §8.5 五处文字编辑的微修，起因见 §10.1。指导方独立复验：</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td>通过：<code>b17cc8b</code> 仅动 <code>paper/summary.tex</code>、<code>paper/sec2_assumptions.tex</code>、<code>paper/sec6_q3.tex</code>、<code>paper/main.pdf</code> 与 <code>交付/T027</code> 四个文件；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code> 未触碰</td></tr>
+<tr><td>五处编辑</td><td>通过（diff 恰为五处）：① summary “The condition: in this replay reroutes stay within a zone”；② A12 末增 “The tricycle-caliber replay of Section 6 keeps the target inside the source zone, so the truck layer stays fixed there by construction.”（<code>\ref</code> 不写字面）；③ §6.4 首段末增两句：同区重演把 §5 卡车层按构造固定、跨区放置规则只在卡车口径测试定价；④ §6.6 “First, in the truck-caliber test reroutes are cell-level…”；⑤ summary “an upper estimate of 4.33 rides each per day”。无其他改动</td></tr>
+<tr><td>数字门</td><td>通过：14 个 tex 逐文件 Counter 对 <code>3209636</code>；<code>summary.tex</code>/<code>sec2_assumptions.tex</code>/<code>sec6_q3.tex</code> 均 identical；全篇仍仅 <code>sec5_q2.tex</code> 新增 <code>12</code>×1；<code>ai_report.tex</code> +<code>12</code>×1 按 §8.3 豁免</td></tr>
+<tr><td>独立编译</td><td>通过：临时副本三遍 xelatex（未写 <code>paper/</code>），27 总 / 25 计页；overfull 0、LaTeX Warning 0、undefined 0、<code>??</code> 0、U+037E 0；underfull 7 与 R1b（<code>fcde640</code>）同环境编译的 7 相同，属既有版式、非回归；目录 References→25、AI 报告→26；p25 以 References 开头、p26 以 Report on Use of AI Tools 开头、p27 为末页（页 28 不存在）</td></tr>
+<tr><td>渲染</td><td>通过：六条关键句在 PDF 各出现一次；A12 的 <code>\ref</code> 排成 Section 6，§6.4 排成 Section 5 与 Section 2，与章节号一致；摘要 p1 仍以 “data needed to run any model above” 收束，未被新增文字挤到第二页</td></tr>
+<tr><td>哈希</td><td>通过：<code>file_list.json</code> 757 个文件逐一 SHA-256 复算，0 缺失、0 差异；五个改动文件哈希已更新</td></tr>
+<tr><td>回归</td><td>通过：<code>verify_final.json</code> revision=<code>R1c</code>、<code>all_pass=true</code>、<code>r1c_checks</code> 五条全 true；六数复算一致（975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385%）；交付 checks 33、affected 31，末五条即 R1c-1…5，均带 old→new→basis</td></tr>
+</tbody></table></div>
+<p><strong>结论：R1c 通过。</strong>同区/跨区两个口径在摘要、A12、§6.4、§6.6 已一致；唯一剩余的门是 DeepSeek 第四轮冷读（<code>review/review_r4.json</code>，<code>--prev review_r3.json</code>）。</p>
+<h2>12. DeepSeek 第四轮裁决（<code>R1c</code>；F，0/6/3）与 R1d</h2>
+<p>第四轮对 R1c 的 PDF 源（<code>review/review_r4.json</code>，model deepseek-v4-pro，input 39,861 / output 13,071 tokens）：<b>阻塞 0</b>，中 6，低 3。上一轮整改状态：M1/M2/M4/M5/M6 partial、M3 not_fixed，与前两轮一致，均为已披露的建模深度问题，不是文字-模型矛盾；R1c 的五处修改未被列为问题。</p>
+
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>卡车只扫 5 点、三轮车在 K=60 之后解，无联合优化</td><td>部分接受（已披露）</td><td>同第三轮：§5.3 写 K=60 只是 compared grid 的最小；§6.4/§10 写明层间序贯；联合两梯队 MILP 是另一个模型，不是本轮文字缺陷</td></tr>
+<tr><td>M2</td><td>1/p 缩放流量与未缩放 I0 混用</td><td>部分接受（已披露）</td><td>同第三轮：343,638 是 initial-inventory proxy（§3 写下界、§7.1 写两情景分开跑）；换 I0 重跑会改变全部 Q2/Q4/Q5 数字，超出定稿任务范围</td></tr>
+<tr><td>M3</td><td>三轮车层逐区-小时静态、无跨时状态</td><td>部分接受（已披露）</td><td>同 M1；§5.4 明写逐区-小时静态 LP + earliest-finish，§10 列入局限</td></tr>
+<tr><td>M5</td><td>逐站 95 分位容量约定过保守</td><td>部分接受（已披露）</td><td>同第三轮：§7.1 明写不可加性与 required-capacity sizing convention；系统级 chance constraint 不在本稿范围</td></tr>
+<tr><td>M6</td><td>κ、ρ 未做全局敏感性</td><td>部分接受（已披露）</td><td>同第三轮：2017 年 5 月无奖励数据，κ/ρ 不可识别；§6.2 明说 assumed，§6.4 表给 c₀×{0.8,1.0,1.2} 重优化，摘要称 pilot design</td></tr>
+<tr><td>M7（新）</td><td>日终空驶 1,023.76 km / 6,142.58 CNY 不在目标内，剔除它高估了节省，建议并入目标重算</td><td><b>驳回主张，采纳澄清</b></td><td>事实前提不成立：<code>t024_q2_tier2.py:1050–1066</code> 中 <code>total_fullload</code> 与 <code>no_tricycle_total</code> 都含同一个 <code>cmp["truck_obj"]</code>，空驶两侧同进同出，节省 902,223.20（59.385%）不变；正文已写“reported separately; repeating the daily plan requires it”。为防止读者误读，采纳“写明同侧”的一句文字（R1d-2），不重算模型</td></tr>
+<tr><td>m1</td><td>617,055.7515 / 39,984.2332 等小数过多</td><td>驳回</td><td>同 R0/第二轮/第三轮：精度是溯源约定（每个印刷值可回查结果文件），§10 有精度句；改舍入会破坏 token 门与回归</td></tr>
+<tr><td>m2</td><td>§8 的 σ 未定义</td><td><b>接受</b></td><td>属实：<code>sec8_q5.tex</code> 只有 <code>$\sigma(a+2m\tilde x_i)$</code>，全篇无定义；<code>code/t022_m15_q5_mismatch.py:79</code> 的 <code>_sigmoid</code> 即 logistic。R1d-1 插入定义</td></tr>
+<tr><td>m3</td><td>Kneedle 归一化公式未给</td><td>驳回</td><td>§7.2 已写“both are normalised to [0,1]”“farthest from the chord joining the first and last frontier points”，并给偏差 0.21829 / 0.20982；DeepSeek 未读到该段</td></tr>
+</tbody></table></div>
+
+<h3>12.1 R1d（两处纯文字，零数字 token）</h3>
+<p>任务单 §8.6 已下达：<b>R1d-1</b> 在 <code>sec8_q5.tex</code> 的 σ 句插入 “<code>$\sigma$</code> is the logistic function”；<b>R1d-2</b> 在 <code>sec5_q2.tex</code> 的空驶句后加 “The truck cost is common to both totals in the comparison, so this deadhead shifts the two sides equally and leaves the percentage saving unchanged.”。两处均不含数字，token 门须与 R1c 完全相同；R1d 交付后跑第五轮冷读（<code>--prev review/review_r4.json</code>），无阻塞即写终判。</p>
+
+<h3>12.2 阶段结论</h3>
+<p>第四轮满足“0 阻塞”，且 R1c 的对应项不再出现；六中里五项是已披露的建模深度限制，新增 M7 的事实前提经代码核对不成立，仅采纳其澄清句；三项低中 m2 属实、m1/m3 驳回。故按验收标准不构成“不可提交”，但须先落 R1d 两处文字并复核、跑第五轮，再写最终“可提交”。</p>
 
 </main>
 </body>
