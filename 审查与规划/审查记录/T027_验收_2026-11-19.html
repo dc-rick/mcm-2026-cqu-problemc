@@ -337,6 +337,49 @@ li{margin:3px 0}
 
 <h3>16.2 阶段结论</h3>
 <p>第六轮满足“0 阻塞”，M5/M8 已判 fixed；八项中里 N2–N5、N7 为重复或已定义口径，N1、m3 与正文/页数事实不符；剩 N8 的措辞过强与 N6 的摘要口径两处，均以纯文字修正（R1f），不动任何数字。落 R1f 并复核、跑第七轮后写终判。</p>
+<h2>17. R1f 复核（<code>f95611d</code>，2026-11-19）</h2>
+<p>R1f 是对第六轮 N8（Q5 推断强度）与 N6（摘要空驶限定）的两处纯文字微修（任务单 §8.8）。指导方独立复验：</p>
+<div class="tw"><table>
+<thead><tr><th>查验项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>范围</td><td>通过：<code>f95611d</code> 仅动 <code>paper/sec8_q5.tex</code>、<code>paper/summary.tex</code>、<code>paper/main.pdf</code> 与 <code>交付/T027</code> 四个文件；<code>code/</code>、<code>data/</code>、<code>审查与规划/</code> 未触碰</td></tr>
+<tr><td>两处编辑</td><td>通过（diff 恰为两处）：① §8 改为 “at $m=0$ the difference (12.12\% against 12.10\%) is within seed noise, and at $m\ge1.0$ it is no better than independent\_equal (16.11\% against 16.00\%, 19.55\% against 19.03\%), the deficit clearing seed noise only at the largest mismatch.”；② 摘要 Q2 条件句前插入 “the two-tier total excludes the end-of-day repeat-positioning deadhead, reported separately;”。无其他改动，R1f-2 未撤回</td></tr>
+<tr><td>数字门</td><td>通过：14 个 tex 逐文件 Counter 对 <code>3209636</code>；<code>sec8_q5.tex</code>、<code>summary.tex</code> 均 identical（六个百分比与 m=0、m≥1.0 的出现次数不变，未新增 m=1.5 字面值），全篇仍仅 <code>sec5_q2.tex</code> +<code>12</code>×1；<code>ai_report.tex</code> +<code>12</code>×1 按 §8.3 豁免</td></tr>
+<tr><td>独立编译</td><td>通过：临时副本三遍 xelatex，27 总 / 25 计页；overfull 0、LaTeX Warning 0、undefined 0、<code>??</code> 0、U+037E 0；underfull 7 与同环境此前编译相同；目录 References→25、AI 报告→26</td></tr>
+<tr><td>页 1</td><td>通过：新增限定句在 p1，摘要仍以 Keywords 收束、未溢出到 p2；p2 仍为目录</td></tr>
+<tr><td>渲染</td><td>通过：两条新句在 PDF 各出现一次；Q5 句读作 “…the deficit clearing seed noise only at the largest mismatch.”，与 <code>m15_mismatch.json</code> 的 sd（m=0 ≈0.2 SE、m=1.0 ≈1.3 SE、m=1.5 ≈6 SE）一致</td></tr>
+<tr><td>哈希</td><td>通过：<code>file_list.json</code> 757 个文件逐一 SHA-256 复算，0 缺失、0 差异</td></tr>
+<tr><td>回归</td><td>通过：<code>verify_final.json</code> revision=<code>R1f</code>、<code>all_pass=true</code>、<code>r1f_checks</code> 两条全 true，新增 <code>summary_p1_deadhead</code> 与 <code>toc_on_p2</code> 断言；六数复算一致（975 / 533,248.01 / 617,055.7515 / 39,984.2332 / 902,223.20 / 59.385%）；交付 checks 51、affected 37</td></tr>
+</tbody></table></div>
+<p><strong>结论：R1f 通过。</strong>唯一剩余的门是 DeepSeek 第七轮冷读（<code>review/review_r7.json</code>，<code>--prev review_r6.json</code>）；按 §8.8，第七轮 0 阻塞且无新的文字-模型矛盾或推断强度问题即写“可提交”终判。</p>
+<h2>18. DeepSeek 第七轮裁决（<code>R1f</code>；M，0/6/5）与终判</h2>
+<p>第七轮对 R1f 的 PDF 源（<code>review/review_r7.json</code>，model deepseek-v4-pro，input 40,326 / output 13,767 tokens）：<b>阻塞 0</b>，中 6，低 5；prize estimate 由前六轮的 F 升为 <b>M</b>。上一轮整改状态：N1 partial（正文区分三个 baseline 已获认可）、N4/N6/N7 partial、N2/N3/N8 保持 not_fixed，均与历轮裁决一致；R1f 的两处修改未被列为缺陷。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>发现</th><th>裁决</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>1/p 流量与未缩放 I0</td><td>驳回（已披露）</td><td>同 M2/N2：343,638 是 initial-inventory proxy（§3 写下界、§7.1 两情景分开跑）；换 I0 重跑会改全部 Q2/Q4/Q5 数字，超出定稿范围</td></tr>
+<tr><td>M2</td><td>无联合两梯队优化、三轮车层静态</td><td>驳回（已披露）</td><td>同 M1/N3/N4：§5.3/§5.4/§10 明写网格、层间序贯与静态 LP；联合模型是另一项研究</td></tr>
+<tr><td>M3</td><td>κ/ρ 未扫</td><td>驳回（已披露）</td><td>同 M6/N5：2017 年 5 月无奖励数据，κ/ρ 不可识别；§6.2 assumed、§6.4 c₀ 表、摘要 pilot design</td></tr>
+<tr><td>M4</td><td>摘要 59.53% 未带 per-fence 95 分位限定</td><td>驳回</td><td>表注与 §7.1 定义分母并给出 974,923.16 vs 630,002.78；摘要 Q4 条件句已写 “these are required capacities under mandatory parking, driven by the assumed 150-slot cap”；与 M5/N7 同源，已三轮裁决</td></tr>
+<tr><td>M5</td><td>Q5 未报 SE/区间</td><td>驳回（改措辞已完成）</td><td><code>data/runs/T022/m15_mismatch.json</code> 已存 sd（0.0006–0.0008）；R1f-1 已按 sd 改为“m=0/1.0 在 seed 噪声内、仅最大失配显著”。印刷 SE 需新增数字，会破坏 token 门与七轮回归；20-seed 的结果文件已随代码归档</td></tr>
+<tr><td>M6</td><td>duration 常数未验证、同格高估 3.94pp</td><td>驳回（已披露）</td><td>§4.6 逐字披露；duration 实际用于 Q2 行程时间（46.92 min 检验）与三轮车 handling，不能写“无下游决策使用”</td></tr>
+<tr><td>m1</td><td>空驶未并入 headline</td><td>驳回</td><td>R1f-2 已在摘要限定 “the two-tier total excludes the end-of-day repeat-positioning deadhead, reported separately”；正文 R1d-2 写明两侧同含 <code>truck_obj</code>、节省不变</td></tr>
+<tr><td>m2</td><td>小数位过多</td><td>驳回</td><td>溯源精度约定（§10），同前六轮</td></tr>
+<tr><td>m3</td><td>MILP gap 未写单位/定义</td><td>接受但延后（低）</td><td>表行名 “MILP gap”、正文写 “optimal to the solver tolerance”；加 “relative” 属可选澄清，低项按协议延后，不为一词再开一轮</td></tr>
+<tr><td>m4</td><td>分段不稳定</td><td>驳回（已披露）</td><td>§4.6 报告 silhouette 0.256/0.263 与 ARI 0.305，并称其仅作解释性分组</td></tr>
+<tr><td>m5</td><td>版面过密/页数风险</td><td>驳回</td><td>27 总 / 25 计页已独立核验（摘要 p1、目录 p2、正文 p3–24、References p25、AI p26–27）</td></tr>
+</tbody></table></div>
+
+<h3>18.1 终判：可提交</h3>
+<p>判定依据：</p>
+<ol>
+<li><b>七项标准</b>（记录 §2）在 R1、R1b、R1c、R1d、R1e、R1f 六轮复核后仍全部满足；每轮的数字门、757 文件 SHA-256、独立三遍 xelatex、回归六数均通过。</li>
+<li><b>COMAP 合规</b>（记录 §3）：27 总页中 25 计页（AI 报告 p26–27 按规则置于附录外），摘要 p1、目录 p2、正文 p3–24、References p25；无超页、无未定义引用、无 <code>??</code>。</li>
+<li><b>数字溯源</b>（记录 §4 的 25 项 + 各轮 affected）：所有印刷数字可回溯到结果文件；相对基线 <code>3209636</code> 的唯一授权新增 token 为 <code>sec5_q2.tex</code> 的 <code>12</code>×1（ai_report 按 §8.3 豁免 +<code>12</code>×1）。</li>
+<li><b>外部冷读</b>：第三至七轮连续 0 阻塞（0/6/4、0/6/3、0/7/4、0/8/3、0/6/5），第七轮 prize estimate 升至 M；复核中自见的同类文字-模型矛盾（H30 同区口径、M8 capped-plan 可靠性）已在 R1c/R1e 修掉，推断与口径问题（M7/N6、N8）已在 R1d/R1f 处理。</li>
+<li><b>剩余项</b>：所有中项均为已披露的建模深度或数据不可识别项（联合优化、I0 口径、静态三轮车层、κ/ρ、seed 区间），不是可在一轮文字内消除的缺陷；低项 m3 按协议延后。无未关闭的高严重度问题。</li>
+</ol>
+<p>因此 T027 验收结论：<strong>可提交</strong>。提交包为 <code>交付/T027/file_list.json</code> 所列 757 个文件（基线 <code>8708d37</code>，最终 revision <code>R1f</code>，commit <code>f95611d</code>），论文为 <code>paper/main.pdf</code>（27 页，25 计页）。</p>
 
 </main>
 </body>
