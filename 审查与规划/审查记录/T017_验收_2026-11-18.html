@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T017 验收：通过（27 页 / 计页 25）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:#8a5a00}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T017 验收：通过（27 页 / 计页 25）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T017_delivery.json</code>（commit 5c03c3b，本地）　·　结论：<strong>通过，H19 关闭</strong></p>
+
+<h2>1. 页图（硬指标）</h2>
+<div class="tw"><table>
+<thead><tr><th>部分</th><th>改前</th><th>改后（我独立重编译）</th><th>题面</th></tr></thead>
+<tbody>
+<tr><td>Summary Sheet</td><td>p1</td><td><strong>p1（1 页）</strong></td><td>1 页</td></tr>
+<tr><td>Table of Contents</td><td>p2</td><td><strong>p2（1 页）</strong></td><td>—</td></tr>
+<tr><td>正文 §1–§10</td><td>p3–26（24）</td><td><strong>p3–23（21）</strong></td><td>—</td></tr>
+<tr><td>References（32 条）</td><td>p27–28（2）</td><td><strong>p24–25（2）</strong></td><td>—</td></tr>
+<tr><td>AI Use Report</td><td>p29–30（2）</td><td><strong>p26–27（2）</strong></td><td>不计页</td></tr>
+<tr><td><strong>总计 / 计页</strong></td><td>30 / 28</td><td><strong>27 / 25</strong></td><td>≤25（AI 除外）</td></tr>
+</tbody></table></div>
+<p>目录 References 指向第 24 页，与正文一致；摘要页与目录各占一页；AI 报告仍 2 页、内容未删。</p>
+
+<h2>2. 独立复核（五项全过）</h2>
+<div class="box ok">
+<ul>
+<li><strong>数字零变动</strong>：14 个 tex 逐文件数字 token 多重集，只有 <code>main.tex</code> 变化；新增 token 全部来自版式参数——<code>captionsetup skip 2</code>、<code>titlespacing 7/2/3</code> 与 <code>6/1/2</code>、<code>setlist 0/1/0</code>、<code>arraystretch 0.96</code>、<code>textfloatsep 5/2/1</code>、<code>floatsep 4/1/1</code>、<code>intextsep 4/1/1</code>、<code>parskip 0</code>、<code>displayskip 3/3/1/1</code>；唯一消失的 <code>5</code> 是旧的 <code>abovedisplayskip 5pt</code>。sec1–sec10、summary、references、ai_report 零 token 变化；<code>deleted_sentences</code> 为空。</li>
+<li><strong>独立重编译三遍</strong>：27 页、undefined 0、overfull 0；U+037E = 0、分号 131、<code>??</code> 0；目录 References 第 24 页。仓库 <code>paper/main.pdf</code> 文本层同项复现。</li>
+<li><strong>图只改字号</strong>：<code>90_figs.py</code>/<code>t012_figs.py</code>/<code>lib.py</code> 的 diff 只有 <code>fontsize</code>/<code>labelsize</code>，没有任何数据、坐标轴范围、图线改动；6 张图重新生成。目检 fig1/fig4/fig6：无裁切、无重叠、坐标轴与图例可读。</li>
+<li><strong>正文只改表字号</strong>：8 个 sec 文件各只加 <code>\footnotesize</code>（sec1 把 <code>\small</code> 改为 <code>\footnotesize</code>），无文字、表行、公式改动。</li>
+<li><strong>范围与交付</strong>：执行方 commit 27 个文件，全部是 paper 源码/图/PDF、三个绘图脚本、生成器与交付 JSON；<code>data/</code> 与 <code>审查与规划/</code> 零改动；交付 JSON 10/10，<code>page_map</code>/<code>token_diff</code> 与我的复算一致。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><strong>唯一披露项（不阻塞）：</strong>图内正文/刻度/图例字号 ≥7.02 pt（按 0.816–0.822 缩放），但 matplotlib 的数学上下标按 70% 渲染，印刷约 4.95 pt。这是下标排版而非正文字号；目检 6 张图未见不可读。若要求连下标也 ≥7 pt，需要把数学字号再放大 ~40%，图会明显变重、可能影响页数，故按现状接受并在此留痕。</p>
+</div>
+
+<h2>3. 裁定</h2>
+<p>T017 验收标准 7 条全部满足：题面“no more than 25 total pages（AI 报告除外）”现已满足，<strong>计页 25 = 摘要 1 + 目录 1 + 正文 21 + 参考文献 2</strong>，AI 报告 2 页不计。H19 关闭；论文可按 27 页 PDF 提交。</p>
+
+</main>
+</body>
+</html>
