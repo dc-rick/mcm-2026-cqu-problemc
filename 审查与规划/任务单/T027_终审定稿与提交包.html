@@ -32,7 +32,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T027 · 终审定稿与提交包</h1>
-<p class="meta">状态：<strong>已下达 2026-11-19（T021B 已通过，基线 <code>8708d37</code>）</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、L16（§4 舍入）、全部剩余低级别项　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
+<p class="meta">状态：<strong>已下达 2026-11-19（T021B 已通过，基线 <code>8708d37</code>；同日追加 §6 冷读文字修正）</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、L16（§4 舍入）、全部剩余低级别项、冷读六处文字修正　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
 
 <div class="box hi">
 <p><strong>分工：</strong>本任务由执行方完成“可提交物”的整理（AI 报告、最终编译、提交清单）；<strong>七标准冷读、COMAP 合规复核、逐数字溯源与 DeepSeek 外部冷读由指导方在验收时做</strong>，执行方不用替自己做最终判决。</p>
@@ -57,7 +57,7 @@ li{margin:3px 0}
 
 <h2>3. 一致性与禁区</h2>
 <ul>
-<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>唯一例外（L16）：</strong>sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；这是本任务唯一被授权改动的正文数字。</li>
+<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>例外（逐条授权）：</strong>（i）L16：sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；（ii）§6 冷读修正带来的两处：summary 的 “10--24 May” 改为 “10--19 May”（token 24→19）、A6 增加 “travel at 20 km/h”（新增 token 20）。<strong>除这三处外，正文数字 token 不得有任何增减。</strong></li>
 <li>禁止在收尾阶段改结论、改表值、改图；发现不一致先报 <code>blocked</code>，不要"顺手修"。</li>
 <li>不写内部任务编号（T0xx）、不写改稿历史、不写"earlier version"。</li>
 </ul>
@@ -72,7 +72,21 @@ li{margin:3px 0}
 <li>指导方出 <code>审查记录/T027_验收_YYYY-MM-DD.html</code>，给出"可提交 / 不可提交"结论。</li>
 </ol>
 
-<h2>5. 停止条件</h2>
+<h2>6. 冷读文字修正（2026-11-19 追加）</h2>
+<p class="meta">指导方已对 <code>8708d37</code> 版跑完 DeepSeek 冷读（<code>review/review_r1.json</code>：0 blocking / 5 major / 5 minor，评级 F）。下列六处是冷读暴露的<b>文字与表述缺陷</b>，只改表述、不改任何表值、图、结果与结论；数字 token 变化仅 §3 授权的两处。</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>位置</th><th>现行文字</th><th>改为</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>sec3_data.tex</code> §3.3</td><td>“if the two orders are adjacent … the second order must start in the same 153 m geohash cell” 与 “Correcting the exact-match <em>rate</em> for that false match gives $p\approx0.18$--$0.19$”</td><td>按实际估计模型改写：exact 匹配率 12.83% 是<b>下界</b>（约三分之一真实相邻回程因坐标抖动/格边界跨格，$a_{\text{exact}}\approx0.685$）；250 m 匹配率 19.97% 覆盖全部相邻对，扣除 placebo 假匹配 2.30%/1.30% 后 $p=(0.1997-b)/(1-b)=0.181/0.189$，故 0.18--0.19 来自 <b>250 m 率</b>而非 exact 率</td><td><code>data/runs/T002/p_estimate.json</code> 的 <code>identification</code>（<code>p_250_skip1=0.180872</code>、<code>p_250_skip2=0.189098</code>、<code>a_implied.exact≈0.685</code>）</td></tr>
+<tr><td>2</td><td><code>summary.tex</code></td><td>“five training days of the 10--24 May window”</td><td>“10--19 May window”（正文 §3.2 与 §4 一律用 10--19；20--24 是截断样本）</td><td><code>sec3_data.tex</code> “All estimation therefore uses the nine recorded days of 10--19 May”；token 24→19 已在 §3 授权</td></tr>
+<tr><td>3</td><td><code>sec5_q2.tex</code> §5.4 首段</td><td>“The tricycle layer is therefore a same-zone vehicle-routing problem … The layer is solved zone by zone as an integer routing program”</td><td>按实际实现写清楚：每个 zone-hour 一个 donor→sink 的运输规划（transportation program），由 LP 流量构造整数 trip 列表，再按 earliest-finish 分配给三轮车；参数（$Q_{\text{tri}}=20$、15 km/h、0.5 min/辆、≤5 km、07:00--20:00、300 CNY/日、0.2 CNY/km、6 CNY 惩罚）与全部数字不变</td><td><code>code/t024_q2_tier2.py</code>：<code>_tri_lp</code>（transportation LP）、<code>_int_trips</code>、<code>_assign</code>（earliest-finish）；现文字写 “VRP” 会让评委索要未实现的车辆路径模型</td></tr>
+<tr><td>4</td><td><code>sec2_assumptions.tex</code> A6</td><td>“Trucks serve only the eight nearest zones within 9 km (290 arcs), the range of an overnight shift.”</td><td>“…… (290 arcs) and travel at 20 km/h.”（46.92 min 上限 = 9 km ÷ 20 km/h + 40 辆 × 0.5 min 装卸，可复算；删去与全天小时班表矛盾的 “overnight shift”）</td><td><code>code/t018_q2_int.py:65</code> <code>SPEED_KMH=20.0</code>；新增 token 20 已在 §3 授权</td></tr>
+<tr><td>5</td><td><code>sec7_q4.tex</code> §7.1、§7.5、§7.6</td><td>“starts each fence at its measured inventory”“At the measured inventory”“The measured 5/16 snapshot”</td><td>统一为 “initial-inventory proxy”（§3.4 的定义：由每辆车最后一次归还位置推出的存量，不是实测车队）；“measured 5/16 snapshot” 可改为 “5/16 00:00 snapshot”</td><td><code>sec3_data.tex</code> 对 343,638 的定义；术语必须全文一致</td></tr>
+<tr><td>6</td><td><code>sec7_q4.tex</code> 表 <code>tab:q4plan</code></td><td>行名 “Assigned demand”“Unassigned demand”</td><td>“Assigned sizing demand”“Unassigned sizing demand”（§7.1 已说明这是逐站 95 分位的 sizing convention，不是同时刻全城需求；全城同时刻 95 分为 630,002.78）</td><td><code>sec7_q4.tex</code> §7.1 第 27--36 行；只改行名，数字不动</td></tr>
+</tbody></table></div>
+<p><strong>执行规则：</strong>六处全部为文字修正；改后必须重编译并确认 <b>计页仍为 25</b>（无余量）。若某处使版面溢出，可在同一节内等量压缩文字，但不得删数字、不得删限定条件、不得删核心结果表与图；做不到就报 <code>blocked</code> 并说明是哪一处。改后按 §3 复算 token 多重集，新增/删除 token 必须与 §3 授权的三项（3.65→3.64、24→19、+20）完全一致。</p>
+
+<h2>7. 停止条件</h2>
 <ul>
 <li>冷读发现会推翻结论的缺陷 → 停下来，回到 T021A 级别重做，不在终审阶段打补丁。</li>
 <li>页数压不下来且必须删核心结果 → 回到用户，不要在终审阶段自行取舍。</li>
