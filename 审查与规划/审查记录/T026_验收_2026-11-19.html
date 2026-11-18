@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T026 验收：通过（Q3 激励 vs 三轮车，H26 关闭）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T026 验收：通过（Q3 激励 vs 三轮车同口径重解）</h1>
+<p class="meta">2026-11-19 · 交付 commit <code>a0b4c22</code>（<code>交付/T026_delivery.json</code>，R0）· check 12/12 · 我独立重跑 7 个点、复算全部恒等式、核对 15 个哈希</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>H26 关闭。核心结论有三条：① 同一 T024 两级口径下，激励可以替代三轮车——最优 r*=0.60（0.05 网格），净节省 <strong>18,011.46 元/日</strong>（2.92%），付款 16,608.52 在 30,000 预算内，车队 975→959（−16），未服务 39,984.23→35,019.77（净减 4,964.46）；② H26 的疑问解决：total(0.81)=603,232.87 < total(2.70)=1,272,910.24，卡车层在两点逐位相同（83,807.74384），“2.70 的卡车目标更低”在本口径不存在，2.70 多付 784,302.68 只省 114,625.31；③ 因此论文 §6 与摘要应写 <strong>r*=0.60</strong>，不是 0.81 或 1.76/2.70。T025 的卡车口径负结论保持不变，两段并列。</p>
+</div>
+
+<h2>1. 我读了什么、重跑了什么</h2>
+<ul>
+<li>读：<code>交付/T026_delivery.json</code>、<code>check.json</code>、<code>cost_vs_r.json</code>、<code>optimum.json</code>、<code>sensitivity.json</code>、<code>regression.json</code>、<code>code/t026_incentive_tricycle.py</code> 的 <code>zone_edges</code>/<code>reroute_hour</code>/<code>dyn_zone_r</code>/<code>exec_n_r</code>/<code>run_point</code>/<code>stage_scan</code>/<code>stage_figure</code>。</li>
+<li>重跑（执行方代码，只读 smoke，不写结果文件）：r=0.60、0.81、2.70（arrivals）与 0.81、2.70（surplus）五个点，以及 c0=0.64/r=0.55、c0=0.96/r=0.70 两个敏感性点；全部逐位复现交付数值。</li>
+<li>复算（不经过执行方）：61 档网格与 122 行字段；total = 卡车层 + 三轮车层 + 付款；payment = q·r；payment_capped = min(payment, 30000)；预算余量；argmin 与净节省；逐区下降与 alloc 差分；份额恒等式与上界恒等式；H26 的付款/层差恒等式；低奖励端凸起；r_cross 的上下夹点。</li>
+<li>未做：没有重跑完整 61×2 扫描（用交付文件 + 7 个点抽验）；没有目检 PDF 图（无 pdftoppm），改用 PyMuPDF 检查字号与页面。</li>
+</ul>
+
+<h2>2. 独立复算表</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>我的复算 / 重跑</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>回归门 r=0</td><td>975 / 39,984.233156118324 / 533,248.0076801622 / 617,055.7515153277 / 未分配 0</td><td>与 <code>T024/schedule_check.json</code> 的 <code>exec_totals</code> 逐项相同（bit_identical）</td><td>✓</td></tr>
+<tr><td>网格与字段</td><td>61 档 × 2 口径；含 r=2.70</td><td>61 个 r 值 0–3.00 步长 0.05；每行含 <code>payment_capped</code>、<code>total_capped</code>、<code>iter</code>、<code>resid</code>、<code>slack</code> 等 25 个字段</td><td>✓</td></tr>
+<tr><td>会计恒等式</td><td>total = payment + 两层</td><td>122 行最大偏差 2.3e-10；capped 变体 1.2e-10；payment=q·r 3.5e-10；capped=min(pay,30000) 全等</td><td>✓</td></tr>
+<tr><td>最优 r*（arrivals）</td><td>0.60 / 599,044.2922 / 节省 18,011.4593</td><td>argmin 即 0.60；重跑该点逐位相同；节省=617,055.7515−599,044.2922</td><td>✓</td></tr>
+<tr><td>r*（surplus）</td><td>0.60 / 610,404.5276 / 节省 6,651.2239</td><td>argmin 即 0.60；节省恒等式成立</td><td>✓</td></tr>
+<tr><td>r_cross</td><td>arrivals 1.038281（宽 7.8e-4）；surplus 1.627344（宽 7.8e-4）</td><td>重跑夹点：1.0375 617,036.09（−19.66）→1.038281 617,095.29（+39.54）；surplus 1.626562 616,974.66（−81.09）→1.627344 617,232.03（+176.28）</td><td>✓（精度措辞见 §5）</td></tr>
+<tr><td>H26 0.81</td><td>total 603,232.8674；付款 37,120.1593（未截断）</td><td>重跑逐位相同；q=45,827.3571；n=960；层 482,304.9643</td><td>✓</td></tr>
+<tr><td>H26 2.70</td><td>total 1,272,910.2393；付款 821,422.8369</td><td>重跑逐位相同；q=304,230.6803；n=918；层 367,679.6586</td><td>✓</td></tr>
+<tr><td>H26 差额分解</td><td>payment_gap 784,302.6776 + layer_gap −114,625.3057 = total_gap 669,677.3718</td><td>恒等式逐项成立；卡车层两点均为 83,807.74384</td><td>✓</td></tr>
+<tr><td>c0 敏感性</td><td>0.55/19,747.4237；0.60/18,011.4593；0.70/16,365.8810</td><td>重跑 0.64 与 0.96 两个最优点，逐位相同</td><td>✓</td></tr>
+<tr><td>上界对照</td><td>上界 24,141.9424；实际 18,011.4593；差 6,130.4831 = 35,917.2559 − 29,786.7728</td><td>三条恒等式全部成立；q=27,680.86，净未服务减 4,964.46（每 q 0.1793）</td><td>✓</td></tr>
+<tr><td>逐区下降</td><td>arrivals −16 辆 / 9 区；surplus −6 辆 / 5 区</td><td>与 r=0 的 alloc 差分逐区一致；alloc 和 975→959/969</td><td>✓</td></tr>
+<tr><td>卡车层不变</td><td>122 行全为 83,807.74384</td><td>常数检查通过；且 r=0 回归即 T024 的 T018 层</td><td>✓</td></tr>
+<tr><td>哈希与禁用数字</td><td>7 输入 + 8 输出 SHA-256；禁用词命中 0</td><td>15/15 全串一致；digit-bounded 扫描 5 个结果 JSON 命中 0；输入哈希与 T023 交付对同文件的记录一致</td><td>✓</td></tr>
+<tr><td>图</td><td><code>figs/fig_total_vs_r.pdf</code>，17,234 B</td><td>1 页、矢量；字号 8 pt（41 段）、7 pt（3 段）、5.6 pt（2 个 mathtext 上标 “3”，即 10³，T017 已披露的 70% 下标惯例）</td><td>✓（未目检）</td></tr>
+</tbody></table></div>
+
+<h2>3. 模型口径核查（我从代码确认，不只看 notes）</h2>
+<ul>
+<li><strong>Δ_c 口径</strong>：<code>dyn_zone_r</code> 在 <code>walk_borrow0</code> 之后、<code>_tri_lp_local</code> 之前取 <code>resid</code>，与 T024 的 cellunmet 对齐；r=0 逐位复现 T024-R3，说明口径未漂移。</li>
+<li><strong>同 zone 限制</strong>：<code>zone_edges</code> 只用 <code>za["idx"]</code> 的格，源格与目标格同区——这是卡车层不变的定义性原因，不是巧合；交付把“若变则停”写进代码。</li>
+<li><strong>无热启动</strong>：<code>stage_scan</code> 每个点都从 889 分配出发，注释写明 raise-only 不动点不能继承上一 r 的车队；我抽查的 7 个点与扫描行一致。</li>
+<li><strong>不动点残差</strong>：<code>exec_n_r</code> 与 T024 的 <code>_exec_n</code> 同构（raise-only，k≤n 停）；<code>resid</code> 是末次迭代车队变化，全为 0；<code>slack</code>（n_exec−贪心最小车队，全市最大 197）单列，不冒充收敛残差——与 T024 已接受的约定一致。</li>
+<li><strong>付款不截断</strong>：行为只依赖 r；<code>total</code> 用未截断付款；<code>total_capped</code> 标为“会计变体、非可行方案”。这一条与 T020 的硬预算规则不冲突，但必须在论文里写清：r*=0.60 的付款本来就在预算内，预算规则在最优点不紧。</li>
+</ul>
+
+<h2>4. H26 裁决与论文口径（T021A 必须原样使用）</h2>
+<div class="box hi">
+<p><strong>H26 关闭。</strong>T023 notes 第 60 条的“r=2.7 时卡车目标更低”在 T026 的精确口径下<strong>不存在</strong>：两点卡车层逐位相同；且 0.81 的总支出远低于 2.70（差 669,677.37）。同时 T020 的 0.81 也不是本口径最优：<strong>r*=0.60，节省 18,011.46 元/日</strong>。论文 §6 与摘要按 0.60 写。</p>
+</div>
+<div class="tw"><table>
+<thead><tr><th>进入论文的数</th><th>值</th><th>写法与条件</th></tr></thead>
+<tbody>
+<tr><td>最优奖励</td><td>r* = 0.60 元/次</td><td>0.05 网格 argmin；arrivals 口径平台仅此一点，surplus 平台 0.55–1.15；写“网格分辨率 0.05，附近 ±0.05 内 total 变化 &lt;1,000 元/日”</td></tr>
+<tr><td>净节省</td><td>18,011.46 元/日（2.92%）</td><td>相对同口径两级方案（617,055.75），不是相对无三轮车；surplus 口径 6,651.22（1.08%）</td></tr>
+<tr><td>付款</td><td>16,608.52 元/日</td><td>未截断；预算 30,000 余 13,391.48；写“r* 处预算不紧”</td></tr>
+<tr><td>改动量</td><td>q=27,680.86 次/日；车队 975→959（−16）；未服务 39,984.23→35,019.77（−4,964.46）</td><td>写“q 与净减少未服务不是一对一（每 q 0.179）”，并说明源格失去到达</td></tr>
+<tr><td>交叉点</td><td>arrivals 1.038；surplus 1.627</td><td>写约 1.04/1.63；不要声称 0.001 元精度（见 §5）</td></tr>
+<tr><td>c0 敏感性</td><td>r*=0.55/0.60/0.70；节省 19,747.42/18,011.46/16,365.88</td><td>c0×0.8/1.0/1.2 重优化，不是固定 r 压力测试</td></tr>
+<tr><td>H26 对照</td><td>total(0.81)=603,232.87；total(2.70)=1,272,910.24</td><td>可写“0.81 优于 2.70”；<strong>不得</strong>把 total_capped 当可行方案</td></tr>
+</tbody></table></div>
+<p><strong>硬规则：</strong>(a) T025 与 T026 并列：卡车口径“激励换不掉卡车”，格级/三轮车口径“激励可替代三轮车”；(b) 不得写“激励一律不划算”；(c) 不得把 T023 的 q3 区间（<code>q3_pure_obj</code> 138,317 / <code>q3_ceiling</code> −1,591）贴到 T026 的 18,011 上——那些是 T025 口径的不确定性，T026 是确定性单日结果，区间只用两种来源上限与 c0 敏感性表达；(d) 同 zone 限制、付款不截断、运输时点（小时内落车）写进 assumptions 与 limitations。</p>
+
+<h2>5. 非阻塞缺陷（记录，不返工）</h2>
+<ol>
+<li><strong>r_cross 精度措辞</strong>：check 5 写“bisected on r to &lt;= 0.001 CNY”，实际是 r 宽度 7.8e-4，端点总支出差 −19.7/+39.5（arrivals）与 −81.1/+176.3（surplus）。正确读法：交叉点精确到 r 的 0.001，不是总支出 0.001 元。T021A 写“约 1.04 / 1.63”即可，结果文件不改。</li>
+<li><strong>文件名偏差</strong>：任务单写 <code>sensitivity_c0.json</code>，交付为 <code>sensitivity.json</code>；内容为 c0×{0.8,1.0,1.2} 三行，满足要求。</li>
+<li><strong>图字号</strong>：两个 5.6 pt 为 10³ 的 mathtext 上标（8×0.7），与 T017 已接受的下标惯例相同；目检留 T027。</li>
+<li><strong>结果文件不入 git</strong>：<code>data/</code> 被 <code>.gitignore</code> 整体忽略（T023 同样），提交只含代码与交付 JSON；复现依赖磁盘结果。</li>
+</ol>
+
+<h2>6. 范围与合规</h2>
+<ul>
+<li><code>git status --porcelain</code> 干净；<code>a0b4c22</code> 只含 <code>code/t026_incentive_tricycle.py</code>、<code>code/t026_delivery.py</code>、<code>交付/T026_delivery.json</code>；<code>paper/</code>、<code>审查与规划/</code>、<code>data/</code> 输入零改动（7 个输入哈希全等）。</li>
+<li>交付 <code>integrity.readonly_respected=true</code>、<code>no_files_written_in_review_or_planning=true</code>、<code>no_push=true</code>；本地未推送，由指导方随验收一起推。</li>
+<li>r=0.81 不在 0.05 网格上，为 H26 单独求值；我重跑确认其数值与交付一致。</li>
+</ul>
+
+<div class="box warn">
+<p><strong>验收边界：</strong>通过不等于 Q3 结论可以无限外推。18,011.46 是单日确定性回放、同 zone、付款不截断、行为接受函数 π(r) 固定（κ=2, ρ=0.35, c0=0.8）下的结果；T021A 必须把这些条件与 c0 敏感性一起写，不能用它覆盖 T025 的卡车口径结论，也不能把它写成“无条件的系统节省”。</p>
+</div>
+
+</main>
+</body>
+</html>
