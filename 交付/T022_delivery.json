@@ -1,20 +1,23 @@
 {
  "task": "T022",
- "title": "P1 补强实验：M16 车队估计偏差方向 R1（M12/M15 尚未完成）",
+ "title": "P1 补强实验：M16 R1（已通过）+ M12 Q1 共用 β（M15 待 T019）",
  "date": "2026-11-18",
  "status": "partial",
  "revision": "R1",
- "summary": "M16 R1：撤回 Chao1 作为下界的解释。两窗只有 (n1,n2,m) 三个统计量，同质模型 (N,p1,p2) 逐辆复现 E[f1]=174,793、E[f2]=309,961、E[并集]=484,754，Chao1_homog=534,038.5 与观测 534,038.6 只差 0.05 辆；+7.8% 来自 p1=0.934 与 p2=0.670 的强度不等，不是异质性。等强度公式 1+(1-p)^2 在 p=0.934/0.801/0.670 给出 1.0044/1.0396/1.1089。200 次“第一窗口抽 5 天”重抽样 Chao1 的 P5/P50/P95 = 508,839/520,176/533,736，15–19 对 20–24 为 494,284，低于 Chapman 点。保留的结论：设计无关下界 N ≥ 484,754（并集），故每车每日 ≤ 4.42；Chapman 495,540 因使用频次异质性偏低，故 4.33 是上估计；534,039 只作情景值（若车队达 534,039 则为 4.01）。退役/新投放方向更正保留，新投放证据降为提示性。M12 下一步，M15 等 T019。",
+ "summary": "M16 R1 已由指导方验收通过（记录 1c9c74c）。M12 完成：同一训练日（10/11/15/16/18）、测试日（12/19）、全 5,263 格候选集，只换距离衰减参数。五时段 β 对全日共用 β=2.2100：5/12 对数损失 3.505778 vs 3.511287（差 −0.005509），Top-5 0.391228 vs 0.390688（+0.000540），区-时净流量 L1 11,672.0 vs 11,762.8（−90.8），最大绝对 172.4 vs 176.7（−4.3）；5/19 为 3.345188 vs 3.350319（−0.005132）、0.454264 vs 0.453794（+0.000470）、12,327.5 vs 12,401.1（−73.6）、151.3 vs 156.9（−5.6）。四项指标两天都偏向五时段，但幅度很小；分带符号并不一致。T022 整体仍为 partial：M15 等 T019。",
  "checks": {
   "M16.a_reproduce_495540": "pass; command=`python -I code/t022_fleet.py`; n1=462,893, n2=331,822, m=309,961, union=484,754; Chapman=495,539.9881 (paper 495,540); SE=131.315, 95% CI [495,282.61, 495,797.37], matching paper/sec3_data.tex:94. Evidence: data/runs/T022/fleet_estimates.json -> chapman_pooled.",
   "M16.b_stratified_chapman_5_layers": "pass; 5 strata by window-1 trips (1, 2-3, 4-6, 7-10, 11+); (n1,n2,m) = (44,552,22,030,22,030), (108,435,64,482,64,482), (162,044,110,850,110,850), (115,571,86,641,86,641), (32,291,25,958,25,958); recapture rates 0.4945/0.5947/0.6841/0.7497/0.8039; within-stratum Chapman equals n1 and the sum equals the union 484,754 (degeneracy disclosed). Evidence: fleet_estimates.json -> strata, stratified_chapman.",
-  "M16.c_chao_withdrawn_homogeneity_benchmark": "pass; `chao1_raw.status` now says withdrawn as a lower bound. `homogeneity_benchmark`: N=495,539.988, p1=0.934118, p2=0.669617, E[f1]=174,792.956 (obs 174,793), E[f2]=309,961.022 (obs 309,961), E[union]=484,753.978 (obs 484,754), chao1_homog=534,038.526 vs observed 534,038.576, diff=0.0498, max_stat_diff=0.0435. Evidence: fleet_estimates.json -> homogeneity_benchmark, chao1_raw.",
-  "M16.d_chao_effort_bias": "pass; equal-effort formula 1+(1-p)^2 at p=0.934/0.801/0.670 gives 1.004356/1.039601/1.108900; exact unequal-effort factor at observed (p1,p2)=1.0776901, observed ratio chao1/Chapman=1.0776902. Statement in file: Chao1 assumes equal per-bicycle capture propensity across windows; Chapman does not. Evidence: fleet_estimates.json -> chao_effort_bias.",
-  "M16.e_resample_200x5day": "pass; 200 draws, seed 20261118, five of the nine recorded first-window days, second window fixed; Chao1 P5/P50/P95 = 508,838.9/520,176.0/533,735.8; min 502,743.9, max 539,179.9; 104 distinct values. Named blocks: 10-14 -> 539,179.9; 15-19 -> 494,283.6, below the Chapman point. Reviewer's 30-draw values 540,086/494,845 differ by 0.1-0.2% (day-boundary pipeline offset), same sign and same crossing. Evidence: fleet_estimates.json -> resample_5day.",
-  "M16.f_direction": "pass; heterogeneity biases Chapman DOWN: recapture rates rise monotonically 0.4945->0.8039, Cochran-Armitage z=121.57, p<1e-300, rate ratio 1.626. Retirement: +0.105 per recapturable retiree, 0 per unused retiree -> up or unchanged, never down. New deployment: +1.493 per used new bicycle -> up or unchanged. Net sign of openness not identified. Evidence: fleet_estimates.json -> heterogeneity, openness.",
-  "M16.g_rides": "pass; numerator 2,143,417.41. Values: F=484,754 (design-independent lower bound) -> 4.4217; F=495,540 (Chapman, biased low) -> 4.3254; F=534,039 (scenario only) -> 4.0136. Statement: 4.33 is an upper estimate; the design-independent ceiling is 4.42; 4.01 holds only in the 534,039 scenario. Evidence: fleet_estimates.json -> rides_per_bike_day.",
-  "M16.h_output": "pass; data/runs/T022/fleet_estimates.json (9,759 bytes, sha256 363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5); run log data/runs/T022/m16_run.log; script code/t022_fleet.py (sha256 0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24); input data/trips.parquet sha256 5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb.",
-  "M12.shared_beta_baseline": "pending; separate commit and message.",
+  "M16.c_chao_withdrawn_homogeneity_benchmark": "pass (accepted 1c9c74c); `chao1_raw.status` withdrawn as a lower bound. `homogeneity_benchmark`: N=495,539.988, p1=0.934118, p2=0.669617, E[f1]=174,792.956 (obs 174,793), E[f2]=309,961.022 (obs 309,961), E[union]=484,753.978 (obs 484,754), chao1_homog=534,038.526 vs observed 534,038.576, diff=0.0498, max_stat_diff=0.0435. Evidence: fleet_estimates.json -> homogeneity_benchmark, chao1_raw.",
+  "M16.d_chao_effort_bias": "pass (accepted 1c9c74c); equal-effort formula 1+(1-p)^2 at p=0.934/0.801/0.670 gives 1.004356/1.039601/1.108900; exact unequal-effort factor at observed (p1,p2)=1.0776901, observed ratio chao1/Chapman=1.0776902. Evidence: fleet_estimates.json -> chao_effort_bias.",
+  "M16.e_resample_200x5day": "pass (accepted 1c9c74c); 200 draws, seed 20261118; Chao1 P5/P50/P95 = 508,838.9/520,176.0/533,735.8; min 502,743.9, max 539,179.9; 104 distinct values; 10-14 block 539,179.9, 15-19 block 494,283.6 (below the Chapman point). Evidence: fleet_estimates.json -> resample_5day.",
+  "M16.f_direction": "pass (accepted 1c9c74c); heterogeneity biases Chapman DOWN (rates 0.4945->0.8039, z=121.57); retirement up or unchanged (+0.105 per recapturable retiree, 0 otherwise); new deployment up or unchanged (+1.493 per used new bicycle); net openness sign not identified. Evidence: fleet_estimates.json -> heterogeneity, openness.",
+  "M16.g_rides": "pass (accepted 1c9c74c); 2,143,417.41/484,754=4.4217 (ceiling); /495,540=4.3254; /534,039=4.0136 (scenario only). 4.33 is an upper estimate. Evidence: fleet_estimates.json -> rides_per_bike_day.",
+  "M16.h_output": "pass; data/runs/T022/fleet_estimates.json (sha256 363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5); code/t022_fleet.py (sha256 0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24). Commit f638d11.",
+  "M12.a_same_setup": "pass; train days 2017-05-10/11/15/16/18, test days 2017-05-12/19, candidate set = all 5,263 cells for both fitting and scoring; per-band smoothed attraction identical in both models; only the distance-decay parameter differs. Evidence: data/runs/T022/shared_beta.json -> setup, beta.",
+  "M12.b_two_by_two_table": "pass; five-band vs shared beta, per test day (log-loss, top-5, zone-hour net-flow L1, max abs): 2017-05-12 five-band 3.505778 / 0.391228 / 11,672.0 / 172.4, shared 3.511287 / 0.390688 / 11,762.8 / 176.7; 2017-05-19 five-band 3.345188 / 0.454264 / 12,327.5 / 151.3, shared 3.350319 / 0.453794 / 12,401.1 / 156.9. Evidence: shared_beta.json -> per_day.",
+  "M12.c_differences_and_signs": "pass; five-band minus shared: 5/12 nlp -0.005509, top5 +0.000540, L1 -90.84, max -4.30; 5/19 nlp -0.005132, top5 +0.000470, L1 -73.58, max -5.60. Negative nlp/L1/max and positive top5 all favour the five-band model on both days. Per-band signs are mixed: on 5/12 night (+0.0010) and late (+0.0015) favour the shared beta; on 5/19 night (+0.0073), morning (+0.0058) and evening (+0.0043) favour it. The aggregate gain is small and driven by the large morning/midday/evening bands. Evidence: shared_beta.json -> per_day.*.diff.per_band_nlp.",
+  "M12.d_reproducibility": "pass; command=`python -I code/t022_shared_beta.py`, runtime 40 s, deterministic (no random seed); beta five-band 2.094837/2.014439/2.517201/2.129723/2.365260, pooled 2.210036; training log-likelihood five-band sum -4,734,375.4 vs pooled -4,743,645.0 (delta 9,270 over 1,364,827 training trips = 0.0068 nats/trip in-sample).",
   "M15.q5_spatial_mismatch": "pending; waits for T019 acceptance per the task sheet."
  },
  "affected": [
@@ -53,33 +56,47 @@
    "old": "serving 4.33 rides per bicycle per day",
    "new": "serving at most about 4.4 rides per bicycle per day (4.33 at the Chapman point, an upper estimate)",
    "basis": "T022-M16 R1: N >= 484,754, so the rate cannot exceed 4.42"
+  },
+  {
+   "location": "paper/sec4_q1.tex:116-117",
+   "old": "and it is what makes a time-varying formulation necessary: a single beta would average the commute and the errand and misdescribe both",
+   "new": "a single pooled beta=2.210 is a close approximation: the five-band model improves held-out log-loss by 0.0051-0.0055 nats per trip, top-5 by 0.047-0.054 percentage points, and zone-hour net-flow L1 by 74-91 trips per day; the band structure is a small, consistent gain rather than a necessity",
+   "basis": "T022-M12: shared_beta.json per_day table, five-band minus shared on 2017-05-12/19"
   }
  ],
  "outputs": [
   "code/t022_fleet.py",
+  "code/t022_shared_beta.py",
   "data/runs/T022/fleet_estimates.json",
-  "data/runs/T022/m16_run.log"
+  "data/runs/T022/shared_beta.json",
+  "data/runs/T022/m16_run.log",
+  "data/runs/T022/m12_run.log"
  ],
  "notes": [
-  "R1 逐条对应验收记录 §4：1) homogeneity_benchmark 已加；2) chao_effort_bias 已加；3) 200 次重抽样已跑；4) affected 已改写，不再出现“fleet at least 534,039”和“506,635 失效”；5) 新投放证据已降为提示性；6) paper/ 未动。",
-  "Chao1 值 534,038.6 保留在 chao1_raw 里只作数字记录，不承担任何下界功能。534,039 只作情景值引用：若车队达 534,039，则每车每日 4.01。",
-  "设计无关下界是观测 14 天并集 484,754：任何在役过至少一次的车都在并集里，故 N ≥ 484,754；由此每车每日 ≤ 4.42。",
-  "200 次 5 天重抽样中 0 次低于 Chapman 点，但 5 天块的 Chao1 在 502,744-539,180 间跳动（104 个不同值），且 15-19 的四天块给出 494,284，低于点估计。这与指导方 30 次的 503k-534k 量级一致；差异来自日界管线（0.1-0.2%）。",
-  "M6/T023 若把车队当不确定性来源，应按 484,754-534,039 作情景区间传播，不得当置信区间；这是验收记录 §6 的口径。",
-  "495,540 仍是 T018-T024 的锁定库存情景值，本交付不改任何下游输入。",
-  "脚本第一版在可用内存 0.86 GB 时 MemoryError；改用 np.isin(assume_unique=True) 后 48 s 跑完（含 200 次重抽样），数值不变。"
+  "M16 R1 已通过（验收记录 1c9c74c）；M6 记为“修复中（待论文落地）”，T021 改完文字后关闭。T023 传播车队时按 N ∈ [484,754, 534,039] 作情景区间，不当置信区间。",
+  "M12 的五时段 β 与论文 q1_params 的差异很小（夜间 2.0948 vs 2.0963 等），因为本次用全候选集拟合（与评分口径一致）；两种模型的 A_j(h) 完全相同，差别只在 β。",
+  "M12 的结论是“小而有方向一致性”，不是“分时段 β 必要”。四项指标两天都偏向五时段，但 nlp 只差 0.15%，top-5 只差 0.05 个百分点；分带有正有负。T021 应按此弱化 sec4_q1.tex 的措辞。",
+  "M12 未做配对显著性检验（任务单只要求表与差值符号）；若指导方需要，可补 per-trip paired SE。",
+  "495,540 仍是 T018-T024 的锁定库存情景值；本交付不改任何下游输入。",
+  "脚本 t022_fleet.py 第一版在可用内存 0.86 GB 时 MemoryError，改用 np.isin(assume_unique=True) 后 48 s 跑完，数值不变。"
  ],
  "reproduction": {
-  "command": "python -I code/t022_fleet.py",
-  "runtime_seconds": 48,
-  "solver": "none (closed-form estimators + 200-draw day resampling)",
-  "input_sha256": {
+  "m16_command": "python -I code/t022_fleet.py",
+  "m16_runtime_seconds": 48,
+  "m16_input_sha256": {
    "data/trips.parquet": "5208d0b77989db602b93a2b069e4361310d99edc7b22b1344244eef00d1431cb"
   },
-  "output_sha256": {
+  "m16_output_sha256": {
    "data/runs/T022/fleet_estimates.json": "363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5",
    "code/t022_fleet.py": "0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24"
-  }
+  },
+  "m12_command": "python -I code/t022_shared_beta.py",
+  "m12_runtime_seconds": 40,
+  "m12_output_sha256": {
+   "data/runs/T022/shared_beta.json": "7719b5ab8263397ce38242356de9f3cda8a877bceb5e62c9b67ee90f928f3b32",
+   "code/t022_shared_beta.py": "372c5b71873f8da53789ee7f21769ae1fbec33707e5c25addec8457320ca89f4"
+  },
+  "solver": "scipy bounded scalar search for beta; no MILP"
  },
  "integrity": {
   "readonly_respected": true,
