@@ -3,8 +3,8 @@
  "title": "P1 补强实验：M16 R1（已通过）+ M12 Q1 共用 β（M15 待 T019）",
  "date": "2026-11-18",
  "status": "partial",
- "revision": "R1",
- "summary": "M16 R1 已由指导方验收通过（记录 1c9c74c）。M12 完成：同一训练日（10/11/15/16/18）、测试日（12/19）、全 5,263 格候选集，只换距离衰减参数。五时段 β 对全日共用 β=2.2100：5/12 对数损失 3.505778 vs 3.511287（差 −0.005509），Top-5 0.391228 vs 0.390688（+0.000540），区-时净流量 L1 11,672.0 vs 11,762.8（−90.8），最大绝对 172.4 vs 176.7（−4.3）；5/19 为 3.345188 vs 3.350319（−0.005132）、0.454264 vs 0.453794（+0.000470）、12,327.5 vs 12,401.1（−73.6）、151.3 vs 156.9（−5.6）。四项指标两天都偏向五时段，但幅度很小；分带符号并不一致。T022 整体仍为 partial：M15 等 T019。",
+ "revision": "R2",
+ "summary": "M16 R1 已由指导方验收通过（记录 1c9c74c）。M12 完成并按 M12-R1 要求补了逐行程配对检验：同一训练日（10/11/15/16/18）、测试日（12/19）、全 5,263 格候选集，只换距离衰减参数。五时段 β 对全日共用 β=2.2100：5/12 对数损失差 −0.005509（配对 95% CI [−0.006035, −0.004984]，z=−20.55），Top-5 差 +0.000540（[+0.000167, +0.000913]，z=+2.84）；5/19 为 −0.005132（[−0.005557, −0.004706]，z=−23.65）、+0.000470（[+0.000141, +0.000799]，z=+2.80）；n=253,617 与 302,058 全部测试行程。两个指标在全样本上 CI 都不含 0，但幅度很小（0.15% 与 0.054 个百分点）。指导方 40,000 抽样得到的 Top-5 CI 含 0 是样本量所致（SE 约为全样本的 2.5 倍）；本交付按全样本写。T022 整体仍为 partial：M15 等 T019。",
  "checks": {
   "M16.a_reproduce_495540": "pass; command=`python -I code/t022_fleet.py`; n1=462,893, n2=331,822, m=309,961, union=484,754; Chapman=495,539.9881 (paper 495,540); SE=131.315, 95% CI [495,282.61, 495,797.37], matching paper/sec3_data.tex:94. Evidence: data/runs/T022/fleet_estimates.json -> chapman_pooled.",
   "M16.b_stratified_chapman_5_layers": "pass; 5 strata by window-1 trips (1, 2-3, 4-6, 7-10, 11+); (n1,n2,m) = (44,552,22,030,22,030), (108,435,64,482,64,482), (162,044,110,850,110,850), (115,571,86,641,86,641), (32,291,25,958,25,958); recapture rates 0.4945/0.5947/0.6841/0.7497/0.8039; within-stratum Chapman equals n1 and the sum equals the union 484,754 (degeneracy disclosed). Evidence: fleet_estimates.json -> strata, stratified_chapman.",
@@ -15,9 +15,10 @@
   "M16.g_rides": "pass (accepted 1c9c74c); 2,143,417.41/484,754=4.4217 (ceiling); /495,540=4.3254; /534,039=4.0136 (scenario only). 4.33 is an upper estimate. Evidence: fleet_estimates.json -> rides_per_bike_day.",
   "M16.h_output": "pass; data/runs/T022/fleet_estimates.json (sha256 363924af96b0b187ba876efae9efbee2bc52dfe73ea5d93e0b804c78ab4739c5); code/t022_fleet.py (sha256 0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24). Commit f638d11.",
   "M12.a_same_setup": "pass; train days 2017-05-10/11/15/16/18, test days 2017-05-12/19, candidate set = all 5,263 cells for both fitting and scoring; per-band smoothed attraction identical in both models; only the distance-decay parameter differs. Evidence: data/runs/T022/shared_beta.json -> setup, beta.",
-  "M12.b_two_by_two_table": "pass; five-band vs shared beta, per test day (log-loss, top-5, zone-hour net-flow L1, max abs): 2017-05-12 five-band 3.505778 / 0.391228 / 11,672.0 / 172.4, shared 3.511287 / 0.390688 / 11,762.8 / 176.7; 2017-05-19 five-band 3.345188 / 0.454264 / 12,327.5 / 151.3, shared 3.350319 / 0.453794 / 12,401.1 / 156.9. Evidence: shared_beta.json -> per_day.",
-  "M12.c_differences_and_signs": "pass; five-band minus shared: 5/12 nlp -0.005509, top5 +0.000540, L1 -90.84, max -4.30; 5/19 nlp -0.005132, top5 +0.000470, L1 -73.58, max -5.60. Negative nlp/L1/max and positive top5 all favour the five-band model on both days. Per-band signs are mixed: on 5/12 night (+0.0010) and late (+0.0015) favour the shared beta; on 5/19 night (+0.0073), morning (+0.0058) and evening (+0.0043) favour it. The aggregate gain is small and driven by the large morning/midday/evening bands. Evidence: shared_beta.json -> per_day.*.diff.per_band_nlp.",
-  "M12.d_reproducibility": "pass; command=`python -I code/t022_shared_beta.py`, runtime 40 s, deterministic (no random seed); beta five-band 2.094837/2.014439/2.517201/2.129723/2.365260, pooled 2.210036; training log-likelihood five-band sum -4,734,375.4 vs pooled -4,743,645.0 (delta 9,270 over 1,364,827 training trips = 0.0068 nats/trip in-sample).",
+  "M12.b_two_by_two_table": "pass; five-band vs shared beta, per test day (log-loss, top-5, zone-hour net-flow L1, max abs): 2017-05-12 five-band 3.505778 / 0.391228 / 11,672.0 / 172.4, shared 3.511287 / 0.390688 / 11,762.8 / 176.7; 2017-05-19 five-band 3.345188 / 0.454264 / 12,327.5 / 151.3, shared 3.350319 / 0.453794 / 12,401.1 / 156.9. Paired per-trip test on all test trips: 5/12 log-loss diff −0.005509 (95% CI [−0.006035, −0.004984], z=−20.55, n=253,617), top-5 diff +0.000540 ([+0.000167, +0.000913], z=+2.84); 5/19 log-loss −0.005132 ([−0.005557, −0.004706], z=−23.65, n=302,058), top-5 +0.000470 ([+0.000141, +0.000799], z=+2.80). Evidence: shared_beta.json -> per_day.*.paired.",
+  "M12.c_differences_and_signs": "pass; five-band minus shared point estimates: 5/12 nlp −0.005509, top5 +0.000540, L1 −90.84, max −4.30; 5/19 nlp −0.005132, top5 +0.000470, L1 −73.58, max −5.60. The paired CIs for nll and top5 exclude zero on both days at full sample size, so the direction is supported, but the effect is small: 0.15% of nats per trip and 0.054/0.047 percentage points of top-5. L1 and max_abs are full-sample descriptive totals with no sampling SE and are not called significant. Per-band signs are mixed: on 5/12 night (+0.0010) and late (+0.0015) favour the shared beta; on 5/19 night (+0.0073), morning (+0.0058) and evening (+0.0043) favour it. Evidence: shared_beta.json -> per_day.*.diff and per_day.*.paired.",
+  "M12.d_reproducibility": "pass; command=`python -I code/t022_shared_beta.py`, deterministic (no random seed); beta five-band 2.094837/2.014439/2.517201/2.129723/2.365260, pooled 2.210036; training log-likelihood five-band sum −4,734,375.4 vs pooled −4,743,645.0 (delta 9,270 over 1,364,827 training trips = 0.0068 nats/trip in-sample). Output shared_beta.json sha256 521932b0e03c36734766c25d5fc230b6b7da791771fab162a9b5078837813c2c; script sha256 3925b23b8f26d718761ea08199f42821dc09eba1ed5f9ff3883f3685d15314f3.",
+  "M12.e_paired_tests": "pass; M12-R1 requirement: every test trip of each day, paired by trip, five-band minus shared. nll uses the per-trip difference of −log p; top-5 uses the per-trip hit indicator (deterministic top-5 set per origin, weight descending, cell index ascending on ties). 5/12 n=253,617: nll −0.005509, SE 0.000268, z −20.55, CI [−0.006035, −0.004984]; top5 +0.000540, SE 0.000190, z +2.84, CI [+0.000167, +0.000913]. 5/19 n=302,058: nll −0.005132, SE 0.000217, z −23.65, CI [−0.005557, −0.004706]; top5 +0.000470, SE 0.000168, z +2.80, CI [+0.000141, +0.000799]. The paired means equal the aggregate differences exactly (same trip weighting), which is an internal consistency check. A Bonferroni correction over the four day-metric tests (critical z 2.50) leaves all four results outside the null. Evidence: shared_beta.json -> per_day.*.paired.",
   "M15.q5_spatial_mismatch": "pending; waits for T019 acceptance per the task sheet."
  },
  "affected": [
@@ -60,8 +61,8 @@
   {
    "location": "paper/sec4_q1.tex:116-117",
    "old": "and it is what makes a time-varying formulation necessary: a single beta would average the commute and the errand and misdescribe both",
-   "new": "a single pooled beta=2.210 is a close approximation: the five-band model improves held-out log-loss by 0.0051-0.0055 nats per trip, top-5 by 0.047-0.054 percentage points, and zone-hour net-flow L1 by 74-91 trips per day; the band structure is a small, consistent gain rather than a necessity",
-   "basis": "T022-M12: shared_beta.json per_day table, five-band minus shared on 2017-05-12/19"
+   "new": "a single pooled beta=2.210 is a close approximation: on all test trips it costs 0.0051-0.0055 nats per trip (about 0.15%) and 0.047-0.054 percentage points of top-5 hit rate; paired 95% CIs exclude zero on both days (log-loss z=-20.6/-23.7; top-5 z=+2.8/+2.8), but the effects are too small to change any route or rebalancing decision, so the pooled beta is adequate for the paper's purposes",
+   "basis": "T022-M12 R1: shared_beta.json -> per_day.*.paired (all test trips, n=253,617 and 302,058)"
   }
  ],
  "outputs": [
@@ -70,13 +71,15 @@
   "data/runs/T022/fleet_estimates.json",
   "data/runs/T022/shared_beta.json",
   "data/runs/T022/m16_run.log",
-  "data/runs/T022/m12_run.log"
+  "data/runs/T022/m12_run.log",
+  "data/runs/T022/m12_run_r1.log"
  ],
  "notes": [
   "M16 R1 已通过（验收记录 1c9c74c）；M6 记为“修复中（待论文落地）”，T021 改完文字后关闭。T023 传播车队时按 N ∈ [484,754, 534,039] 作情景区间，不当置信区间。",
   "M12 的五时段 β 与论文 q1_params 的差异很小（夜间 2.0948 vs 2.0963 等），因为本次用全候选集拟合（与评分口径一致）；两种模型的 A_j(h) 完全相同，差别只在 β。",
-  "M12 的结论是“小而有方向一致性”，不是“分时段 β 必要”。四项指标两天都偏向五时段，但 nlp 只差 0.15%，top-5 只差 0.05 个百分点；分带有正有负。T021 应按此弱化 sec4_q1.tex 的措辞。",
-  "M12 未做配对显著性检验（任务单只要求表与差值符号）；若指导方需要，可补 per-trip paired SE。",
+  "M12-R1 的结论：全部测试行程的配对检验在两天、两个指标上 95% CI 都不含 0（nll z=−20.6/−23.7；top-5 z=+2.8/+2.8），方向支持五时段，但效应量只有 0.15% 的 nats 与 0.047-0.054 个百分点，足以说不“必要”（necessary），不足以说“显著”或会改变任何调度结论。T021 按效应量写，不写“一致/necessary/显著”。分带符号仍不一致，保留“band-level gains are not uniform”。",
+  "指导方 40,000 抽样的 Top-5 配对 CI 含 0（SE≈0.00048），本交付全样本（253,617 / 302,058）的 SE≈0.00017-0.00019，CI 不含 0；差异来自样本量而非方法（40k 的 SE 约为全样本的 2.5 倍，点值与全样本相容）。按任务要求“每日全部测试行程”，本交付以全样本为准。",
+  "Top-5 配对检验用确定性 top-5 集合（权重降序，平手按格编号升序）；其逐行程均值与聚合 top-5 差完全相等（+0.0005401846 与 +0.0004701084），可作为内部一致性核对。",
   "495,540 仍是 T018-T024 的锁定库存情景值；本交付不改任何下游输入。",
   "脚本 t022_fleet.py 第一版在可用内存 0.86 GB 时 MemoryError，改用 np.isin(assume_unique=True) 后 48 s 跑完，数值不变。"
  ],
@@ -91,10 +94,10 @@
    "code/t022_fleet.py": "0fc83135db2c1ff561ff9a97b8a302f5a1c874f9504958c04f1f1c7e445eae24"
   },
   "m12_command": "python -I code/t022_shared_beta.py",
-  "m12_runtime_seconds": 40,
+  "m12_runtime_seconds": 54.7,
   "m12_output_sha256": {
-   "data/runs/T022/shared_beta.json": "7719b5ab8263397ce38242356de9f3cda8a877bceb5e62c9b67ee90f928f3b32",
-   "code/t022_shared_beta.py": "372c5b71873f8da53789ee7f21769ae1fbec33707e5c25addec8457320ca89f4"
+   "data/runs/T022/shared_beta.json": "521932b0e03c36734766c25d5fc230b6b7da791771fab162a9b5078837813c2c",
+   "code/t022_shared_beta.py": "3925b23b8f26d718761ea08199f42821dc09eba1ed5f9ff3883f3685d15314f3"
   },
   "solver": "scipy bounded scalar search for beta; no MILP"
  },

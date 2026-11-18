@@ -80,6 +80,51 @@ def fit_pooled(terms_list, D):
     return float(res.x), float(-res.fun)
 
 
+def top5_membership(logA, beta, D, origins, jj, inv, K=5):
+    """Deterministic top-5 set per origin: weight desc, cell index asc on ties."""
+    hit = np.zeros(len(jj))
+    for a in range(0, len(origins), 600):
+        o = origins[a:a + 600]
+        W = logA[None, :] - np.float32(beta) * D[o, :]
+        top = np.argsort(-W, axis=1, kind="stable")[:, :K]
+        sel = (inv >= a) & (inv < a + len(o))
+        row = inv[sel] - a
+        hit[sel] = (top[row] == jj[sel][:, None]).any(1).astype(float)
+    return hit
+
+
+def paired_band(terms, beta_five, beta_shared, D, sub, n):
+    """Per-trip paired differences: log-loss (five - shared) and top-5 hit."""
+    key = sub.o.values.astype(np.int64) * n + sub.d.values
+    uk, cnt = np.unique(key, return_counts=True)
+    ii = (uk // n).astype(np.int64)
+    jj = (uk % n).astype(np.int64)
+    origins, inv = np.unique(ii, return_inverse=True)
+    ls_f = log_s(terms, beta_five, D, origins=origins)
+    ls_s = log_s(terms, beta_shared, D, origins=origins)
+    logp_f = (terms["logA"][jj] - ls_f[inv].astype(np.float32)
+              - np.float32(beta_five) * D[ii, jj]).astype(np.float64)
+    logp_s = (terms["logA"][jj] - ls_s[inv].astype(np.float32)
+              - np.float32(beta_shared) * D[ii, jj]).astype(np.float64)
+    # nll_five - nll_shared: negative favours the five-band model
+    d_nll = logp_s - logp_f
+    hit_f = top5_membership(terms["logA"], beta_five, D, origins, jj, inv)
+    hit_s = top5_membership(terms["logA"], beta_shared, D, origins, jj, inv)
+    return cnt.astype(np.float64), d_nll, hit_f - hit_s
+
+
+def paired_stats(weights, d):
+    """Weighted mean of per-trip paired differences with a paired 95% CI."""
+    n = float(weights.sum())
+    mean = float((weights * d).sum() / n)
+    var = float((weights * (d - mean) ** 2).sum() / (n - 1.0))
+    se = float(np.sqrt(var / n))
+    z = float(mean / se) if se > 0 else float("nan")
+    return dict(n=int(round(n)), diff=mean, se=se, z=z,
+                ci95=[mean - 1.96 * se, mean + 1.96 * se],
+                sd=float(np.sqrt(var)))
+
+
 def softmax_rows(logA, beta, D):
     W = logA[None, :] - np.float32(beta) * D
     m = W.max(1)
@@ -207,7 +252,27 @@ def main():
             print(f"{day} {model}: nlp={rec['nlp']:.6f} top5={rec['top5']:.6f} "
                   f"l1={rec['l1']:.1f} max={rec['max_abs']:.1f}")
         a, p = day_res["five_band"], day_res["shared_beta"]
+        weights = []
+        d_nll = []
+        d_hit = []
+        for b in range(len(BANDS)):
+            sub = gt[(gt.date == day) & (gt.band == b)]
+            w_b, nll_b, hit_b = paired_band(terms[b], beta_bands[b],
+                                            beta_pool, D, sub, n)
+            weights.append(w_b)
+            d_nll.append(nll_b)
+            d_hit.append(hit_b)
+        w_all = np.concatenate(weights)
+        nll_all = np.concatenate(d_nll)
+        hit_all = np.concatenate(d_hit)
+        paired = dict(
+            nll=paired_stats(w_all, nll_all),
+            top5=paired_stats(w_all, hit_all),
+            note=("per-trip paired difference (five-band minus shared); "
+                  "nll < 0 and top5 > 0 favour the five-band model.  "
+                  "SE is the paired standard error over all test trips."))
         per_day[day] = dict(five_band=a, shared_beta=p,
+                            paired=paired,
                             diff=dict(nlp=a["nlp"] - p["nlp"],
                                       top5=a["top5"] - p["top5"],
                                       l1=a["l1"] - p["l1"],
@@ -224,6 +289,13 @@ def main():
               f"top5={per_day[day]['diff']['top5']:+.6f} "
               f"l1={per_day[day]['diff']['l1']:+.1f} "
               f"max={per_day[day]['diff']['max_abs']:+.1f}")
+        pn = paired["nll"]
+        pt = paired["top5"]
+        print(f"{day} paired nll: {pn['diff']:+.6f} "
+              f"[{pn['ci95'][0]:+.6f}, {pn['ci95'][1]:+.6f}] z={pn['z']:+.2f}; "
+              f"top5: {pt['diff']:+.6f} "
+              f"[{pt['ci95'][0]:+.6f}, {pt['ci95'][1]:+.6f}] z={pt['z']:+.2f} "
+              f"(n={pn['n']})")
 
     out = dict(
         task="T022-M12", date="2026-11-18",
@@ -249,8 +321,11 @@ def main():
                                     for d in TE_DAYS])),
             nlp_shared_mean=float(np.mean([per_day[d]["shared_beta"]["nlp"]
                                            for d in TE_DAYS])),
-            note="negative nlp difference means the five-band model is better; "
-                 "positive top5 difference means the five-band model is better"),
+            note="negative nlp difference means the five-band model is "
+                 "better; positive top5 difference means the five-band "
+                 "model is better; inferential claims use the per-day paired "
+                 "95% CI in per_day.*.paired, not the sign of a point "
+                 "estimate"),
     )
     with open(os.path.join(RUN, "shared_beta.json"), "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=1)
