@@ -1,10 +1,10 @@
 {
  "task": "T022",
- "title": "P1 补强实验：M16 R1（已通过）+ M12 Q1 共用 β（M15 待 T019）",
+ "title": "P1 补强实验：M16 R1（已通过）+ M12 Q1 共用 β + M15 Q5 空间错位",
  "date": "2026-11-18",
- "status": "partial",
- "revision": "R2",
- "summary": "M16 R1 已由指导方验收通过（记录 1c9c74c）。M12 完成并按 M12-R1 要求补了逐行程配对检验：同一训练日（10/11/15/16/18）、测试日（12/19）、全 5,263 格候选集，只换距离衰减参数。五时段 β 对全日共用 β=2.2100：5/12 对数损失差 −0.005509（配对 95% CI [−0.006035, −0.004984]，z=−20.55），Top-5 差 +0.000540（[+0.000167, +0.000913]，z=+2.84）；5/19 为 −0.005132（[−0.005557, −0.004706]，z=−23.65）、+0.000470（[+0.000141, +0.000799]，z=+2.80）；n=253,617 与 302,058 全部测试行程。两个指标在全样本上 CI 都不含 0，但幅度很小（0.15% 与 0.054 个百分点）。指导方 40,000 抽样得到的 Top-5 CI 含 0 是样本量所致（SE 约为全样本的 2.5 倍）；本交付按全样本写。T022 整体仍为 partial：M15 等 T019。",
+ "status": "delivered",
+ "revision": "R3",
+ "summary": "M16 R1 已由指导方验收通过（记录 1c9c74c）。M12 完成并按 M12-R1 要求补了逐行程配对检验：同一训练日（10/11/15/16/18）、测试日（12/19）、全 5,263 格候选集，只换距离衰减参数。五时段 β 对全日共用 β=2.2100：5/12 对数损失差 −0.005509（配对 95% CI [−0.006035, −0.004984]，z=−20.55），Top-5 差 +0.000540（[+0.000167, +0.000913]，z=+2.84）；5/19 为 −0.005132（[−0.005557, −0.004706]，z=−23.65）、+0.000470（[+0.000141, +0.000799]，z=+2.80）；n=253,617 与 302,058 全部测试行程。两个指标在全样本上 CI 都不含 0，但幅度很小（0.15% 与 0.054 个百分点）。指导方 40,000 抽样得到的 Top-5 CI 含 0 是样本量所致（SE 约为全样本的 2.5 倍）；本交付按全样本写。M15 完成（T019 口径：4,000 站、150 位/站、450 m、15 分钟重放、训练日 Q1 面、20 种子）：同比拆分在围栏分辨率下不再是零未服务——m=0 独立 12.10%、共享 12.12%、等容 12.16%；错位升到 m=1.5 时独立 18.99%、共享 19.55%、等容 19.03%。共享围栏不降低未服务（m≥1.0 时略高于独立运营），但把独立围栏相对共享的所需容量比从 1.082 抬到 1.132（即独立围栏重复 8.2%-13.2% 的泊位）；共享相对单一平台的容量仍多 4.0%（m=0）。结论：竞争的可测代价主要是容量重复，不是库存深度；共享围栏省容量但不改失单率。",
  "checks": {
   "M16.a_reproduce_495540": "pass; command=`python -I code/t022_fleet.py`; n1=462,893, n2=331,822, m=309,961, union=484,754; Chapman=495,539.9881 (paper 495,540); SE=131.315, 95% CI [495,282.61, 495,797.37], matching paper/sec3_data.tex:94. Evidence: data/runs/T022/fleet_estimates.json -> chapman_pooled.",
   "M16.b_stratified_chapman_5_layers": "pass; 5 strata by window-1 trips (1, 2-3, 4-6, 7-10, 11+); (n1,n2,m) = (44,552,22,030,22,030), (108,435,64,482,64,482), (162,044,110,850,110,850), (115,571,86,641,86,641), (32,291,25,958,25,958); recapture rates 0.4945/0.5947/0.6841/0.7497/0.8039; within-stratum Chapman equals n1 and the sum equals the union 484,754 (degeneracy disclosed). Evidence: fleet_estimates.json -> strata, stratified_chapman.",
@@ -19,7 +19,7 @@
   "M12.c_differences_and_signs": "pass; five-band minus shared point estimates: 5/12 nlp −0.005509, top5 +0.000540, L1 −90.84, max −4.30; 5/19 nlp −0.005132, top5 +0.000470, L1 −73.58, max −5.60. The paired CIs for nll and top5 exclude zero on both days at full sample size, so the direction is supported, but the effect is small: 0.15% of nats per trip and 0.054/0.047 percentage points of top-5. L1 and max_abs are full-sample descriptive totals with no sampling SE and are not called significant. Per-band signs are mixed: on 5/12 night (+0.0010) and late (+0.0015) favour the shared beta; on 5/19 night (+0.0073), morning (+0.0058) and evening (+0.0043) favour it. Evidence: shared_beta.json -> per_day.*.diff and per_day.*.paired.",
   "M12.d_reproducibility": "pass; command=`python -I code/t022_shared_beta.py`, deterministic (no random seed); beta five-band 2.094837/2.014439/2.517201/2.129723/2.365260, pooled 2.210036; training log-likelihood five-band sum −4,734,375.4 vs pooled −4,743,645.0 (delta 9,270 over 1,364,827 training trips = 0.0068 nats/trip in-sample). Output shared_beta.json sha256 521932b0e03c36734766c25d5fc230b6b7da791771fab162a9b5078837813c2c; script sha256 3925b23b8f26d718761ea08199f42821dc09eba1ed5f9ff3883f3685d15314f3.",
   "M12.e_paired_tests": "pass; M12-R1 requirement: every test trip of each day, paired by trip, five-band minus shared. nll uses the per-trip difference of −log p; top-5 uses the per-trip hit indicator (deterministic top-5 set per origin, weight descending, cell index ascending on ties). 5/12 n=253,617: nll −0.005509, SE 0.000268, z −20.55, CI [−0.006035, −0.004984]; top5 +0.000540, SE 0.000190, z +2.84, CI [+0.000167, +0.000913]. 5/19 n=302,058: nll −0.005132, SE 0.000217, z −23.65, CI [−0.005557, −0.004706]; top5 +0.000470, SE 0.000168, z +2.80, CI [+0.000141, +0.000799]. The paired means equal the aggregate differences exactly (same trip weighting), which is an internal consistency check. A Bonferroni correction over the four day-metric tests (critical z 2.50) leaves all four results outside the null. Evidence: shared_beta.json -> per_day.*.paired.",
-  "M15.q5_spatial_mismatch": "pending; waits for T019 acceptance per the task sheet."
+  "M15.q5_spatial_mismatch": "pass; evidence=data/runs/T022/m15_mismatch.json, m15_capacity.npz, m15_check.json all_pass=true. Design: 4 mismatch levels m=0/0.5/1.0/1.5 x 3 regimes (independent 150/150 slots, independent_equal 75/75, shared 150 pooled) x 20 seeds = 12 rows; caliber is T019 plan_meas343_main (4,000 sites, 150 slots per fence, 450 m assignment), 15-minute replay, training-day Q1 surface, I0=343,638. Mismatch rule: platform A's share of each origin cell is sigmoid(a+2*m*x_tilde), B takes the complement, a bisected so A still carries half of all trips; both platforms keep half of the observed inventory at every cell; destinations follow the citywide arrival surface at half rate; riders are single-homing and take only own bikes even from a shared fence (sharing is parking capacity, not bicycles). Results (unmet rate, full/overflow rate, required capacity = sum of per-site 95th-percentile peak occupancy over seeds): m=0 independent 12.102% / 0.000% / 608,326.1 slots, equal 12.159% / 0.898% / 608,326.1, shared 12.120% / 0.348% / 562,331.6; m=0.5 13.267/13.322/13.293% (ind/equal/shared) and 619,001.8/619,001.8/564,716.9; m=1.0 15.956/16.004/16.114% and 643,486.0/643,486.0/577,094.6; m=1.5 18.988/19.032/19.549% and 673,517.5/673,517.5/594,809.5. Capacity ratio independent/shared 1.0818 (m=0), 1.0961, 1.1150, 1.1323 (m=1.5). Shared capacity at m=0 is 4.05% above the single-platform requirement 540,447.7; the single-platform reference itself leaves 11.66% unmet at 0.33% full. Regional split (per day, mean over seeds) at m=1.0 shared: east A 22.46% vs B 6.42%, west A 5.95% vs B 22.04%, i.e. the displaced platform's riders bear the mismatch. Checks: dep_ratio 0.99974, arr_ratio 1.00036, share-sum error 0.0, fleet split exact (171,819 each), 12 rows, rates in [0,1], pooling ratio >= 1 everywhere, m=0 shared/single 1.0405. Control: the old zone-level proportional split (data/q5_summary.json) is kept as control_proportional_zone; the m=0 row is the model-consistent control at fence resolution."
  },
  "affected": [
   {
@@ -63,13 +63,35 @@
    "old": "and it is what makes a time-varying formulation necessary: a single beta would average the commute and the errand and misdescribe both",
    "new": "a single pooled beta=2.210 is a close approximation: on all test trips it costs 0.0051-0.0055 nats per trip (about 0.15%) and 0.047-0.054 percentage points of top-5 hit rate; paired 95% CIs exclude zero on both days (log-loss z=-20.6/-23.7; top-5 z=+2.8/+2.8), but the effects are too small to change any route or rebalancing decision, so the pooled beta is adequate for the paper's purposes",
    "basis": "T022-M12 R1: shared_beta.json -> per_day.*.paired (all test trips, n=253,617 and 302,058)"
+  },
+  {
+   "location": "paper/sec8_q5.tex:19-23",
+   "old": "Unserved demand was zero in all twenty-four runs.",
+   "new": "Qualify as zone-level and add the discriminating fence-level experiment: at T019 caliber (4,000 sites, 150 slots, 450 m) the same proportional split leaves 12.10% of departures unserved under independent fences and 12.12% under shared fences; a ±1.5 east-west origin skew with unchanged total fleet and demand raises this to 18.99% and 19.55%. The zero is an aggregation artifact of the zone-level simulation, not evidence that competition is neutral for availability.",
+   "basis": "T022-M15: m15_mismatch.json rows (independent/shared at m=0 and m=1.5), m15_check.json"
+  },
+  {
+   "location": "paper/sec8_q5.tex:35-44",
+   "old": "The Monte-Carlo quantification was computed on the 626-fence layout rather than the 705-fence knee; we therefore do not quote a duplication percentage.",
+   "new": "Quote the measured duplication instead: required capacity (sum of per-site 95th-percentile peak occupancy) for independent fences is 1.0818x the shared-fence requirement at m=0 and 1.1323x at m=1.5, i.e. separate fences duplicate 7.6%-11.7% of slots; even shared fences need 4.05% more capacity than a single platform at m=0. State that this quantification is on the T019 4,000-site layout at 150 slots per site, a different layout from the 626/705-fence Q4 frontier, so it is a caliber-specific measurement, not a transferable percentage.",
+   "basis": "T022-M15: m15_mismatch.json required_capacity_slots and capacity_ratio_ind_over_shared; m15_check.json m0_shared_vs_single"
+  },
+  {
+   "location": "paper/summary.tex:63-68",
+   "old": "In the proportional single-homing scenario, splitting fleet and demand leaves unserved demand at zero in all twenty-four runs; this is conditional, not a general availability guarantee.",
+   "new": "Splitting fleet and demand leaves unserved demand at zero only at zone resolution; at fence resolution (150 slots/site, 450 m) the proportional split already leaves 12.1% of departures unserved, and an east-west mismatch of 1.5 raises it to 19.0% (independent) / 19.5% (shared). Shared fences save 7.6%-11.7% of required slots relative to separate fences but do not lower the unserved rate, so the competitive loss is duplicated capacity and data, not inventory depth.",
+   "basis": "T022-M15: m15_mismatch.json; m15_check.json all_pass=true"
   }
  ],
  "outputs": [
   "code/t022_fleet.py",
   "code/t022_shared_beta.py",
+  "code/t022_m15_q5_mismatch.py",
   "data/runs/T022/fleet_estimates.json",
   "data/runs/T022/shared_beta.json",
+  "data/runs/T022/m15_mismatch.json",
+  "data/runs/T022/m15_capacity.npz",
+  "data/runs/T022/m15_check.json",
   "data/runs/T022/m16_run.log",
   "data/runs/T022/m12_run.log",
   "data/runs/T022/m12_run_r1.log"
@@ -81,7 +103,12 @@
   "指导方 40,000 抽样的 Top-5 配对 CI 含 0（SE≈0.00048），本交付全样本（253,617 / 302,058）的 SE≈0.00017-0.00019，CI 不含 0；差异来自样本量而非方法（40k 的 SE 约为全样本的 2.5 倍，点值与全样本相容）。按任务要求“每日全部测试行程”，本交付以全样本为准。",
   "Top-5 配对检验用确定性 top-5 集合（权重降序，平手按格编号升序）；其逐行程均值与聚合 top-5 差完全相等（+0.0005401846 与 +0.0004701084），可作为内部一致性核对。",
   "495,540 仍是 T018-T024 的锁定库存情景值；本交付不改任何下游输入。",
-  "脚本 t022_fleet.py 第一版在可用内存 0.86 GB 时 MemoryError，改用 np.isin(assume_unique=True) 后 48 s 跑完，数值不变。"
+  "脚本 t022_fleet.py 第一版在可用内存 0.86 GB 时 MemoryError，改用 np.isin(assume_unique=True) 后 48 s 跑完，数值不变。",
+  "M15 的口径与论文 Q5 现有模拟不同：现有 24 次运行是 zone 级、5 分钟、fleet 与需求同比缩放；M15 是 T019 的 4,000 站围栏级、15 分钟、两平台各占一半且骑手单归属。两者不冲突，但论文必须写清“零未服务”是 zone 级结果，围栏级同口径同比拆分已有 12.1% 失单。",
+  "M15 的共享围栏只共享泊位，不共享车辆；共享情景下每平台仍只服务自己的车。共享容量按到达比例配给，因此共享围栏在 m≥1.0 时失单率略高于独立等容运营（16.11% vs 16.00%，19.55% vs 19.03%）：共享池让一个平台的车辆占用另一个平台需要的泊位，而独立围栏的容量隔离反而保护了各自的高峰。",
+  "M15 的地区拆分已按日归一（除以 20 个种子），与 rows 的日均口径一致；比率不变。东/西拆分显示 m=1.0 共享时 A 在东侧失单 22.46%、B 仅 6.42%，西侧镜像，说明错位代价落在被位移的一侧骑手。",
+  "M15 的所需容量是各站 95 分位峰值占用之和，独立=q95(A)+q95(B)，共享=q95(A+B)，所以比值就是独立围栏相对共享的容量重复率；这不是成本（元），是泊位数。论文若写成本差，需要另乘每泊位造价，本交付不给未经校准的造价。",
+  "单平台参照（同 4,000 站、150 位/站、全车队与全需求）失单 11.66%、满位 0.33%、所需容量 540,447.7；两平台 m=0 独立运营 12.10%，拆分本身（不含错位）就多出约 0.44 个百分点的失单，这是“竞争碎片化”的基线代价。"
  ],
  "reproduction": {
   "m16_command": "python -I code/t022_fleet.py",
@@ -98,6 +125,18 @@
   "m12_output_sha256": {
    "data/runs/T022/shared_beta.json": "521932b0e03c36734766c25d5fc230b6b7da791771fab162a9b5078837813c2c",
    "code/t022_shared_beta.py": "3925b23b8f26d718761ea08199f42821dc09eba1ed5f9ff3883f3685d15314f3"
+  },
+  "m15_command": "python -I code/t022_m15_q5_mismatch.py --stage all --force",
+  "m15_runtime_seconds": 23.0,
+  "m15_output_sha256": {
+   "data/runs/T022/m15_mismatch.json": "23535e0ea52ab1ee95faeace32ee968f6ae0fc35964129a25191eb816d6f1e5d",
+   "data/runs/T022/m15_capacity.npz": "d0ea0d3de78201d6843dfa45a9258fbae99e9c7cafcc5ad883b07f2f0bc3dd03",
+   "data/runs/T022/m15_check.json": "f4548715fe029c5a3ca3fd476a7af5357163b305e254555b124390bc3a9f5ef3",
+   "code/t022_m15_q5_mismatch.py": "6693dfef764801b0d266c46d806d77c53cd7b6502551e0f47a748d3620227e1b"
+  },
+  "m15_inputs": {
+   "plan": "data/runs/T019/plan_meas343_main.npz",
+   "demand": "data/runs/T019/cell_demand.npz"
   },
   "solver": "scipy bounded scalar search for beta; no MILP"
  },
