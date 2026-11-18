@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T016 验收：通过（日数口径改为九个记录日）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.ok{border-left-color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T016 验收：通过（日数口径改为九个记录日）</h1>
+<p class="meta">验收：2026-11-18　·　交付：<code>交付/T016_delivery.json</code>（commit 3c571e4，本地）　·　结论：<strong>通过，L3 关闭</strong></p>
+
+<div class="box ok">
+<p><strong>五项独立复核全部通过。</strong></p>
+<ul>
+<li><strong>替换逐字一致</strong>：<code>20f8f3b..3c571e4</code> 的 tex diff 只有 5 处——<code>sec3_data.tex:37</code> “the ten days 10--19 May” → “the nine recorded days of 10--19 May”；<code>sec4_q1.tex:178</code> 表题、<code>:186</code> 表头 <code>user (10--19 May)</code>、<code>:199</code> “nine recorded days of the 10--19 May window”、<code>:201</code> “nine recorded days”。没有改任何数值、份额、表行。</li>
+<li><strong>措辞门槛</strong>：<code>grep -Ei "ten days|ten-day|10 days" paper/*.tex</code> = 0。论文现在与 <code>sec3_data.tex:28</code> “17 May is entirely absent” 及 <code>sec3_data.tex:86</code> “nine complete days” 自洽；“seven fully covered weekdays” 不变且正确（10–19 中 17 日缺失，恰为七个完整工作日）。</li>
+<li><strong>数字 token 多重集</strong>：我从 <code>7ce233c</code> 到 <code>3c571e4</code> 逐文件复算，只有 <code>sec4_q1.tex</code> 变化：<code>only_in_base = {}</code>、<code>only_in_new = {'10': 2, '19': 3}</code>——全部来自新增的日期标签 10/19，<strong>没有任何数据值变化</strong>；交付 JSON 的 <code>token_diff</code> 与我一致。</li>
+<li><strong>独立重编译两遍</strong>：30 页、正文 24（第 3–26 页）、undefined 0、overfull 0；U+037E = 0、分号 131、<code>??</code> 0；目录 References 第 27 页、正文 References 起于第 27 页。PDF 文本层回读五处均在位，包括表题 “Table 5: Latent user segments (the nine recorded days of 10–19 May)” 与表头 “user (10–19 May)”。</li>
+<li><strong>数据依据成立</strong>：<code>data/trips.parquet</code> 按 starttime 计数，2017-05-17 零记录；10–19 May 只有九个记录日（10/11/12/13/14/15/16/18/19，225,281–322,201 单/日）。<code>code/04_behaviour.py:17</code> 的过滤范围正是 2017-05-10..2017-05-19，故用户表 trips per user 的分母就是九个记录日——标签改正，数值不动是对的。</li>
+<li><strong>范围</strong>：仅 <code>paper/main.pdf</code>、<code>sec3_data.tex</code>、<code>sec4_q1.tex</code>、<code>code/t016_delivery.py</code>、交付 JSON；<code>data/</code> 与 <code>审查与规划/</code> 零改动；未重跑模型。</li>
+</ul>
+</div>
+
+<div class="box">
+<p><strong>裁定。</strong>T016 验收标准 5 条全部满足。L3（“ten usable days 实为 9 天”）自 2026-11-17 挂账、T012 未落实，至此关闭。此改动只改文字标签，不改任何计算结果，论文其余数字与结论不受影响。</p>
+</div>
+
+</main>
+</body>
+</html>
