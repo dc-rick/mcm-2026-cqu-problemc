@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T021A 论文内容整合（换数、新表新图）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T021A · 论文内容整合（换数、新表新图）</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（T023、T026 通过后开工；用户已拍板拆分）</strong>　·　问题：H20、H21、H22、H23、H24、M6、M12–M18　·　可写：<code>paper/</code>、<code>code/</code>（只限作图与数字抽取脚本）、<code>data/runs/T021A/</code>、<code>交付/T021A_delivery.json</code></p>
+
+<div class="box hi">
+<p><strong>本任务只负责“做对”，不管页数。</strong>允许论文暂时涨到 28–30 页；<strong>不要</strong>为了版面删结论、删表或删图。压到计页 ≤25、写执行摘要、重写摘要，全部由后续的 T021B 负责。T021B 的硬门是“正文数字与 T021A 完全一致”，所以本任务把数字定死后，压缩阶段不可能改数。</p>
+</div>
+
+<h2>1. 输入：只能用已验收的结果</h2>
+<div class="tw"><table>
+<thead><tr><th>来源</th><th>提交</th><th>用到的数</th></tr></thead>
+<tbody>
+<tr><td>T024-R3</td><td>1d2bd8c</td><td>975 辆、617,055.7515、39,984.2332、59.385%、实际里程 618,086.7288 / 59.317%、盈亏点 1.472153 与 1,225.357、区 24 = 2,085.9826</td></tr>
+<tr><td>T018-R1</td><td>310be4e</td><td>单层卡车基线 60 辆：83,807.74、5,659.17 km、dev 459.41、峰值 2,376、空驶 1,023.76 km / 6,142.58 元</td></tr>
+<tr><td>T025-R2</td><td>296e8d4</td><td>纯卡车 K=2 138,317.1512 / 33.1936；零未服务 312,289.2110（2.2578×）；付款上限全负</td></tr>
+<tr><td>T026</td><td>（待通过）</td><td>r_cross、r*、净节省、n_z 下降；<strong>T026 未通过前不得引用</strong></td></tr>
+<tr><td>T019</td><td>343e1a2</td><td>4,000 站、到达份额 59.53%、占用上限 61.10%、未分配量、R 扫描、回放</td></tr>
+<tr><td>T020</td><td>dd4bedb</td><td>两本账、硬预算规则、联合比较负节省</td></tr>
+<tr><td>T022-M16/M12/M15</td><td>f638d11 / c9ce2ea / 3cfbf53</td><td>车队区间与方向、β 配对检验、12.10% 与容量比</td></tr>
+<tr><td>T023</td><td>（待通过）</td><td>分组区间、方差份额、龙卷风图；<strong>T023 未通过前不得引用</strong></td></tr>
+</tbody></table></div>
+
+<h2>2. 要写什么</h2>
+<ol>
+<li><strong>数字锁定表</strong> <code>data/runs/T021A/numbers.json</code>：每个进入论文的数字 → 文件 → 键 → 口径。必须覆盖 T021 任务单 §3 的每一条，冲突以 §3 与对应验收记录为准。</li>
+<li><strong>Q2（§5）</strong>：删 623.17 与“rounded up when a schedule is drawn”；改为两级调度叙事——卡车跨区（T018 单层基线作对照）+ 三轮车区内（T024-R3）；三方案同口径对比表（不调度 / 只卡车 / 两级）；整数–LP 差距；留出日回放。889/61.06% 只能作理想 LP 上界并注明 534/13,775 趟排不进。</li>
+<li><strong>Q3（§6）</strong>：两段并列——激励不能替代卡车（T025，区级基线未服务仅 432.23）；激励可以替代三轮车（T026，交叉奖励 r_cross）。两本账、付款上限、硬预算规则（T020）。<strong>不得</strong>写“可测量的移除”，不得引用 10.40 / 2,883.3 / 480.6× 作效应，也不得引用 T008 的 6.83%–20.83% 作系统节省。</li>
+<li><strong>Q4（§7）</strong>：式 (29) 换 Kneedle 规则；705 标“无硬容量上限的参考方案”；主结果改 150 位限容（站点数、总车位、有容量保障覆盖率、未分配量、两种库存）；回放满位与溢出；R 敏感性表与合规口径（M18）。</li>
+<li><strong>Q5（§8）</strong>：错位表（4 强度 × 3 制度）；写明 12.10% 的分母是围栏内离场量（约 1,181,755），与 T019 全城口径 6.2% 不可直接并列；容量是“所需容量”不是现有泊位；布局专属 4,000 站/150 位。</li>
+<li><strong>Q1（§4）</strong>：共用 β 对照小表（M12）；n 写“建模行程”并给 253,617 / 302,058 与原始 265,173 / 314,516 的关系。</li>
+<li><strong>§9 灵敏度</strong>：换成按来源分组的区间表 + 龙卷风图（T023），删掉单参数逐段扫描文字。</li>
+<li><strong>§3 车队估计（M16）</strong>：改写 <code>sec3_data.tex:94-99</code>、<code>sec9_sensitivity.tex:17-20</code> 的偏差方向与区间；4.33 次/车/天同步。</li>
+<li><strong>Table 1（Q1 行）</strong>：改为行为结论，不放 β 与 Top-5。</li>
+<li><strong>新图</strong>：cost-vs-r（T026）、龙卷风（T023）、错位表可作表；全部矢量 PDF，字号 ≥7 pt。</li>
+</ol>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><code>numbers.json</code> 覆盖 T021 §3 每条；我抽 10 个独立复算，全部一致。</li>
+<li><code>grep</code> 门：<code>623.17</code> 不再作推荐方案；“by minimising” 不再修饰式 (29)；“170,000”“60,000” 预算句已按 T020 改写；<code>885</code>、<code>266,327</code>、<code>40,357</code>、<code>705</code>（作主结果）、<code>76.86%</code> 不再作结果出现（705 只可作“无上限参考”）。</li>
+<li>回归门：975 / 617,055.7515 / 39,984.2332 三个数在正文与表中逐字一致。</li>
+<li>xelatex 两遍以上：undefined 0、overfull 0、U+037E 0、<code>??</code> 0。<strong>页数本阶段不设限</strong>，但要报实际计页数。</li>
+<li>未改动段落的数字 token 与 <code>c4be8d1</code> 一致；交付附逐文件 diff，变化只来自本单列出的位置。</li>
+<li>交付 JSON 按契约；单独 commit，不 push。</li>
+</ol>
+
+<h2>4. 禁区</h2>
+<ul>
+<li>不做版面压缩、不改摘要、不写 Executive Summary（留给 T021B）。</li>
+<li>不新增没有结果文件支撑的论断；T023/T026 未通过前，对应段落先留占位句并标 <code>TODO</code>，不得预填数字。</li>
+<li>不得为了“好读”重排 §1–§4 的结构（压缩与重排留给 T021B，且要有依据）。</li>
+</ul>
+
+</main>
+</body>
+</html>

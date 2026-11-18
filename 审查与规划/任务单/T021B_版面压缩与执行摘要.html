@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T021B 版面压缩、执行摘要与摘要</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T021B · 版面压缩、执行摘要与摘要</h1>
+<p class="meta">状态：<strong>已下达 2026-11-18（T021A 通过后开工）</strong>　·　问题：H19（计页）、M17（执行摘要）　·　可写：<code>paper/</code>、<code>交付/T021B_delivery.json</code>　·　不改 <code>code/</code>、<code>data/</code></p>
+
+<div class="box hi">
+<p><strong>本任务只负责“装得下”，不改数。</strong>唯一允许新增数字的地方是摘要与 Executive Summary，且其中每个数字必须能在 <code>data/runs/T021A/numbers.json</code> 里查到。<strong>正文 §3–§10 的数字 token 多重集必须与 T021A 通过版完全一致</strong>——这是硬门，也是本任务最重要的验收项。</p>
+</div>
+
+<h2>1. 三件事</h2>
+<ol>
+<li><strong>压到计页 ≤25。</strong>计页 = 总页数 − AI 报告页数（AI 报告独立分页、不计入）。现状基准：27 页 / 计页 25（摘要 1 + 目录 1 + 正文 21 + 参考文献 2）。T021A 之后会计页上涨，本任务要压回去。</li>
+<li><strong>Executive Summary（M17）</strong>：§1.5 现为“The contributions are four.”的贡献清单，不是题面要求的执行摘要。改写为给平台运营方与北京市交通主管部门的约 0.6 页备忘录，每条带成立条件：卡车数量与时段（T018/T024）、奖励额度与目标区及预算规则（T020/T026）、围栏数量/位置类型/单站规模上限（T019）、竞争监管建议（§8.5）。</li>
+<li><strong>摘要重写</strong>：每问一个主要结果 + 必要条件；每个数字能在 <code>numbers.json</code> 找到；不再保留任何被取代的旧数。</li>
+</ol>
+
+<h2>2. 压缩优先级（从高到低，按此顺序砍）</h2>
+<div class="tw"><table>
+<thead><tr><th>顺序</th><th>位置</th><th>做法</th><th>预估</th><th>为什么安全</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>§4.6 用户聚类</td><td>压到 5 行 + 一张小表</td><td>−0.8 页</td><td>聚类不进入 Q2–Q5 任何模型</td></tr>
+<tr><td>2</td><td>§10 评价</td><td>去掉与 §5–§8 重复的数字复述</td><td>−0.6 页</td><td>数字在正文已出现，重复不增信息</td></tr>
+<tr><td>3</td><td>§1.1–1.3</td><td>背景压缩</td><td>−0.5 页</td><td>不承载结论</td></tr>
+<tr><td>4</td><td>§6.8 / §8.5 / §10.4</td><td>三处重复的政策段合并为一处</td><td>−0.4 页</td><td>同一建议写三遍</td></tr>
+<tr><td>5</td><td>§3 数据段</td><td>字段描述压缩，指向 DATA.md</td><td>−0.3 页</td><td>可复现信息仍在仓库</td></tr>
+<tr><td>6</td><td>表 2 符号表</td><td>只留正文用到的符号</td><td>−0.3 页</td><td>未用符号不承重</td></tr>
+</tbody></table></div>
+<p class="meta">合计约 −2.9 页；不够时再动版式参数（表字号、浮动体间距、图宽），版式改动不得造成裁切或字号低于 7 pt。</p>
+
+<h2>3. 验收（缺一不可）</h2>
+<ol>
+<li><strong>数字门</strong>：正文 §3–§10 的数字 token 多重集与 T021A 通过版<strong>完全一致</strong>（允许的唯一差异是本单列出的删除段落里的数字，且逐条列出）；摘要与 §1.5 的每个数字都能在 <code>numbers.json</code> 查到。</li>
+<li><strong>页数</strong>：计页 ≤25；AI 报告独立分页且不计入；目录页码与正文一致。</li>
+<li><strong>编译</strong>：undefined 0、overfull 0、U+037E 0、<code>??</code> 0、两遍以上。</li>
+<li><strong>图</strong>：目检无裁切、无重叠；正文字号 ≥7 pt。</li>
+<li><strong>执行摘要</strong>：§1.5 为备忘录体，四条建议各带成立条件，与正文不矛盾。</li>
+<li><strong>摘要</strong>：五问各有主结果 + 条件；不出现"激励不划算"这类被 T026 推翻的表述。</li>
+<li>交付 JSON 按契约；附改前/改后每节行数与页数；单独 commit，不 push。</li>
+</ol>
+
+<h2>4. 禁区</h2>
+<ul>
+<li>不改任何数字、公式、表值（摘要与执行摘要除外，且须溯源）。</li>
+<li>不删 §5–§8 的核心结果表与图；如果为了页数必须删，先停下来报 <code>blocked</code>，不要自行取舍。</li>
+<li>不引入新的内部编号（T0xx）、改稿语言（"earlier version"、"withdrawn"）。</li>
+</ul>
+
+</main>
+</body>
+</html>
