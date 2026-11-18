@@ -1,0 +1,532 @@
+[
+ {
+  "file": "sec4_q1.tex",
+  "token": "0.9",
+  "old_context": "e for Q2--Q4.  \\begin{figure}[htbp] \\centering \\includegraphics[width=0.9\\linewidth]{../figs/fig3_q1_validation.pdf} \\caption[Q1 validation]"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "0.9",
+  "old_context": " deliverable.  \\begin{figure}[htbp] \\centering \\includegraphics[width=0.9\\linewidth]{../figs/fig2_segments.pdf} \\caption[User segments]{User"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "1.64",
+  "old_context": "akes 9.18 trips over the nine recorded days of the 10--19 May window (1.64 per active day) --- the profile of a short-distance commuter or a"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "10.6",
+  "old_context": "15.2\\% & 29.6\\% & 13.98 & 0.67 & 0.20 \\\\ Commuter & 67,528 & 20.5\\% & 10.6\\% & 3.71 & 1.17 & 0.07 \\\\ Low frequency & 49,396 & 15.0\\% & 5.2\\%"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "10.6",
+  "old_context": ".17 km) and concentrates its trips in peak hours but contributes only 10.6\\% of volume. The remaining two classes are peripheral.  This matt"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "10.6",
+  "old_context": "descriptively. The peak is made by a minority of trips --- commuters, 10.6\\% of volume --- while the volume is made by riders whose trips ar"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "16.5",
+  "old_context": "he nine recorded days (2.47 per active day), each 0.67 km on average; 16.5\\% of their trips end in the same cell they started in, and 25.7\\%"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "2.47",
+  "old_context": "heavy short-trip} user makes 13.98 trips over the nine recorded days (2.47 per active day), each 0.67 km on average; 16.5\\% of their trips e"
+ },
+ {
+  "file": "sec4_q1.tex",
+  "token": "25.7",
+  "old_context": "rage; 16.5\\% of their trips end in the same cell they started in, and 25.7\\% return to an origin cell they had already used that day. This i"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": ", the optimum under the arrivals cap is \\begin{equation} \\boxed{\\ r^*=0.60\\ \\text{CNY},\\quad q^*=27{,}680.86\\ \\text{reroutes},\\quad \\text{pa"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "ne.  Under the conservative surplus cap the same procedure gives $r^*=0.60$ on the grid (the optimal plateau is 0.55--1.15), $q^*=4{,}503.02"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": " 0.55 & 27,778.22 & 15,278.02 & 958 & 35,002.21 & 19,747.42 \\\\ 0.80 & 0.60 & 27,680.86 & 16,608.52 & 959 & 35,019.77 & \\textbf{18,011.46} \\\\"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "gers therefore bracket the policy: the increment ledger supports $r^*=0.60$, the payment ledger a lower reward for the same money, and the h"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "37,120.16, 1.24 times the budget; the budget-feasible optimum is $r^*=0.60$. A ``capped total'' that pays 30,000 against a larger obligation"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "t a feasible policy. The global tricycle-caliber optimum remains $r^*=0.60$.  \\subsection{The scheme, and where its numbers stop}  The schem"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "licit.  \\begin{enumerate}[leftmargin=1.6em] \\item \\textbf{A reward of 0.60 CNY per accepted reroute}, posted on a 0.05-CNY grid,   with the "
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "0.60",
+  "old_context": "als cap (upper) and the surplus cap (conservative). Circles mark $r^*=0.60$; dashed lines mark the return crossings ($\\approx$1.04 and $\\app"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": " 617,055.7515 to \\textbf{599,044.29 CNY/day}, a net saving of \\textbf{18,011.46 CNY/day (2.92\\%)} \\emph{relative to the same-caliber two-tie"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "icycle unit cost predicts 24,141.94 of saving; the exact replay gives 18,011.46, a gap of 6,130.48, dominated by the source-cell loss. This "
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "ated by the source-cell loss. This is why the paper does not describe 18,011.46 as a system saving: it is a saving inside the tricycle layer"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "utable tricycle fleet; ``payment'' is $r\\,q$ on the increment ledger; 18,011.46 is the reference row.} \\label{tab:q3c0} \\small \\begin{tabula"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "42 \\\\ 0.80 & 0.60 & 27,680.86 & 16,608.52 & 959 & 35,019.77 & \\textbf{18,011.46} \\\\ 0.96 & 0.70 & 31,039.47 & 21,727.63 & 958 & 34,491.76 & "
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "optimised, and a full sweep of $\\kappa$ and $\\rho$ is not run. Fifth, 18,011.46 is a deterministic single-day result on the planning midpoin"
+ },
+ {
+  "file": "sec6_q3.tex",
+  "token": "18,011.46",
+  "old_context": "} describe the truck-caliber payment ceiling and do not apply to this 18,011.46 saving. The saving replaces part of the tricycle layer; it i"
+ },
+ {
+  "file": "sec8_q5.tex",
+  "token": "1.6",
+  "old_context": "measures, in descending order of value.  \\begin{enumerate}[leftmargin=1.6em] \\item \\textbf{Share the data, not the bicycles.} The models of "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": " and the incentive parameters are declared unidentified, with only $c_0$ re-optimised and the rest as a limitation.  \\textbf{Validation is b"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "rs are assumed.} No reward was offered in May 2017, so $\\kappa,\\rho,c_0$ cannot be estimated from this dataset. They are fixed at $\\kappa=2$"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "ated from this dataset. They are fixed at $\\kappa=2$, $\\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recommended reward of 0.60"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "et. They are fixed at $\\kappa=2$, $\\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recommended reward of 0.60 CNY is a prediction"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "ainty is expressed by the two source caps (1.08\\%--2.92\\%) and the $c_0$ table, not by the truck-caliber intervals of Section~\\ref{sec:sens}"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "%); under the arrivals cap it is 18,011.46 (2.92\\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value moves the optimum to 0.55 and 0.70 C"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0",
+  "old_context": "optimum. Under the joint parameter draws the P5--P50--P95 of $K^*$ is 0--40--60, and about 91\\% of draws move the recommendation away from 6"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.2",
+  "old_context": "ger chain deviates from the proxy by at most 38,986.30 CNY/day, about 0.2 standard deviations of the Q2 total. Both are approximations, not "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.35",
+  "old_context": "t be estimated from this dataset. They are fixed at $\\kappa=2$, $\\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recommended rewa"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.55",
+  "old_context": "-optimising $c_0$ at 0.8 and 1.2 times its value moves the optimum to 0.55 and 0.70 CNY and the saving to 19,747.42 and 16,365.88. The quali"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.60",
+  "old_context": " $c_0=0.8$, and only $c_0$ is re-optimised. The recommended reward of 0.60 CNY is a prediction of the model, not a measurement; it is the de"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.60",
+  "old_context": "en at zero reward. It can replace part of the tricycle layer: at $r^*=0.60$ it removes 4,964.46 unserved departures and saves \\textbf{18,011"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.70",
+  "old_context": "ng $c_0$ at 0.8 and 1.2 times its value moves the optimum to 0.55 and 0.70 CNY and the saving to 19,747.42 and 16,365.88. The qualitative di"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.8",
+  "old_context": "ed from this dataset. They are fixed at $\\kappa=2$, $\\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recommended reward of 0.60 C"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.8",
+  "old_context": "der the arrivals cap it is 18,011.46 (2.92\\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value moves the optimum to 0.55 and 0.70 CNY and"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "0.824",
+  "old_context": "The cap binds in every joint draw (the 95th percentile of coverage is 0.824), so the qualitative reading holds; the exact percentages do not"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1,097",
+  "old_context": "on. The spatial structure is tested against an independent source --- 1,097 subway entrances from OpenStreetMap --- and the attractors the m"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1,494.80",
+  "old_context": " gap, and the tricycle allocation is integer, with a rounding loss of 1,494.80 unserved departures between the LP solution and the executabl"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1,532",
+  "old_context": "cannot replace the trucks: at $K=2$ the best mixed policy is at least 1,532 CNY/day worse than pure trucks even at zero reward. It can repla"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1.01",
+  "old_context": "proxy intervals.} The truck layer is solved as an integer MILP with a 1.01\\% LP gap, and the tricycle allocation is integer, with a rounding"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1.08",
+  "old_context": "anning midpoint; its uncertainty is expressed by the two source caps (1.08\\%--2.92\\%) and the $c_0$ table, not by the truck-caliber interval"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1.08",
+  "old_context": "he conservative surplus cap the net saving falls to 6,651.22 CNY/day (1.08\\%); under the arrivals cap it is 18,011.46 (2.92\\%). Re-optimisin"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1.2",
+  "old_context": "arrivals cap it is 18,011.46 (2.92\\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value moves the optimum to 0.55 and 0.70 CNY and the sav"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "1.875",
+  "old_context": "after the truck layer is 11.22\\%, and the two-tier plan reduces it to 1.875\\%. None of these supports a general claim that the system cannot"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "11",
+  "old_context": "e. The intervals of Section~\\ref{sec:sens} are LP-proxy intervals: at 11 representative parameter points the integer chain deviates from the"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "11.22",
+  "old_context": "5,540 it is 3.51\\%; the operational shortage after the truck layer is 11.22\\%, and the two-tier plan reduces it to 1.875\\%. None of these su"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "14",
+  "old_context": "clusion (incentives cannot replace trucks) also flips sign in roughly 14\\%--16\\% of the grouped parameter draws of Section~\\ref{sec:sens}, s"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "150",
+  "old_context": "robust of the five, but it is driven by the assumed cap: changing the 150-slot cap moves coverage by 46.77 percentage points, the day by 17."
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "150",
+  "old_context": "e the 30,000 budget. The fence analysis places \\textbf{4,000 sites of 150 slots}, covering 59.53\\% of peak occupancy and 55.80\\% of arrivals"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "16",
+  "old_context": "n (incentives cannot replace trucks) also flips sign in roughly 14\\%--16\\% of the grouped parameter draws of Section~\\ref{sec:sens}, so even"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "16,365.88",
+  "old_context": "oves the optimum to 0.55 and 0.70 CNY and the saving to 19,747.42 and 16,365.88. The qualitative direction survives all of these, but the ma"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "16,608.52",
+  "old_context": "ures and saves \\textbf{18,011.46 CNY/day (2.92\\%)}, with a payment of 16,608.52 inside the 30,000 budget. The fence analysis places \\textbf{"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "17.11",
+  "old_context": "he 150-slot cap moves coverage by 46.77 percentage points, the day by 17.11 and the walking radius by 7.11. The cap binds in every joint dra"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "18,011.46",
+  "old_context": " the same zone, which is what keeps the truck layer unchanged, so the 18,011.46 CNY/day saving replaces part of the tricycle layer and nothi"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "18,011.46",
+  "old_context": "ving falls to 6,651.22 CNY/day (1.08\\%); under the arrivals cap it is 18,011.46 (2.92\\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "18,011.46",
+  "old_context": " $r^*=0.60$ it removes 4,964.46 unserved departures and saves \\textbf{18,011.46 CNY/day (2.92\\%)}, with a payment of 16,608.52 inside the 30"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "19,747.42",
+  "old_context": "es its value moves the optimum to 0.55 and 0.70 CNY and the saving to 19,747.42 and 16,365.88. The qualitative direction survives all of the"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "2",
+  "old_context": "c_0$ cannot be estimated from this dataset. They are fixed at $\\kappa=2$, $\\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recomm"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "2",
+  "old_context": "vel baseline. The incentive analysis cannot replace the trucks: at $K=2$ the best mixed policy is at least 1,532 CNY/day worse than pure tru"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "2.92",
+  "old_context": "idpoint; its uncertainty is expressed by the two source caps (1.08\\%--2.92\\%) and the $c_0$ table, not by the truck-caliber intervals of Sec"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "2.92",
+  "old_context": "to 6,651.22 CNY/day (1.08\\%); under the arrivals cap it is 18,011.46 (2.92\\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value moves the "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "2.92",
+  "old_context": "ves 4,964.46 unserved departures and saves \\textbf{18,011.46 CNY/day (2.92\\%)}, with a payment of 16,608.52 inside the 30,000 budget. The fe"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "24,949",
+  "old_context": "y a quarter over the day. The two-tier rebalancing plan moves \\textbf{24,949 bicycles} with 60 trucks over 5,659.17 truck-kilometres, then a"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "3.51",
+  "old_context": " cell-level unserved share is 5.84\\%, and at the closed 495,540 it is 3.51\\%; the operational shortage after the truck layer is 11.22\\%, and"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "30,000",
+  "old_context": " Q3 optimum is priced on the increment ledger and checked against the 30,000 CNY budget; the payment ledger prices the same reward higher an"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "30,000",
+  "old_context": "f{18,011.46 CNY/day (2.92\\%)}, with a payment of 16,608.52 inside the 30,000 budget. The fence analysis places \\textbf{4,000 sites of 150 sl"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "343,638",
+  "old_context": " estimate. Our defence is conditional: at the initial-inventory proxy 343,638 the pre-plan cell-level unserved share is 5.84\\%, and at the c"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "343,638,",
+  "old_context": "slots}, covering 59.53\\% of peak occupancy and 55.80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, with 394,553.13 bike-slot"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "38,986.30",
+  "old_context": "parameter points the integer chain deviates from the proxy by at most 38,986.30 CNY/day, about 0.2 standard deviations of the Q2 total. Both"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "394,553.13",
+  "old_context": "80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, with 394,553.13 bike-slots left unassigned at the measured inventory.  The "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "4,000",
+  "old_context": "16,608.52 inside the 30,000 budget. The fence analysis places \\textbf{4,000 sites of 150 slots}, covering 59.53\\% of peak occupancy and 55.8"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "4,964.46",
+  "old_context": ". It can replace part of the tricycle layer: at $r^*=0.60$ it removes 4,964.46 unserved departures and saves \\textbf{18,011.46 CNY/day (2.92"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "40",
+  "old_context": "imum. Under the joint parameter draws the P5--P50--P95 of $K^*$ is 0--40--60, and about 91\\% of draws move the recommendation away from 60. "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "46.77",
+  "old_context": "riven by the assumed cap: changing the 150-slot cap moves coverage by 46.77 percentage points, the day by 17.11 and the walking radius by 7."
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "49.59",
+  "old_context": "of peak occupancy and 55.80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, with 394,553.13 bike-slots left unassigned at the "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "495,540",
+  "old_context": "8 the pre-plan cell-level unserved share is 5.84\\%, and at the closed 495,540 it is 3.51\\%; the operational shortage after the truck layer i"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "495,540,",
+  "old_context": "upancy and 55.80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, with 394,553.13 bike-slots left unassigned at the measured in"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "5,659.17",
+  "old_context": "r rebalancing plan moves \\textbf{24,949 bicycles} with 60 trucks over 5,659.17 truck-kilometres, then adds \\textbf{975 tricycles} inside zon"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "5.84",
+  "old_context": "ial-inventory proxy 343,638 the pre-plan cell-level unserved share is 5.84\\%, and at the closed 495,540 it is 3.51\\%; the operational shorta"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "52.18",
+  "old_context": "ing 59.53\\% of peak occupancy and 55.80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, with 394,553.13 bike-slots left unassi"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "55.80",
+  "old_context": "tbf{4,000 sites of 150 slots}, covering 59.53\\% of peak occupancy and 55.80\\% of arrivals at 343,638, and 52.18\\% and 49.59\\% at 495,540, wi"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "59.385",
+  "old_context": "pper bound on the executable minimum (the ideal LP uses 889), and the 59.385\\% saving is a lower bound on the ideal LP saving (61.06\\%).  \\t"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "59.385",
+  "old_context": "ve the recommendation away from 60. The two-tier fleet of 975 and the 59.385\\% saving should therefore be read as bounds, not as a point des"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "59.385",
+  "old_context": " of \\textbf{617,055.7515 CNY/day} and a saving of \\textbf{902,223.20 (59.385\\%)} against the no-tricycle cell-level baseline. The incentive "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "59.53",
+  "old_context": "The fence analysis places \\textbf{4,000 sites of 150 slots}, covering 59.53\\% of peak occupancy and 55.80\\% of arrivals at 343,638, and 52.1"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "6,651.22",
+  "old_context": "o choices. Under the conservative surplus cap the net saving falls to 6,651.22 CNY/day (1.08\\%); under the arrivals cap it is 18,011.46 (2.9"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "60",
+  "old_context": " looks. The integer scan covers five grid points (0, 20, 40, 60, 80); 60 is the minimum of those points, not a proof of a global optimum. Un"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "60",
+  "old_context": " 0--40--60, and about 91\\% of draws move the recommendation away from 60. The two-tier fleet of 975 and the 59.385\\% saving should therefore"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "60",
+  "old_context": "ay. The two-tier rebalancing plan moves \\textbf{24,949 bicycles} with 60 trucks over 5,659.17 truck-kilometres, then adds \\textbf{975 tricyc"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "60,",
+  "old_context": "r than it looks. The integer scan covers five grid points (0, 20, 40, 60, 80); 60 is the minimum of those points, not a proof of a global op"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "60,",
+  "old_context": ". Under the joint parameter draws the P5--P50--P95 of $K^*$ is 0--40--60, and about 91\\% of draws move the recommendation away from 60. The "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "61.06",
+  "old_context": "89), and the 59.385\\% saving is a lower bound on the ideal LP saving (61.06\\%).  \\textbf{One ledger, one reward, one day.} The Q3 optimum is"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "617,055.7515",
+  "old_context": "then adds \\textbf{975 tricycles} inside zones, for a total of \\textbf{617,055.7515 CNY/day} and a saving of \\textbf{902,223.20 (59.385\\%)} a"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "7.11",
+  "old_context": "y 46.77 percentage points, the day by 17.11 and the walking radius by 7.11. The cap binds in every joint draw (the 95th percentile of covera"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "889",
+  "old_context": " fleet is an upper bound on the executable minimum (the ideal LP uses 889), and the 59.385\\% saving is a lower bound on the ideal LP saving "
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "902,223.20",
+  "old_context": " for a total of \\textbf{617,055.7515 CNY/day} and a saving of \\textbf{902,223.20 (59.385\\%)} against the no-tricycle cell-level baseline. Th"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "91",
+  "old_context": "int parameter draws the P5--P50--P95 of $K^*$ is 0--40--60, and about 91\\% of draws move the recommendation away from 60. The two-tier fleet"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "95",
+  "old_context": "nd the walking radius by 7.11. The cap binds in every joint draw (the 95th percentile of coverage is 0.824), so the qualitative reading hold"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "975",
+  "old_context": "xact statements.  \\textbf{The plan is a bound in two directions.} The 975-tricycle fleet is an upper bound on the executable minimum (the id"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "975",
+  "old_context": " of draws move the recommendation away from 60. The two-tier fleet of 975 and the 59.385\\% saving should therefore be read as bounds, not as"
+ },
+ {
+  "file": "sec10_evaluation.tex",
+  "token": "975",
+  "old_context": "les} with 60 trucks over 5,659.17 truck-kilometres, then adds \\textbf{975 tricycles} inside zones, for a total of \\textbf{617,055.7515 CNY/d"
+ }
+]

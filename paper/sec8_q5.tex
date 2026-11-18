@@ -14,9 +14,9 @@ state and whose magnitude we cannot.
 \subsection{A cell-resolution mismatch experiment}
 
 The Q4 plan is fixed: 4,000 sites, 150 slots each, $R=450$ m, initial-inventory proxy
-343,638. Two platforms share the market equally (share $s=0.5$), each drawing its own
-Poisson arrivals and departures at half rate, each holding half of every cell's
-standing inventory. Three institutions are compared:
+343,638. Two platforms share the market equally (share $s=0.5$), each drawing Poisson
+arrivals and departures at half rate and holding half of every cell's inventory. Three
+institutions are compared:
 \begin{itemize}[leftmargin=1.2em,itemsep=0pt]
 \item \textbf{independent} --- each platform owns a 150-slot fence at each open site and
   only its own bicycles park there;
@@ -45,7 +45,7 @@ share of site-steps at capacity; ``required slots'' is the sum over sites of the
 percentile over seeds of peak occupancy, an unbounded-peak sizing convention, not
 existing berths. The single-platform row is the same plan under one operator.}
 \label{tab:q5mismatch}
-\small
+\scriptsize
 \begin{tabular}{@{}llrrr@{}}
 \toprule
 $m$ & \textbf{Institution} & \textbf{Unmet rate} & \textbf{Full-site rate} &
@@ -75,11 +75,11 @@ $m$ & \textbf{Institution} & \textbf{Unmet rate} & \textbf{Full-site rate} &
 \subsection{What the simulation says}
 
 \textbf{Splitting the market costs service even with no mismatch.} The single platform
-leaves 11.66\% of within-fence departures unserved. At $m=0$, with both platforms
-proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%, about
-half a percentage point worse. The mechanism is not spatial: each platform's own Poisson
-fluctuations no longer pool with the other's, so the same total fleet produces more
-empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that finding
+leaves 11.66\% of within-fence departures unserved; at $m=0$, with both platforms
+proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%,
+about half a percentage point worse. The mechanism is not spatial: each platform's
+Poisson fluctuations no longer pool with the other's, so the same total fleet produces
+more empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that finding
 does not survive the cell resolution: at zone scale the
 stocks are large enough that the split's noise is invisible, and at fence scale it is
 not.
@@ -117,30 +117,29 @@ city or another grid.
 
 \textbf{The full-site rates separate the institutions cleanly.} The independent regime
 almost never fills a fence (0.00007\% to 0.57\% of site-steps), because each platform's
-own fence sits half-empty while the other platform's riders walk past it. The
-independent\_equal regime, with the same total concrete split in two, fills up to 6.23\%
-of site-steps, and the shared regime sits between them at 0.35\% to 1.57\%. A low
-full-site rate is therefore not evidence of adequate capacity; it is evidence that the
-capacity is in the wrong hands.
+own fence sits half-empty while the other's riders walk past it; the
+independent\_equal regime fills up to 6.23\% of site-steps, and the shared regime sits
+between them at 0.35\% to 1.57\%. A low full-site rate is therefore not evidence of
+adequate capacity but evidence that the capacity is in the wrong hands.
 
 \subsection{Cost and data duplication}
 
-\textbf{Cost.} The rebalancing plan of Q2 is computed over the whole city. A platform
-with a third of the trips still faces the same 290 arcs and the same nightly window, but
-fills each truck with a third as many bicycles. The fixed component of the truck fleet
---- 600 CNY per truck per day, which is \textbf{42.96\%} of the daily cost at $K=60$
-(36,000 of 83,807.74 CNY) --- is therefore incurred by every platform separately. The
-same argument applies to the tricycle layer's fixed cost, 300 CNY per tricycle-day, which
-is 293,342.61 of the 617,055.7515 two-tier total.
+\textbf{Cost.} The rebalancing plan of Q2 is computed over the whole city; a platform
+with a third of the trips still faces the same 290 arcs and nightly window but fills
+each truck with a third as many bicycles. The truck fleet's fixed component --- 600 CNY
+per truck per day, \textbf{42.96\%} of the daily cost at $K=60$ (36,000 of 83,807.74
+CNY) --- is therefore incurred by every platform separately, and the same holds for
+the tricycle layer's fixed cost, 300 CNY per tricycle-day, which is 293,342.61 of the
+617,055.7515 two-tier total.
 
-\textbf{Data.} This is the most serious loss and the least visible. Every model in this
-paper is estimated from the full origin--destination matrix. A platform holding a third
-of the market observes a third of the rows, so the attraction $A_j$ of
-\eqnref{eq:gravity} and the cell deficit $\Delta_c$ used in \eqnref{eq:q3lp} are estimated
+\textbf{Data.} This is the most serious loss and the least visible. Every model here is
+estimated from the full origin--destination matrix, and a platform holding a third of
+the market observes a third of the rows, so the attraction $A_j$ of
+\eqnref{eq:gravity} and the cell deficit $\Delta_c$ of \eqnref{eq:q3lp} are estimated
 with a standard error that grows as $\sqrt{3}$. More decisively, \emph{no platform can
-compute the plans of Q2 and Q4 at all}, because the Q2 truck plan is defined on a
-city-wide zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on
-a city-wide deficit list. Each is a public-good computation that only the city can run.
+compute the plans of Q2 and Q4 at all}: the Q2 truck plan is defined on a city-wide
+zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on a
+city-wide deficit list, each a public-good computation that only the city can run.
 
 \subsection{Multi-homing, and why it does not rescue the situation}\label{sec:multihome}
 
@@ -163,28 +162,18 @@ longer be financed.
 
 \subsection{What a regulator should do}
 
-The analysis suggests four measures, in descending order of value.
-
-\begin{enumerate}[leftmargin=1.6em]
-\item \textbf{Share the data, not the bicycles.} The models of Q1--Q4 require a city-wide
-  OD matrix. Requiring platforms to deposit trip records with a neutral trustee --- as
-  the city already does for taxi and bus data --- costs the firms nothing competitively
-  and makes every result in this paper computable. This is the single highest-value
-  intervention.
-\item \textbf{Share the fences, and pool more than concrete.} Electronic fencing is
-  public infrastructure, and the shared regime saves 7.6\%--11.7\% of the slot
-  requirement relative to independent fences. But sharing fences alone does not reduce
-  lost orders (\S\ref{sec:q5}), because the fleets remain separate; shared fences must be
-  paired with shared data and a neutral rebalancing operator to matter for service.
-\item \textbf{Coordinate rebalancing.} A neutral rebalancing operator, or a
-  requirement that platforms' trucks serve shared depots, recovers the fixed cost that
-  is currently paid three times.
-\item \textbf{Tie fleet caps to measured service.} A cap expressed as bicycles per
-  thousand trips, rather than as a fixed number, keeps the fleet anchored to the
-  measured service requirement as demand grows and is auditable from the shared data
-  of measure one. The scenarios of \S\ref{sec:q2} do not identify an optimal fleet
-  size, so the cap should be set conservatively and revised with the shared data.
-\end{enumerate}
+Four measures follow, in descending order of value; the executive summary states them
+to the two readers. \textbf{Share the data, not the bicycles}: a city-wide OD matrix is
+the binding public good, and requiring platforms to deposit trip records with a
+neutral trustee costs the firms nothing competitively. \textbf{Share the fences, and
+pool more than concrete}: the shared regime saves 7.6\%--11.7\% of the slot
+requirement, but shared fences alone do not reduce lost orders (\S\ref{sec:q5}),
+because the fleets remain separate. \textbf{Coordinate rebalancing}: a neutral
+rebalancing operator, or a requirement that platforms' trucks serve shared depots,
+recovers the fixed cost currently paid three times. \textbf{Tie fleet caps to measured
+service}: a cap expressed as bicycles per thousand trips, rather than as a fixed
+number, stays anchored to the measured service requirement and is auditable from the
+shared data of the first measure.
 
 \subsection{What the external data say about the market}
 

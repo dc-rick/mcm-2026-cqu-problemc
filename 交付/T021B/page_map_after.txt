@@ -1,0 +1,28 @@
+pages=27
+p01 words=610 headings=The Geometry of a Bicycle City: Behaviour, Rebalancing, || Incentives and Fences in Beijing’s Dockless Bike-Share System
+p02 words=974 headings=Contents || List of Figures
+p03 words=714 headings=1 || Introduction
+p04 words=661 headings=2 || Assumptions and Notation
+p05 words=845 headings=
+p06 words=799 headings=3 || Data
+p07 words=602 headings=
+p08 words=616 headings=4 || Question 1: A Behavioural Model of Riding
+p09 words=752 headings=
+p10 words=633 headings=
+p11 words=658 headings=5 || Question 2: Optimal Repositioning on a Typical Day
+p12 words=854 headings=
+p13 words=836 headings=6 || Question 3: Paying Riders to Move Bicycles
+p14 words=590 headings=
+p15 words=870 headings=
+p16 words=785 headings=7 || Question 4: Siting and Sizing Electronic Fences
+p17 words=798 headings=
+p18 words=722 headings=
+p19 words=777 headings=8 || Question 5: What Competition Does to the Problem
+p20 words=786 headings=
+p21 words=803 headings=9 || Sensitivity and the Boundaries of Validity
+p22 words=809 headings=
+p23 words=579 headings=
+p24 words=726 headings=10 || Evaluation and Conclusions
+p25 words=748 headings=References
+p26 words=688 headings=Report on Use of AI Tools
+p27 words=190 headings=

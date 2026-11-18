@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 
 % ---------- page geometry ----------
-\usepackage[a4paper,top=2.1cm,bottom=2.1cm,left=2.2cm,right=2.2cm]{geometry}
+\usepackage[a4paper,top=1.9cm,bottom=1.9cm,left=2.0cm,right=2.0cm]{geometry}
 \setlength{\emergencystretch}{2em}
 
 % ---------- fonts: Times for text and mathematics ----------
@@ -18,8 +18,11 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{graphicx}
+\usepackage{xparse}
+\let\mcmoriginclude\includegraphics
+\RenewDocumentCommand{\includegraphics}{O{} m}{\scalebox{0.85}{\mcmoriginclude[#1]{#2}}}
 \usepackage{caption}
-\captionsetup{font=small,labelfont=bf,skip=2pt}
+\captionsetup{font=footnotesize,labelfont=bf,skip=1pt}
 \usepackage{subcaption}
 
 % ---------- colour, links, headers ----------
@@ -35,20 +38,21 @@
 \renewcommand{\headrulewidth}{0pt}
 \usepackage{enumitem}
 \usepackage{titlesec}
-\titlespacing*{\section}{0pt}{7pt plus 2pt minus 2pt}{3pt}
-\titlespacing*{\subsection}{0pt}{6pt plus 1pt minus 1pt}{2pt}
+\titlespacing*{\section}{0pt}{4pt plus 1pt minus 1pt}{2pt}
+\titlespacing*{\subsection}{0pt}{3pt plus 1pt minus 1pt}{1pt}
 \setlist{itemsep=0pt,topsep=1pt,parsep=0pt}
 \usepackage{float}
-\renewcommand{\arraystretch}{0.96}
-\renewcommand{\topfraction}{0.92}
-\renewcommand{\bottomfraction}{0.85}
-\renewcommand{\textfraction}{0.06}
-\renewcommand{\floatpagefraction}{0.75}
+\linespread{0.98}
+\renewcommand{\arraystretch}{0.90}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.8}
 \setcounter{topnumber}{3}
 \setcounter{bottomnumber}{3}
-\setlength{\textfloatsep}{5pt plus 2pt minus 1pt}
-\setlength{\floatsep}{4pt plus 1pt minus 1pt}
-\setlength{\intextsep}{4pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{4pt plus 1pt minus 1pt}
+\setlength{\floatsep}{2pt plus 1pt minus 1pt}
+\setlength{\intextsep}{2pt plus 1pt minus 1pt}
 
 
 % ---------- notation shortcuts ----------
@@ -61,8 +65,8 @@
 \newcommand{\eqnref}[1]{Eq.~\eqref{#1}}
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{0pt}
-\setlength{\abovedisplayskip}{3pt}
-\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayskip}{2pt}
+\setlength{\belowdisplayskip}{2pt}
 \setlength{\abovedisplayshortskip}{1pt}
 \setlength{\belowdisplayshortskip}{1pt}
 \setcounter{tocdepth}{1}

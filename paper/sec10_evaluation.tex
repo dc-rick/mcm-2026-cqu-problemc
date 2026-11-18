@@ -3,95 +3,65 @@
 
 \subsection{Strengths}
 
-\textbf{One model, four answers.} The gravity model of Q1 is the demand engine for the rebalancing program, the incentive supply
-curve and the parking forecast. Because the same estimated object is used four times,
-the answers are comparable: the same OD surface prices a truck-kilometre, a
-tricycle-day and a reroute, and the two-tier plan of Q2 and the incentive of Q3 are
-evaluated on the same demand and the same penalty.
+\textbf{One model, four answers.} The gravity model of Q1 is the demand engine for the
+rebalancing program, the incentive supply curve and the parking forecast, so the four
+answers are priced on the same demand surface and the same service penalty.
 
-\textbf{Identification is treated as part of the modelling.} Four quantities that the
-data do not contain are handled explicitly: the sampling rate is estimated and its
-role as an upper-bound scale factor is stated; the fleet is estimated with
-capture--recapture, a stratified check and a model interval; the initial-inventory proxy is
-carried as two scenarios; and the incentive parameters are declared unidentified, with
-only $c_0$ re-optimised and the rest as a limitation.
-
-\textbf{Validation is both internal and external.} The behavioural model is tested on
-two held-out days against two nested benchmarks and against a shared-$\beta$
-simplification. The spatial structure is tested against an independent source ---
-1,097 subway entrances from OpenStreetMap --- and the attractors the model finds are
-nearly twice as likely to sit near one as a random cell.
+\textbf{Identification and validation are part of the modelling.} The sampling rate,
+the fleet, the initial inventory and the incentive parameters are either estimated
+with a stated direction or carried as explicit scenarios. The behavioural model is
+tested on two held-out days against two nested benchmarks and a shared-$\beta$
+simplification, and the geography of the demand surface is checked against an
+independent map of subway entrances.
 
 \subsection{Weaknesses}
 
 \textbf{Attraction is endogenous.} $A_j$ is measured from the arrivals it already
-receives, so the model describes an equilibrium rather than a structural choice model.
-It can answer ``what if the distance decay changed?'' but not ``what if a new mall
-opened?''. A structural alternative --- a random-utility model with employment and
-retail density as attributes --- would answer the second but requires land-use data
-we do not have.
+receives, so the model describes an equilibrium: it can answer how flows respond to
+distance and time of day, not what a new development would do.
 
 \textbf{The incentive parameters are assumed.} No reward was offered in May 2017, so
-$\kappa,\rho,c_0$ cannot be estimated from this dataset. They are fixed at
-$\kappa=2$, $\rho=0.35$, $c_0=0.8$, and only $c_0$ is re-optimised. The recommended
-reward of 0.60 CNY is a prediction of the model, not a measurement; it is the design of a pilot, not a settled price. The Q3 truck-caliber
-conclusion (incentives cannot replace trucks) also flips sign in roughly 14\%--16\% of
-the grouped parameter draws of Section~\ref{sec:sens}, so even its sign is conditional on the assumed parameters.
+$\kappa,\rho,c_0$ cannot be estimated; the recommended reward is the design of a
+pilot, not a settled price. The truck-caliber conclusion (incentives cannot replace
+trucks) also flips sign in a minority of the grouped parameter draws of
+Section~\ref{sec:sens}.
 
-\textbf{The tricycle saving is not a system saving.} Q3 moves trips between cells of
-one zone; Q2 moves bicycles between zones. Reroutes are restricted to the same zone,
-which is what keeps the truck layer unchanged, so the 18,011.46 CNY/day saving replaces
-part of the tricycle layer and nothing else. It is a deterministic single-day result on
-the planning midpoint; its uncertainty is expressed by the two source caps
-(1.08\%--2.92\%) and the $c_0$ table, not by the truck-caliber intervals of Section~\ref{sec:sens}.
+\textbf{The tricycle saving is not a system saving.} Reroutes stay within a zone, which
+keeps the truck layer unchanged, so the saving replaces part of the tricycle layer and
+nothing else; it is a deterministic single-day result whose uncertainty is the two
+source caps and the $c_0$ table.
 
-\textbf{Integer programs and proxy intervals.} The truck layer is solved as an integer
-MILP with a 1.01\% LP gap, and the tricycle allocation is integer, with a rounding loss
-of 1,494.80 unserved departures between the LP solution and the executable schedule.
-The intervals of Section~\ref{sec:sens} are LP-proxy intervals: at 11 representative parameter points the
-integer chain deviates from the proxy by at most 38,986.30 CNY/day, about 0.2 standard
-deviations of the Q2 total. Both are approximations, not exact statements.
-
-\textbf{The plan is a bound in two directions.} The 975-tricycle fleet is an upper bound
-on the executable minimum (the ideal LP uses 889), and the 59.385\% saving is a lower
-bound on the ideal LP saving (61.06\%).
+\textbf{The numbers are approximations in two directions.} The truck layer is an
+integer MILP and the tricycle allocation integer, so the executable plan carries a
+known rounding loss, and the intervals of Section~\ref{sec:sens} are LP-proxy
+intervals; the executable fleet is an upper bound on the executable minimum and the
+quoted saving a lower bound on the ideal LP saving.
 
 \textbf{One ledger, one reward, one day.} The Q3 optimum is priced on the increment
-ledger and checked against the 30,000 CNY budget; the payment ledger prices the same
-reward higher and is enforced by a conservative reservation rule. A uniform reward is
-modelled; a personalised one is not, and the whole answer is a single planning day, not
-a distribution over days.
-
-\textbf{No weather, no holidays, no long run.} The seven modelled days are mild spring
-weekdays. Rain reduces cycling sharply and would change both rates and decay; the
-model has nothing to say about it.
+ledger and checked against the daily budget; the payment ledger is enforced by a
+conservative reservation rule. The reward is uniform, and the answer is a single
+planning day, not a distribution over days. The modelled days are mild spring
+weekdays, and rain would change both rates and decay.
 
 \subsection{What would change the conclusions}
 
-The Q3 tricycle-caliber answer is sized by two choices. Under the conservative surplus
-cap the net saving falls to 6,651.22 CNY/day (1.08\%); under the arrivals cap it is
-18,011.46 (2.92\%). Re-optimising $c_0$ at 0.8 and 1.2 times its value moves the optimum
-to 0.55 and 0.70 CNY and the saving to 19,747.42 and 16,365.88. The qualitative direction survives all of these, but the magnitude does not.
+The Q3 answer is sized by the source cap and the acceptance constant: the conservative
+cap keeps about a third of the arrivals-cap saving, and re-optimising $c_0$ moves the
+optimum and the saving by the amounts tabulated in Section~\ref{sec:q3}. The direction
+survives, the magnitude does not.
 
 The Q2 fleet conclusion is narrower than it looks. The integer scan covers five grid
-points (0, 20, 40, 60, 80); 60 is the minimum of those points, not a proof of a global
-optimum. Under the joint parameter draws the P5--P50--P95 of $K^*$ is 0--40--60, and
-about 91\% of draws move the recommendation away from 60. The two-tier fleet of 975 and
-the 59.385\% saving should therefore be read as bounds, not as a point design.
+points (0, 20, 40, 60, 80), and its minimum is not a proof of a global optimum; the
+joint parameter draws move the recommendation away from it in most draws, so the
+two-tier fleet and its saving should be read as bounds, not as a point design. The Q4
+conclusion is the most robust, but it is driven by the assumed cap: changing the cap
+moves coverage by tens of percentage points.
 
-The Q4 conclusion is the most robust of the five, but it is driven by the assumed cap:
-changing the 150-slot cap moves coverage by 46.77 percentage points, the day by 17.11
-and the walking radius by 7.11. The cap binds in every joint draw (the 95th percentile of
-coverage is 0.824), so the qualitative reading holds; the exact percentages do not
-transfer to another cap.
-
-The oversupply diagnosis is the one conclusion that would be overturned wholesale if
-the initial-inventory proxy were very different from what we estimate. Our defence is
-conditional: at the initial-inventory proxy 343,638 the pre-plan cell-level unserved share is 5.84\%,
-and at the closed 495,540 it is 3.51\%; the operational shortage after the truck layer
-is 11.22\%, and the two-tier plan reduces it to 1.875\%. None of these supports a
-general claim that the system cannot run dry --- only that, at the modelled inventory,
-cost and placement are the binding problem.
+The oversupply diagnosis would be overturned wholesale if the initial-inventory proxy
+were very different from what we estimate. Our defence is conditional: at the proxy
+and at the closed fleet the pre-plan cell-level unserved shares are small, and the
+two-tier plan reduces the operational shortfall further. That supports only the claim
+that, at the modelled inventory, cost and placement are the binding problem.
 
 \subsection{Conclusions}
 
@@ -100,25 +70,10 @@ was failing because bicycles were in the wrong places, because nobody was paying
 move them, and because the space they occupied was free to the firms that put them
 there. The models in this paper quantify each of those statements.
 
-The behavioural model shows that demand is a superposition of five behaviours,
-dominated by short multi-purpose riding, and that distance explains most of where
-riders go with a decay that varies by a quarter over the day. The two-tier rebalancing
-plan moves \textbf{24,949 bicycles} with 60 trucks over 5,659.17 truck-kilometres, then
-adds \textbf{975 tricycles} inside zones, for a total of \textbf{617,055.7515 CNY/day}
-and a saving of \textbf{902,223.20 (59.385\%)} against the no-tricycle cell-level
-baseline. The incentive analysis cannot replace the trucks: at $K=2$ the best mixed
-policy is at least 1,532 CNY/day worse than pure trucks even at zero reward. It can
-replace part of the tricycle layer: at $r^*=0.60$ it removes 4,964.46 unserved
-departures and saves \textbf{18,011.46 CNY/day (2.92\%)}, with a payment of 16,608.52
-inside the 30,000 budget. The fence analysis places \textbf{4,000 sites of 150 slots},
-covering 59.53\% of peak occupancy and 55.80\% of arrivals at 343,638, and 52.18\% and
-49.59\% at 495,540, with 394,553.13 bike-slots left unassigned at the measured
-inventory.
-
-The unifying finding is that the instruments are complements with different domains:
-trucks where the imbalance is between zones, tricycles and incentives where it is
-within a zone, fences where the parking must be bounded, and data --- shared, city-wide
-data --- because none of these instruments can be aimed without it.
+The instruments are complements with different domains: trucks where the imbalance is
+between zones, tricycles and incentives where it is within a zone, fences where the
+parking must be bounded, and data --- shared, city-wide data --- because none of these
+instruments can be aimed without it.
 
 \emph{Most numbers in this paper are printed directly from result files by a single
 script; the constants that are typed rather than computed are listed in the Report on

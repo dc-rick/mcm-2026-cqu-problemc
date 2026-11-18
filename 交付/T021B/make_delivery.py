@@ -1,0 +1,109 @@
+# T021B: assemble 交付/T021B_delivery.json from the measured evidence files.
+import io, json, sys
+
+tg = json.load(io.open("交付/T021B/token_gate.json", encoding="utf-8"))
+
+deleted = []
+for f, d in tg.items():
+    for tok, n in sorted(d["removed"].items()):
+        deleted.append({"file": "paper/" + f, "token": tok, "removed": n})
+    assert not d["added"], (f, d["added"])
+
+n_deleted = sum(x["removed"] for x in deleted)
+n_sec10 = sum(tg["sec10_evaluation.tex"]["removed"].values())
+t_sec10 = len(tg["sec10_evaluation.tex"]["removed"])
+
+delivery = {
+    "task": "T021B",
+    "title": "版面压缩、执行摘要与摘要",
+    "date": "2026-11-19",
+    "status": "delivered",
+    "revision": "R0",
+    "summary": "Counted pages 30 -> 25 (32 -> 27 total; AI report pp26-27 excluded): §4.6 compressed with its segments figure and a prose paragraph deleted, §10 rewritten without numeric restatements, §1.1-1.3/§3 field text and the symbol table tightened, §8.5 merged into one paragraph, a final prose-trim pass over §5-§9, and stage-2 layout (margins 1.9/2.0 cm, figures at 0.85, captions footnotesize, table bodies scriptsize >= 8 pt, float/title/display spacing, linespread 0.98). §1.5 is now a conditional memo to the operator and the transport authority; the abstract is rewritten on locked numbers with the $K=0$ condition on the 432.23 and no T026-overturned claim. Body token multiset (§3-§10) identical to 7105b07 except "
+               + str(n_deleted) + " deleted-passage occurrences, each listed in deleted_tokens and contextualised in 交付/T021B/removed_tokens.json.",
+    "checks": {
+        "1_token_gate_body_3_10": "pass; baseline=7105b07; 8 files (sec3_data..sec10_evaluation); added tokens=0 in every file; removed occurrences=" + str(n_deleted) + ": sec4 {0.9x1, 10.6x1, 1.64x1, 2.47x1, 16.5x1, 25.7x1}; sec6 {0.60x1, 18,011.46x1}; sec8 {1.6x1}; sec10 {" + str(t_sec10) + " types, " + str(n_sec10) + " occurrences}; every removed occurrence is a number inside a deleted or rewritten passage, per-item in deleted_tokens and with 140-char contexts in 交付/T021B/removed_tokens.json; evidence=交付/T021B/token_gate.json, 交付/T021B/token_gate.py, 交付/T021B/removed_tokens.json, 交付/T021B/removed_tokens.py",
+        "2_abstract_and_15_numbers_json": "pass; rounding-aware token check against data/runs/T021A/numbers.json (a token is findable if it equals an entry token modulo %/commas, or roundings of an entry value to the printed precision, e.g. 3.24<-3.239, 2.01<-2.0144, 8.57<-8.568, 1.13<-1.1323); summary.tex: 73 tokens, missing=0, exempt=2 calendar years (2017, 2026); sec1_intro.tex: 66 tokens, missing=1 -> '4.6' is the p{4.6cm} column width in Table 1, a LaTeX layout length, not a result number (sibling layout tokens p{0.7cm}/p{4.1cm}/p{5.0cm}/leftmargin 1.6em/2.2em); exempt=5 calendar years (2016, 2017 x3, 2018); evidence=交付/T021B/numbers_json_check.py output in this JSON (notes[0])",
+        "3_L15_wording": "pass; sec6 'rather than the 33.19' -> 'rather than the 33.19 bicycles' (token-neutral; 33.19 count in sec6 still 3); the sec10 'would answer the second but requires land-use data' sentence no longer exists because §10 was rewritten under priority 2 - its replacement already reads 'it can answer how flows respond to distance and time of day, not what a new development would do'; grep -rn 'would answer the second|requires land-use|land-use data' paper/*.tex = 0 hits",
+        "4_page_count": "pass; total=27; AI report=pp26-27 (2 pages, separate and excluded); counted=25 = summary 1 + TOC 1 + body 22 + references 1, <= 25; baseline counted=30 (32 total); section start pages now: §1 p3, §2 p4, §3 p6, §4 p8, §5 p11, §6 p13, §7 p16, §8 p19, §9 p21, §10 p24, References p25, AI report p26; TOC and LoF/LoT page numbers verified against the built PDF; evidence=交付/T021B/page_map_after.txt vs page_map_before.txt",
+        "5_compile": "pass; xelatex 2 passes (build_final.log); undefined=0, overfull=0, '??'=0 in extracted text, U+037E=0 in extracted text and in all .tex; Output written on main.pdf (27 pages); log=交付/T021B/build_final.log",
+        "6_figures_visual": "pass; all five figure pages rendered at 110 dpi and inspected (p7 fig1, p10 fig2, p14 fig3, p17 fig4, p23 fig5): no clipping, no overlap, axis labels legible; figures are drawn at 0.85 (the 15% end of the permitted 10-15% band, applied by a wrapper in main.tex so sec-file width tokens are untouched); figure-internal type measures 5.7-6.8 pt after the scale, while body text is >= 7 pt (prose 10.9 pt, captions 9 pt, tables and references 8 pt; span-size histogram over the PDF: 8.0/8.1 pt = 11,304 chars, 9.0/9.1 = 6,870, 10.0 = 3,906, 10.9 = 86,678, 12.0/14.3 = 2,504; sub-7 pt chars = 2,331, all inside figures)",
+        "7_executive_summary": "pass; §1.5 is a memo 'written as a briefing to two readers: the operator who runs the fleet and the transport authority that regulates it', with four recommendations each carrying an explicit 'The condition:': (1) trucks 60/24,949 bicycles/5,659.17 truck-km and the day-long dispatch window, with the grid-minimum and parameter-draw caveat; (2) reward 0.60 CNY, 18,011.46 (2.92%) inside the tricycle layer, 16,608.52 inside the 30,000 budget, reservation rule, pilot/assumption and 1.08%-2.92% bracket; (3) fences 4,000 sites x 150 slots at 450 m, 59.53%/55.80%, 394,553.13 unassigned, with the mandatory-parking and layout-specific caveat; (4) competition: data deposit and neutral rebalancing, 1.0818-1.1323 capacity duplication, with the regulator-capability condition; consistent with §5-§8 and Table 1 unchanged in content",
+        "8_abstract": "pass; five questions each carry one main result and an explicit 'The condition:'; the 432.23 statement reads 'leaves only 432.23 departures unserved with no dispatch at all ($K=0$)'; no 'incentives do not pay' claim - Q3 states only the tricycle-layer saving with its pilot, within-zone and 1.08%-2.92% conditions (the old 'the instrument fails ... 1,532 worse' sentence is gone); every abstract number findable per check 2"
+    },
+    "deleted_tokens": deleted,
+    "affected": [
+        {"location": "paper/main.tex:3", "old": "geometry top=2.1cm,bottom=2.1cm,left=2.2cm,right=2.2cm", "new": "top=1.9cm,bottom=1.9cm,left=2.0cm,right=2.0cm", "basis": "T021B sheet stage-2 ③ page density; no numeric token in §3-§10"},
+        {"location": "paper/main.tex:21-23", "old": "\\usepackage{graphicx} (no scaling)", "new": "\\includegraphics wrapped in \\scalebox{0.85} via \\RenewDocumentCommand", "basis": "stage-2 ① figure height -15% (allowed band 10-15%); wrapper in main.tex keeps every sec-file width= token unchanged"},
+        {"location": "paper/main.tex:25", "old": "\\captionsetup{font=small,labelfont=bf,skip=2pt}", "new": "\\captionsetup{font=footnotesize,labelfont=bf,skip=1pt}", "basis": "stage-2 ③"},
+        {"location": "paper/main.tex:40-41", "old": "titlespacing section 7pt/3pt, subsection 6pt/2pt", "new": "section 4pt/2pt, subsection 3pt/1pt", "basis": "stage-2 ③"},
+        {"location": "paper/main.tex:46", "old": "(no linespread)", "new": "\\linespread{0.98}", "basis": "stage-2 spacing; disclosed 2% leading reduction"},
+        {"location": "paper/main.tex:47", "old": "\\arraystretch{0.96}", "new": "\\arraystretch{0.90}", "basis": "stage-2 ③ table density"},
+        {"location": "paper/main.tex:48-56", "old": "textfloatsep 5pt, floatsep 4pt, intextsep 4pt; topfraction .92/bottomfraction .85/textfraction .06/floatpagefraction .75", "new": "textfloatsep 4pt, floatsep 2pt, intextsep 2pt; .95/.9/.05/.8", "basis": "stage-2 ③ float spacing"},
+        {"location": "paper/main.tex:68-69", "old": "abovedisplayskip/belowdisplayskip 3pt", "new": "2pt", "basis": "stage-2 ③ display spacing"},
+        {"location": "paper/references.tex:4", "old": "\\small", "new": "\\scriptsize", "basis": "reference block 2 pages -> 1; 8 pt at 11 pt base, above the 7 pt floor"},
+        {"location": "paper/summary.tex (whole)", "old": "accepted abstract: Q3 paragraph framed the instrument as failing against trucks ('at K=2 the best mixed policy is at least 1,532 CNY/day worse ...'), 432.23 without a K=0 condition", "new": "rewritten abstract: one main result plus an explicit condition per question; 432.23 carries 'with no dispatch at all ($K=0$)'; Q3 keeps only the tricycle-layer saving and its brackets; 73 numeric tokens, 0 missing from numbers.json", "basis": "T021B sheet item 3 and the T026 overturn note"},
+        {"location": "paper/sec1_intro.tex:88-148", "old": "§1.5 contribution list ('The contributions are four ...')", "new": "§1.5 memo to the platform operator and the Beijing transport authority: four recommendations, each with 'The condition:' (trucks 60 and dispatch window; reward 0.60/18,011.46/30,000 and budget rule; fences 4,000x150 at 450 m; competition data deposit/neutral rebalancing)", "basis": "M17 in the task sheet; numbers all findable in numbers.json"},
+        {"location": "paper/sec2_assumptions.tex (A1,A3,A6,A9,A10,A11 + notation table)", "old": "longer statements; table carried unused symbols mu, D, alpha", "new": "tightened statements; table keeps only symbols used in the text (Q added, mu/D/alpha removed)", "basis": "sheet priority 6 (-0.3 page)"},
+        {"location": "paper/sec3_data.tex (§3.1, §3.2, §3.5, §3.6)", "old": "full field dictionary and longer data narrative", "new": "field dictionary points to the repository's DATA.md; 'The five days of 20--24 May carry 54.53%'; tightened fleet and spatial-unit paragraphs", "basis": "sheet priority 5 (-0.3 page); tokens 20/24 preserved"},
+        {"location": "paper/sec4_q1.tex (§4.6)", "old": "segments figure fig2_segments + full paragraph with per-class detail (1.64, 2.47, 16.5%, 25.7%, 'contributes only 10.6% of volume')", "new": "~7 lines + Table 6 only (fig2_segments block deleted; per-class detail compressed)", "basis": "sheet priority 1 (-0.8 page: segmentation enters no Q2-Q5 model); deleted tokens enumerated in deleted_tokens"},
+        {"location": "paper/sec5_q2.tex", "old": "10 verbose passages (proxy statement, pricing list, constraint physics, LP tricycle, rounding loss, schemes open/close, hold-out, uncertainty x2)", "new": "same content, tighter sentences; token-neutral (each pair asserted equal numeric multiset)", "basis": "page target; pairs in 交付/T021B/_trim1.py and _trim2.py"},
+        {"location": "paper/sec6_q3.tex", "old": "6 compressed passages (§6.1, §6.2, §6.3, §6.4, §6.5, §6.7) + 'the 33.19'", "new": "tightened; 'the 33.19 bicycles'", "basis": "page target + L15; token-neutral except the two enumerated deletions (0.60 and 18,011.46) in earlier compressed sentences"},
+        {"location": "paper/sec7_q4.tex", "old": "6 verbose passages (§7.1 x2, §7.3, §7.4, §7.5, Kneedle, knee marginal curve)", "new": "tightened; token-neutral", "basis": "page target"},
+        {"location": "paper/sec8_q5.tex (§8.5 + §8.2)", "old": "policy recommendation as a 4-item enumerate (leftmargin=1.6em); longer institution description", "new": "one compact paragraph 'Four measures follow, in descending order of value ...' (7.6%-11.7% kept); tighter descriptions", "basis": "sheet priority 4 (merge duplicated policy passages); the 1.6 is a LaTeX leftmargin, not a content number"},
+        {"location": "paper/sec9_sensitivity.tex", "old": "4 verbose passages (§9.1 LP-proxy caution, §9.4 zero-bar note, §9.5, §9.6 five-item validity list)", "new": "tightened; token-neutral", "basis": "page target"},
+        {"location": "paper/sec10_evaluation.tex (whole)", "old": "125 lines restating §5-§8 numbers (numeric recap of Q1-Q5 results)", "new": "80 lines, qualitative evaluation with no numeric restatements except the integer grid (0, 20, 40, 60, 80); all 62 removed occurrences listed in deleted_tokens", "basis": "sheet priority 2 (-0.6 page: numbers already in §5-§8)"}
+    ],
+    "line_counts": {
+        "summary.tex": [77, 75], "sec1_intro.tex": [145, 156],
+        "sec2_assumptions.tex": [134, 126], "sec3_data.tex": [169, 162],
+        "sec4_q1.tex": [270, 250], "sec5_q2.tex": [263, 261],
+        "sec6_q3.tex": [255, 248], "sec7_q4.tex": [248, 245],
+        "sec8_q5.tex": [198, 187], "sec9_sensitivity.tex": [193, 191],
+        "sec10_evaluation.tex": [125, 80], "references.tex": [167, 167],
+        "main.tex": [100, 104]
+    },
+    "section_pages": {
+        "summary": [1, 1], "toc": [1, 1], "sec1": [1, 1], "sec2": [2, 2],
+        "sec3": [2, 2], "sec4": [4, 3], "sec5": [3, 2], "sec6": [4, 3],
+        "sec7": [3, 3], "sec8": [2, 2], "sec9": [3, 3], "sec10": [2, 1],
+        "references": [2, 1], "ai_report": [2, 2],
+        "body_total": [26, 22], "total": [32, 27], "counted": [30, 25]
+    },
+    "outputs": [
+        "paper/main.pdf", "paper/main.tex", "paper/summary.tex",
+        "paper/sec1_intro.tex", "paper/sec2_assumptions.tex", "paper/sec3_data.tex",
+        "paper/sec4_q1.tex", "paper/sec5_q2.tex", "paper/sec6_q3.tex",
+        "paper/sec7_q4.tex", "paper/sec8_q5.tex", "paper/sec9_sensitivity.tex",
+        "paper/sec10_evaluation.tex", "paper/references.tex",
+        "交付/T021B_delivery.json",
+        "交付/T021B/token_gate.py", "交付/T021B/token_gate.json",
+        "交付/T021B/removed_tokens.py", "交付/T021B/removed_tokens.json",
+        "交付/T021B/numbers_json_check.py", "交付/T021B/make_delivery.py",
+        "交付/T021B/_trim1.py", "交付/T021B/_trim2.py",
+        "交付/T021B/build_final.log", "交付/T021B/page_map_before.txt",
+        "交付/T021B/page_map_after.txt", "交付/T021B/tokens_before.json"
+    ],
+    "page_counts_evidence": {
+        "before": "交付/T021B/page_map_before.txt (32 pages: summary p1, TOC p2, §1 p3, §2 p4, §3 p6, §4 p8, §5 p12, §6 p15, §7 p19, §8 p22, §9 p24, §10 p27, refs p29-30, AI p31-32)",
+        "after": "交付/T021B/page_map_after.txt (27 pages: summary p1, TOC p2, §1 p3, §2 p4, §3 p6, §4 p8, §5 p11, §6 p13, §7 p16, §8 p19, §9 p21, §10 p24, refs p25, AI p26-27)"
+    },
+    "notes": [
+        "numbers_json_check.py output: summary.tex tokens=73 missing=0 (exempt years 2017, 2026); sec1_intro.tex tokens=66 missing=1 (the p{4.6cm} column width; years 2016/2017/2018 exempt). Findability is rounding-aware; exact tokens are used wherever numbers.json stores them (e.g. 1.0818-1.1323 instead of 1.08-1.13 in the abstract).",
+        "Deletions with surviving same-token occurrences, identified exactly: sec4 0.9 -> the deleted fig2_segments includegraphics (the fig3 width survives); sec4 10.6 -> the deleted clause 'but contributes only 10.6% of volume' (the Table 6 cell and the 'commuter class, 10.6% of volume' sentence survive); sec6 0.60 -> the deleted sentence 'The global tricycle-caliber optimum remains $r^*=0.60$.'; sec6 18,011.46 -> 'do not apply to this 18,011.46 saving' reworded to 'not this saving'; sec8 1.6 -> the deleted enumerate's leftmargin=1.6em (layout parameter, not a content number); sec10 0 -> four deleted $c_0$ occurrences (the $c_0$ table, the re-optimising sentence and the '(0, 20, ...' grid survive); sec10 '60,' -> the deleted '0--40--60' P5--P50--P95 sentence.",
+        "L15 at sec10: the target sentence 'would answer the second but requires land-use data' was removed with the §10 rewrite (priority 2). The replacement sentence is already grammatical: 'it can answer how flows respond to distance and time of day, not what a new development would do.' If the reviewer wants the L15 edit to appear in a sentence that still exists, the wording would need a new sentence, not a fix; flagging rather than inventing one.",
+        "Figure-internal type after the 0.85 scale measures 5.7-6.8 pt. The sheet's floor is on 正文 (body text), which is >= 8 pt everywhere; figure axis labels were checked visually at 110 dpi and are legible. If the reviewer reads the 7 pt floor as including figure type, the wrapper scale can be raised to 0.88-0.90 at the cost of roughly +0.3 page.",
+        "\\linespread{0.98} is disclosed as a 2% leading reduction; without it the body ends ~0.4 page higher and counted pages would exceed 25.",
+        "Evidence files live in 交付/T021B/ (executor-owned 交付/); no writes to code/ or data/, no writes to 审查与规划/, .claude/ or .git/. Scratch build logs build2.log/build3.log/build4.log were removed; only build_final.log is kept.",
+        "T021A numbers.json was read-only used as the lock file; nothing under data/ was modified. This delivery makes no new numeric claims beyond §1.5 and the abstract, and both were checked against numbers.json."
+    ],
+    "integrity": {
+        "readonly_respected": True,
+        "no_files_written_in_review_or_planning": True
+    }
+}
+
+io.open("交付/T021B_delivery.json", "w", encoding="utf-8", newline="\n").write(
+    json.dumps(delivery, indent=2, ensure_ascii=False))
+print("deleted token types:", len(deleted), "occurrences:", n_deleted)
+print("written 交付/T021B_delivery.json")

@@ -8,11 +8,11 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \subsection{Assumptions}
 
 \begin{enumerate}[label=\textbf{A\arabic*.},leftmargin=2.4em]
-\item \emph{Stationary weekday regime.} The seven weekdays between 10 and 19 May
-  that are fully covered by the sample are exchangeable draws from one daily regime.
-  Weather, holidays and price promotions are not modelled. The observed daily volume
-  varies with a coefficient of variation of 8.25\% around its mean (\figref{fig:data}a),
-  so any single-day quantity in this paper carries that order of sampling noise.
+\item \emph{Stationary weekday regime.} The seven fully covered weekdays between 10
+  and 19 May are exchangeable draws from one daily regime; weather, holidays and price
+  promotions are not modelled. The observed daily volume varies with a coefficient of
+  variation of 8.25\% around its mean (\figref{fig:data}a), so any single-day quantity
+  carries that order of sampling noise.
 
 \item \emph{Poisson trip generation.} Departures from cell $i$ in time interval
   $t$ are Poisson with rate $\lambda_{it}$, constant on 15-minute intervals. This is
@@ -21,11 +21,10 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   rather than a failure of the conditional model.
 
 \item \emph{Supply-independent destination choice.} A rider chooses a destination
-  without regard to whether a bicycle will be available there. This is the usual
-  assumption of trip-distribution modelling. It is conditional here: the 50-zone LP
-  finds no zone stockout at the measured inventory, but the cell-level simulation
-  finds 5.84\% unserved at the initial-inventory proxy 343,638 and 3.51\% at 495,540, so the censoring is small
-  but not zero and is reported rather than assumed away.
+  without regard to whether a bicycle will be available there. The 50-zone LP finds no
+  zone stockout at the measured inventory, but the cell-level simulation finds 5.84\%
+  unserved at the initial-inventory proxy 343,638 and 3.51\% at 495,540, so the
+  censoring is small but not zero and is reported rather than assumed away.
 
 \item \emph{Endogenous attraction.} The attraction of a destination is measured by
   the arrivals it actually receives. The model is therefore a description of an
@@ -40,10 +39,9 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   for our purposes.
 
 \item \emph{Truck operations.} A truck carries at most $Q=40$ bicycles, travels one
-  inter-zone leg per hour, and unloads entirely at its destination. Loading and
-  unloading are assumed to fit inside the same hour. Trucks may serve only the eight
-  nearest zones within 9 km, a restriction that keeps the arc set to 290 and matches
-  the range of an overnight shift.
+  inter-zone leg per hour, and unloads entirely at its destination; loading and
+  unloading fit inside the same hour. Trucks serve only the eight nearest zones within
+  9 km (290 arcs), the range of an overnight shift.
 
 \item \emph{Utility of accepting an incentive.} A rider offered $r$ CNY to end at a
   different cell evaluates $U = \kappa r - \rho\,\tau(d) + \epsilon$, with $\tau(d)$
@@ -62,30 +60,28 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 
 \item \emph{Cost parameters.} A bicycle costs 1.0 CNY per day to own and maintain
   (about 1{,}000 CNY over a three-year life); a truck costs 600 CNY per day to own,
-  insure and staff, and 6 CNY per kilometre to run. These are planning assumptions
-  of the right order for 2017 Beijing. They are perturbed one at a time over
-  $\pm50\%$ in Section~\ref{sec:sens}; the truck-kilometre price alone moves the Q2
-  total by 33,534.39 CNY/day over 3--9 CNY/km, and Section~\ref{sec:sens} ranks every
-  input this way. All costs are linear in the other parameters.
+  insure and staff, and 6 CNY per kilometre to run --- planning assumptions of the
+  right order for 2017 Beijing. They are perturbed one at a time
+  over $\pm50\%$ in Section~\ref{sec:sens}; the truck-kilometre price alone moves the
+  Q2 total by 33,534.39 CNY/day over 3--9 CNY/km. All costs are linear in the other
+  parameters.
 
 \item \emph{Two-tier repositioning.} Trucks move bicycles between zones as in A6.
   Tricycles move bicycles between cells \emph{within one zone} only, carrying
   $Q_{\text{tri}}=20$ bicycles at 15 km/h with 0.5 minutes per bicycle handled, trips
-  of at most 5 km, operating 07:00--20:00, at 300 CNY per tricycle-day and 0.2 CNY per
-  kilometre. Because reroutes do not cross a zone boundary, the truck layer is
-  unchanged by the tricycle layer. The tricycle allocation is integer, and the
-  executable plan raises the fractional LP fleet to the smallest fixed point at which
-  every zone's schedule can be run.
+  of at most 5 km, operating 07:00--20:00, at 300 CNY per tricycle-day and 0.2 CNY
+  per kilometre. Because reroutes do not cross a zone boundary, the truck layer is
+  unchanged. The allocation is integer, and the executable plan raises the fractional
+  LP fleet to the smallest fixed point at which every zone's schedule can be run.
 
-\item \emph{Two ledgers, one budget.} A reward can be settled on the \emph{increment}
+\item \emph{Two ledgers, one budget.} A reward is settled on the \emph{increment}
   ledger, paying $r$ per completed reroute that fills a deficit (bill $r\,q$), or on
   the \emph{payment} ledger, paying $r$ per accepted invitation including riders who
-  would have gone there anyway (bill $r\,P$). The 30,000 CNY daily budget is a promise
-  and the two ledgers price it differently; every result is labelled by its ledger. The
-  payment ledger is enforced by reserving $r$ per invitation and stopping when the
-  cumulative reserve reaches the budget, which is conservative and may truncate the
-  program; at the Q3 optimum the increment-ledger bill is checked against the budget
-  rather than truncated by it.
+  would have gone there anyway (bill $r\,P$). The 30,000 CNY daily budget is a
+  promise the two ledgers price differently; the payment ledger is enforced by
+  reserving $r$ per invitation and stopping at the budget, which is conservative and
+  may truncate the program, while at the Q3 optimum the increment bill is checked
+  against the budget rather than truncated by it.
 
 \item \emph{Placement and payment.} A reroute is placed in the hour of the original
   trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is
@@ -95,24 +91,21 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 
 \subsection{Notation}
 
-\tabref{tab:notation} lists the symbols that recur. Two index sets run in parallel ---
-cells $i,j$ for behaviour, parking and incentives, and zones $z$ for rebalancing ---
-because the two models operate at different resolutions; where a quantity exists at
-both, the subscript makes the resolution explicit. Time is indexed by the hour $t$ in
-the optimisation and grouped into five bands $h$ where the decay is estimated, since
-the behaviour model needs a rate at 15-minute resolution but a distance decay only at
-the resolution of the daily rhythm. Symbols are local: $d_{ij}$ and $d_{jc}$ are
-distances, while $d_{zt}$ is an hourly departure; $w$ is the Q2 service penalty,
-$w_e$ the Q3 incremental acceptance weight and $w_c$ a parking capacity; $n$ is a
-platform count in Q5, a sample size in \S\ref{sec:data} and an observed OD count in
-\S\ref{sec:q1}.
+\tabref{tab:notation} lists the symbols that recur. Cells $i,j$ serve behaviour,
+parking and incentives; zones $z$ serve rebalancing. Time is the hour $t$ in the
+optimisation and the band $h$ where decay is estimated, because the behaviour model
+needs rates at 15-minute resolution but decay only at the resolution of the daily
+rhythm. Symbols are local: $d_{ij}$ and $d_{jc}$ are distances while $d_{zt}$ is an
+hourly departure; $w$ is the Q2 service penalty, $w_e$ the Q3 incremental acceptance
+weight and $w_c$ a parking capacity; $n$ is a platform count in Q5, a sample size in
+\S\ref{sec:data} and an observed OD count in \S\ref{sec:q1}.
 
 \begin{table}[htbp]
 \centering
 \footnotesize
 \caption[Principal symbols]{Principal symbols. Indices are suppressed where the meaning is clear.}
 \label{tab:notation}
-\small
+\scriptsize
 \begin{tabular}{@{}ll@{\hspace{1.2cm}}ll@{}}
 \toprule
 \textbf{Symbol} & \textbf{Meaning} & \textbf{Symbol} & \textbf{Meaning} \\
@@ -122,13 +115,12 @@ $z$ & traffic zone ($Z=50$) & $d_{ij}$ & great-circle distance (km) \\
 $t$ & hour ($T=24$) & $A_j$ & attraction of destination $j$ \\
 $h$ & time band (five per day) & $P(j\mid i,h)$ & destination probability \\
 $\lambda_{it}$ & departure rate (trips/h) & $n_{ij}$ & observed OD count \\
-$p$ & order sampling rate & $\mu$ & rides per bicycle per day \\
-$F$ & fleet size (bicycles) & $D$ & distinct bicycles observed \\
+$p$ & order sampling rate & $F$ & fleet size (bicycles) \\
 $I_{zt}$ & inventory of zone $z$ at $t$ & $u_{zt}$ & unmet departures \\
 $x_{ijt}$ & bicycles moved $i\to j$ in $t$ & $m_{ijt}$ & trucks moved $i\to j$ in $t$ \\
-$K$ & trucks in service & $\alpha$ & fleet size relative to observed \\
-$q(r)$ & placements bought by reward $r$ & $r$ & reward (CNY) \\
-$R$ & catchment radius (m) & $w_c$ & parking capacity (slots) \\
+$K$ & trucks in service & $q(r)$ & placements bought by reward $r$ \\
+$r$ & reward (CNY) & $R$ & catchment radius (m) \\
+$w_c$ & parking capacity (slots) & $Q$ & truck capacity (bicycles) \\
 \bottomrule
 \end{tabular}
 \end{table}

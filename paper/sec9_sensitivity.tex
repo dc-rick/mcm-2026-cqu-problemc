@@ -14,14 +14,13 @@ from their design distributions ($n=128$ draws, eight pick-freeze passes each; g
 and C marginals have $n=128$, group B has the exact 54).
 
 Two cautions govern the reading. First, the reference column is the \emph{planning
-midpoint}, not an expectation and not a median: the cost parameters enter
-multiplicatively, so the midpoint of the parameter box is not the centre of the cost
-distribution, and the Q2 midpoint of 617,056 sits well above the joint median of
-484,372. Second, every Q2 and Q3 interval is an \emph{LP-proxy} interval. At 11
-representative parameter points the integer chain deviates from the proxy by at most
-38,986.30 CNY/day, about 0.2 standard deviations of the Q2 total; the intervals
-therefore describe the shape of the parameter response, not a calibrated confidence
-interval for the integer plan.
+midpoint}, not an expectation or median: the cost parameters enter multiplicatively,
+so the parameter-box midpoint is not the centre of the cost distribution, and the Q2
+midpoint of 617,056 sits well above the joint median of 484,372. Second, every Q2 and
+Q3 interval is an \emph{LP-proxy} interval: at 11 representative parameter points the
+integer chain deviates from the proxy by at most 38,986.30 CNY/day, about 0.2 standard
+deviations of the Q2 total, so the intervals describe the shape of the parameter
+response, not a calibrated confidence interval for the integer plan.
 
 \subsection{Grouped intervals}
 
@@ -82,7 +81,7 @@ only qualitatively.
 \subsection{Where the variance comes from}
 
 \begin{center}
-\small
+\scriptsize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 \textbf{Output} & \textbf{A} & \textbf{B} & \textbf{C} &
@@ -140,17 +139,16 @@ everything: changing the 150-slot cap moves coverage by 46.77 percentage points,
 by 17.11 and the walking radius by 7.11, while every cost coefficient has a zero bar
 because cost does not enter the coverage objective.
 
-The zero bars are informative, not missing. They show that an input which matters in one
-question may be irrelevant in another, and that a single global sensitivity ranking would
-be misleading.
+The zero bars are informative, not missing: an input that matters in one question may
+be irrelevant in another, so a single global sensitivity ranking would be misleading.
 
 \subsection{The fleet estimate}
 
 The closed fleet is a capture--recapture estimate between the nine complete days and
 the truncated second window: 462,893 bicycles seen in the first window, 331,822 in the
 second, 309,961 in both, giving \textbf{495,540} with a sampling standard error of 131
-(95\% interval 495,283--495,797). The closure failures dominate, and the signs are the
-opposite of what a first guess suggests. Heterogeneity in use is the largest: the
+(95\% interval 495,283--495,797). The closure failures dominate, and their signs are
+not what a first guess suggests. Heterogeneity in use is the largest: the
 recapture rate rises monotonically from 0.4945 for one-trip bicycles to 0.8039 for
 11-or-more-trip bicycles ($\chi^2=15{,}063.61$ on 4 df; Cochran--Armitage $z=121.57$;
 rate ratio 1.6257), so heavy users are over-represented in the overlap and the pooled
@@ -180,14 +178,14 @@ with at least 484,754 bicycles and 4.33--4.42 rides per bicycle per day. They sh
 be extrapolated to:
 
 \begin{itemize}[leftmargin=1.4em]
-\item \emph{systems with stations}, where the docking constraint changes the inventory
-  process and the rebalancing problem becomes a routing problem with hard capacity;
+\item \emph{systems with stations}, where docking changes the inventory process and
+  rebalancing becomes a routing problem with hard capacity;
 \item \emph{low-density cities}, where the walking radius of Q4 covers a much smaller
   share of arrivals and the incentive pool of Q3 vanishes;
-\item \emph{other layouts}, where the 4,000-site, 150-slot result is specific to this
+\item \emph{other layouts}: the 4,000-site, 150-slot result is specific to this
   0.005$^\circ$ grid, this walking radius and demand surface;
-\item \emph{extreme weather or holidays}, not represented in the fourteen recorded dates
-  (of which five training and two held-out days drive the models; 17 May has no records);
-\item \emph{the long run}, where the attraction $A_j$ itself changes with land use. The
-  model is a description of an equilibrium, not a forecast of one.
+\item \emph{extreme weather or holidays}, not represented in the fourteen recorded
+  dates (five training and two held-out days drive the models; 17 May has no records);
+\item \emph{the long run}, where the attraction $A_j$ itself changes with land use; the
+  model describes an equilibrium, it does not forecast one.
 \end{itemize}

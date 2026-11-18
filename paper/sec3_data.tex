@@ -4,21 +4,18 @@
 \subsection{The order file}
 
 The dataset is the order file released for the 2017 Mobike Algorithm Challenge
-\cite{mobike}.
+\cite{mobike}; the field dictionary is in the repository's DATA.md.
 
-The dataset contains 3,214,096 order records. Each record has an order identifier, a
-user identifier, a bicycle identifier, a bicycle type, a start timestamp and two
-seven-character geohashes that encode the start and end positions. Decoding follows
-the standard base-32 latitude/longitude interleaving \cite{niemeyer2008}: each
-character contributes five bits, alternately to longitude and latitude, so that a
-seven-character string resolves a rectangle of roughly $153\times153$ m. The decoded
-coordinates agree with the operator's own city, and 99.6\% of the records begin with
-the geohash prefix \texttt{wx4}, which covers Beijing.
-
-We remove 786 records whose decoded start lies outside the metropolitan bounding box
-($39.4$--$40.4^\circ$N, $115.8$--$117.0^\circ$E); these are GPS or decoding faults as
-far away as $20^\circ$N. After the filter 3,213,310 orders remain, placed by 349,241
-users on 484,754 distinct bicycles.
+The file contains 3,214,096 order records, each with order, user and bicycle
+identifiers, a bicycle type, a start timestamp and two seven-character geohashes.
+Decoding follows the standard base-32 latitude/longitude interleaving
+\cite{niemeyer2008}: each character contributes five bits, alternately to longitude
+and latitude, so a seven-character string resolves a rectangle of roughly
+$153\times153$ m; 99.6\% of the records begin with the geohash prefix \texttt{wx4},
+which covers Beijing. We remove 786 records whose decoded start lies outside the
+metropolitan bounding box ($39.4$--$40.4^\circ$N, $115.8$--$117.0^\circ$E), GPS or
+decoding faults as far away as $20^\circ$N. After the filter 3,213,310 orders remain,
+placed by 349,241 users on 484,754 distinct bicycles.
 
 \subsection{Coverage, and why the analysis uses seven days}
 
@@ -29,14 +26,13 @@ expected weekend dip. \textbf{17 May is entirely absent} --- not sparse, absent 
 so no interpolation is possible and we treat the day as missing.
 
 From 20 May onward the sample is \emph{truncated}, not merely quieter. The five days
-carry 54.53\% of the typical-day volume and 63.11\% of the typical-day bicycles, and
-13 entire hour blocks are missing (20 May lacks 19:00--22:00; 23 May lacks three
-hours; 24 May lacks six). Within the hours that are present, the hourly profile
-correlates only 0.54--0.72 with a typical day, against 0.98--0.997 among the complete
-weekdays. These are the signatures of a sample cut off, not of behavioural change, so
-we do not use 20--24 May for estimation. All estimation uses the nine recorded days of 10--19 May,
-and within them the seven fully covered weekdays, which we call \emph{typical days}.
-Weekends are used only where the text says so.
+of 20--24 May carry 54.53\% of the typical-day volume and 63.11\% of the typical-day
+bicycles, and 13 entire hour blocks are missing (20 May lacks 19:00--22:00; 23 May
+lacks three hours; 24 May lacks six). The hourly profile correlates only 0.54--0.72
+with a typical day, against 0.98--0.997 among the complete weekdays: the signatures of
+a sample cut off, not of behavioural change. All estimation therefore uses the nine
+recorded days of 10--19 May, and within them the seven fully covered weekdays, which
+we call \emph{typical days}; weekends are used only where the text says so.
 
 \begin{figure}[htbp]
 \centering
@@ -117,16 +113,15 @@ abundant in the aggregate; that is the tension the rest of the paper quantifies.
 
 Two partitions are used, at different resolutions and for different purposes.
 
-\textbf{Cells.} A grid of $0.005^\circ$ (about $555\times426$ m) is laid over the
-city. Keeping only cells with at least 50 sampled trips leaves \textbf{5,263 cells},
-which contain 95.81\% of the typical-day trips. Cells are the unit at which a rider
-can reasonably be asked to change destination (a few hundred metres), so they are
-used for the incentive model (Q3) and the parking model (Q4).
+\textbf{Cells.} A grid of $0.005^\circ$ (about $555\times426$ m) over the city,
+keeping only cells with at least 50 sampled trips, leaves \textbf{5,263 cells}
+holding 95.81\% of the typical-day trips; cells are the unit at which a rider can
+reasonably be asked to change destination, so they serve the incentive (Q3) and
+parking (Q4) models.
 
 \textbf{Zones.} Fifty zones are formed by $k$-means on the cell centroids weighted by
-trip volume, and each cell is assigned to its nearest centroid. Zones hold between
-604 and 12,119 trips per day and are roughly 4 km across, which is the scale at which a
-truck moves bicycles. They are used for rebalancing (Q2).
+trip volume; they hold between 604 and 12,119 trips per day and are roughly 4 km
+across, the scale at which a truck moves bicycles. They serve rebalancing (Q2).
 
 \tabref{tab:data} collects the descriptive statistics.
 
@@ -137,7 +132,7 @@ truck moves bicycles. They are used for rebalancing (Q2).
 endpoints. The fleet is the closed-population capture--recapture estimate; the
 initial-inventory proxy is a different quantity.}
 \label{tab:data}
-\small
+\scriptsize
 \begin{tabular}{@{}lrl@{}}
 \toprule
 \textbf{Quantity} & \textbf{Value} & \textbf{Note} \\
@@ -160,10 +155,8 @@ Initial-inventory proxy & 343,638 & last observed return positions, used as $I_0
 \end{tabular}
 \end{table}
 
-Two remarks on the distance distribution (\figref{fig:data}c). It is close to
-lognormal, with an empirical median of 0.70 km and a 90th percentile of 1.41 km, but
-the fit is not exact: the lognormal drawn in the figure has $\sigma=0.65$ and a median
-of 0.66 km, and the 0.04 km by which it undershoots the empirical median is the
-compressed lower tail, because trips shorter than about 150 m cannot be distinguished
-from zero at the geohash resolution. This is a measurement floor, not a behavioural
-feature, and the gravity model is estimated on the distances that are resolved.
+The distance distribution (\figref{fig:data}c) is close to lognormal, with an
+empirical median of 0.70 km and a 90th percentile of 1.41 km; the fitted lognormal has
+$\sigma=0.65$ and a median of 0.66 km, and the 0.04 km undershoot is the compressed
+lower tail, because trips shorter than about 150 m are not distinguishable at the
+geohash resolution. This is a measurement floor, not a behavioural feature.

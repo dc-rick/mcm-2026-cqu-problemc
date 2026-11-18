@@ -4,24 +4,22 @@
 \subsection{A city that rides, and the problem that follows}
 
 Between 2016 and 2018, dockless shared bicycles changed how Chinese cities moved.
-Unlike the earlier station-based systems of Hangzhou and Shanghai, a dockless fleet
-imposes no docking constraint: a rider may leave the bicycle wherever the journey
-ends, and the next rider finds it through a phone application. The convenience is
-real, and so is the externality. Because no station absorbs the end of a trip, the
-spatial distribution of bicycles is simply the integral of every rider's private
-choice, and that distribution drifts. Bicycles pile up at subway exits, at shopping
-centres and at the foot of office towers, while residential streets empty by nine in
-the morning. Operators respond with trucks; cities respond with parking rules; and
-both are expensive because neither is guided by a model of where the bicycles will
-go.
+Unlike the earlier station-based systems, a dockless fleet imposes no docking
+constraint: a rider leaves the bicycle wherever the journey ends and the next rider
+finds it through a phone application. The convenience is real, and so is the
+externality. Because no station absorbs the end of a trip, the spatial distribution of
+bicycles is the integral of every rider's private choice, and it drifts: bicycles pile
+up at subway exits and office towers while residential streets empty by nine in the
+morning. Operators respond with trucks and cities with parking rules, both expensive
+because neither is guided by a model of where the bicycles will go.
 
 This paper builds that model from the largest artefact the industry left behind: the
-2017 Mobike Algorithm Challenge dataset, which records 3,213,310 orders placed on
-484,754 bicycles by 349,241 users in Beijing between 10 and 24 May 2017. Each order
-carries an order identifier, a user identifier, a bicycle identifier, a start time,
-a bicycle type, and origin and destination coordinates encoded as seven-character
-geohashes. There is no inventory record, no station, and no record of a user who
-wanted to ride and found no bicycle.
+2017 Mobike Algorithm Challenge order file --- 3,213,310 orders placed on 484,754
+bicycles by 349,241 users in Beijing between 10 and 24 May 2017; each order carries
+order, user and bicycle identifiers, a start time, a bicycle type and two geohash
+endpoints.
+There is no inventory record, no station, and no record of a user who wanted to ride
+and found no bicycle.
 
 \subsection{The five questions}
 
@@ -42,74 +40,89 @@ The problem poses five questions, which we restate in operational terms:
 
 \subsection{Three things the data do not tell us}
 
-Most of the analytical difficulty in this problem is not in the optimisation; it is
-in three quantities the dataset does not contain and that a careless model would
-silently assume.
+Most of the analytical difficulty is not in the optimisation; it is in three
+quantities the dataset does not contain and that a careless model would silently
+assume.
 
-\textbf{No inventory.} The data record movements, not stocks. A cell that receives no
-arrivals may be empty or may hold fifty bicycles that nobody rode. Any statement
-about a ``shortage'' therefore requires an assumption about where the bicycles were
-at midnight, and that assumption is not identified by the data (Section~\ref{sec:sens}).
+\textbf{No inventory.} The data record movements, not stocks: a cell that receives no
+arrivals may be empty or may hold fifty bicycles nobody rode. Any statement about a
+``shortage'' therefore requires an assumption about where the bicycles were at
+midnight, and that assumption is not identified by the data (Section~\ref{sec:sens}).
 
-\textbf{Unknown sampling rate.} The file is described as a sample of the operator's
-orders. If only a fraction $p$ of orders is present, then every count in the file is
-a count of $1/p$ of reality, and the fleet is larger than the number of distinct
-bicycle identifiers. We estimate $p$ from the internal consistency of successive
-rides of the same bicycle, and we show that the fleet estimate is invariant to it.
+\textbf{Unknown sampling rate.} If only a fraction $p$ of orders is present, every
+count is a count of $1/p$ of reality and the fleet is larger than the number of
+distinct bicycle identifiers. We estimate $p$ from the internal consistency of
+successive rides of the same bicycle and show that the fleet estimate is invariant to
+it.
 
 \textbf{Truncated demand.} A user who wants to ride and finds no bicycle never
-appears. The observed trips are therefore demand censored at supply, which biases any
-naive estimate of demand downward exactly where the system is most stressed. Our
-models avoid this bias by treating observed trips as realisations of a rate process
-rather than as the demand itself, and by reporting service quality as a simulated
-quantity rather than a fitted one.
+appears, so the observed trips are demand censored at supply, which biases any naive
+estimate downward exactly where the system is most stressed. Our models avoid the
+bias by treating observed trips as realisations of a rate process and by reporting
+service quality as a simulated quantity.
 
 \subsection{Related work}
 
-Bike-share research divides into three strands. The first documents the systems and
-their users \cite{shaheen2010,fishman2013}; studies of station-based and free-floating
-systems add land-use effects on bicycle flows \cite{faghih2014}, predictors of
-shared-bicycle use \cite{bachand2012}, and dockless travel patterns in Singapore and
-Nanjing \cite{shen2018,du2018}. The second treats rebalancing as a vehicle-routing or
-inventory problem: static repositioning \cite{raviv2013}, the static rebalancing
-problem with multiple vehicles \cite{chemia2013}, inventory-plus-routing formulations
-with service-level constraints \cite{schuijbroek2017}, and stationless static
-rebalancing for free-floating systems \cite{pal2017}. The third replaces trucks with
-prices, either by dynamic redistribution with user incentives \cite{pfrommer2014} or
-by mechanism design for balanced systems \cite{singla2015}. The probabilistic
-analysis of station occupancy that underlies both is given in \cite{omahony2015}.
+Bike-share research divides into three strands. The first documents systems and users
+\cite{shaheen2010,fishman2013}, including land-use effects on bicycle flows
+\cite{faghih2014}, predictors of shared-bicycle use \cite{bachand2012}, and dockless
+travel patterns in Singapore and Nanjing \cite{shen2018,du2018}. The second treats
+rebalancing as a vehicle-routing or inventory problem: static repositioning
+\cite{raviv2013}, multiple vehicles \cite{chemia2013}, inventory-plus-routing with
+service-level constraints \cite{schuijbroek2017}, and stationless static rebalancing
+\cite{pal2017}. The third replaces trucks with prices, by dynamic redistribution
+\cite{pfrommer2014} or by mechanism design \cite{singla2015}; the probabilistic
+analysis of station occupancy is given in \cite{omahony2015}.
 
-Our approach differs from all three in one respect: the behavioural model is not a
-convenience for generating demand but the object of study in its own right, and the
-same estimated object is then reused, without re-fitting, in the optimisation (Q2),
-the incentive design (Q3) and the parking forecast (Q4). Spatial interaction models
-of the gravity family \cite{wilson1970,erlander1990,fotheringham1989} supply the
-destination choice; the discrete-choice foundation is due to \cite{mcfadden1974}.
-The radiation model offers an opportunity-based alternative \cite{simini2012}. The
-latent-class segmentation uses $k$-means \cite{lloyd1982} with the silhouette criterion
-\cite{rousseeuw1987}. The competition discussion draws on the economics of spatial
-and platform competition \cite{hotelling1929,katz1985,rochet2003}.
+Our approach differs in one respect: the behavioural model is not a convenience for
+generating demand but the object of study in its own right, and the same estimated
+object is reused, without re-fitting, in the optimisation (Q2), the incentive design
+(Q3) and the parking forecast (Q4). Spatial interaction models of the gravity family
+\cite{wilson1970,erlander1990,fotheringham1989} supply the destination choice; the
+discrete-choice foundation is due to \cite{mcfadden1974}, the radiation model offers
+an opportunity-based alternative \cite{simini2012}, and the latent-class segmentation
+uses $k$-means \cite{lloyd1982} with the silhouette criterion \cite{rousseeuw1987}.
+The competition discussion draws on the economics of spatial and platform competition
+\cite{hotelling1929,katz1985,rochet2003}.
 
-\subsection{Executive summary: contributions and answers}
+\subsection{Executive summary: recommendations to the operator and the city}
 
-The contributions are four.
+This subsection is written as a briefing to two readers: the operator who runs the
+fleet and the transport authority that regulates it. Each recommendation carries the
+condition under which it holds.
 
 \begin{enumerate}[leftmargin=1.6em]
-\item \textbf{A diagnosis.} The Beijing system of May 2017 was oversupplied. We
-  establish this three ways --- a capture--recapture fleet estimate, a zone-level
-  stockout diagnostic, and a cell-level simulation --- and it reframes Q2 from
-  ``prevent shortages'' to ``minimise the cost of restoring balance''.
-\item \textbf{One model, four uses.} A single estimated gravity model feeds the
-  rebalancing LP, the incentive supply curve and the parking forecast, so the four
-  answers are internally consistent.
-\item \textbf{An incentive supply curve.} Rather than assert an acceptance rate, we
-  derive the cost of voluntary relocation as a function of the reward, solve an hourly
-  assignment program with one reroute per trip, and price the instrument against both
-  layers: it cannot replace the trucks, and it can replace part of the tricycle layer.
-\item \textbf{Explicit uncertainty.} The unidentified quantities are bounded, not
-  assumed: the sampling rate is estimated and its role as an upper-bound scale factor
-  is stated, the initial-inventory proxy is carried as two scenarios, and every behavioural
-  parameter is swept in Section~\ref{sec:sens}.
+\item \textbf{Do not buy trucks for shortage; buy balance.} At the modelled inventory
+  the 50-zone program leaves 432.23 departures unserved with no dispatch at all
+  ($K=0$), so the truck plan is a reset, not a rescue: 60 trucks dispatched through
+  the day, not in a single overnight shift, move 24,949 bicycles over 5,659.17
+  truck-kilometres and carry the two-tier total to 617,055.7515 CNY/day. The
+  condition: 60 is the minimum of the compared grid, not a global optimum, and the
+  joint parameter draws move the recommendation in most draws --- treat the fleet as a
+  bound and re-scan it on local data.
+\item \textbf{Buy within-zone balance from riders before tricycles.} A posted reward
+  of 0.60 CNY per completed reroute, aimed at the hourly list of deficient cells and
+  settled on the increment ledger, saves 18,011.46 CNY/day (2.92\%) on the tricycle
+  layer, with a payment of 16,608.52 inside the 30,000 budget; the budget promise is
+  kept by reserving the reward per invitation and stopping when the reserve is
+  reached. The condition: this is a pilot design, not a measured price --- the
+  acceptance parameters are assumed, the saving is bracketed at 1.08\%--2.92\% by the
+  two source caps, and the instrument cannot replace trucks: against the truck layer
+  it is at least 1,532 CNY/day worse even at zero reward.
+\item \textbf{Fence the parking, not the fleet.} Siting fences greedily by coverage
+  and capping each at 150 slots gives 4,000 sites at a 450 m walking radius, covering
+  59.53\% of peak occupancy and 55.80\% of arrivals at the measured inventory and
+  leaving 394,553.13 bike-slots unassigned. The condition: these are required-capacity
+  figures under mandatory parking, not existing berths and not voluntary compliance,
+  and they are specific to this grid, radius and inventory; a different cap or radius
+  produces a different plan.
+\item \textbf{Regulate the market as a shared computation.} Independent platforms
+  need 1.0818--1.1323 times the fenced capacity of a shared regime, yet sharing
+  fences alone does not reduce lost orders, because the fleets remain separate; the
+  binding public good is the city-wide origin--destination matrix, which no single
+  platform can observe. The condition: the recommendation presumes the regulator can
+  require data deposit and neutral rebalancing, the argument developed in
+  Section~\ref{sec:q5}.
 \end{enumerate}
 
 \tabref{tab:answers} states the answer to each question in one line.
@@ -136,10 +149,8 @@ Q5 & Competition & Two-platform cell-resolution simulation & Unmet 12.10\% again
 
 \subsection{Roadmap}
 
-Section~\ref{sec:assume} states assumptions and notation.
-Section~\ref{sec:data} describes the data, the geohash decoding, the sampling-rate
-estimate and the fleet-size estimate.
-Section~\ref{sec:q1} builds and validates the behavioural model.
-Sections~\ref{sec:q2}--\ref{sec:q5} answer Q2--Q5.
-Section~\ref{sec:sens} reports sensitivity and the boundaries of validity, and
+Section~\ref{sec:assume} states assumptions and notation, Section~\ref{sec:data}
+describes the data and the fleet estimate, Section~\ref{sec:q1} builds and validates
+the behavioural model, Sections~\ref{sec:q2}--\ref{sec:q5} answer Q2--Q5,
+Section~\ref{sec:sens} reports sensitivity and validity limits, and
 Section~\ref{sec:eval} evaluates the work.

@@ -11,9 +11,9 @@ Before optimising anything we should know what the optimisation is for. At the
 \end{equation}
 never reaches zero from the initial-inventory proxy of 343,638 bicycles; $a$ and
 $d$ are the hourly arrivals and departures of a typical day scaled by $1/p$. This is a
-statement about the initial-inventory proxy and the zone aggregation, not a
-resolution-free guarantee. At cell resolution the pre-plan simulation leaves unserved
-shares of 5.84\% at 343,638 bicycles and 3.51\% at the closed fleet 495,540 (R=450 m).
+statement about the proxy and the zone aggregation, not a resolution-free guarantee:
+at cell resolution the pre-plan simulation leaves unserved shares of 5.84\% at 343,638
+and 3.51\% at the closed fleet 495,540 (R=450 m).
 
 Those figures describe a day with no repositioning. Once a zone-level truck plan is
 fixed, the residual mismatch moves inside the zones, where the plan cannot see it. A
@@ -62,23 +62,23 @@ departures $u_{zt}$, and the end-of-day deviations $dp_z,dm_z$.
 & I,u,dp,dm \ge 0,\qquad x,m,n \in \mathbb{Z}_{\ge 0}. \notag
 \end{align}
 
-The objective has five parts. $c_{\text{km}}=6$ CNY per truck-kilometre is the running
-cost; $c_{\text{load}}=0.5$ CNY per bicycle loaded and unloaded is the handling cost;
+The objective prices five things. $c_{\text{km}}=6$ CNY per truck-kilometre is the
+running cost; $c_{\text{load}}=0.5$ CNY per bicycle loaded and unloaded is handling;
 $w=6$ CNY per unmet departure is a service penalty set above the cost of moving a
-bicycle; $c_{\text{dev}}=3$ CNY per bicycle of end-of-day drift penalises leaving the
-system out of balance, linearised by $dp,dm$; and $f=600$ CNY per truck per day is the
-ownership cost of a truck, charged on the fleet size $K$ because a truck that is bought
-must be paid for whether it drives or not.
+bicycle; $c_{\text{dev}}=3$ CNY per bicycle of end-of-day drift, linearised by $dp,dm$,
+penalises leaving the system out of balance; and $f=600$ CNY per truck per day is the
+ownership cost of a truck, charged on $K$ because a truck that is bought must be paid
+for whether it drives or not.
 
-The constraints are the physics. \eqnref{eq:q2bal} is conservation of bicycles.
+The constraints are the physics. \eqnref{eq:q2bal} is conservation of bicycles;
 \eqnref{eq:q2serv} is the event-order constraint: a truck may take away only bicycles
-that are present at the start of the hour, before that hour's departures are served.
-\eqnref{eq:q2cap} couples bikes to trucks ($Q=40$ bicycles per truck), and
-\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve trucks and return the fleet to its
-starting zones by midnight. \eqnref{eq:q2dev} defines the end-of-day deviation, which
-makes the plan a reset rather than a one-way transfer. Bicycles, trucks and truck
-presence are integer variables; solved as a continuous program the same instance would
-be cheaper but would describe fractions of a truck and fractions of a bicycle.
+present at the start of the hour, before that hour's departures are served;
+\eqnref{eq:q2cap} couples bikes to trucks ($Q=40$ bicycles per truck);
+\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve trucks and return them to their
+starting zones by midnight; \eqnref{eq:q2dev} defines the end-of-day deviation that
+makes the plan a reset. Bicycles, trucks and truck presence are integer variables; as
+a continuous program the instance would be cheaper but would describe fractions of a
+truck and of a bicycle.
 
 The integrality matters, and so does the event order. The continuous LP plan, re-checked
 on its own demand, violates the stock constraint in 3 of 1,200 zone-hours and would
@@ -105,7 +105,7 @@ the unmet departures of the 50-zone model, priced at 6 CNY; the objective includ
 fixed cost $600K$, the kilometre and loading costs, and the deviation. The LP relaxation
 at $K=60$ costs 82,968.0671.}
 \label{tab:q2scan}
-\small
+\scriptsize
 \begin{tabular}{@{}rrrrrr@{}}
 \toprule
 $K$ & \textbf{Moved} & \textbf{Truck-km} & \textbf{Zone unmet} & \textbf{Dev} &
@@ -128,14 +128,14 @@ model has almost no unmet demand to remove. More trucks bring diminishing return
 after 60: $K=80$ adds 11,359.70 CNY and moves 86 fewer bicycles because the extra fixed
 cost buys no additional balance.
 
-The hold-out replay is the external check. The plan is fixed on the five training days
-and replayed on the two held-out days with their observed demand. On 12 May, at
-0.9291 times the design volume, the plan leaves 704.74 departures unserved and ends
+The hold-out replay is the external check: the plan is fixed on the five training
+days and replayed on the two held-out days with their observed demand. On 12 May, at
+0.9291 times the design volume, it leaves 704.74 departures unserved and ends
 53,255.64 bicycles away from balance; on 19 May, at 1.1066 times the design volume, it
 leaves 14,232.37 unserved, 0.60\% of that day's departures, and 51,718.20 away from
 balance. No zone-hour hits the truck capacity in either replay. The service cost of a
-volume surprise is therefore small in percentage terms, while the end-of-day balance
-deteriorates sharply: the plan is built for the typical day, not for the tail.
+volume surprise is small in percentage terms, but the end-of-day balance deteriorates
+sharply: the plan is built for the typical day, not for the tail.
 
 \subsection{The tricycle layer: replacing within-zone walking with a fleet}
 
@@ -154,10 +154,9 @@ Solved as an LP over tricycle counts, the layer buys 889 tricycles, costs 507,77
 and leaves 40,041.58 cell-level departures unserved, for a total of 591,587.42 and a
 saving of 927,691.53 (61.06\%) against the no-tricycle cell-level baseline of
 1,519,278.95. That is an \emph{ideal LP upper bound}, not a plan: the integer schedule
-built from the same allocation leaves 534 of 13,775 trips unassigned in 15 zones,
-because a fractional tricycle cannot be dispatched. Raising the fleet to the smallest
-executable fixed point adds 86 tricycles across those 15 zones, for \textbf{975
-tricycles} and zero unassigned trips in all 50 zones.
+built from the same allocation leaves 534 of 13,775 trips unassigned in 15 zones.
+Raising the fleet to the smallest executable fixed point adds 86 tricycles across
+those 15 zones, for \textbf{975 tricycles} and zero unassigned trips in all 50 zones.
 
 The executable layer costs 533,248.01, of which 293,342.61 is fixed, kilometre and
 handling cost and 239,905.40 is the 6 CNY penalty on 39,984.2332 unserved departures.
@@ -173,18 +172,16 @@ The integer cost of the tricycle layer is visible in the rounding. At the city s
 the LP leaves 38,489.44 cell departures unserved and the integer schedule 39,984.2332,
 a rounding loss of 1,494.80. In zone 24, the largest allocation (44 tricycles), the LP
 leaves 2,059.49 and the integer schedule 2,085.98; the 26.50 loss is 0.43\% of the
-bicycle flows the LP assigns in the zone and is bounded by 81.5. The bound is not tight, but it is small relative
-to the layer cost, and the direction is known: the executable plan can only be worse
-than its LP relaxation.
+bicycle flows the LP assigns in the zone and is bounded by 81.5. The bound is not
+tight, but it is small; the executable plan can only be worse than its relaxation.
 
 \subsection{The three schemes on their own calibers}
 
-\tabref{tab:q2schemes} puts the schemes side by side. The zone-level panel and the
-cell-level panel are \emph{different accounting calibers}, and the table says so: the
-truck plan was optimised in the zone model, where it removes all 432.23 unmet
-departures at $K=0$ and costs 83,807.74 at $K=60$. The same truck plan, priced in the
-cell model, carries a cell deficit of 239,245.20 that the zone model cannot see; the
-two-tier plan is the only row that removes most of it.
+\tabref{tab:q2schemes} puts the schemes side by side. The two panels are
+\emph{different accounting calibers}: the truck plan was optimised in the zone model,
+where it removes all 432.23 unmet departures at $K=0$ and costs 83,807.74 at $K=60$;
+the same plan, priced in the cell model, carries a cell deficit of 239,245.20 that the
+zone model cannot see, and the two-tier plan is the only row that removes most of it.
 
 \begin{table}[htbp]
 \centering
@@ -197,7 +194,7 @@ fixed, kilometre and handling cost; ``cell penalty'' is 6 CNY times the cell-lev
 unmet. The 1,519,278.95 baseline is the cell-level cost of the truck-only plan, not
 the 83,807.74 zone-level objective.}
 \label{tab:q2schemes}
-\small
+\scriptsize
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 \textbf{Scheme} & \textbf{Fleet} & \textbf{Truck} & \textbf{Tricycle operating} &
@@ -222,17 +219,18 @@ two-tier plan.
 Panel A gives the single-layer result: 143,384.53 at $K=0$ against 83,807.74 at $K=60$,
 a saving of 59,576.79 (41.55\%). Panel B gives the two-tier result: 1,519,278.95
 against 617,055.75, a saving of 902,223.20 (59.385\%). The two savings answer different
-questions. 41.55\% is what trucks do for the zone model; 59.385\% is what the tricycle
-layer adds once the zone model's blind spot is priced. Neither is a system-level claim
-that one instrument alone would deliver the other's number.
+questions: 41.55\% is what trucks do for the zone model, 59.385\% what the tricycle
+layer adds once the zone model's blind spot is priced, and neither is a system-level
+claim.
 
 \subsection{Uncertainty and the limits of the number}
 
-The numbers above are a planning midpoint, not an expectation or a median. Propagating
-the grouped parameter draws of Section~\ref{sec:sens} through the LP proxy gives a Q2 total of \textbf{617,056} at
-the midpoint, with a joint P5--P95 interval of \textbf{271,732--882,188} and a median
-of 484,372; the planning midpoint sits above the distribution median because the cost
-parameters enter multiplicatively and the reference is a point, not the mean. Executable
+The numbers above are a planning midpoint, not an expectation or a median. The
+grouped parameter draws of Section~\ref{sec:sens}, propagated through the LP proxy, give
+a Q2 total of \textbf{617,056} at the midpoint, a joint P5--P95 interval of
+\textbf{271,732--882,188} and a median of 484,372; the midpoint sits above the median
+because the cost parameters enter multiplicatively and the reference is a point, not
+the mean. Executable
 unmet is 39,984.23 at the midpoint, with a joint interval of 2,789--73,744 and a median
 of 11,392. The saving share is 0.594 at the midpoint, with a joint interval of
 $-0.461$--$0.692$ and a median of 0.260: in \textbf{31 of 128 joint draws (24\%)} the
@@ -245,10 +243,10 @@ recommended truck fleet.
 
 Two boundaries follow. The 975-tricycle fleet is an upper bound on the executable
 minimum (the ideal LP uses 889), and the 59.385\% saving is a lower bound on the ideal
-LP saving (61.06\%); both are reported as bounds, not as point estimates. The intervals
-are LP-proxy intervals: at 11 representative parameter points the integer chain deviates
-from the proxy by at most 38,986.30 CNY per day, about 0.2 standard deviations of the
-Q2 total, so the interval is a shape statement, not a calibrated confidence interval.
+LP saving (61.06\%); both are bounds, not point estimates. The intervals are LP-proxy
+intervals: at 11 representative parameter points the integer chain deviates from the
+proxy by at most 38,986.30 CNY per day, about 0.2 standard deviations of the Q2 total,
+so they are a shape statement, not a calibrated confidence interval.
 
 \begin{figure}[htbp]
 \centering

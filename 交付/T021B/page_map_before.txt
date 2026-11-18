@@ -1,0 +1,33 @@
+pages=32
+p01 chars=4062 words=608 headings=14.3pt The Geometry of a Bicycle City: Behaviour, Rebalancing, || 14.3pt Incentives and Fences in Beijing’s Dockless Bike-Share System
+p02 chars=2610 words=989 headings=14.3pt Contents || 14.3pt List of Figures || 14.3pt List of Tables
+p03 chars=4457 words=716 headings=14.3pt 1 || 14.3pt Introduction
+p04 chars=3452 words=531 headings=14.3pt 2 || 14.3pt Assumptions and Notation
+p05 chars=4974 words=841 headings=
+p06 chars=3730 words=622 headings=14.3pt 3 || 14.3pt Data
+p07 chars=3307 words=565 headings=
+p08 chars=4087 words=669 headings=14.3pt 4 || 14.3pt Question 1: A Behavioural Model of Riding
+p09 chars=3377 words=567 headings=
+p10 chars=3902 words=659 headings=
+p11 chars=3410 words=551 headings=
+p12 chars=3480 words=573 headings=14.3pt 5 || 14.3pt Question 2: Optimal Repositioning on a Typical Day
+p13 chars=3665 words=650 headings=
+p14 chars=4508 words=760 headings=
+p15 chars=4201 words=710 headings=14.3pt 6 || 14.3pt Question 3: Paying Riders to Move Bicycles
+p16 chars=2453 words=464 headings=
+p17 chars=5091 words=862 headings=
+p18 chars=4258 words=691 headings=
+p19 chars=3744 words=637 headings=14.3pt 7 || 14.3pt Question 4: Siting and Sizing Electronic Fences
+p20 chars=4164 words=702 headings=
+p21 chars=4259 words=695 headings=
+p22 chars=4566 words=753 headings=14.3pt 8 || 14.3pt Question 5: What Competition Does to the Problem
+p23 chars=4264 words=686 headings=
+p24 chars=4550 words=766 headings=14.3pt 9 || 14.3pt Sensitivity and the Boundaries of Validity
+p25 chars=4571 words=726 headings=
+p26 chars=3767 words=606 headings=
+p27 chars=4424 words=727 headings=14.3pt 10 || 14.3pt Evaluation and Conclusions
+p28 chars=4558 words=771 headings=
+p29 chars=4900 words=598 headings=14.3pt References
+p30 chars=1282 words=152 headings=
+p31 chars=4191 words=649 headings=14.3pt Report on Use of AI Tools
+p32 chars=1409 words=234 headings=

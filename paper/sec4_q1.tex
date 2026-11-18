@@ -78,7 +78,7 @@ the out-of-sample performance.
 nats per trip; lower is better. ``Attraction only'' is the same model with
 $\beta_h=0$.}
 \label{tab:q1}
-\small
+\scriptsize
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
 \textbf{Band} & \textbf{Train trips} & $\hat\beta_h$ & \textbf{Gravity} &
@@ -133,7 +133,7 @@ the two held-out days. $n$ is \emph{modelled} trips, whose origin and destinatio
 fall in the 5,263 cells (raw trips in parentheses); log-loss is nats per trip. The last
 row is five-band minus shared, with the paired standard error.}
 \label{tab:q1shared}
-\small
+\scriptsize
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 \textbf{Model} & $\beta$ (km$^{-1}$) & \textbf{12 May} & \textbf{12 May} &
@@ -210,16 +210,13 @@ axis, so the difference is not flattened. (d) Top-five destination hit rate.}
 
 \subsection{Who is riding}
 
-A single representative rider would misrepresent the system, because the hourly
-profile is the superposition of distinct behaviours. We characterise each user by six
-features computed over the nine recorded days: trips per day, mean trip distance, entropy
-of the departure-hour distribution, share of trips in peak hours, share on weekends,
-and share of trips that return to the origin cell. $k$-means \cite{lloyd1982} with the
-silhouette criterion \cite{rousseeuw1987} gives a \emph{best-run} silhouette of 0.256
-at $k=5$ and 0.263 at $k=6$, so the criterion does not select $k=5$; we choose $k=5$
-for the prediction task and for interpretability, and we do not call the classes
-stable. Across 20 random initialisations the pairwise adjusted Rand index at $k=5$ is
-0.665 with a minimum of 0.306, which is substantial but far from reproducible.
+A single representative rider would misrepresent the system: the hourly profile is a
+superposition of behaviours. Clustering users on six nine-day features, $k$-means
+\cite{lloyd1982} with the silhouette criterion \cite{rousseeuw1987} gives a
+\emph{best-run} silhouette of 0.256 at $k=5$ and 0.263 at $k=6$, so the criterion does
+not select $k=5$; we keep $k=5$ for interpretation, and across 20 random
+initialisations the pairwise adjusted Rand index at $k=5$ is 0.665 with a minimum of
+0.306, so the classes are not called stable.
 
 \begin{table}[htbp]
 \centering
@@ -227,7 +224,7 @@ stable. Across 20 random initialisations the pairwise adjusted Rand index at $k=
 \caption[Latent user segments]{Latent user segments (the nine recorded days of 10--19 May). ``Peak'' is the share of a user's trips
 starting in 07--09 or 17--19.}
 \label{tab:seg}
-\small
+\scriptsize
 \begin{tabular}{@{}lrrrrrr@{}}
 \toprule
 \textbf{Segment} & \textbf{Users} & \textbf{Share of} & \textbf{Share of} &
@@ -243,28 +240,11 @@ Weekend / leisure & 29,410 & 8.9\% & 2.8\% & 2.25 & 0.92 & 0.79 \\
 \end{tabular}
 \end{table}
 
-\figref{fig:seg} and \tabref{tab:seg} show the structure. Two groups generate
-four-fifths of all trips. The \emph{regular multi-purpose} user makes 9.18 trips over
-the nine recorded days of the 10--19 May window (1.64 per active day) --- the profile of a short-distance commuter
-or a rider who uses the bicycle as a substitute for walking --- and accounts for
-51.8\% of trips. The \emph{heavy short-trip} user makes 13.98 trips over the nine recorded days
-(2.47 per active day), each 0.67 km on average; 16.5\% of their trips end in the same cell they
-started in, and 25.7\% return to an origin cell they had already used that day. This
-is the courier-like, errand-heavy behaviour that dominates the dense core. The
-\emph{commuter} class rides longer (1.17 km) and concentrates its trips in peak hours
-but contributes only 10.6\% of volume. The remaining two classes are peripheral.
-
-This matters operationally rather than descriptively. The peak is made by a minority
-of trips --- commuters, 10.6\% of volume --- while the volume is made by riders whose
-trips are short and whose destinations are diffuse. An intervention designed to
-flatten the peak must target the first group; one designed to reduce total vehicle
-movement must target the second. Neither can be inferred from the aggregate profile,
-which is why the segmentation is part of the deliverable.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\linewidth]{../figs/fig2_segments.pdf}
-\caption[User segments]{User segments. (a) Size of each segment by users and by trips. (b)--(e)
-Behavioural signature on four dimensions.}
-\label{fig:seg}
-\end{figure}
+\tabref{tab:seg} shows the structure. Two groups generate four-fifths of all trips:
+the \emph{regular multi-purpose} user makes 9.18 trips over the nine recorded days of
+the 10--19 May window and accounts for 51.8\% of trips, and the \emph{heavy short-trip}
+user makes 13.98 trips of 0.67 km on average. The peak, by contrast, is made by the
+\emph{commuter} class, 10.6\% of volume, whose trips average 1.17 km. An intervention
+that flattens the peak must target commuters; one that reduces total vehicle movement
+must target the short-trip majority. Neither can be inferred from the aggregate
+profile, which is why the segmentation is part of the deliverable.
