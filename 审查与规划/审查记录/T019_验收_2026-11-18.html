@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T019 验收：有条件通过</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T019 验收：有条件通过（补两套覆盖率单位）</h1>
+<p class="meta">2026-11-18 · 交付 2c5e859（T019_delivery.json R0）· 模型与回放通过，覆盖率单位需补一列</p>
+
+<div class="box hi">
+<p><strong>结论：</strong>限容 150 的联合选址-分配-容量已经解出来，约束全 0，回放与半径敏感性齐备。唯一实质问题：<strong>旧的 76.86% 是“到达份额”，新的 59.53%/61.10% 是“占用份额”，两者不能直接比</strong>。指导方按到达份额重算为 <strong>55.80%（折点）/ 56.75%（全开）</strong>——结论方向不变且更强，但论文里必须用同一把尺子，否则会被评委抓住单位偷换。</p>
+</div>
+
+<h2>1. 指导方独立复算</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>可分配上限（全开 5,263 站）</td><td>占用覆盖率 61.098%</td><td>用 <code>a−u</code> 复算 61.10%；600,000 车位 / 974,923 占用需求</td><td>✓</td></tr>
+<tr><td>折点 4,000 站</td><td>59.530%</td><td>复算 59.53%；705 站 10.847%（边际曲线一致）</td><td>✓</td></tr>
+<tr><td>到达份额覆盖（我加的）</td><td>未给</td><td>按格内已分配比例 <code>(a−u)/a</code> 加权到到达量：全开 <strong>56.75%</strong>、折点 <strong>55.80%</strong>；旧 76.86% 是到达份额，可以直接比</td><td>需补</td></tr>
+<tr><td>半径</td><td>R=150/300 同覆盖 52.424%，R=450 59.530%</td><td>一致；300 m 内无邻格（网格 0.426×0.556 km）</td><td>✓</td></tr>
+<tr><td>合规加权</td><td>7.622% / 3.172% / 1.417%</td><td>覆盖率 × π(R)：0.1454 / 0.0605 / 0.0238，逐项一致</td><td>✓</td></tr>
+<tr><td>分配一致性</td><td>max 2.7e-13；>450 m 违反 0；超容 0</td><td>check.json 自洽；S 整数偏差 0</td><td>✓</td></tr>
+<tr><td>回放（折点，meas343）</td><td>05-12 实现覆盖 50.333%、满位 1,007、溢出 104,551</td><td>replay.json 一致；05-19 50.353%、1,110、126,921</td><td>✓</td></tr>
+<tr><td>步行距离</td><td>未分配到达 98.35% 在 450 m 内；严格超出 15,524 辆/日，P50 0.700、P90 1.749 km</td><td>15,524/942,487 = 1.647% ✓，与 98.35% 自洽</td><td>✓</td></tr>
+<tr><td>式 (29) 替换文字</td><td>Kneedle 规则、λ=150、705 为无上限参考</td><td>与代码 t009_q4.py:130-138 一致；cost(n) 单调，无内点最优</td><td>✓</td></tr>
+<tr><td>大型站点</td><td>未做，无逐格用地依据</td><td>符合任务单“只有有用地依据才做”</td><td>✓</td></tr>
+</tbody></table></div>
+
+<h2>2. R1 要做的事（都不需要重解）</h2>
+<ol>
+<li><strong>覆盖率给两列。</strong>每个方案同时报：占用份额（现有）与到达份额（按 <code>(a−u)/a</code> 加权到 <code>arr</code>）。到达份额才是和旧 76.86% 可比的数。指导方算得全开 56.75%、折点 55.80%，请用你的管线复算并写进 <code>summary.json</code> 与 <code>frontier.json</code>。</li>
+<li><strong>分母的口径说明。</strong>“逐格 95 分位求和”作为总需求是保守上界（你已在 demand_stats 里注明）；请再给一个系统级对照——同一批 MC 重复里总占用量的 95 分位，与逐格求和之比。论文要用一句话交代分母为什么偏保守。</li>
+<li><strong>设计日回放的自洽解释。</strong>设计日满位 0、但实现覆盖率 55.8% 低于设计 59.53%，同时 <code>departure_shortfall</code> 132,251——这是“空站借不到车”的服务缺口，不是容量缺口。请在回放表里单列这一项，并在论文中说清：满位率与借车成功率是两个方向的服务失效。</li>
+<li><strong>回放时间步长。</strong>交付未写回放步长；请注明（15 分钟或 1 小时），并在 15 分钟时说明与 1 小时结果的差异。</li>
+</ol>
+
+<h2>3. 结论层面可以写的（给 T021）</h2>
+<ul>
+<li>硬上限 150 位/站 + 450 m 单次分配下，即使 5,263 个候选站全开，占用份额覆盖也只有 61.10%、到达份额 56.75%；旧 76.86% 在限容下<strong>不可达</strong>——这是 Q4 的主要修正。</li>
+<li>折点方案 4,000 站 / 600,000 车位：占用 59.53%、到达 55.80%；回放实现 50.33%（05-12）。</li>
+<li>半径：R=450 的覆盖比 R=150/300 高 7.1 个百分点（59.53 vs 52.42），但零奖励合规率 2.38% vs 14.54%；若按自愿合规加权，有效覆盖率反而随半径下降（1.42% vs 7.62%）。<strong>这正好回答 M18：限容围栏只有在强制停车口径下才成立。</strong></li>
+<li>未分配到达中 98.35% 在本格 450 m 内（多为本格满位），严格超距的仅 1.65%；论文应写“容量不足，而非距离过远”。</li>
+</ul>
+
+<h2>4. 未解决项</h2>
+<ul>
+<li>大型站点（用地依据）未做：在论文的限制段写一句“若允许地铁口枢纽级站点，覆盖上限会高于 61.10%，本数据无逐格用地信息，故不主张”。</li>
+<li>折点规则在占用份额上选出 4,000；若改在到达份额上画前沿，折点位置可能变化。T021 只需说明前沿用占用份额（容量口径），不需要重画。</li>
+</ul>
+
+</main>
+</body>
+</html>

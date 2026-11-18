@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T018-R1 验收：通过</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T018-R1 验收：通过</h1>
+<p class="meta">2026-11-18 · 交付 310be4e（T018_delivery.json R1）· 前一轮退回的 4 条全部落实</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>装车量已全部整数，四份班表的五类约束仍为 0 违反，指导方复算与交付一致。期末空驶与贪心固定成本已按要求单列。日循环版本给了额外信息，T021 按“目标 + 空驶”合计写。</p>
+</div>
+
+<h2>1. 指导方独立复算</h2>
+<div class="tw"><table>
+<thead><tr><th>检查</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>装车量整数</td><td>四份 CSV 全整数，最大 40</td><td>K20/40/60/80 载货 240/479/632/629 趟，小数 0 趟，最大 40.0</td><td>✓</td></tr>
+<tr><td>K=60 物理</td><td>五类 0 违反</td><td>位置接续 0、余量平衡 0、最长 46.92 min、搬运合计 24,949</td><td>✓</td></tr>
+<tr><td>目标与差距</td><td>obj 83,807.74；gap 0.964%；较 LP 82,968.07 高 1.012%</td><td>(83,807.74−82,999.74)/83,807.74=0.964% ✓；839.67/82,968.07=1.012% ✓</td><td>✓</td></tr>
+<tr><td>峰值</td><td>2,376 @ 0 时（60 车次）</td><td>result_int_K60.json 一致；整数解把调度前移到 0 时，事件顺序允许</td><td>✓（需在论文解释）</td></tr>
+<tr><td>期末空驶</td><td>1,023.76 km / 6,142.58 元/天，单列</td><td>constraint_check.json end_positions 一致</td><td>✓</td></tr>
+<tr><td>日循环版本</td><td>obj 85,536.76，dev 910.26，空驶 2,477.75</td><td>result_int_K60_cycle.json 一致：moved 24,459、峰值 2,347@23</td><td>✓</td></tr>
+<tr><td>字段</td><td>truck_counts_integer / bike_loads_integer 分离</td><td>LP 与整数结果文件 schema 一致</td><td>✓</td></tr>
+<tr><td>贪心拆解</td><td>固定 36,000 + 可变 141,892.62</td><td>可变比不调度低 1,491.91，差额全部来自固定成本</td><td>✓</td></tr>
+</tbody></table></div>
+
+<h2>2. 两套解怎么选（给 T021 的口径）</h2>
+<div class="tw"><table>
+<thead><tr><th>方案</th><th>目标</th><th>空驶</th><th>合计</th><th>dev</th></tr></thead>
+<tbody>
+<tr><td>K=60 整数（日循环不约束）</td><td>83,807.74</td><td>6,142.58</td><td><strong>89,950.32</strong></td><td>459.41</td></tr>
+<tr><td>K=60 整数（强制 n[23]=n[0]）</td><td>85,536.76</td><td>2,477.75</td><td><strong>88,014.51</strong></td><td>910.26</td></tr>
+</tbody></table></div>
+<p>日循环版本合计更省 1,935.81 元/天，但 dev 差 450.85 辆（罚 1,352.55 元）。<strong>论文应以“目标 + 空驶”合计作为可执行成本</strong>，并说明日循环版本是可重复日班表的推荐形态；两套都报，读者可复核。</p>
+
+<h2>3. 遗留（不影响通过）</h2>
+<ul>
+<li>峰值移到 0 时：60 辆车在 0 时集中搬运 2,376 辆。夜间调度在共享单车行业是常规做法，但论文要写明这意味着夜班全员出车，并给出与昼间方案的操作差异。</li>
+<li>留出日 dev 51,718–53,256（约 I0 的 15%），是设计日特定方案的代价；T021 必须写，并可与日循环版本对照。</li>
+<li>卡车容量 40 辆仍无来源，标“规划假设”。</li>
+</ul>
+
+</main>
+</body>
+</html>
