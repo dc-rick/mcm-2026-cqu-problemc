@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T024 验收：退回 R1（里程单位、整数装车、区内上限）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T024 验收：退回 R1（里程单位、整数装车、区内上限）</h1>
+<p class="meta">2026-11-18 · 交付 7240f42（T024_delivery.json R0）· 架构与主方向通过；三处计算缺陷必须修</p>
+
+<div class="box ok">
+<p><strong>通过的部分：</strong>两级分解（卡车跨区、三轮车区内）成立；区级 0 未服务与格级 11.22% 的对照是 H24/M14 要的答案；11 个车队规模单调下降；成本恒等式、断言、输入口径（Pcell 行和 1.4e-8、区匹配 7.7e-7、dep_cell/dep_zone 1.000000004）全部复算一致；6 个三轮车参数都有值和区间并标“规划假设”；1.24 与 1,530 两个盈亏平衡数的算式正确。</p>
+</div>
+
+<div class="box hi">
+<p><strong>退回的原因（三处）：</strong></p>
+<ol>
+<li><strong>里程成本单位错了。</strong><code>_tri_lp</code> 返回的 <code>km = Σ d·x</code>，x 是<b>车</b>数，所以这是<b>车-公里</b>；但成本行 <code>TRI_KM * km</code> 按 0.20 元/<b>车</b>-公里收费，应该是 0.20 元/<b>辆</b>-公里（载 20 辆）。同一份代码里 LP 目标 <code>c[k]=TRI_KM*d/Q</code> 按 /Q 计价，聚合处却没除——自相矛盾。核验：0 区 n=20 的 km 曲线 2,017.07，而班表实际行驶 221.69 辆-公里，比值 9.10 恰是平均装载（3,945.6 辆/436 趟）。正确的里程费是 750.5（按满载 Q=20）到 1,658.7（按班表实测 9.05 辆/趟），不是 15,010.15。总成本应由 624,205 降到 609,945–610,854。</li>
+<li><strong>“可执行班表”不是可执行的。</strong>把 LP 流按 <code>min(Q, rem)</code> 拆成趟后，436 趟里 62 趟载不满 1 辆、188 趟不足 5 辆（例：0.531、0.0587 辆）；22 辆车里有 206/225 个“车-小时”合计非整数，每辆车日搬运 129.30–226.75 辆也全非整数。三轮车不能运 0.53 辆车。这和 T018 被退回的小数装车是同一类缺陷。</li>
+<li><strong>“728 辆最优”是区内上限的产物。</strong>每区最多 20 辆（<code>TRI_NMAX=20</code>），在 728 的分配里有 <strong>15/50 个区顶在上限</strong>（0,2,4,5,10,11,12,22,24,33,34,37,39,45,48），中位数才 17。DP 想再给这些区加车也加不进去，所以 728 不是最优，是“上限 20 下的最优”。notes 里“边界饱和是因为边际车省不到 300 元”这句话在这个前提下是循环论证。</li>
+</ol>
+</div>
+
+<h2>1. 指导方独立复算</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>只卡车总成本</td><td>1,519,278.95</td><td>239,245.201×6 + 83,807.744 = 1,519,278.95</td><td>✓</td></tr>
+<tr><td>728 辆三轮车成本</td><td>233,410.15</td><td>300×728 + 0.2×75,050.744 = 233,410.15；<b>但 0.2 乘在车-公里上，见缺陷 1</b></td><td>算式对、单位错</td></tr>
+<tr><td>两级总成本</td><td>624,204.93</td><td>51,164.507×6 + 83,807.744 + 233,410.149 = 624,204.93</td><td>✓</td></tr>
+<tr><td>节省与份额</td><td>895,074.02 / 58.91%</td><td>1,519,278.95 − 624,204.93 = 895,074.02；/1,519,278.95 = 58.91%</td><td>✓（但受缺陷 1 影响）</td></tr>
+<tr><td>格级未服务份额</td><td>11.22% / 2.40%</td><td>239,245.201/2,132,542.19 = 11.2188%；51,164.507/2,132,542.19 = 2.3991%</td><td>✓</td></tr>
+<tr><td>罚金盈亏平衡</td><td>1.2410 元</td><td>233,410.149/188,080.694 = 1.2410</td><td>✓（受缺陷 1 影响）</td></tr>
+<tr><td>固定成本上限</td><td>1,529.50 元/车日</td><td>(6×188,080.694 − 15,010.149)/728 = 1,529.50</td><td>✓（分子含被高估的里程）</td></tr>
+<tr><td>车队扫描</td><td>0,100,…,1000 共 11 点</td><td>N≥800 时三轮车均停在 728；单调下降成立</td><td>✓</td></tr>
+<tr><td>区级/格级口径</td><td>区级 0，格级 239,245</td><td>T018 K=60 未服务 0 复现；静态拆分 115,129 与 5.40% 一致</td><td>✓</td></tr>
+<tr><td>步行项</td><td>300 m 在本网格无邻格，walk300 = strict</td><td>check.json walk_cross_zone_share = 0.0；格心间距 426×556 m</td><td>✓</td></tr>
+<tr><td><b>指导方加算：最优车队对罚金的敏感性</b></td><td>未给</td><td>按 p·unmet + 三轮车成本重选最优：p=1→200 辆，p=2→400，p=3/4→600，p=6/10→728。全局门槛（任一规模能收支相抵的最低 p）在 N=100：70,087.6×p ≥ 34,296.1 → p ≥ <b>0.4893</b>。交付的 1.241 是“728 规模下的边际门槛”，不是全局门槛。</td><td>需补</td></tr>
+<tr><td><b>指导方加算：区内上限</b></td><td>未报</td><td>728 分配中 15/50 个区 = 20（上限），说明 DP 被截断</td><td>需重解</td></tr>
+<tr><td><b>指导方加算：班表装载</b></td><td>436 趟 / 3,945.6 辆</td><td>逐行复算：436 趟、3,945.62 辆、221.69 km；62 趟 &lt;1 辆、188 趟 &lt;5 辆；最小 0.0587 辆</td><td>不符“可执行”</td></tr>
+</tbody></table></div>
+
+<h2>2. R1 要做的事</h2>
+<ol>
+<li><strong>修里程单位。</strong><code>_tri_lp</code> 的 km 改名为 <code>bike_km</code>，成本改为 <code>TRI_KM × 辆-公里</code>，辆-公里 = Σ d·ceil(x/Q)（或至少 /Q）。重算 <code>tricycle_km / tricycle_cost / total / saving / </code>两个平衡点；<code>vehicle_km</code> 与 <code>bike_km</code> 两个字段分开存。交付文字里“75,051 vehicle-km”改为“75,051 车-公里（≈3,753 辆-公里）”。</li>
+<li><strong>整数化班表。</strong>按趟取整（向下取整后把余数并入下一趟，或按趟向上取整但检查 donor 库存），并合并 &lt;1 辆的流（一趟运 0.06 辆没有意义）。重跑 0 区样例，重报 trips / max_load / unassigned / end_h / km。城市级至少给出取整误差上界：趟数 × 0.5 辆 与 188,081 的比值（按 0 区 436 趟/22 辆外推约 1.4 万趟 → ≤3.8%）。</li>
+<li><strong>放开区内上限重解。</strong><code>TRI_NMAX</code> 提到 40（或 60），重跑成本曲线与 DP，报新的最优车队、残余未服务、总成本。若 728 仍最优，把“上限不绑定”写成证据（落在上限的区数 = 0）；若变大，按新数改全文。</li>
+<li><strong>补三张表（都是现成数据能算的）：</strong>
+  <ul>
+  <li>N*(p)：p ∈ {1,2,3,4,6,10} 下的最优车队与总成本，说明结论对罚金假设的依赖；</li>
+  <li>全局门槛：给出“任一规模能收支相抵”的最低 p（指导方算得 0.4893，请独立复算）；</li>
+  <li>格级未服务的区间：静态 5.40% 与动态 11.22% 并列为下界/上界，写清为什么（跨格步行未建模，格心间距 &gt; 300 m，但跨格边界步行是可能的）。</li>
+  </ul></li>
+<li><strong>口径声明：</strong>两级是<b>序贯</b>求解（T018 卡车计划固定，三轮车只补残余），不是联合最优；联合优化只会更好，所以 58.9% 是保守下界。另：<code>pre_tricycle_shortfall</code> 沿“有三轮车”的库存路径计量，与 239,245 不同口径，需一句话说明。</li>
+</ol>
+
+<h2>3. 论文口径（给 T021，不必等 R1）</h2>
+<ul>
+<li><strong>主句用服务指标，不用钱：</strong>“格级未服务从 11.2% 降到 2.4%，每消除 1 次未服务花 1.24 元（模型罚金 6 元）。”58.9% 只能作为“在 6 元罚金口径下”的括号数字出现——这和 T020/Q3 的教训是同一条：等价成本模型的节省不是系统节省。</li>
+<li>三轮车参数全是规划假设（230–500 元/车日、12–30 辆/趟等），论文必须给区间敏感性：固定成本在 [200,500] 内取值时最优车队如何变。</li>
+<li>“有 300 m 步行就够”这句话不能写：本网格上 300 m 到不了任何邻格，三轮车层是唯一的区内工具；但也要承认跨格边界步行未建模，11.22% 是上界。</li>
+</ul>
+
+<h2>4. 未解决项（不影响本轮判定）</h2>
+<ul>
+<li>丢失的行程不回馈到到达（交付已注明，偏差 ≤ 未服务份额 2–11%）：论文限制段写一句。</li>
+<li>栅栏外/无用地依据的站点未处理，与 T019 一致。</li>
+<li>联合优化（卡车与三轮车同时决策）未做：作为 future work。</li>
+</ul>
+
+</main>
+</body>
+</html>
