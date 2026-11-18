@@ -1019,7 +1019,10 @@ def run_schedule(force=False):
             iterations=int(e["iterations"]),
             trips=int(len(bf["trips"])),
             unassigned=int(a["unassigned"]) if a else None,
-            unmet=float(bf["r"]["unmet"]),
+            unmet_lp=float(bf["r"]["unmet"]),
+            int_short=float(bf["flows_bikes"] - bf["int_bikes"]),
+            unmet=float(bf["r"]["unmet"] + bf["flows_bikes"]
+                        - bf["int_bikes"]),
             lp_vehicle_km=float(bf["lp_vehicle_km"]),
             vehicle_km=float(a["vehicle_km"]) if a else None,
             deadhead_km=float(sum(s["deadhead_km"] for s in a["sched"]))
@@ -1031,6 +1034,8 @@ def run_schedule(force=False):
         zones_raised=int(sum(1 for r in exec_rows
                              if r["n_exec"] is not None
                              and r["n_exec"] > r["n_priced"])),
+        unmet_lp=float(sum(r["unmet_lp"] for r in exec_rows)),
+        int_short=float(sum(r["int_short"] for r in exec_rows)),
         unmet=float(sum(r["unmet"] for r in exec_rows)),
         lp_vehicle_km=float(sum(r["lp_vehicle_km"] for r in exec_rows)),
         vehicle_km=float(sum(r["vehicle_km"] or 0 for r in exec_rows)),
@@ -1113,6 +1118,9 @@ def run_schedule(force=False):
         rounding_loss=float(built["flows_bikes"] - built["int_bikes"]),
         rounding_share=float((built["flows_bikes"] - built["int_bikes"])
                              / max(built["flows_bikes"], 1e-9)),
+        lp_unmet_zone=float(built["r"]["unmet"]),
+        int_unmet_zone=float(built["r"]["unmet"] + built["flows_bikes"]
+                             - built["int_bikes"]),
         min_feasible_tricycles=min_feasible,
         min_feasible_scan=scan,
         city=city,
@@ -1244,7 +1252,9 @@ def run_check(force=False):
             city.get("zones_with_unassigned", -1)),
         schedule_exec_feasible=bool(ex.get("feasible", False)),
         schedule_exec_n=int(ex.get("n_exec", -1)),
-        schedule_exec_unmet=float(ex.get("unmet", 0.0)),
+        schedule_exec_unmet_lp=float(ex.get("unmet_lp", 0.0)),
+        schedule_exec_int_short=float(ex.get("int_short", 0.0)),
+        schedule_exec_unmet_int=float(ex.get("unmet", 0.0)),
         schedule_exec_total_fullload=float(ex.get("total_fullload", 0.0)),
         schedule_exec_saving_fullload=float(ex.get("saving_fullload", 0.0)),
         schedule_exec_saving_share=float(
@@ -1252,10 +1262,17 @@ def run_check(force=False):
         schedule_exec_penalty_ceiling=float(
             ex.get("penalty_ceiling_exec", 0.0)),
         schedule_exec_fixed_ceiling=float(ex.get("fixed_ceiling_exec", 0.0)),
-        schedule_city_actual_mileage_cost=float(
+        schedule_lp_unmet_zone=float(sch.get("lp_unmet_zone", 0.0)),
+        schedule_int_unmet_zone=float(sch.get("int_unmet_zone", 0.0)),
+        schedule_city_priced_actual_mileage_cost=float(
             city.get("actual_mileage_cost", 0.0)),
-        schedule_city_fullload_mileage_cost=float(
+        schedule_city_priced_fullload_mileage_cost=float(
             city.get("fullload_mileage_cost", 0.0)),
+        schedule_exec_actual_mileage_cost=float(
+            TRI_KM * (ex.get("vehicle_km", 0.0)
+                      + ex.get("deadhead_km", 0.0))),
+        schedule_exec_fullload_mileage_cost=float(
+            TRI_KM * ex.get("lp_vehicle_km", 0.0)),
         schedule_load_ok=bool(sch["max_load_ok"]),
         schedule_loads_integer=bool(sch.get("loads_integer", False)),
         schedule_shift_ok=bool(sch["shift_ok"]),
