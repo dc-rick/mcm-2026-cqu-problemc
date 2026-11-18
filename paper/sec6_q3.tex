@@ -90,7 +90,10 @@ The tricycle layer is different because its residual is large: 239,245.20 cell-l
 departures unserved before tricycles and 39,984.2332 after the executable
 975-tricycle plan. A reroute raises the arrival count at its target cell, reducing the
 deficit the tricycle layer must fill, so the incentive enters exactly where the
-tricycle layer is paying.
+tricycle layer is paying. The replay keeps every reroute inside the source zone, which
+holds the truck layer of Section~\ref{sec:q2} fixed by construction; the unrestricted
+placement rule of Section~\ref{sec:assume} --- a target cell outside the source zone
+--- is the one priced in the truck-caliber test above.
 
 Payments are settled on the \emph{increment} ledger in this calculation: the platform
 pays $r$ per reroute that fills a deficit, so the bill is $r\,q(r)$. On the 0.05-CNY
@@ -222,7 +225,7 @@ a larger obligation is an accounting-only variant, not a feasible policy.
   does not bind.
 \end{enumerate}
 
-Five limits bound these numbers. First, reroutes are cell-level, not zone-level: the
+Five limits bound these numbers. First, in the truck-caliber test reroutes are cell-level, not zone-level: the
 target cell may lie outside the source zone, so a small share of accepted reroutes
 changes a zone-hour arrival total. That is the only channel through which the incentive
 can reach the truck layer, and it is priced in the truck-caliber test above, where it

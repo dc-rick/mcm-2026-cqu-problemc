@@ -1,6 +1,6 @@
 {
  "task": "T027",
- "revision": "R1b",
+ "revision": "R1c",
  "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
@@ -122,6 +122,13 @@
  "r1b_checks": {
   "R1b-1_sizing_demand_units": true,
   "R1b-2_caption_row_ref": true
+ },
+ "r1c_checks": {
+  "R1c-1_summary_replay_scope": true,
+  "R1c-2_A12_tricycle_replay": true,
+  "R1c-3_sec6_two_calibers": true,
+  "R1c-4_sec6_truck_caliber_first": true,
+  "R1c-5_summary_4_33_upper": true
  },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,

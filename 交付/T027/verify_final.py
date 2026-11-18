@@ -1,4 +1,4 @@
-"""T027 R1/R1b verification.
+"""T027 R1/R1b/R1c verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
   1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
@@ -6,8 +6,9 @@ Checks, with evidence written to 交付/T027/verify_final.json:
      ai_report.tex is excluded from the gate (R1-13) but its diff is reported.
   2. Forbidden strings: internal task ids (T0xx), revision language.
   3. Section-6 legacy wording checks (carried from R0), the R1-1..R1-13
-     item checks from task sheet section 8.1, and the R1b-1/R1b-2 text
-     checks from section 8.4.
+     item checks from task sheet section 8.1, the R1b-1/R1b-2 text
+     checks from section 8.4, and the R1c-1..R1c-5 text checks from
+     section 8.5.
   4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
      from data/runs/T024/schedule_check.json and matched to the paper strings.
   5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
@@ -69,7 +70,7 @@ def norm(text):
 
 
 def main():
-    ev = {"task": "T027", "revision": "R1b", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1c", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
@@ -196,7 +197,32 @@ def main():
             and not has("sec7_q4.tex", "in the last row")),
     }
     ev["r1b_checks"] = r1b
-    ok = ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
+
+    # ---- 3c. R1c item checks (task sheet 8.5) --------------------------
+    r1c = {
+        "R1c-1_summary_replay_scope": has(
+            "summary.tex", "in this replay reroutes stay within a zone"),
+        "R1c-2_A12_tricycle_replay": (
+            has("sec2_assumptions.tex",
+                "The tricycle-caliber replay of Section~\\ref{sec:q3} keeps the target")
+            and has("sec2_assumptions.tex",
+                    "inside the source zone, so the truck layer stays fixed there by construction")),
+        "R1c-3_sec6_two_calibers": (
+            has("sec6_q3.tex", "The replay keeps every reroute inside the source zone")
+            and has("sec6_q3.tex",
+                    "the unrestricted placement rule of Section~\\ref{sec:assume}")
+            and has("sec6_q3.tex", "fixed by construction; the unrestricted")),
+        "R1c-4_sec6_truck_caliber_first": (
+            has("sec6_q3.tex",
+                "First, in the truck-caliber test reroutes are cell-level, not zone-level")
+            and not has("sec6_q3.tex", "First, reroutes are cell-level")),
+        "R1c-5_summary_4_33_upper": (
+            has("summary.tex", "an upper estimate of 4.33 rides each per day")
+            and not has("summary.tex", "serving \\textbf{4.33 rides")),
+    }
+    ev["r1c_checks"] = r1c
+    ok = (ok and all(checks6.values()) and all(r1.values()) and all(r1b.values())
+          and all(r1c.values()))
 
     # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
@@ -305,6 +331,7 @@ def main():
                       "token_gate_pass": ev["token_gate_pass"],
                       "r1_checks_pass": all(r1.values()),
                       "r1b_checks_pass": all(r1b.values()),
+                      "r1c_checks_pass": all(r1c.values()),
                       "section6_pass": all(checks6.values()),
                       "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],

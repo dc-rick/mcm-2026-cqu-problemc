@@ -3,8 +3,8 @@
  "title": "终审定稿与提交包 — R1（DeepSeek 第二轮冷读 13 项文字修正）",
  "date": "2026-11-19",
  "status": "delivered",
- "revision": "R1b",
- "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。 R1b（任务单 §8.4，2026-11-19）：sec7_q4.tex 两处纯文字——q4cap 符号句量纲改为 sizing-demand 单位（f/u 不再写作 arrivals，a_i 不改叫 arrivals），tab:q4plan 表注改指 'Arrival coverage' 行；sec7_q4.tex 对 3209636 的数字 token 多重集与 R1 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。R1 复核两项裁决按 ① A10 附加句采纳保留、② pp11–12 公式跨页接受结案。",
+ "revision": "R1c",
+ "summary": "按任务单 §8.1 完成 13 项只改文字的模型表述/推导修正（R1-1～R1-13，另修 A12 中第四处同类 B2 口径句），按 §8.2 补两个紧凑公式块（三轮车区-小时 LP eq:q2tri、受限选址 0-1 规划 eq:q4cap）；数字 token 门对 3209636 逐文件比对：唯一新增为 sec5_q2.tex 的 token 12 一次（TRI_NEAREST=12），ai_report.tex 按任务单排除但同样仅 +12；xelatex 三遍恢复 27 总页 / 25 计页（Summary p1、目录 p2、正文 p3--24、References p25、AI 报告 pp26--27），undefined 0、overfull 0、LaTeX Warning 0、?? 0、U+037E 0，目录页码与正文一致；回归数字 975 / 617,055.7515 / 39,984.2332（及 533,248.01 / 902,223.20 / 59.385%）与 data/runs/T024/schedule_check.json 逐一复算一致；code/、data/ 未动、未重跑；file_list 与哈希已重算（757 个文件）。 R1b（任务单 §8.4，2026-11-19）：sec7_q4.tex 两处纯文字——q4cap 符号句量纲改为 sizing-demand 单位（f/u 不再写作 arrivals，a_i 不改叫 arrivals），tab:q4plan 表注改指 'Arrival coverage' 行；sec7_q4.tex 对 3209636 的数字 token 多重集与 R1 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。R1 复核两项裁决按 ① A10 附加句采纳保留、② pp11–12 公式跨页接受结案。 R1c（任务单 §8.5，2026-11-19）：五处纯文字——摘要补 'in this replay' 与 'an upper estimate of 4.33'，A12 与 §6.4 写明三轮车口径重演限定区内（故卡车层按构造固定）而跨区放置规则用于卡车口径测试，§6.6 第一条限定 'in the truck-caliber test'；token 门与 R1b 完全相同（全篇仍仅 sec5_q2.tex +12×1），27 总 / 25 计页不变。",
  "checks": {
   "R1-1_A11_placement": "pass; paper/sec2_assumptions.tex A11（Placement and payment）改写为：改派放在原行程所在小时、目标格取自该小时亏缺表，目标不受源区限制；跨区部分经 zone_delta 进入卡车层，指向 §6 的卡车口径检验；保留 'No cross-hour rearrangement is modelled.'。旧句 'in the same zone / no cross-zone reroute' 已不存在。证据：交付/T027/verify_final.json r1_checks.R1-1_A11_scope=true。",
   "R1-1b_A12_consistency_fix": "pass; 任务单未列的第四处同类口径句（sec2 A10 末句旧文 'Because reroutes do not cross a zone boundary, the truck layer is unchanged.'）同步改为 'The truck layer is held fixed when the tricycle layer is solved, and the part of a reroute that crosses a zone boundary is priced in the truck-caliber test of Section~\\ref{sec:q3}.'。依据与 R1-1 同（t008_q3_pool.py:124、t020_q3_budget.py:502、T008 zone_decomposition targeted 0.0746）；属主动补漏，特此申报。证据：r1_checks.R1-1b_A12_consistency_fix=true。",
@@ -29,7 +29,16 @@
   "R1b-A1_old_new_basis": "pass; 两处替换在 affected 末尾两条逐条给出 location / old / new / basis。",
   "R1b-A2_token_gate_same_as_R1": "pass; 对基线 3209636 逐文件比对：sec7_q4.tex 数字多重集 removed={} added={} identical=true（与 R1 完全相同）；全篇仍仅 sec5_q2.tex +{'12':1}；ai_report.tex 按 §8.3 豁免。证据 verify_final.json token_gate.sec7_q4.tex、token_gate_pass=true。",
   "R1b-A3_compile_pages": "pass; xelatex 三遍 'Output written on main.pdf (27 pages).'；计页 25；overfull 0、undefined 0、LaTeX Warning 0、'??' 0、U+037E 0；References 起始 p25、AI 报告起始 p26；TOC 页码与正文一致。证据 verify_final.json pdf 段。",
-  "R1b-A4_scope": "pass; 本轮只改 paper/sec7_q4.tex（两处纯文字）与 交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；main.tex、code/、data/、审查与规划/ 未写；未重跑任何代码。"
+  "R1b-A4_scope": "pass; 本轮只改 paper/sec7_q4.tex（两处纯文字）与 交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；main.tex、code/、data/、审查与规划/ 未写；未重跑任何代码。",
+  "R1c-1_summary_replay_scope": "pass; summary.tex 'The condition: reroutes stay within a zone…' → 'The condition: in this replay reroutes stay within a zone…'。证据 r1c_checks.R1c-1_summary_replay_scope=true。",
+  "R1c-2_A12_tricycle_replay": "pass; sec2_assumptions.tex A12 末句 '…a personalised reward is not modelled.' 之后新增 'The tricycle-caliber replay of Section~\\ref{sec:q3} keeps the target inside the source zone, so the truck layer stays fixed there by construction.'（用 \\ref，不写字面 6）。证据 R1c-2_A12_tricycle_replay=true。",
+  "R1c-3_sec6_two_calibers": "pass; sec6_q3.tex §6.4 首段末 '…tricycle layer is paying.' 之后新增两口径句：同区重演把 Section~\\ref{sec:q2} 卡车层按构造固定，跨区放置规则（Section~\\ref{sec:assume}）在卡车口径测试中定价。证据 R1c-3_sec6_two_calibers=true。",
+  "R1c-4_sec6_truck_caliber_first": "pass; §6.6 第一条 'First, reroutes are cell-level, not zone-level…' → 'First, in the truck-caliber test reroutes are cell-level, not zone-level…'。证据 R1c-4_sec6_truck_caliber_first=true。",
+  "R1c-5_summary_4_33_upper": "pass; summary.tex 'serving \\textbf{4.33 rides each per day}' → 'serving \\textbf{an upper estimate of 4.33 rides each per day}'（DeepSeek 第三轮 m2；§3.4 已写 'because the fleet estimate is biased low, 4.33 is an upper estimate'）。证据 R1c-5_summary_4_33_upper=true。",
+  "R1c-A1_old_new_basis": "pass; 五处替换/新增在 affected 末尾五条逐条给出 location / old / new / basis。",
+  "R1c-A2_token_gate_same_as_R1b": "pass; 对基线 3209636 逐文件比对：summary.tex、sec2_assumptions.tex、sec6_q3.tex 数字多重集 removed={} added={} identical=true（与 R1b 完全相同）；全篇仍仅 sec5_q2.tex +{'12':1}；ai_report.tex 按 §8.3 豁免。证据 verify_final.json token_gate、token_gate_pass=true。",
+  "R1c-A3_compile_pages": "pass; xelatex 三遍 'Output written on main.pdf (27 pages).'；计页 25；overfull 0、undefined 0、LaTeX Warning 0、'??' 0、U+037E 0；References 起始 p25、AI 报告起始 p26；TOC 页码与正文一致。证据 verify_final.json pdf 段。",
+  "R1c-A4_scope": "pass; 本轮只改 paper/summary.tex、paper/sec2_assumptions.tex、paper/sec6_q3.tex 与 paper/main.pdf、交付/T027_delivery.json、交付/T027/file_list.json、交付/T027/verify_final.py/.json；code/、data/、审查与规划/ 未写；未重跑任何代码。"
  },
  "affected": [
   {
@@ -187,6 +196,36 @@
    "old": "with the arrival-weighted share in the last row",
    "new": "with the arrival-weighted share in the row labelled Arrival coverage",
    "basis": "表末行已为 MILP gap；到达口径在 'Arrival coverage' 行（55.80%/49.59%）。"
+  },
+  {
+   "location": "paper/summary.tex p1 Q3 段",
+   "old": "The condition: reroutes stay within a zone",
+   "new": "The condition: in this replay reroutes stay within a zone",
+   "basis": "T026 重演的 zone_edges 只建区内边（t026_incentive_tricycle.py docstring 'Per-hour reroute edges within one zone'），18,011.46 这组数字属同区变体；加限定后摘要与 A12/§6.4 不再矛盾。"
+  },
+  {
+   "location": "paper/sec2_assumptions.tex A12 末句之后",
+   "old": "…a personalised reward is not modelled.",
+   "new": "…a personalised reward is not modelled. The tricycle-caliber replay of Section~\\ref{sec:q3} keeps the target inside the source zone, so the truck layer stays fixed there by construction.",
+   "basis": "t026_incentive_tricycle.py 文件头 'same zone so that T018's zone totals and the truck layer are untouched'；一般放置规则（允许跨区）用于卡车口径测试。"
+  },
+  {
+   "location": "paper/sec6_q3.tex §6.4 首段末",
+   "old": "…the incentive enters exactly where the tricycle layer is paying.",
+   "new": "…the tricycle layer is paying. The replay keeps every reroute inside the source zone, which holds the truck layer of Section~\\ref{sec:q2} fixed by construction; the unrestricted placement rule of Section~\\ref{sec:assume} --- a target cell outside the source zone --- is the one priced in the truck-caliber test above.",
+   "basis": "同 R1c-2：三轮车口径重演为同区变体，跨区只在卡车口径测试 §6.2/§6.3 中定价。"
+  },
+  {
+   "location": "paper/sec6_q3.tex §6.6 Five limits 第一条",
+   "old": "First, reroutes are cell-level, not zone-level: the target cell may lie outside…",
+   "new": "First, in the truck-caliber test reroutes are cell-level, not zone-level: the target cell may lie outside…",
+   "basis": "该限制描述的是卡车口径测试的放置规则；三轮车口径重演为同区（R1c-2/R1c-3）。"
+  },
+  {
+   "location": "paper/summary.tex p1 车队段",
+   "old": "serving \\textbf{4.33 rides each per day}",
+   "new": "serving \\textbf{an upper estimate of 4.33 rides each per day}",
+   "basis": "§3.4 已写 'because the fleet estimate is biased low, 4.33 is an upper estimate'；DeepSeek 第三轮 minor m2 指出摘要缺同一限定。"
   }
  ],
  "outputs": [
@@ -218,7 +257,11 @@
   "R1b 只动 paper/sec7_q4.tex 两处纯文字；sec7_q4.tex 对 3209636 的数字多重集与R1 完全相同（identical），页数仍 27 总 / 25 计页——两处替换合计增加约一行文字，未触发版面变化。",
   "R1 复核结论（指导方 2026-11-19）：A10 附加句（R1-1b）采纳保留；pp11–12 的公式跨页（拆分点落在约束 (13)/(14) 之间）接受；token 门、757 文件哈希、独立编译、六数回归均复核通过。",
   "verify_final.py 本轮追加 r1b_checks（R1b-1 / R1b-2 文本断言），revision 改为 R1b；token 门、回归门、PDF 门逻辑未改动。",
-  "file_list.json 已重算：仍 757 个文件（paper tex 14、main.pdf 1、figs PDF 8、code 99、results 633、documents 2），sec7_q4.tex / main.pdf / verify_final.* 的 SHA-256 随之更新。"
+  "file_list.json 已重算：仍 757 个文件（paper tex 14、main.pdf 1、figs PDF 8、code 99、results 633、documents 2），sec7_q4.tex / main.pdf / verify_final.* 的 SHA-256 随之更新。",
+  "R1c 只动 summary.tex / sec2_assumptions.tex / sec6_q3.tex 的文本（五处替换或新增，均纯文字）；三个文件对 3209636 的数字多重集与 R1b 完全相同，页数仍 27 总 / 25 计页——新增约五行被原版面吸收，未触发分页变化。",
+  "R1c 起因：DeepSeek 第三轮（review/review_r3.json，0 阻塞 / 6 中 / 4 低，B1/B2/M4 判 fixed）后指导方发现 T026 的 zone_edges 只建区内边，而摘要与 A12 在跨区/同区口径上互相矛盾。本轮写明两个口径：一般放置规则（允许跨区）用于卡车口径测试，三轮车口径重演限制在区内，故卡车层按构造固定。",
+  "verify_final.py 追加 r1c_checks（R1c-1…R1c-5 文本断言），revision 改为 R1c；token 门、回归门、PDF 门逻辑未改动。",
+  "file_list.json 已重算：仍 757 个文件；summary.tex / sec2_assumptions.tex / sec6_q3.tex / main.pdf / verify_final.* 的 SHA-256 已更新。"
  ],
  "integrity": {
   "readonly_respected": true,
@@ -227,6 +270,6 @@
   "no_push": true,
   "single_commit": true,
   "deleted_files_declared": true,
-  "based_on": "c8561ca (R1)"
+  "based_on": "fcde640 (R1b)"
  }
 }
