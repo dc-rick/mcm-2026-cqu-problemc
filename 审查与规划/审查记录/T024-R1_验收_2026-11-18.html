@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T024-R1 验收：有条件通过</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T024-R1 验收：有条件通过</h1>
+<p class="meta">2026-11-18 · 交付 2456080（T024_delivery.json R1）· 三条缺陷已修；附三条口径条件，随下一次交付补</p>
+
+<div class="box ok">
+<p><strong>结论：有条件通过。</strong>R0 的三条都落实了：里程改为辆-公里计价且恒等式自洽；班表整车装载、约束全 0；区内上限提到 40 后最优 885 辆（仅 1 区顶格，且该区第 40 辆的净边际 169.8 元 &lt; 300，封顶影响已很小）。成本、节省、三个门槛、N*(p)、格级区间全部复算一致。附三条口径条件，不影响方向，但影响论文里印的数（尤其 61.0% vs 59.3%）。</p>
+</div>
+
+<h2>1. 指导方独立复算</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>三轮车成本</td><td>266,327.40</td><td>300×885 + 0.20×4,136.978 = 265,500 + 827.40 = 266,327.40</td><td>✓</td></tr>
+<tr><td>辆-公里恒等</td><td>4,136.98</td><td>82,739.551/20 = 4,136.978；逐区求和 = 4,136.978</td><td>✓</td></tr>
+<tr><td>总成本</td><td>592,278.8</td><td>83,807.744 + 266,327.396 + 6×40,357.274 = 592,278.78</td><td>✓</td></tr>
+<tr><td>节省/份额</td><td>927,000 / 61.0%</td><td>1,519,278.95 − 592,278.78 = 927,000.17；/1,519,278.95 = 61.02%</td><td>✓</td></tr>
+<tr><td>未服务份额</td><td>1.89%</td><td>40,357.274/2,132,542.19 = 1.892%</td><td>✓</td></tr>
+<tr><td>全局门槛</td><td>0.43110</td><td>30,214.8/70,087.56 = 0.43111（N=100）；我上轮的 0.4893 用的是旧里程口径，差额正是 4,081.3 元里程费</td><td>✓</td></tr>
+<tr><td>车队边际门槛</td><td>1.339</td><td>266,327.396/198,887.927 = 1.3391</td><td>✓</td></tr>
+<tr><td>固定成本上限</td><td>1,347</td><td>(6×198,887.927 − 827.396)/885 = 1,347.46</td><td>✓</td></tr>
+<tr><td>上限扫描</td><td>20/25/30/40 → 741/802/865/885</td><td>逐点一致；顶格区数 17/7/4/1</td><td>✓</td></tr>
+<tr><td>上限的边际</td><td>未给</td><td>0 区 24 的成本曲线 c[39]−c[40] = 169.8（已含该车 300 元固定成本）；第 41 辆净收益 &lt; 170，封顶截断 &lt; 0.1%</td><td>✓</td></tr>
+<tr><td>整数班表</td><td>395 趟、0.43% 取整损失</td><td>逐行复算：395 趟、6,166 辆、装载全整数 1–20、227 个车-小时合计全整数、末班 19.29 h；26.4965/6,192.4965 = 0.428%</td><td>✓</td></tr>
+<tr><td>班表空驶</td><td>max 0.280 km</td><td>合计 40.106 km（占载货 215.71 km 的 18.6%），单趟最大 0.280</td><td>✓</td></tr>
+<tr><td>N*(p)</td><td>203/457/580/726/885/1,224</td><td>逐行一致；p=10 时 1,224 &lt; 50×40=2,000，但该轮未报顶格区数</td><td>✓（补字段）</td></tr>
+</tbody></table></div>
+
+<h2>2. 三条附条件（下次交付一并补，不单独开轮）</h2>
+
+<div class="box warn">
+<p><strong>条件 1 · 上限再来一点：nmax=60。</strong>20→40 的曲线仍在下降（总成本 609,912→601,285→595,169→592,279），40 处还有 1 个区顶格、净边际 169.8 元。跑 nmax=60 一个点即可：若最优仍是 885，写“上限不绑定”；若变大，全文改数。代价约 2 分钟。</p>
+</div>
+
+<div class="box warn">
+<p><strong>条件 2 · 缓冲车的账要算清（影响头条）。</strong>样例班表用的是 40 分配 + 4 缓冲 = 44 辆，<code>dyn_zone</code> 也是按 n=44 重解的 LP（bike_km 3,461.6），而成本曲线 n=40 的值是 3,195.4——<strong>所以这份班表证明的是“44 辆可执行”，不是“被计价的 40 辆可执行”</strong>。两件事要做：</p>
+<ul>
+<li>用 n=40（无缓冲）跑一次班表，报未分配趟数与最小可行车数；若 40 不够，写出需要几辆。</li>
+<li>若确需 10% 缓冲，按 974 辆计价：固定 292,200 + 里程 827 = 293,027，总成本 618,979，节省 900,300，份额 <strong>59.3%</strong>（不是 61.0%）。论文二选一，不能一边按 885 计价一边用 44 辆跑班表。</li>
+<li><code>penalty_scan</code> 每行补 <code>zones_at_nmax</code>（p=10 的 1,224 辆可能也有区顶格）。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><strong>条件 3 · 里程口径标注。</strong>城市级辆-公里仍按满载 20 辆折算（bike_km/20）。班表实测平均装载 15.6 辆/趟、空驶再占 18.6%，按执行口径真实里程约 1,060–1,260 元，而不是 827 元。差额 ≤ 430 元/日（总成本的 0.07%），<strong>不需要重解</strong>，但论文必须写“vehicle-km 按满载折算”，不能把 4,137 当成实际里程。</p>
+</div>
+
+<h2>3. 现在可以写的（给 T021，等条件 2 定稿后再落数）</h2>
+<ul>
+<li><strong>主叙事：</strong>区级未服务为 0 的方案，在格级仍有 11.22%（动态上界）/5.40%（静态下界）的缺口；加三轮车层后降到 <strong>1.89%</strong>，代价 266,327 元/日（885 辆）或 293,027 元/日（含 10% 缓冲）。</li>
+<li><strong>三个门槛：</strong>本车队边际 1.339 元/减少的未服务单；全局最低 0.4311 元（N=100）；固定成本上限 1,347 元/三轮车日。6 元罚金下的“省 61.0%（或 59.3%）”只能作为括号数字。</li>
+<li><strong>N*(p)：</strong>最优车队随罚金从 203（p=1）到 1,224（p=10），这是“结论依赖罚金假设”的定量证据，应进正文。</li>
+<li><strong>口径：</strong>两级序贯、非联合最优；班表样例只覆盖最大的 1 个区；三轮车参数全是规划假设。</li>
+</ul>
+
+<h2>4. 台账处理</h2>
+<ul>
+<li>H24（题面点名三轮车）方法层关闭：两级模型 + 整数班表样例已具备。</li>
+<li>M14（车队规模未分区/格）关闭：0 vs 40,357 的对照已给出。</li>
+<li>T024 任务台账：通过（附条件 1–3，随下一次交付补）。</li>
+</ul>
+
+</main>
+</body>
+</html>
