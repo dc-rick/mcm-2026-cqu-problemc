@@ -32,7 +32,7 @@ li{margin:3px 0}
 <main>
 
 <h1>T027 · 终审定稿与提交包</h1>
-<p class="meta">状态：<strong>待 T021B 通过后开工（T021A 已于 2026-11-19 通过）</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、全部剩余低级别项　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
+<p class="meta">状态：<strong>已下达 2026-11-19（T021B 已通过，基线 <code>8708d37</code>）</strong>　·　问题：H28（AI 报告）、M7（引用）、L14（工作稿转储）、L16（§4 舍入）、全部剩余低级别项　·　可写：<code>paper/</code>、<code>交付/T027_delivery.json</code>、<code>交付/T027/</code></p>
 
 <div class="box hi">
 <p><strong>分工：</strong>本任务由执行方完成“可提交物”的整理（AI 报告、最终编译、提交清单）；<strong>七标准冷读、COMAP 合规复核、逐数字溯源与 DeepSeek 外部冷读由指导方在验收时做</strong>，执行方不用替自己做最终判决。</p>
@@ -41,7 +41,7 @@ li{margin:3px 0}
 <h2>1. AI 报告（H9）</h2>
 <ol>
 <li>补记本轮（T018–T026）的 AI 使用：任务单下达、代码生成与修改、结果复核、论文改写，各写清工具、版本、日期与用途。</li>
-<li><strong>改准既有陈述（2026-11-19 追加）：</strong>报告现写“all six figures”，正文已有 8 张图；日期区间“11 to 18 November 2026”未含 19 日的 T021A/T026；报告称 <code>95_numbers.py</code> 打印“most values”，但该脚本未读取任何 T018–T026 结果（grep 0），新数字由 <code>code/t021a_numbers.py</code> 生成 <code>data/runs/T021A/numbers.json</code>；§10 结尾“constants ... listed in the Report on Use of AI Tools”必须与重写后的报告一致，不能夸大覆盖范围。</li>
+<li><strong>改准既有陈述（2026-11-19 追加）：</strong>报告现写“all six figures”，但 T021B 后 <code>figs/</code> 有 8 个 PDF、论文实际 included 5 图（fig1_data、fig3_q1_validation、fig4_q2、fig_q3_cost_vs_r、fig9_tornado；fig2_segments 已随 T021B 删除，fig5_q3、fig6_q4 为旧文件）；日期区间“11 to 18 November 2026”未含 19 日的 T021A/T021B/T026；报告称 <code>95_numbers.py</code> 打印“most values”，但该脚本未读取任何 T018–T026 结果（grep 0），新数字由 <code>code/t021a_numbers.py</code> 生成 <code>data/runs/T021A/numbers.json</code>；§10 结尾“constants ... listed in the Report on Use of AI Tools”必须与重写后的报告一致，不能夸大覆盖范围。图数与清单按实际写，不得写 “six figures” 或 “8 图”。</li>
 <li>若本轮新增了"由脚本按规则生成、非人工选择"的常数（T018 的卡车速度/装卸时间、T024 的三轮车常数、T019 的 150 位上限与 4,000 站膝点、T026 的接受函数参数），必须逐条列入并说明来源或"规划假设"。</li>
 <li>Query / Output 示例至少两组，取自本轮真实对话。</li>
 <li>保持既有格式：工具版本、日期区间、行内 <code>\cite{aiapp}</code>、参考文献条目。</li>
@@ -50,14 +50,14 @@ li{margin:3px 0}
 <h2>2. 提交物</h2>
 <ol>
 <li>最终 PDF：<code>paper/main.pdf</code>，xelatex 三遍，undefined 0、overfull 0、U+037E 0、<code>??</code> 0。</li>
-<li>页数：计页 ≤25，AI 报告独立分页；目录页码与正文一致；References 在目录中。</li>
+<li>页数：计页 ≤25，AI 报告独立分页；目录页码与正文一致；References 在目录中。当前 <code>8708d37</code> 已是 <strong>27 总页 / 计页 25</strong>（摘要 1 + 目录 1 + 正文 22 + 参考文献 1），<strong>无余量</strong>；L16 与 §10 结尾句改动后必须重编译，确认仍为 25 计页。</li>
 <li>文件清单：<code>paper/*.tex</code>、<code>figs/*.pdf</code>（论文以 <code>../figs/</code> 引用，不是 <code>paper/figs/</code>）、<code>paper/main.pdf</code>、<code>code/</code> 全量、<code>data/runs/T0xx/</code> 结果、<code>DATA.md</code>、<code>README.md</code>，逐项写进 <code>交付/T027/file_list.json</code>（路径 + SHA-256）。<strong>临时/基准脚本</strong>（如 <code>code/_bench_t023*.py</code>、<code>data/runs/*/scratch/</code>）不得混入正式清单：能删则删，需保留则归入 <code>scratch</code> 并在清单里单列一节说明“非复现路径”。<strong>L14：</strong><code>paper/main_txt_check.txt</code> 是 T021A-R1 的 PDF 文本转储（1,638 行），不是论文源文件，提交前删除或移到 <code>data/runs/T021A/</code>；<code>file_list.json</code> 不得收录它。</li>
 <li>复现说明：<code>run_all.py</code> 的完整阶段清单与预计耗时；哪些阶段依赖 T018–T026 的输入（写明），哪些可跳。</li>
 </ol>
 
 <h2>3. 一致性与禁区</h2>
 <ul>
-<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版完全一致（AI 报告新增段落除外）。</li>
+<li><strong>数字门</strong>：正文数字 token 与 T021B 通过版 <code>8708d37</code> 完全一致（AI 报告新增段落除外）。<strong>唯一例外（L16）：</strong>sec4:103 的 “3.28--3.65” 改为 “3.28--3.64”（3.6446 的正确两位舍入；摘要已用 3.64），不改表值 3.645；这是本任务唯一被授权改动的正文数字。</li>
 <li>禁止在收尾阶段改结论、改表值、改图；发现不一致先报 <code>blocked</code>，不要"顺手修"。</li>
 <li>不写内部任务编号（T0xx）、不写改稿历史、不写"earlier version"。</li>
 </ul>
