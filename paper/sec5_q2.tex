@@ -80,7 +80,7 @@ makes the plan a reset rather than a one-way transfer. Bicycles, trucks and truc
 presence are integer variables; solved as a continuous program the same instance would
 be cheaper but would describe fractions of a truck and fractions of a bicycle.
 
-The integrality matters, and so does the event order. The pre-T018 LP plan, re-checked
+The integrality matters, and so does the event order. The continuous LP plan, re-checked
 on its own demand, violates the stock constraint in 3 of 1,200 zone-hours and would
 take 717.54 bicycles out of zones that do not have them. The integer plan has zero
 violations of every constraint: maximum load 40 bicycles, maximum trip 46.92 minutes
@@ -100,7 +100,7 @@ once tricycles are available.
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption[Integer truck scan]{Integer truck plan by fleet size (T018). ``Zone unmet'' is
+\caption[Integer truck scan]{Integer truck plan by fleet size. ``Zone unmet'' is
 the unmet departures of the 50-zone model, priced at 6 CNY; the objective includes the
 fixed cost $600K$, the kilometre and loading costs, and the deviation. The LP relaxation
 at $K=60$ costs 82,968.0671.}
@@ -173,7 +173,7 @@ The integer cost of the tricycle layer is visible in the rounding. At the city s
 the LP leaves 38,489.44 cell departures unserved and the integer schedule 39,984.2332,
 a rounding loss of 1,494.80. In zone 24, the largest allocation (44 tricycles), the LP
 leaves 2,059.49 and the integer schedule 2,085.98; the 26.50 loss is 0.43\% of the
-zone's unmet and is bounded by 81.5. The bound is not tight, but it is small relative
+bicycle flows the LP assigns in the zone and is bounded by 81.5. The bound is not tight, but it is small relative
 to the layer cost, and the direction is known: the executable plan can only be worse
 than its LP relaxation.
 
@@ -191,7 +191,7 @@ two-tier plan is the only row that removes most of it.
 \footnotesize
 \caption[Q2 schemes]{Q2 schemes at two calibers. Panel A is the 50-zone model in which
 the truck plan is optimised; Panel B is the cell-level model, with the same $K=60$
-truck plan and the cell deficit priced at 6 CNY. ``Truck'' is the T018 objective,
+truck plan and the cell deficit priced at 6 CNY. ``Truck'' is the zone-level truck objective,
 including its own zone penalty and deviation in Panel A; ``tricycle operating'' is
 fixed, kilometre and handling cost; ``cell penalty'' is 6 CNY times the cell-level
 unmet. The 1,519,278.95 baseline is the cell-level cost of the truck-only plan, not
@@ -229,7 +229,7 @@ that one instrument alone would deliver the other's number.
 \subsection{Uncertainty and the limits of the number}
 
 The numbers above are a planning midpoint, not an expectation or a median. Propagating
-the T023 parameter draws through the LP proxy gives a Q2 total of \textbf{617,056} at
+the grouped parameter draws of Section~\ref{sec:sens} through the LP proxy gives a Q2 total of \textbf{617,056} at
 the midpoint, with a joint P5--P95 interval of \textbf{271,732--882,188} and a median
 of 484,372; the planning midpoint sits above the distribution median because the cost
 parameters enter multiplicatively and the reference is a point, not the mean. Executable

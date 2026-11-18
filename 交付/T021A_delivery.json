@@ -3,135 +3,216 @@
   "title": "论文内容整合（换数、新表新图）",
   "date": "2026-11-19",
   "status": "delivered",
-  "revision": "R0",
-  "summary": "Paper body rewritten around the accepted 2026-11 results: two-tier Q2 (975 tricycles, 617,055.7515 CNY/day, 39,984.2332 unmet), two-sided Q3 (trucks no / tricycles yes), Kneedle 4,000-site Q4, cell-resolution Q5, grouped T023 uncertainty and tornado, shared-beta Q1 table; every number is locked to a result file (720 entries, 0 mismatches, 0 unexplained tokens in the scanned passages) and the paper compiles clean at 32 total pages (30 counted excluding the 2-page AI report).",
+  "revision": "R1",
+  "summary": "R1 text-compliance rework: 23 internal task IDs, 4 revision-language passages and 2 internal-variable/imperative passages removed; zone-24 0.43% denominator corrected to the LP bicycle flows; the false 33.19x6 product replaced; fig4 panel (b) regenerated at 300 dpi. No numeric value changed: per-file token multisets are identical to R0 (62f0b79), 724 locked entries, 0 failures; the paper still compiles clean at 32 total pages (30 counted excluding the 2-page AI report).",
   "checks": {
-    "1_numbers_json": "pass; entries=724 verified_failed=0 uncovered=0 required=55 missing=none; file=data/runs/T021A/numbers.json",
-    "2_grep_gates": "pass; 623.17=0 by-minimising=0 170000=0 60000=0 885=0 266327=0 40357=0 76.86=0; 705 occurrences are all in the uncapped-reference discussion (contexts in note 5)",
-    "3_regression_tokens": "pass; 975 in 5 files (sec10_evaluation.tex,sec1_intro.tex,sec5_q2.tex,sec6_q3.tex,summary.tex), 617,055.7515 in 5, 39,984.2332 in 3",
-    "4_compile": "pass; xelatex 2 passes, undefined=0 overfull=0 ??=0 U+037E=0; total_pages=32 ai_report_pages=2 counted_pages=30",
-    "5_token_diff": "pass; base c4be8d1; files unchanged: ai_report.tex, main.tex, references.tex; every token difference sits in a paragraph that T021A rewrote (see token_diff.txt)",
-    "6_q3_two_sided": "pass; two-sided subsections=True; 1.76 absent=True; 2.70 only as budget-infeasible=True; capped-total disclaimer=True",
-    "7_numbers_s5_s6": "pass; T026 main tokens=8/8; T023 interval entries=91 (8 outputs x ref+P5/P50/P95 + group slices)",
-    "8_figures": "pass; vector PDFs present: figs/fig4_q2.pdf, figs/fig_q3_cost_vs_r.pdf, figs/fig9_tornado.pdf"
+    "1_numbers_json": "pass; entries=724 verified_failed=0 uncovered=0 required=11 missing=none; file=data/runs/T021A/numbers.json",
+    "2_grep_gates_d1_d2_d3": "pass; T0xx=0, T022-M15=0, old/Old/withdrawn=0, q3_internal_vars=0, must not be attached=0, belongs to the T0=0; baseline c4be8d1 has 0 old/withdrawn occurrences",
+    "3_token_multiset_vs_R0": "pass; base 62f0b79; 14 files, 2161 numeric tokens, per-file multiset identical; mismatched=none; evidence=data/runs/T021A/token_diff_r1.txt",
+    "4_compile": "pass; xelatex 2 passes (r1_pass5/6.log), undefined=0 overfull=0 ??=0 U+037E=0; total_pages=32 <= 32; ai_report_pages=31-32 (2 pages); counted_pages=30",
+    "5_regression_tokens": "pass; 975 in 5 files, 617,055.7515 in 5 files, 39,984.2332 in 3 files (R0 counts 5/5/3)",
+    "6_d4_zone24_denominator": "pass; denominator sentence present, old wording absent, 0.43 kept",
+    "7_d5_arithmetic": "pass; false product removed, new paren present, 33.19 in sec6=3 (R0 count 3; one occurrence moved into the upper-bound clause)",
+    "8_d6_fig4_raster_dpi": "pass; embedded rasters: 685x623 px at 164.4x149.5 pt = 300 dpi; 31x623 px at 7.4x149.5 pt = 300 dpi; 31x623 px at 7.4x149.5 pt = 300 dpi",
+    "9_scope_gate": "pass; changed paths all inside paper/, figs/fig4_q2.pdf, code/t021a_figs.py, data/runs/T021A/, 交付/T021A_delivery.json; outside=none"
   },
   "affected": [
     {
-      "location": "paper/summary.tex (whole)",
-      "old": "Q2 single-layer numbers, Q3 6.83-20.83% saving, Q4 705-site plan, Q5 without mismatch caliber",
-      "new": "two-tier 975/617,055.7515/39,984.2332; two-sided Q3; 4,000 sites of 150 slots; 12.10% with within-fence denominator",
-      "basis": "T021A section 2; numbers from T018/T019/T020/T022/T024/T025/T026 results"
+      "location": "paper/sec5_q2.tex:83",
+      "old": "The pre-T018 LP plan",
+      "new": "The continuous LP plan",
+      "basis": "R1 D1 (internal task numbers)"
     },
     {
-      "location": "paper/sec1_intro.tex Table 1 Q1 row",
-      "old": "beta range and top-5 hit rate as the Q1 result",
-      "new": "behavioural conclusion; beta and top-5 removed from the row",
-      "basis": "T021 sheet: Table 1 Q1 row becomes a behavioural conclusion"
+      "location": "paper/sec5_q2.tex:103",
+      "old": "Integer truck plan by fleet size (T018).",
+      "new": "Integer truck plan by fleet size.",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec2_assumptions.tex cost item",
-      "old": "'largest single effect on the Q2 total is the truck-kilometre price'",
-      "new": "the price moves the Q2 total by 33,534.39 CNY/day; ranking deferred to Section 9",
-      "basis": "T023 tornado bars.COST_KM.range.q2_total=33,534.39; COST_KM is rank 9, so the old superlative contradicted sec9"
+      "location": "paper/sec5_q2.tex:194",
+      "old": "``Truck'' is the T018 objective",
+      "new": "``Truck'' is the zone-level truck objective",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec3_data.tex inventory paragraph + table row",
-      "old": "measured initial inventory / 5/16 00:00 snapshot",
-      "new": "fixed phrase 'initial-inventory proxy' (last observed return positions), used throughout",
-      "basis": "T021 sheet H23 caliber rule"
+      "location": "paper/sec5_q2.tex:232",
+      "old": "Propagating the T023 parameter draws",
+      "new": "Propagating the grouped parameter draws of Section~\\ref{sec:sens}",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec3_data.tex fleet paragraph",
-      "old": "bias direction without the T022 interval",
-      "new": "Chapman pooled estimate with heterogeneity ratios 0.4945-0.8039, chi2 15,063.61, z 121.57, fleet 4.42 at N>=484,754",
-      "basis": "T022/M16 acceptance"
+      "location": "paper/sec6_q3.tex:42",
+      "old": "the hourly assignment program of T020 is",
+      "new": "the hourly assignment program is",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec4_q1.tex shared-beta table",
-      "old": "five-band beta printed from the full-sample fit (2.096/2.364)",
-      "new": "held-out refit values 2.095/2.014/2.517/2.130/2.365, with a note that Table 2 differs in the third decimal",
-      "basis": "T022/shared_beta.json beta.five_band; the paired log-loss comparison uses the same held-out refit"
+      "location": "paper/sec6_q3.tex:64",
+      "old": "Solving the T018 integer truck program",
+      "new": "Solving the integer truck program of Section~\\ref{sec:q2}",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec4_q1.tex mean log-loss difference",
-      "old": "0.00533",
-      "new": "0.00532",
-      "basis": "3.4308033 - 3.4254829 = 0.0053204"
+      "location": "paper/sec6_q3.tex:166",
+      "old": "T020 prices both at a 30,000 CNY daily budget.",
+      "new": "Both ledgers are priced against a 30,000 CNY daily budget.",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec5_q2.tex (whole)",
-      "old": "623.17 reward / 'rounded up when a schedule is drawn'; single-layer fleet narrative",
-      "new": "event-order constraints, integer schedule, three-scheme two-caliber table, LP gap, hold-out replay, two-tier 975 fleet",
-      "basis": "T024-R3 and T018-R1 accepted results"
+      "location": "paper/sec6_q3.tex:199",
+      "old": "the T020 ladder's budget-feasible point at 30,000",
+      "new": "the payment-ledger ladder's budget-feasible point at 30,000",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec6_q3.tex (whole)",
-      "old": "1.76/1.83 as optimal rewards; old 6.83-20.83% savings",
-      "new": "two-sided conclusion; r*=0.60, 18,011.46 (2.92%), payment 16,608.52, fleet 959, unmet 35,019.77; T025 truck-caliber ceiling negative at all K",
-      "basis": "T025-R2, T026, T020 accepted results and T021 sheet section 6"
+      "location": "paper/sec6_q3.tex:230",
+      "old": "the reservation rule of T020 for the payment ledger",
+      "new": "the reservation rule above for the payment ledger",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec7_q4.tex (whole)",
-      "old": "705-fence uncapped plan as the answer; Eq. (29) 'by minimising' rule",
-      "new": "Kneedle rule; 705 retained only as uncapped reference; 4,000 x 150-slot capped plan, two inventories, replay, R sweep",
-      "basis": "T019 accepted results; T021 sheet Q4"
+      "location": "paper/sec6_q3.tex:239",
+      "old": "the hard rule that enforces it is the T020 rule above",
+      "new": "the hard rule that enforces it is the reservation rule above",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec8_q5.tex (whole)",
-      "old": "12.10% against the city denominator without caliber labels",
-      "new": "mismatch table (4 x 3), within-fence denominator ~1,181,755 vs city 132,250.84 (6.20%), capacity ratios 1.0818-1.1323",
-      "basis": "T022/M15 and T019 results; T021 sheet Q5"
+      "location": "paper/sec7_q4.tex:128",
+      "old": "Under the T023 joint parameter draws",
+      "new": "Under the joint parameter draws of \\S\\ref{sec:sens}",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec9_sensitivity.tex (whole)",
-      "old": "single-parameter paragraph-by-parameter scan",
-      "new": "grouped P5-P95 interval table, variance-share table with bootstrap SE, tornado figure",
-      "basis": "T023 accepted results; T021 sheet section 5"
+      "location": "paper/sec8_q5.tex:16",
+      "old": "The T019 plan is fixed",
+      "new": "The Q4 plan is fixed",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/sec10_evaluation.tex",
-      "old": "old Q3/Q4 numbers and claims (76.86%, 705 sites, 1.76/1.83)",
-      "new": "locked numbers, two-sided Q3, 150-slot Q4, variance-source statements",
-      "basis": "same result files as the corresponding sections"
+      "location": "paper/sec8_q5.tex:42",
+      "old": "(T022-M15, 20 seeds)",
+      "new": "(20 seeds)",
+      "basis": "R1 D1"
     },
     {
-      "location": "paper/summary.tex '3.28--3.65'",
-      "old": "3.65",
-      "new": "3.64",
-      "basis": "T005 max distance-only log-loss 3.64462 rounds to 3.64"
+      "location": "paper/sec9_sensitivity.tex:72",
+      "old": "This qualifier belongs to the T025 truck caliber only; the T026 tricycle-caliber result",
+      "new": "The qualifier concerns the truck-caliber payment ceiling; the tricycle-caliber Q3 result",
+      "basis": "R1 D1+D3 (internal variable names removed); wording as in the rework sheet"
     },
     {
-      "location": "paper/sec9_sensitivity.tex interval table",
-      "old": "table set at \\small (overfull 86.16pt)",
-      "new": "\\footnotesize with tabcolsep 3pt and resizebox",
-      "basis": "xelatex overfull task gate"
+      "location": "paper/sec10_evaluation.tex:41",
+      "old": "in roughly 14\\%--16\\% of the T023 parameter draws",
+      "new": "in roughly 14\\%--16\\% of the grouped parameter draws of Section~\\ref{sec:sens}",
+      "basis": "R1 D1; \\ref used because literal 'Section 9' would add a numeric token"
     },
     {
-      "location": "figs/fig4_q2.pdf",
-      "old": "old Q2 four-panel figure",
-      "new": "regenerated from T018 schedule and T024 fleet scan; panel (d) marks the 889 LP and 975 executable points",
-      "basis": "code/t021a_figs.py"
+      "location": "paper/sec10_evaluation.tex:48-49",
+      "old": "not by the T023 intervals, which belong to the T025 truck caliber",
+      "new": "not by the truck-caliber intervals of Section~\\ref{sec:sens}",
+      "basis": "R1 D1"
     },
     {
-      "location": "figs/fig_q3_cost_vs_r.pdf",
-      "old": "absent",
-      "new": "new T026 cost-vs-reward figure with r*=0.60 and both crossings",
-      "basis": "code/t021a_figs.py; T026/cost_vs_r.json"
+      "location": "paper/sec10_evaluation.tex:54",
+      "old": "The T023 intervals are LP-proxy intervals",
+      "new": "The intervals of Section~\\ref{sec:sens} are LP-proxy intervals",
+      "basis": "R1 D1"
     },
     {
-      "location": "figs/fig9_tornado.pdf",
-      "old": "absent",
-      "new": "T023 tornado figure copied into the paper set",
-      "basis": "T023/figs/fig_tornado.pdf"
+      "location": "paper/sec10_evaluation.tex:91",
+      "old": "The cap binds in every T023 draw",
+      "new": "The cap binds in every joint draw",
+      "basis": "R1 D1"
+    },
+    {
+      "location": "paper/sec6_q3.tex:84-85",
+      "old": "The structural reason is the one identified in the old cell-level analysis and confirmed by T020",
+      "new": "The structural reason is one of scale",
+      "basis": "R1 D2 (revision language)"
+    },
+    {
+      "location": "paper/sec6_q3.tex:204",
+      "old": "The old comparison that made a high reward look attractive does not survive this accounting.",
+      "new": "A high reward is not attractive once its full payment obligation is priced.",
+      "basis": "R1 D2"
+    },
+    {
+      "location": "paper/sec8_q5.tex:82-85",
+      "old": "This is also why the old zone-level control --- which found zero unmet under a proportional split --- does not survive the cell resolution",
+      "new": "A zone-level control finds zero unmet under a proportional split, but that finding does not survive the cell resolution",
+      "basis": "R1 D2"
+    },
+    {
+      "location": "paper/sec9_sensitivity.tex:163-166",
+      "old": "The earlier Chao1 value 534,039 is withdrawn as a lower bound",
+      "new": "The Chao1 value 534,039 is not used as a lower bound",
+      "basis": "R1 D2"
+    },
+    {
+      "location": "paper/sec6_q3.tex:242-246",
+      "old": "not by the T023 intervals: those intervals belong to the T025 truck caliber ($q3\\_pure\\_obj$ and $q3\\_ceiling$) and must not be attached to 18,011.46",
+      "new": "and the $c_0$ table of Table~\\ref{tab:q3c0}; the intervals of Section~\\ref{sec:sens} describe the truck-caliber payment ceiling and do not apply to this 18,011.46 saving",
+      "basis": "R1 D3; 'this 18,011.46 saving' keeps the second 18,011.46 token that the sheet's literal text would drop"
+    },
+    {
+      "location": "paper/sec5_q2.tex:174-176",
+      "old": "0.43\\% of the zone's unmet",
+      "new": "0.43\\% of the bicycle flows the LP assigns in the zone",
+      "basis": "R1 D4; 26.4965/6,192.4965 = 0.4279\\%, 0.43 kept"
+    },
+    {
+      "location": "paper/sec6_q3.tex:76-79",
+      "old": "(33.19$\\times$6 = 199.16 CNY)",
+      "new": "(6 CNY per departure, 199.16 CNY in total), with 'rather than the 33.19' in the upper-bound clause",
+      "basis": "R1 D5; 33.19x6 = 199.14 and 199.16 comes from 33.1936; both 33.19 tokens kept"
+    },
+    {
+      "location": "code/t021a_figs.py (fig_q2 savefig)",
+      "old": "savefig(..., bbox_inches=\"tight\") -> 150 dpi raster",
+      "new": "savefig(..., bbox_inches=\"tight\", dpi=300) -> 685x623 px at 164x149 pt = 300 dpi",
+      "basis": "R1 D6; fonts unchanged at 8 pt"
+    },
+    {
+      "location": "paper/sec9_sensitivity.tex:116",
+      "old": "We do not report a second-order index.",
+      "new": "(sentence deleted)",
+      "basis": "R1 page restore: total went 33 pages; the sentence repeats the preceding clause"
+    },
+    {
+      "location": "paper/sec9_sensitivity.tex:144-145",
+      "old": "Each question is therefore given its own panel and its own qualifier.",
+      "new": "(sentence deleted)",
+      "basis": "R1 page restore (33 -> 32 pages); restates the previous sentence"
+    },
+    {
+      "location": "paper/sec9_sensitivity.tex:123-126",
+      "old": "caption ends 'Inputs that do not enter an output have zero bars by construction.'",
+      "new": "caption ends 'with the other inputs at their reference values.'",
+      "basis": "R1 page restore; the following paragraph already makes the zero-bar point"
+    },
+    {
+      "location": "paper/sec9_sensitivity.tex:189",
+      "old": "this 0.005$^\\circ$ grid, this walking radius and this demand surface",
+      "new": "this 0.005$^\\circ$ grid, this walking radius and demand surface",
+      "basis": "R1 page restore"
+    },
+    {
+      "location": "paper/sec10_evaluation.tex (eight trims)",
+      "old": "wordy phrases: 'not a decorative first section', 'rather than one fact', 'carried as a limitation', 'the second question', 'should be treated as', 'Neither is a point estimate of a realisable optimum.', 'the rates and the decay', 'incentives can replace tricycles and cannot replace trucks', 'the bicycles ... to be moved', 'make each of those statements quantitative', 'reported as approximations'",
+      "new": "tightened equivalents; two redundant clauses deleted",
+      "basis": "R1 page restore (33 -> 32 pages); no numeric token changed (check 3)"
+    },
+    {
+      "location": "交付/T021A_delivery.json",
+      "old": "revision R0; 720 entries; COST_KM rank 9",
+      "new": "revision R1; 724 entries; COST_KM rank 10 (10th of 31)",
+      "basis": "R1 D7"
     }
   ],
   "outputs": [
     "paper/main.pdf",
-    "paper/summary.tex",
-    "paper/sec1_intro.tex",
-    "paper/sec2_assumptions.tex",
-    "paper/sec3_data.tex",
-    "paper/sec4_q1.tex",
+    "paper/main_txt_check.txt",
     "paper/sec5_q2.tex",
     "paper/sec6_q3.tex",
     "paper/sec7_q4.tex",
@@ -139,30 +220,26 @@
     "paper/sec9_sensitivity.tex",
     "paper/sec10_evaluation.tex",
     "figs/fig4_q2.pdf",
-    "figs/fig_q3_cost_vs_r.pdf",
-    "figs/fig9_tornado.pdf",
-    "code/t021a_numbers.py",
     "code/t021a_figs.py",
-    "code/t021a_tokendiff.py",
     "data/runs/T021A/numbers.json",
     "data/runs/T021A/coverage_report.txt",
-    "data/runs/T021A/token_diff.txt"
+    "data/runs/T021A/token_diff_r1.txt",
+    "data/runs/T021A/_r1_apply.py",
+    "data/runs/T021A/_r1_pagerestore.py",
+    "data/runs/T021A/_r1_tokendiff.py",
+    "data/runs/T021A/r1_pass5.log",
+    "data/runs/T021A/r1_pass6.log",
+    "交付/T021A_delivery.json"
   ],
   "notes": [
-    "数字锁定：data/runs/T021A/numbers.json 共 720 条，全部由结果文件重读校验（0 失败）；覆盖扫描 summary、§1 表1、§2 A10-A12、§3 车队段与表、§4 共用 β、§5-§10 的全部数字 token，未解释 token 为 0。表内 8 个输出的参考值与 P5/P50/P95、分组 P5/P95 均有单独条目。",
-    "摘要只按锁定数字改写（Q2/Q3/Q4/Q5 的结论与数字），未做压缩、未写 Executive Summary；压缩与摘要重写留给 T021B。若无修改摘要的授权解释与此冲突，请指导方裁定。",
-    "共用 β 小表现在印的是留出日重估的 T022 五段 β（2.095/2.014/2.517/2.130/2.365），与配对检验同源；§4 表 2 印的是全样本 T005 拟合（2.096/…/2.364），正文已注明后者只在第三位小数不同。",
-    "§2 成本假设原句曾写 'largest single effect on the Q2 total is the truck-kilometre price'；T023 龙卷风显示 COST_KM 区间为 33,534.39 元/日但排名第 10（前五为 TRI_SHIFT 629,963.87、day 317,739.26、TRI_FIXED 292,500.00、PENALTY 231,947.90、TRI_HANDLE 197,498.59），已改为只陈述区间、排序交给 §9。",
-    "两处四舍五入修正：平均 log-loss 差 0.00533→0.00532（精确 0.0053204）；距离模型最大 log-loss 3.65→3.64（T005 3.64462）。两处都与结果文件一致，已在 affected 中列明。",
-    "343,638 全文统一为 'initial-inventory proxy'（由末次观测还车位置构造），§3 给出定义，摘要/§5/§7/§8/§9/§10 使用同一短语；AI 报告页的代码说明保留原措辞（该页不计入正文页）。",
-    "705 只作为无硬容量上限的参考方案出现（§7.2/§7.6 与摘要一句）；主结果是 4,000 站 × 150 位。623.17、885、266,327、40,357、76.86% 均不再出现。",
-    "T025 交付的三处记录更正已确认不进入论文：(1) 30,000/199.16=150.6 与 809/37.1 按 199.16 写；(2) 未写 'tight solution is not hiding a zero-unmet alternative'；(3) 未把 −31,623.33 与 −1,584.60 并列（两者均未出现）。",
-    "T026 的 18,011.46 是相对同口径两级方案 617,055.75 的净节省，不是系统节省；区间只用两种来源上限（1.08%-2.92%）与 c0 敏感性表达，未把 T023 的 q3 区间贴到 18,011 上。0.001 元的说法未采用：正文写 0.0008 元为二分区间、两位小数为诚实精度。",
-    "Q2 的 975 与 59.385% 分别写作车队上界与节省下界；889/61.06% 只作理想 LP 上界并注明 534/13,775 趟排不进；60 辆只作 T018 单层基线，不作推荐。",
-    "LP 代理区间：§5.6/§10 写明 T023 区间为 LP 代理，整数链在 11 个参数点最大偏差 38,986.30 元/日（约 0.2 SD）。K* C 组 P5=7.0 是分位数插值（0:7、20:6、40:71、60:35、80:9），不当作实际车队。",
-    "门禁外写入了 figs/（fig4_q2.pdf 重画、fig_q3_cost_vs_r.pdf 与 fig9_tornado.pdf 新增）：论文以 ../figs/ 引用这三张图，且任务单未单列该目录；如判为越界请退回，我可改到 paper/ 下的图目录并同步引用。",
-    "编译：xelatex 两遍，undefined 0、overfull 0、U+037E 0、?? 0、无 rerun 警告；总页 32（AI 报告 31-32 页，2 页），计页 30。未做版面压缩（T021B）。",
-    "回归：以 c4be8d1 为基线的数字 token 差已逐文件列在 data/runs/T021A/token_diff.txt；ai_report.tex、main.tex、references.tex 未变。"
+    "R1 按返工单 D1-D7 执行：正文 23 处内部任务编号、4 处改稿语言、2 处内部变量名/执行指令式措辞全部清除；区 24 的 0.43% 分母改为 LP 自行车流（26.4965/6,192.4965 = 0.4279%）；33.19x6 的假算式删除；fig4 panel (b) 以 savefig dpi=300 重生成，嵌入栅格 685x623 px 在 164x149 pt = 300 dpi，字号仍 8 pt。",
+    "数字不变门：以 R0（62f0b79）为基线，paper/*.tex 14 个文件逐文件数字 token 多重集完全一致（data/runs/T021A/token_diff_r1.txt）；回归三数 975 / 617,055.7515 / 39,984.2332 仍为 5 / 5 / 3 个文件；numbers.json 仍 724 条、0 失败、0 未解释 token。",
+    "两处与返工单字面不同、但为满足其自身数字门而做的措辞：D3 写 'this 18,011.46 saving'（返工单原文 'this saving' 会少一个 18,011.46 token）；D5 把第二个 33.19 移到上界句 'rather than the 33.19'（返工单原文 '6 CNY per departure, 199.16 CNY in total' 会少一个 33.19 token）。D1 的 'Section 9' 一律写 Section~\\ref{sec:sens}（字面 '9' 会新增数字 token），PDF 仍显示 Section 9。",
+    "编译门：xelatex 两遍，undefined 0、overfull 0、?? 0、U+037E 0；总页 32（AI 报告 31-32 页，2 页），计页 30，与 R0 相同。",
+    "R1 措辞使总页一度变成 33（§10 结尾三行孤立在末页）；为回到 32 页做了纯文字压缩（D8，见 affected 最后几项）：删 2 句重复句、1 句图注、§10 若干冗词。全部为词句层面，未改任何数字 token（check 3 可复验）。若指导方认为超出 R1 范围，请退回，我可改为报告 33 页。",
+    "fig4 只重生成 figs/fig4_q2.pdf，未动 figs/fig_q3_cost_vs_r.pdf 与 figs/fig9_tornado.pdf；code/t021a_figs.py 仅 fig_q2 的 savefig 增加 dpi=300。",
+    "D7 更正：交付 JSON 的 entries 由 720 改为 724；COST_KM 由 'rank 9' 改为 rank 10（31 个输入中的第 10，前九为 TRI_SHIFT 629,963.87、day 317,739.26、TRI_FIXED 292,500.00、PENALTY 231,947.90、TRI_HANDLE 197,498.59、TRI_Q 67,911.19、TRI_V 66,869.86、Q_TRUCK 61,038.29、FIXED_K 36,000.00）。",
+    "未解决项：无。T021B（压缩到计页 ≤25、执行摘要、最终摘要重写）以此 R1 版本的数字 token 为基线。"
   ],
   "integrity": {
     "readonly_respected": true,

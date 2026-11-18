@@ -69,8 +69,8 @@ a quarter of the joint draws, because the parameters that make tricycles cheap a
 the truck layer expensive. And the Q3 payment ceiling changes sign in the joint sample
 (+540 at P95), so ``incentives are not worthwhile at $K=2$'' must carry the qualifier
 that it flips in roughly 14\%--16\% of the parameter draws (C: 20 of 128, joint: 18 of
-128; A and B: 0 and 1). This qualifier belongs to the T025 truck caliber only; the
-T026 tricycle-caliber result is assessed by the two source caps and the $c_0$ table of
+128; A and B: 0 and 1). The qualifier concerns the truck-caliber payment ceiling; the
+tricycle-caliber Q3 result is assessed by the two source caps and the $c_0$ table of
 \S\ref{sec:q3}, not by these intervals.
 
 Q4 is the most stable output. Its occupancy coverage has a joint interval of
@@ -113,7 +113,7 @@ The three shares sum to more than one for most outputs --- 1.072 for Q2 total, 1
 for Q2 unmet, 0.750 for the Q3 ceiling. The residual $1-\sum_g S_g$ is within two
 bootstrap standard errors of zero for every output (Q2 unmet is the largest, 1.23 SE),
 so we treat the excess as a residual of the first-order decomposition, not as evidence
-of a second-order interaction. We do not report a second-order index.
+of a second-order interaction.
 
 \subsection{The tornado}
 
@@ -123,8 +123,7 @@ of a second-order interaction. We do not report a second-order index.
 \caption[One-at-a-time tornado]{One-at-a-time range of each input over its assumed
 interval, for three outputs: (a) the Q2 total cost, (b) the Q3 payment ceiling at $K=2$,
 (c) the Q4 occupancy coverage. Bars are the range between the low and high value of the
-named input, with the other inputs at their reference values. Inputs that do not enter
-an output have zero bars by construction.}
+named input, with the other inputs at their reference values.}
 \label{fig:tornado}
 \end{figure}
 
@@ -143,7 +142,7 @@ because cost does not enter the coverage objective.
 
 The zero bars are informative, not missing. They show that an input which matters in one
 question may be irrelevant in another, and that a single global sensitivity ranking would
-be misleading. Each question is therefore given its own panel and its own qualifier.
+be misleading.
 
 \subsection{The fleet estimate}
 
@@ -160,8 +159,8 @@ estimate is biased \emph{down}. Retirement of a recapturable bicycle biases the 
 by 1.49339 per bicycle; retirement of a never-used bicycle has no effect (0). A
 stratified Chapman estimator, which allows each use stratum its own recapture rate,
 returns the observed 14-day union \textbf{484,754} exactly --- by construction, not by
-fit --- so only $N\ge484{,}754$ is design-independent. The earlier Chao1 value 534,039 is
-withdrawn as a lower bound: the homogeneous model reproduces all three statistics and
+fit --- so only $N\ge484{,}754$ is design-independent. The Chao1 value 534,039 is not
+used as a lower bound: the homogeneous model reproduces all three statistics and
 the Chao1 value to within 0.05 bicycles, so the excess is an unequal-effort artefact, not
 heterogeneity, and the value survives only as a scenario.
 
@@ -186,7 +185,7 @@ be extrapolated to:
 \item \emph{low-density cities}, where the walking radius of Q4 covers a much smaller
   share of arrivals and the incentive pool of Q3 vanishes;
 \item \emph{other layouts}, where the 4,000-site, 150-slot result is specific to this
-  0.005$^\circ$ grid, this walking radius and this demand surface;
+  0.005$^\circ$ grid, this walking radius and demand surface;
 \item \emph{extreme weather or holidays}, not represented in the fourteen recorded dates
   (of which five training and two held-out days drive the models; 17 May has no records);
 \item \emph{the long run}, where the attraction $A_j$ itself changes with land use. The

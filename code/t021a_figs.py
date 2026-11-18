@@ -161,7 +161,9 @@ def fig_q2():
 
     fig.tight_layout(h_pad=1.0, w_pad=0.8)
     out = os.path.join(FIG, "fig4_q2.pdf")
-    fig.savefig(out, bbox_inches="tight")
+    # R1/D6: panel (b) is a resampled imshow; save at 300 dpi so the embedded
+    # raster is >=300 dpi at placement size (vector panels are unaffected).
+    fig.savefig(out, bbox_inches="tight", dpi=300)
     plt.close(fig)
     print("wrote", out)
 

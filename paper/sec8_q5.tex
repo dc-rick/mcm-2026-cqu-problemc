@@ -13,7 +13,7 @@ state and whose magnitude we cannot.
 
 \subsection{A cell-resolution mismatch experiment}
 
-The T019 plan is fixed: 4,000 sites, 150 slots each, $R=450$ m, initial-inventory proxy
+The Q4 plan is fixed: 4,000 sites, 150 slots each, $R=450$ m, initial-inventory proxy
 343,638. Two platforms share the market equally (share $s=0.5$), each drawing its own
 Poisson arrivals and departures at half rate, each holding half of every cell's
 standing inventory. Three institutions are compared:
@@ -39,7 +39,7 @@ $1{,}181{,}755$ within-fence departures per run.
 \centering
 \footnotesize
 \caption[Q5 spatial mismatch]{Two platforms at share 0.5 on the 4,000-site, 150-slot Q4
-plan, by mismatch intensity $m$ and parking institution (T022-M15, 20 seeds).
+plan, by mismatch intensity $m$ and parking institution (20 seeds).
 ``Unmet'' is unserved departures as a share of within-fence departures; ``full'' is the
 share of site-steps at capacity; ``required slots'' is the sum over sites of the 95th
 percentile over seeds of peak occupancy, an unbounded-peak sizing convention, not
@@ -79,8 +79,8 @@ leaves 11.66\% of within-fence departures unserved. At $m=0$, with both platform
 proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%, about
 half a percentage point worse. The mechanism is not spatial: each platform's own Poisson
 fluctuations no longer pool with the other's, so the same total fleet produces more
-empty-fence steps. This is also why the old zone-level control --- which found zero unmet
-under a proportional split --- does not survive the cell resolution: at zone scale the
+empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that finding
+does not survive the cell resolution: at zone scale the
 stocks are large enough that the split's noise is invisible, and at fence scale it is
 not.
 

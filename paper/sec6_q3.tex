@@ -39,7 +39,7 @@ data --- no reward was offered in May 2017 --- and they are fixed at these value
 follows; Section~\ref{sec:sens} re-optimises the reward for $c_0$ at $0.8$ times and
 $1.2$ times its value, and we treat the absence of a full $\kappa,\rho$ sweep as a
 limitation in Section~\ref{sec:eval}. For each target cell $c$ and target hour $h_c$
-the hourly assignment program of T020 is
+the hourly assignment program is
 \begin{equation}
 \max_{x\ge0}\ \sum_{e\in E_h} w_e(r)\,x_e
 \quad\text{s.t.}\quad
@@ -61,7 +61,7 @@ The truck layer of Q2 is a single-layer plan. Its own residual is tiny: at $K=0$
 zone model leaves 432.23 departures unserved, and at $K=2$ it leaves 33.19. There is no
 large pool of truck-served unmet demand for an incentive to substitute for, so the only
 question is whether the incentive can pay for itself by reducing the truck objective.
-It cannot. Solving the T018 integer truck program with and without the incentive at
+It cannot. Solving the integer truck program of Section~\ref{sec:q2} with and without the incentive at
 $K=0,2,5,10,20$, re-solving both sides at a 0.1\% gap, gives a payment ceiling
 $\text{pure}_K-\text{hybrid}_K$ that is negative at \emph{every} $K$: $-1{,}739.22$ at
 $K=0$, $-1{,}591.40$ at $K=2$, $-1{,}588.76$ at $K=5$, $-1{,}623.33$ at $K=10$ and
@@ -73,16 +73,15 @@ to zero, the best mixed policy costs at least \textbf{1,532 CNY per day more} th
 trucks: the returned difference is 1,591.40 and the mixed solve carries its own 59.06
 CNY gap, so 1,532 is the gap-robust lower bound, 11.1 times the 0.1\% solver tolerance
 of 138.32. Equivalently, the 30,000 CNY budget is \textbf{150.6 times} the total
-penalty value of all 33.19 remaining unmet departures (33.19$\times$6 = 199.16 CNY);
-even taking the 1\% upper bound of 134.81 bicycles, the penalty value is 809 CNY and the
-budget is 37.1 times it. And forcing zero unmet requires the policy of
+penalty value of all 33.19 remaining unmet departures (6 CNY per departure, 199.16 CNY
+in total); even taking the 1\% upper bound of 134.81 bicycles rather than the 33.19, the
+penalty value is 809 CNY and the budget is 37.1 times it. And forcing zero unmet requires the policy of
 312,289.21 CNY/day, 2.2578 times the pure-truck cost. The incentive removes an estimated
 10.4 zone-level unmet trips at $K=2$, but that difference is the difference of two
 returned solutions whose gaps are 66.13 and 59.06 CNY --- about 11 and 10 bicycles at
 6 CNY --- so the sign is not resolvable within solver tolerance; we do not use it.
 
-The structural reason is the one identified in the old cell-level analysis and
-confirmed by T020: a reroute moves a trip between cells, while the truck objective
+The structural reason is one of scale: a reroute moves a trip between cells, while the truck objective
 prices zone-hour unmet. Only the part of the reroute that changes a zone-hour arrival
 total can remove a zone-level unmet trip, and at $K=2$ that part is negligible. The
 incentive is therefore not a substitute for trucks at any fleet size tested. This
@@ -163,7 +162,7 @@ The bill $r\,q$ is the \emph{increment} ledger: the platform pays only for rerou
 change a deficit. The alternative is the \emph{payment} ledger, which pays $r$ for every
 accepted invitation, including riders who were already going to the target cell and
 change nothing; those free riders make the payment ledger larger for the same reward.
-T020 prices both at a 30,000 CNY daily budget. At $r=0.81$, for example, the
+Both ledgers are priced against a 30,000 CNY daily budget. At $r=0.81$, for example, the
 deficit-filling placements are $q=28{,}884.65$, the increment bill is 23,396.57 and the
 payment-ledger obligation is $r\,P=30{,}000$ with $P=37{,}037.04$; the 6,603.43
 difference is the free riders. A budget expressed in the payment ledger therefore buys a
@@ -196,13 +195,12 @@ completions instead, which is the ladder above.
 
 At the Q3 optimum the increment-ledger bill is 16,608.52, inside the 30,000 budget with
 13,391.48 to spare, so under that ledger the budget does not bind at $r^*$. Under the
-payment ledger the same reward would owe more, and the T020 ladder's budget-feasible
+payment ledger the same reward would owe more, and the payment-ledger ladder's budget-feasible
 point at 30,000 is $r=0.81$. The two ledgers therefore bracket the policy: the
 increment ledger supports $r^*=0.60$, the payment ledger a lower reward for the same
 money, and the hard rule is what makes either promise keepable.
 
-The old comparison that made a high reward look attractive does not survive this
-accounting. On the same total formula as the Q3 optimum, $r=0.81$ gives 603,232.87
+A high reward is not attractive once its full payment obligation is priced. On the same total formula as the Q3 optimum, $r=0.81$ gives 603,232.87
 CNY/day and $r=2.70$ gives 1,272,910.24, a difference of 669,677.37. The truck layer is
 identical at 83,807.74 by construction, so no lower truck objective exists to offset the
 high reward: $r=2.70$ pays 784,302.68 more in rewards and saves only 114,625.31 in the
@@ -227,7 +225,7 @@ The scheme that follows is narrow and explicit.
 \item \textbf{Payment on completion}, settled on the increment ledger, with the payment
   ledger and its reservation rule reported alongside so that the budget promise can be
   audited.
-\item \textbf{A 30,000 CNY daily budget} and the reservation rule of T020 for the
+\item \textbf{A 30,000 CNY daily budget} and the reservation rule above for the
   payment ledger; at the increment-ledger optimum the bill is 16,608.52 and the budget
   does not bind.
 \end{enumerate}
@@ -236,14 +234,14 @@ Five limits bound these numbers. First, reroutes are restricted to the \emph{sam
 the assignment program moves a trip between cells of one zone only, which is what keeps
 the truck layer unchanged. Second, payment is not truncated in the Q3 optimum: $r$ is a
 posted reward, the 30,000 budget is checked rather than enforced by stopping, and the
-hard rule that enforces it is the T020 rule above. Third, a reroute is placed within the
+hard rule that enforces it is the reservation rule above. Third, a reroute is placed within the
 hour of the original trip; no cross-hour rearrangement is modelled. Fourth, $\pi(r)$ is
 fixed at $\kappa=2$, $\rho=0.35$, $c_0=0.8$; only $c_0$ is re-optimised, and a full
-sweep of $\kappa$ and $\rho$ is not run. Fifth, 18,011.46 is a deterministic single-day
-result on the planning midpoint. Its uncertainty is expressed by the two source caps
-(1.08\%--2.92\%) and the $c_0$ table, not by the T023 intervals: those intervals belong
-to the T025 truck caliber ($q3\_pure\_obj$ and $q3\_ceiling$) and must not be attached
-to 18,011.46. The saving replaces part of the tricycle layer; it is not a system saving.
+sweep of $\kappa$ and $\rho$ is not run. Fifth, 18,011.46 is a deterministic single-day result on the planning midpoint. Its
+uncertainty is expressed by the two source caps (1.08\%--2.92\%) and the $c_0$ table of
+Table~\ref{tab:q3c0}; the intervals of Section~\ref{sec:sens} describe the truck-caliber
+payment ceiling and do not apply to this 18,011.46 saving. The saving replaces part of
+the tricycle layer; it is not a system saving.
 
 \begin{figure}[htbp]
 \centering
