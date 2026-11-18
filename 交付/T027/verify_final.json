@@ -1,14 +1,17 @@
 {
  "task": "T027",
- "baseline": "8708d37",
+ "revision": "R1",
+ "baseline": "3209636",
  "date": "2026-11-19",
  "token_gate": {
   "ai_report.tex": {
    "excluded_from_gate": true,
-   "old_tokens": 79,
-   "new_tokens": 141,
-   "removed_types": 1,
-   "added_types": 46
+   "old_tokens": 141,
+   "new_tokens": 142,
+   "removed": {},
+   "added": {
+    "12": 1
+   }
   },
   "main.tex": {
    "removed": {},
@@ -16,14 +19,9 @@
    "identical": true
   },
   "references.tex": {
-   "removed": {
-    "17": 1
-   },
-   "added": {
-    "19": 1
-   },
-   "identical": false,
-   "expected_authorised": true
+   "removed": {},
+   "added": {},
+   "identical": true
   },
   "sec10_evaluation.tex": {
    "removed": {},
@@ -37,11 +35,8 @@
   },
   "sec2_assumptions.tex": {
    "removed": {},
-   "added": {
-    "20": 1
-   },
-   "identical": false,
-   "expected_authorised": true
+   "added": {},
+   "identical": true
   },
   "sec3_data.tex": {
    "removed": {},
@@ -49,21 +44,17 @@
    "identical": true
   },
   "sec4_q1.tex": {
-   "removed": {
-    "3.65": 1,
-    "0.306": 1
-   },
-   "added": {
-    "3.64": 1,
-    "0.305": 1
-   },
-   "identical": false,
-   "expected_authorised": true
-  },
-  "sec5_q2.tex": {
    "removed": {},
    "added": {},
    "identical": true
+  },
+  "sec5_q2.tex": {
+   "removed": {},
+   "added": {
+    "12": 1
+   },
+   "identical": false,
+   "expected_authorised": true
   },
   "sec6_q3.tex": {
    "removed": {},
@@ -86,14 +77,9 @@
    "identical": true
   },
   "summary.tex": {
-   "removed": {
-    "24": 1
-   },
-   "added": {
-    "19": 1
-   },
-   "identical": false,
-   "expected_authorised": true
+   "removed": {},
+   "added": {},
+   "identical": true
   }
  },
  "token_gate_pass": true,
@@ -115,8 +101,35 @@
   "ai_report_fleet_grid": true,
   "references_aiapp_1119": true
  },
+ "r1_checks": {
+  "R1-1_A11_scope": true,
+  "R1-1b_A12_consistency_fix": true,
+  "R1-2_sec6_limits": true,
+  "R1-3_sec10_saving": true,
+  "R1-4_truck_fleet": true,
+  "R1-5_tri_block": true,
+  "R1-6_siting_block": true,
+  "R1-7_closed_fleet_shape": true,
+  "R1-8_inventory_lower_bound": true,
+  "R1-9_coincidence": true,
+  "R1-10_gurobi_cite_once": true,
+  "R1-11_typo": true,
+  "R1-12_precision": true,
+  "R1-13_ai_report": true,
+  "no_7_46_anywhere": true,
+  "no_same_zone_claim": true
+ },
  "forbidden_strings": {},
  "forbidden_strings_pass": true,
+ "regression": {
+  "n_exec": 975,
+  "unmet_printed": "39,984.2332",
+  "layer_printed": "533,248.01",
+  "total_printed": "617,055.7515",
+  "saving_printed": "902,223.20",
+  "share_printed": "59.385%",
+  "pass": true
+ },
  "L16": {
   "has_3.28--3.64": true,
   "has_3.28--3.65": false,

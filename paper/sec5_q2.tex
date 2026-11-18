@@ -1,9 +1,21 @@
 % =============================== 5. Q2 ===============================
 \section{Question 2: Optimal Repositioning on a Typical Day}\label{sec:q2}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{../figs/fig4_q2.pdf}
+\caption[Q2: flow, truck schedule, fleet scans]{Q2. (a) Net flow in the morning peak
+by zone: the core gains bicycles, the residential periphery loses them. (b) The
+$K=60$ truck schedule: bicycles delivered by hour and receiving zone, from the
+integer plan. (c) Integer objective and zone unmet against the truck fleet; $K=60$
+is the minimum of the compared grid. (d) The tricycle layer: total cost against fleet
+size, with the 889-tricycle LP point and the 975-tricycle executable point marked.}
+\label{fig:q2}
+\end{figure}
+
 \subsection{Two scales of imbalance}
 
-Before optimising anything we should know what the optimisation is for. At the
+At the
 50-zone scale, the flow-only inventory path of each zone,
 \begin{equation}
 \tilde I_{zt} \;=\; I_{z0} + \sum_{s\le t}\left(a_{zs}-d_{zs}\right),
@@ -15,7 +27,7 @@ statement about the proxy and the zone aggregation, not a resolution-free guaran
 at cell resolution the pre-plan simulation leaves unserved shares of 5.84\% at 343,638
 and 3.51\% at the closed fleet 495,540 (R=450 m).
 
-Those figures describe a day with no repositioning. Once a zone-level truck plan is
+Those figures describe a day with no repositioning. Once a truck plan is
 fixed, the residual mismatch moves inside the zones, where the plan cannot see it. A
 dynamic cell replay that carries each zone-hour stock into its cells and lets riders
 walk up to 300 m leaves \textbf{239,245.20 cell-level departures unserved, 11.22\% of
@@ -25,12 +37,9 @@ every hour; 239,245.20 is the operational number. The step from 11.22\% to the
 post-tricycle 1.875\% below is a within-model comparison on the same dynamic replay,
 not a change from the pre-plan 5.84\%.
 
-What the day produces at both scales is drift: the morning commute empties the
-residential north and fills the office core, and the evening reverses it imperfectly.
-Rebalancing is therefore not a rescue operation; it is a \emph{reset}, and it has two
-layers. Trucks move bicycles between zones. Tricycles move bicycles between cells
-inside one zone. The two layers are optimised in that order, because a tricycle cannot
-undo a zone-level shortage.
+Rebalancing is therefore not a rescue operation; it is a \emph{reset}, in two layers:
+trucks move bicycles between zones, tricycles between cells inside one zone. They are
+optimised in that order, because a tricycle cannot undo a zone-level shortage.
 
 \subsection{The truck layer: a time-space network program}
 
@@ -40,6 +49,7 @@ arc $(i,j)$ of a sparse zone graph (the eight nearest neighbours of each zone wi
 9 km; 290 arcs, mean length 5.97 km), the trucks present $n_{zt}$, the unmet
 departures $u_{zt}$, and the end-of-day deviations $dp_z,dm_z$.
 
+{\allowdisplaybreaks
 \begin{align}
 \min\quad
 & c_{\text{km}}\sum_{t}\sum_{(i,j)} d_{ij}\,m_{ijt}
@@ -60,27 +70,28 @@ departures $u_{zt}$, and the end-of-day deviations $dp_z,dm_z$.
    - \textstyle\sum_j x_{zj,23} + \sum_i x_{iz,23}\big] - I_{z0} = dp_z - dm_z,
   \label{eq:q2dev}\\
 & I,u,dp,dm \ge 0,\qquad x,m,n \in \mathbb{Z}_{\ge 0}. \notag
-\end{align}
+\end{align}}
 
 The objective prices five things. $c_{\text{km}}=6$ CNY per truck-kilometre is the
 running cost; $c_{\text{load}}=0.5$ CNY per bicycle loaded and unloaded is handling;
 $w=6$ CNY per unmet departure is a service penalty set above the cost of moving a
 bicycle; $c_{\text{dev}}=3$ CNY per bicycle of end-of-day drift, linearised by $dp,dm$,
 penalises leaving the system out of balance; and $f=600$ CNY per truck per day is the
-ownership cost of a truck, charged on $K$ because a truck that is bought must be paid
-for whether it drives or not.
+ownership cost of a truck, charged on $K$.
 
 The constraints are the physics. \eqnref{eq:q2bal} is conservation of bicycles;
 \eqnref{eq:q2serv} is the event-order constraint: a truck may take away only bicycles
 present at the start of the hour, before that hour's departures are served;
 \eqnref{eq:q2cap} couples bikes to trucks ($Q=40$ bicycles per truck);
-\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve trucks and return them to their
-starting zones by midnight; \eqnref{eq:q2dev} defines the end-of-day deviation that
+\eqnref{eq:q2truck}--\eqnref{eq:q2fleet} conserve the truck count, with $K$ at the
+start and at the end of the day but no per-zone requirement; end-of-day positions are
+matched to the start-of-day ones by the deadhead relocation reported below, outside the
+objective; \eqnref{eq:q2dev} defines the end-of-day deviation that
 makes the plan a reset. Bicycles, trucks and truck presence are integer variables; as
-a continuous program the instance would be cheaper but would describe fractions of a
+a continuous program it would be cheaper but would describe fractions of a
 truck and of a bicycle.
 
-The integrality matters, and so does the event order. The continuous LP plan, re-checked
+The continuous LP plan, re-checked
 on its own demand, violates the stock constraint in 3 of 1,200 zone-hours and would
 take 717.54 bicycles out of zones that do not have them. The integer plan has zero
 violations of every constraint: maximum load 40 bicycles, maximum trip 46.92 minutes
@@ -94,7 +105,7 @@ daily plan requires it.
 
 \tabref{tab:q2scan} scans the integer fleet on the five grid points that were solved.
 $K=0$ is the no-dispatch point; $K=60$ is the minimum of the compared grid and the
-baseline against which the tricycle layer is evaluated. It is not the Q2 recommendation
+baseline against which the tricycle layer is evaluated, not the Q2 recommendation
 once tricycles are available.
 
 \begin{table}[htbp]
@@ -121,15 +132,14 @@ $K$ & \textbf{Moved} & \textbf{Truck-km} & \textbf{Zone unmet} & \textbf{Dev} &
 \end{tabular}
 \end{table}
 
-The plan is not a night-only shift. At $K=60$ the 24,949 relocated bicycles cost
+At $K=60$ the 24,949 relocated bicycles cost
 5,659.17 truck-kilometres, and the end-of-day deviation falls from 46,930.39 at $K=0$
 to 459.41: the objective is dominated by balance, not by service, because the zone
 model has almost no unmet demand to remove. More trucks bring diminishing returns
-after 60: $K=80$ adds 11,359.70 CNY and moves 86 fewer bicycles because the extra fixed
-cost buys no additional balance.
+after 60: $K=80$ adds 11,359.70 CNY and moves 86 fewer bicycles.
 
-The hold-out replay is the external check: the plan is fixed on the five training
-days and replayed on the two held-out days with their observed demand. On 12 May, at
+The hold-out replay fixes the plan on the five training days and replays it on the
+two held-out days. On 12 May, at
 0.9291 times the design volume, it leaves 704.74 departures unserved and ends
 53,255.64 bicycles away from balance; on 19 May, at 1.1066 times the design volume, it
 leaves 14,232.37 unserved, 0.60\% of that day's departures, and 51,718.20 away from
@@ -142,39 +152,59 @@ sharply: the plan is built for the typical day, not for the tail.
 The truck plan equalises zone totals. Inside a zone, riders can already borrow a
 bicycle up to 300 m away, but the 300 m radius reaches no neighbour cell centre on this
 grid, so walking cannot move a bicycle across a cell boundary. The tricycle layer is
-therefore a within-zone transport problem: a transportation program per zone-hour moves
-bicycles from donors to sinks, its flow is cut into integer trips, and the trips go to
-tricycles by earliest finish. A tricycle carries $Q_{\text{tri}}=20$ bicycles, travels
-at 15 km/h, needs 0.5 minutes per bicycle handled, makes trips of at most 5 km, and
-operates from 07:00 to 20:00. Its cost is 300 CNY per tricycle-day, 0.2 CNY per
-vehicle-kilometre, and the same 6 CNY penalty on any cell-level departure left
-unserved. The layer is solved zone by zone; the truck layer is held fixed at the
-$K=60$ plan.
+therefore a within-zone transport problem. A tricycle carries $Q_{\text{tri}}=20$
+bicycles, travels at 15 km/h, needs 0.5 minutes per bicycle handled, makes trips of at
+most 5 km, and operates from 07:00 to 20:00. Its cost is 300 CNY per tricycle-day,
+0.2 CNY per vehicle-kilometre ($c_{\text{km}}$), and the same 6 CNY penalty
+($w_{\text{tri}}$) on any cell-level departure left unserved. The layer is solved zone
+by zone; the truck layer is held fixed at the $K=60$ plan.
+
+A deficit cell $a$ is paired with the 12 nearest
+stock-holding cells $b$ inside the trip limit; $y_{ab}$ bicycles move from $b$ to $a$,
+$u_a$ departures stay unserved, $e_a$ the departure still unmet after trucks and
+walking, $I_b$ the donor stock at the hour start, $d_{ab}$ the distance,
+$\nu_z$ the zone's tricycles, and $\theta_{ab}$ the tricycle-hours one bicycle on
+arc $ab$ occupies: loaded leg out, empty return, one full load, plus handling at both
+ends. For each zone-hour,
+\begin{equation}
+\begin{aligned}
+&\min\;\sum_{ab}\frac{c_{\text{km}}}{Q_{\text{tri}}}\,d_{ab}\,y_{ab}
+  +w_{\text{tri}}\sum_a u_a\\
+&\text{s.t.}\;\;\sum_b y_{ab}+u_a=e_a,\qquad
+\sum_a y_{ab}\le I_b,\qquad
+\sum_{ab}\theta_{ab}\,y_{ab}\le\nu_z ,
+\end{aligned}
+\label{eq:q2tri}
+\end{equation}
+with flows and unmet non-negative. The LP solution is rounded to whole bicycles under
+each donor's integer stock and split into trips of at most $Q_{\text{tri}}$; the fixed
+list is assigned to the zone's tricycles by earliest finish inside the shift
+stated above, and the smallest integer fleet that places every trip replaces the
+fractional count zone by zone.
 
 Solved as an LP over tricycle counts, the layer buys 889 tricycles, costs 507,779.67
 and leaves 40,041.58 cell-level departures unserved, for a total of 591,587.42 and a
-saving of 927,691.53 (61.06\%) against the no-tricycle cell-level baseline of
+saving of 927,691.53 (61.06\%) against the no-tricycle baseline of
 1,519,278.95. That is an \emph{ideal LP upper bound}, not a plan: the integer schedule
-built from the same allocation leaves 534 of 13,775 trips unassigned in 15 zones.
-Raising the fleet to the smallest executable fixed point adds 86 tricycles across
-those 15 zones, for \textbf{975 tricycles} and zero unassigned trips in all 50 zones.
+leaves 534 of 13,775 trips unassigned in 15 zones; the smallest executable fixed
+point adds 86 tricycles across those 15 zones, for \textbf{975 tricycles} and zero
+unassigned trips in all 50 zones.
 
-The executable layer costs 533,248.01, of which 293,342.61 is fixed, kilometre and
-handling cost and 239,905.40 is the 6 CNY penalty on 39,984.2332 unserved departures.
+The executable layer costs 533,248.01: 293,342.61 fixed, kilometre and
+handling cost, and 239,905.40 the 6 CNY penalty on 39,984.2332 unserved departures.
 The total is \textbf{617,055.7515 CNY per day}, a saving of \textbf{902,223.20
-(59.385\%)} against the 1,519,278.95 no-tricycle baseline. Counting actual rather than
-full loads raises the layer to 534,278.98 and the total to 618,086.73, a saving of
+(59.385\%)} against the 1,519,278.95 no-tricycle baseline. Actual rather than
+full loads raise the layer to 534,278.98 and the total to 618,086.73, a saving of
 901,192.22 (59.317\%); the 1,030.98 difference (0.17\%) is the load-factor
-approximation and is carried as a range, not hidden. The executable plan remains
+approximation, carried as a range. The executable plan remains
 preferred until the unserved penalty falls to 1.47215 CNY per bicycle or the tricycle
 fixed cost rises to 1,225.36 CNY per day.
 
-The integer cost of the tricycle layer is visible in the rounding. At the city scale
+At the city scale
 the LP leaves 38,489.44 cell departures unserved and the integer schedule 39,984.2332,
 a rounding loss of 1,494.80. In zone 24, the largest allocation (44 tricycles), the LP
 leaves 2,059.49 and the integer schedule 2,085.98; the 26.50 loss is 0.43\% of the
-bicycle flows the LP assigns in the zone and is bounded by 81.5. The bound is not
-tight, but it is small; the executable plan can only be worse than its relaxation.
+bicycle flows the LP assigns in the zone and is bounded by 81.5.
 
 \subsection{The three schemes on their own calibers}
 
@@ -248,15 +278,3 @@ LP saving (61.06\%); both are bounds, not point estimates. The intervals are LP-
 intervals: at 11 representative parameter points the integer chain deviates from the
 proxy by at most 38,986.30 CNY per day, about 0.2 standard deviations of the Q2 total,
 so they are a shape statement, not a calibrated confidence interval.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\linewidth]{../figs/fig4_q2.pdf}
-\caption[Q2: flow, truck schedule, fleet scans]{Q2. (a) Net flow in the morning peak
-by zone: the core gains bicycles, the residential periphery loses them. (b) The
-$K=60$ truck schedule: bicycles delivered by hour and receiving zone, from the
-integer plan. (c) Integer objective and zone unmet against the truck fleet; $K=60$
-is the minimum of the compared grid. (d) The tricycle layer: total cost against fleet
-size, with the 889-tricycle LP point and the 975-tricycle executable point marked.}
-\label{fig:q2}
-\end{figure}

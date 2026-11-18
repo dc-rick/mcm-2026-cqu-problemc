@@ -15,7 +15,7 @@ interval over the seven typical days,
 \end{equation}
 where $N^{(k)}_{it}$ is the number of departures from cell $i$ in interval $t$ on day
 $k$. With 5,263 cells and 96 intervals the table has $5.05\times10^{5}$ entries ---
-precisely the level of detail the data support. The average cell-interval contains
+the level of detail the data support. The average cell-interval contains
 0.54 trips, and the profile (\figref{fig:data}b) is bimodal on weekdays --- a sharp
 8 a.m. peak, a lunchtime shoulder and an evening peak at 6 p.m. --- and unimodal on
 weekends.
@@ -32,10 +32,9 @@ P(j\mid i,h) \;=\; \frac{A_j(h)\,e^{-\beta_h d_{ij}}}
 \end{equation}
 where $A_j(h)$ is the attraction of $j$ in band $h$ and $\beta_h>0$ is the distance
 decay. The model is origin-constrained --- the probabilities sum to one over
-destinations for every origin --- so the observed origin totals are reproduced exactly
-and no balancing procedure is required beyond the denominator.
+destinations for every origin --- so the observed origin totals are reproduced exactly.
 
-The exponential form is not an arbitrary choice. If trips are the most probable
+If trips are the most probable
 allocation of $n_{ih}=\sum_j n_{ijh}$ indistinguishable riders to destinations subject
 to a known mean trip length, the maximum-entropy distribution is
 \cite{wilson1970}
@@ -43,8 +42,7 @@ to a known mean trip length, the maximum-entropy distribution is
 n_{ijh} \;\propto\; A_j(h)\,e^{-\beta_h d_{ij}},
 \end{equation}
 and $\beta_h$ is the Lagrange multiplier of the distance constraint. It measures how
-strongly riders resist distance: a large $\beta_h$ means the destination distribution
-is concentrated near the origin.
+strongly riders resist distance.
 
 Attraction is measured, not assumed. We set
 \begin{equation}
@@ -94,8 +92,6 @@ $\beta_h=0$.}
 \end{tabular}
 \end{table}
 
-Three readings of \tabref{tab:q1} matter.
-
 \textbf{Distance is the dominant explanatory variable.} The attraction-only model is
 almost useless --- its log-loss is close to the uniform benchmark over 5,263
 destinations ($\log 5263=8.57$) --- because in a balanced system the marginal number of
@@ -111,16 +107,16 @@ evening, when the distance term is already sharp.
 \textbf{The decay varies by time of day, and in the expected direction.} Morning has
 the weakest decay ($\hat\beta=2.01$): the morning trip is the commute, and commutes are
 long. Midday has the strongest ($\hat\beta=2.52$): the midday trip is an errand, and
-errands are local. The evening sits between, and late evening recovers some of the
+errands are local. The evening sits between and late evening recovers some of the
 morning's reach as riders return home. This is the behavioural content of the model,
 and it is what makes a time-varying formulation necessary: a single $\beta$ would
 average the commute and the errand and misdescribe both.
 
 \subsection{Is the time-varying decay necessary?}
 
-A five-band decay is a refinement, and it is fair to ask whether one $\beta$ would do.
-We re-estimated the destination model with a single $\beta$ shared across all five bands
-and compared the two on the held-out days (\tabref{tab:q1shared}). The shared estimate is
+A five-band decay is a refinement; it is fair to ask whether one $\beta$ would do.
+We re-estimated the model with a single shared $\beta$ and compared the two on the
+held-out days (\tabref{tab:q1shared}). The shared estimate is
 2.2100 km$^{-1}$; the five-band estimates used in this comparison are 2.095, 2.014,
 2.517, 2.130 and 2.365 km$^{-1}$ (the full-sample fit of \tabref{tab:q1} differs from
 these in the third decimal).
@@ -157,9 +153,9 @@ The shared model is statistically worse in every comparison --- the paired $z$ i
 $-20.5$ and $-23.7$ on log-loss and $2.84$ and $2.80$ on the top-five rate --- but the
 size is negligible: a mean held-out log-loss of 3.43080 against 3.42548, a difference of
 0.00532 nats, or 0.155\%, and a top-five effect of 0.047--0.054 percentage points. The
-difference is enough to say that the shared specification is the worse of the two, and
-not enough to say that the choice would change an operational decision. We keep the
-five-band model because it costs nothing and because the decay profile carries the
+difference is enough to say that the shared specification is worse, not enough
+to say the choice would change an operational decision. We keep the
+five-band model because it costs nothing and the decay profile carries the
 behavioural content of \S\ref{sec:q1}; a practitioner with less data could use one
 $\beta$ without material loss.
 
@@ -181,22 +177,6 @@ duration-dependent statement in this paper inherits that limitation.
 
 \subsection{Joint validation}
 
-The layers are estimated separately but must be checked together: a model can fit each
-margin and still produce impossible trips. We therefore simulate a full typical day
---- draw each trip's time from the Poisson rates, its destination from
-\eqnref{eq:gravity}, its duration from \eqnref{eq:dur} --- and compare the simulated
-trip-length distribution with the observed one (\figref{fig:q1}a). Same-cell trips are
-excluded from the distance comparison rather than assigned a fabricated 0.30 km, and
-the comparison is made at cell-centre resolution on both sides. The two-sample
-Kolmogorov--Smirnov statistic on cross-cell trips is \textbf{0.098}, and the
-discrepancy is confined to the shortest trips, where the geohash floor sits. At full
-sample the model produces
-\textbf{12.83\% same-cell trips against 8.89\% observed, an overestimate of 3.94
-percentage points}; the agreement elsewhere does not remove that bias. Given that the
-model reproduces the distance distribution, the hourly profile (by construction) and
-the destination choice (by the held-out test), it is adequate as the demand engine for
-Q2--Q4.
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.9\linewidth]{../figs/fig3_q1_validation.pdf}
@@ -207,6 +187,23 @@ band. (c) Out-of-sample log-loss difference from the distance-only model on a li
 axis, so the difference is not flattened. (d) Top-five destination hit rate.}
 \label{fig:q1}
 \end{figure}
+
+The layers are estimated separately but must be checked together. We simulate a full typical day
+--- each trip's time from the Poisson rates, its destination from
+\eqnref{eq:gravity}, its duration from \eqnref{eq:dur} --- and compare the simulated
+trip-length distribution with the observed one (\figref{fig:q1}a). Same-cell trips are
+excluded from the distance comparison rather than assigned a fabricated 0.30 km, and
+the comparison is at cell-centre resolution on both sides. The two-sample
+Kolmogorov--Smirnov statistic on cross-cell trips is \textbf{0.098}, and the
+discrepancy is confined to the shortest trips, where the geohash floor sits. At full
+sample the model produces
+\textbf{12.83\% same-cell trips against 8.89\% observed, an overestimate of 3.94
+percentage points} (the equality with the adjacency rate of \S\ref{sec:data} is a
+numerical coincidence; the two quantities are unrelated); the agreement elsewhere does
+not remove that bias. Because the
+model reproduces the distance distribution, the hourly profile (by construction) and
+the destination choice (by the held-out test), it is adequate as the demand engine for
+Q2--Q4.
 
 \subsection{Who is riding}
 
@@ -242,9 +239,6 @@ Weekend / leisure & 29,410 & 8.9\% & 2.8\% & 2.25 & 0.92 & 0.79 \\
 
 \tabref{tab:seg} shows the structure. Two groups generate four-fifths of all trips:
 the \emph{regular multi-purpose} user makes 9.18 trips over the nine recorded days of
-the 10--19 May window and accounts for 51.8\% of trips, and the \emph{heavy short-trip}
+10--19 May and accounts for 51.8\% of trips, and the \emph{heavy short-trip}
 user makes 13.98 trips of 0.67 km on average. The peak, by contrast, is made by the
-\emph{commuter} class, 10.6\% of volume, whose trips average 1.17 km. An intervention
-that flattens the peak must target commuters; one that reduces total vehicle movement
-must target the short-trip majority. Neither can be inferred from the aggregate
-profile, which is why the segmentation is part of the deliverable.
+\emph{commuter} class, 10.6\% of volume, whose trips average 1.17 km.

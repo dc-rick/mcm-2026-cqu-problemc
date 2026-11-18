@@ -3,12 +3,12 @@
 
 \subsection{How the uncertainty is designed}
 
-The models have three kinds of input, and they are not uncertain in the same way. Group
+The models have three kinds of input, not uncertain in the same way. Group
 \textbf{A} is \emph{data-identified}: the arrival and OD surfaces, resampled by a
 day-block bootstrap. Group \textbf{B} is \emph{load and inventory}: the sampling rate
 $p$, the initial-inventory proxy $I_0$, and which day is treated as typical, enumerated
 exactly over 54 combinations. Group \textbf{C} is \emph{assumed}: the cost coefficients,
-the tricycle parameters, and the behavioural constants $\kappa,\rho,c_0$, which were not
+the tricycle parameters, and the behavioural constants $\kappa,\rho,c_0$, not
 identified from any data. The joint sample \textbf{F} draws all three groups together
 from their design distributions ($n=128$ draws, eight pick-freeze passes each; group A
 and C marginals have $n=128$, group B has the exact 54).
@@ -100,19 +100,17 @@ Q4 unassigned & 0.136$\pm$0.112 & 0.738$\pm$0.081 & 0.382$\pm$0.108 & 1.256$\pm$
 \end{center}
 
 The shares are first-order indices from the pick-freeze covariance identity, with
-bootstrap standard errors from 400 replicates (256 draws). They describe where the
-spread comes from, and the answer differs by question. Q2 total and Q4 coverage are
+bootstrap standard errors from 400 replicates (256 draws). Q2 total and Q4 coverage are
 dominated by the assumed group C; Q2 unmet and Q4 unassigned are dominated by the load
 and inventory group B; the Q2 saving share splits almost evenly between B and C and is
-nearly free of the data group A. That split is the quantitative version of a point the
-text has made throughout: the expensive uncertainties are assumptions and scenarios,
-not sampling error.
+nearly free of the data group A. That split says the expensive uncertainties are
+assumptions and scenarios, not sampling error.
 
 The three shares sum to more than one for most outputs --- 1.072 for Q2 total, 1.381
 for Q2 unmet, 0.750 for the Q3 ceiling. The residual $1-\sum_g S_g$ is within two
 bootstrap standard errors of zero for every output (Q2 unmet is the largest, 1.23 SE),
-so we treat the excess as a residual of the first-order decomposition, not as evidence
-of a second-order interaction.
+so we treat the excess as a residual of the first-order decomposition, not as a
+second-order interaction.
 
 \subsection{The tornado}
 
@@ -140,7 +138,7 @@ by 17.11 and the walking radius by 7.11, while every cost coefficient has a zero
 because cost does not enter the coverage objective.
 
 The zero bars are informative, not missing: an input that matters in one question may
-be irrelevant in another, so a single global sensitivity ranking would be misleading.
+be irrelevant in another, so one global ranking would mislead.
 
 \subsection{The fleet estimate}
 
@@ -164,8 +162,8 @@ heterogeneity, and the value survives only as a scenario.
 
 We therefore report the model interval \textbf{[484,754, 506,635]}, whose lower end is
 the observed union and whose upper end is the normalised nine-day unseen-share
-reference. It is more than forty times wider than the sampling interval, which is the
-honest statement: the statistical error is negligible and the closure assumptions are
+reference. It is more than forty times wider than the sampling interval: the
+statistical error is negligible and the closure assumptions are
 not. The rides-per-bicycle-per-day figure follows the same ordering: 4.33 at the
 495,540 point estimate (an upper estimate, because that fleet is biased low), 4.42 at the
 design-independent ceiling $N\ge484{,}754$, and 4.01 only in the 534,039 scenario. We

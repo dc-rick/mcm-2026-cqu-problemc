@@ -1,16 +1,16 @@
-"""T027 final-state verification.
+"""T027 R1 verification.
 
 Checks, with evidence written to 交付/T027/verify_final.json:
-  1. Body numeric-token multiset against baseline 8708d37, per file.
-     Expected: identical everywhere except sec4_q1.tex, where the only
-     difference is 3.65 -> 3.64 (L16).  ai_report.tex is excluded from the
-     gate (authorised additions) but its diff is reported for the record.
-  2. Forbidden strings: internal task ids (T0xx), revision language,
-     wrong figure-count statements.
-  3. L16 spot checks in sec4_q1.tex.
-  4. PDF gates: page count, '??', U+037E (Greek question mark), and the
-     main.log overfull/undefined counts.
-  5. Page landmarks: References and AI report start pages; counted pages.
+  1. Numeric-token multiset per paper/*.tex against baseline 3209636 (R0).
+     Authorised: sec5_q2.tex gains token 12 exactly once (R1-5, TRI_NEAREST).
+     ai_report.tex is excluded from the gate (R1-13) but its diff is reported.
+  2. Forbidden strings: internal task ids (T0xx), revision language.
+  3. Section-6 legacy wording checks (carried from R0) and the R1-1..R1-13
+     item checks from task sheet section 8.1.
+  4. Regression: 975 / 617,055.7515 / 39,984.2332 (and companions) recomputed
+     from data/runs/T024/schedule_check.json and matched to the paper strings.
+  5. PDF gates: 27 pages, 25 counted, '??', U+037E, overfull / undefined /
+     LaTeX-warning counts, TOC landmarks (References p25, AI report p26).
 
 Run:  python -I 交付/T027/verify_final.py
 """
@@ -24,16 +24,14 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PAPER = os.path.join(ROOT, "paper")
 OUT = os.path.join(ROOT, "交付", "T027", "verify_final.json")
-BASE = "8708d37"
+SCHED = os.path.join(ROOT, "data", "runs", "T024", "schedule_check.json")
+BASE = "3209636"
 
 TOK = re.compile(r"(?<![A-Za-z0-9])\d[\d,]*(?:\.\d+)?")
 
-# Authorised token changes vs 8708d37 (task sheet sections 3 and 6).
+# Authorised token changes vs 3209636 (task sheet 8.3).
 EXPECTED = {
-    "sec4_q1.tex": ({"3.65": 1, "0.306": 1}, {"3.64": 1, "0.305": 1}),  # L16 + #7
-    "summary.tex": ({"24": 1}, {"19": 1}),            # #2 10--24 -> 10--19 May
-    "sec2_assumptions.tex": ({}, {"20": 1}),          # #4 trucks travel at 20 km/h
-    "references.tex": ({"17": 1}, {"19": 1}),         # #9 aiapp 11--17 -> 11--19 Nov
+    "sec5_q2.tex": ({}, {"12": 1}),  # R1-5 TRI_NEAREST=12
 }
 
 
@@ -65,31 +63,40 @@ def git_show(rev, path):
     return r.stdout.decode("utf-8", "replace")
 
 
+def norm(text):
+    return " ".join(text.split())
+
+
 def main():
-    ev = {"task": "T027", "baseline": BASE, "date": "2026-11-19"}
+    ev = {"task": "T027", "revision": "R1", "baseline": BASE, "date": "2026-11-19"}
     ok = True
 
-    # ---- 1. token multiset per file -------------------------------------
     tex = sorted(f for f in os.listdir(PAPER) if f.endswith(".tex"))
+    cache = {name: read_file(os.path.join(PAPER, name)) for name in tex}
+    cnorm = {name: norm(text) for name, text in cache.items()}
+
+    def has(name, s):
+        return s in cnorm[name]
+
+    # ---- 1. token multiset per file -------------------------------------
     gate = {}
     for name in tex:
         path = "paper/" + name
-        new = read_file(os.path.join(PAPER, name))
+        new = cache[name]
         old = git_show(BASE, path)
         if name == "ai_report.tex":
             removed, added = counter_diff(tokens(old), tokens(new))
             gate[name] = {"excluded_from_gate": True,
                           "old_tokens": len(tokens(old)),
                           "new_tokens": len(tokens(new)),
-                          "removed_types": len(removed),
-                          "added_types": len(added)}
+                          "removed": removed, "added": added}
             continue
         removed, added = counter_diff(tokens(old), tokens(new))
         gate[name] = {"removed": removed, "added": added,
                       "identical": not removed and not added}
         if removed or added:
             exp = EXPECTED.get(name)
-            if exp is not None and removed == exp[0] and added == exp[1]:
+            if exp is not None and (removed, added) == exp:
                 gate[name]["expected_authorised"] = True
             else:
                 ok = False
@@ -99,60 +106,127 @@ def main():
         v.get("identical", True) or v.get("expected_authorised") or v.get("excluded_from_gate")
         for v in gate.values())
 
-    # ---- 1b. section-6 correction spot checks --------------------------
-    def has(name, s):
-        return s in read_file(os.path.join(PAPER, name))
+    # ---- 2. carried section-6 wording checks ---------------------------
+    def has_exact(name, s):
+        return s in cache[name]
 
     checks6 = {
-        "sec3_old_adjacency_claim_gone": not has("sec3_data.tex", "must start in the same 153 m geohash cell"),
-        "sec3_old_correction_claim_gone": not has("sec3_data.tex", "Correcting the exact-match rate"),
-        "sec3_lower_bound_wording": has("sec3_data.tex", "a lower bound; 17.72"),
-        "sec3_wide_rate_wording": has("sec3_data.tex", "The wide rate, less that false-match share"),
-        "summary_10_19": has("summary.tex", "10--19 May window") and not has("summary.tex", "10--24 May"),
-        "sec5_vrp_gone": (not has("sec5_q2.tex", "vehicle-routing")
-                          and not has("sec5_q2.tex", "integer routing program")),
-        "sec5_actual_implementation": (has("sec5_q2.tex", "transportation program")
+        "sec3_old_adjacency_claim_gone": not has_exact("sec3_data.tex", "must start in the same 153 m geohash cell"),
+        "sec3_old_correction_claim_gone": not has_exact("sec3_data.tex", "Correcting the exact-match rate"),
+        "sec3_lower_bound_wording": has_exact("sec3_data.tex", "a lower bound; 17.72"),
+        "sec3_wide_rate_wording": has("sec3_data.tex", "The wide rate, less the false-match share"),
+        "summary_10_19": has_exact("summary.tex", "10--19 May window") and not has_exact("summary.tex", "10--24 May"),
+        "sec5_vrp_gone": (not has_exact("sec5_q2.tex", "vehicle-routing")
+                          and not has_exact("sec5_q2.tex", "integer routing program")),
+        "sec5_actual_implementation": (has("sec5_q2.tex", "time-space network program")
                                        and has("sec5_q2.tex", "earliest finish")),
-        "sec2_overnight_gone": not has("sec2_assumptions.tex", "overnight shift"),
-        "sec2_20kmh": has("sec2_assumptions.tex", "travel at 20 km/h"),
+        "sec2_overnight_gone": not has_exact("sec2_assumptions.tex", "overnight shift"),
+        "sec2_20kmh": has_exact("sec2_assumptions.tex", "travel at 20 km/h"),
         "sec7_measured_inventory_gone": (not has("sec7_q4.tex", "measured inventory")
                                          and not has("sec7_q4.tex", "At the measured")),
         "sec7_measured_516_gone": not has("sec7_q4.tex", "measured 5/16"),
         "sec7_sizing_rows": (has("sec7_q4.tex", "Assigned sizing demand")
                              and has("sec7_q4.tex", "Unassigned sizing demand")
                              and not has("sec7_q4.tex", "& Assigned demand")),
-        # #7 ARI minimum 0.306 -> 0.305
-        "sec4_ari_0305": has("sec4_q1.tex", "0.305") and not has("sec4_q1.tex", "0.306"),
-        # #8 AI report terminology and fleet grid
+        "sec4_ari_0305": has_exact("sec4_q1.tex", "0.305") and not has_exact("sec4_q1.tex", "0.306"),
         "ai_report_proxy": (has("ai_report.tex", "initial-inventory proxy")
                             and not has("ai_report.tex", "measured initial inventory")),
-        "ai_report_fleet_grid": has("ai_report.tex", "\\{0,20,40,60,80\\}"),
-        # #9 aiapp reference date range
+        "ai_report_fleet_grid": has_exact("ai_report.tex", "\\{0,20,40,60,80\\}"),
         "references_aiapp_1119": (has("references.tex", "used 11--19 November 2026")
                                   and not has("references.tex", "used 11--17 November 2026")),
     }
     ev["section6_checks"] = checks6
-    ok = ok and all(checks6.values())
 
-    # ---- 2. forbidden strings ------------------------------------------
+    # ---- 3. R1 item checks (task sheet 8.1) ----------------------------
+    sec7_cites = cache["sec7_q4.tex"].count("\\cite{gurobi}")
+    r1 = {
+        "R1-1_A11_scope": (has("sec2_assumptions.tex", "not restricted to the source zone")
+                           and has("sec2_assumptions.tex", "No cross-hour rearrangement is modelled")
+                           and not has("sec2_assumptions.tex", "in the same zone")),
+        "R1-1b_A12_consistency_fix": has("sec2_assumptions.tex",
+                                         "priced in the truck-caliber test of Section~\\ref{sec:q3}"),
+        "R1-2_sec6_limits": (has("sec6_q3.tex", "reroutes are cell-level, not zone-level")
+                             and has("sec6_q3.tex",
+                                     "the only channel through which the incentive can reach the truck layer")
+                             and not has("sec6_q3.tex", "restricted to the \\emph{same zone}")),
+        "R1-3_sec10_saving": (has("sec10_evaluation.tex",
+                                  "neither credits nor charges the induced truck-layer change")
+                              and has("sec10_evaluation.tex",
+                                      "which the truck-caliber test prices separately")
+                              and not has("sec10_evaluation.tex", "Reroutes stay within a zone")),
+        "R1-4_truck_fleet": (has("sec5_q2.tex", "conserve the truck count, with $K$ at the")
+                             and has("sec5_q2.tex", "no per-zone requirement")
+                             and has("sec5_q2.tex", "deadhead relocation reported below, outside the")
+                             and not has("sec5_q2.tex", "return them to their starting zones")),
+        "R1-5_tri_block": (has("sec5_q2.tex", "the 12 nearest")
+                           and has("sec5_q2.tex", "\\label{eq:q2tri}")
+                           and has("sec5_q2.tex", "earliest finish")
+                           and has("sec5_q2.tex", "smallest integer fleet")),
+        "R1-6_siting_block": (has("sec7_q4.tex", "\\label{eq:q4cap}")
+                              and has("sec7_q4.tex", "\\emph{uncapped} reference only")
+                              and has("sec7_q4.tex", "the per-site cap set above")),
+        "R1-7_closed_fleet_shape": has("sec7_q4.tex", "flow-implied one, not the proxy's"),
+        "R1-8_inventory_lower_bound": has("sec3_data.tex", "a lower bound on the true stock"),
+        "R1-9_coincidence": (has("sec4_q1.tex", "numerical coincidence")
+                             and has("sec4_q1.tex", "the two quantities are unrelated")),
+        "R1-10_gurobi_cite_once": sec7_cites == 1,
+        "R1-11_typo": (has("sec3_data.tex", "less the false-match share")
+                       and not has("sec3_data.tex", "less that false-match")),
+        "R1-12_precision": has("sec10_evaluation.tex",
+                               "printed at the precision of the archived result files"),
+        "R1-13_ai_report": has("ai_report.tex",
+                               "12 nearest stocked donor cells per deficit cell in the tricycle stage"),
+        "no_7_46_anywhere": all("7.46" not in text for text in cache.values()),
+        "no_same_zone_claim": (not has("sec2_assumptions.tex", "in the same zone")
+                               and not has("sec6_q3.tex", "same zone, which keeps")
+                               and not has("sec10_evaluation.tex", "stay within a zone, which")),
+    }
+    ev["r1_checks"] = r1
+    ok = ok and all(checks6.values()) and all(r1.values())
+
+    # ---- 4. forbidden strings ------------------------------------------
     pats = [r"T0\d\d", r"six figures", r"all six", r"8\s*图", r"六图",
             r"earlier version", r"previous version", r"前版", r"上一版",
             r"T0xx"]
     forbid = {}
     for name in tex:
-        text = read_file(os.path.join(PAPER, name))
         hits = {}
         for p in pats:
-            m = re.findall(p, text)
+            m = re.findall(p, cache[name])
             if m:
                 hits[p] = len(m)
         if hits:
             forbid[name] = hits
     ev["forbidden_strings"] = forbid
     ev["forbidden_strings_pass"] = not forbid
+    ok = ok and not forbid
 
-    # ---- 3. L16 spot checks --------------------------------------------
-    sec4 = read_file(os.path.join(PAPER, "sec4_q1.tex"))
+    # ---- 5. regression against the archived result file ----------------
+    sched = json.load(io.open(SCHED, encoding="utf-8"))
+    t = sched["exec_totals"]
+    reg = {
+        "n_exec": t["n_exec"],
+        "unmet_printed": "{:,.4f}".format(t["unmet"]),
+        "layer_printed": "{:,.2f}".format(t["layer_cost_fullload"]),
+        "total_printed": "{:,.4f}".format(t["total_fullload"]),
+        "saving_printed": "{:,.2f}".format(t["saving_fullload"]),
+        "share_printed": "{:.3f}%".format(100.0 * t["saving_fullload_share"]),
+    }
+    joined = norm(" ".join(cache[f] for f in ("sec1_intro.tex", "sec5_q2.tex", "sec10_evaluation.tex")))
+    joined = joined.replace("\\", "")
+    reg["pass"] = (
+        reg["n_exec"] == 975
+        and reg["unmet_printed"] == "39,984.2332" and reg["unmet_printed"] in joined
+        and reg["layer_printed"] == "533,248.01" and reg["layer_printed"] in joined
+        and reg["total_printed"] == "617,055.7515" and reg["total_printed"] in joined
+        and reg["saving_printed"] == "902,223.20" and reg["saving_printed"] in joined
+        and reg["share_printed"] == "59.385%" and reg["share_printed"] in joined
+    )
+    ev["regression"] = reg
+    ok = ok and reg["pass"]
+
+    # ---- 6. L16 spot checks (carried from R0) --------------------------
+    sec4 = cache["sec4_q1.tex"]
     ev["L16"] = {
         "has_3.28--3.64": "3.28--3.64" in sec4,
         "has_3.28--3.65": "3.28--3.65" in sec4,
@@ -162,7 +236,7 @@ def main():
     }
     ok = ok and ev["L16"]["pass"]
 
-    # ---- 4. PDF gates ---------------------------------------------------
+    # ---- 7. PDF gates ---------------------------------------------------
     try:
         import fitz
     except ImportError:
@@ -181,25 +255,25 @@ def main():
         qq, gr = [], []
         landmarks = {}
         for p in doc:
-            t = p.get_text()
-            if "??" in t:
+            tt = p.get_text()
+            if "??" in tt:
                 qq.append(p.number + 1)
-            if ";" in t:
+            if ";" in tt:
                 gr.append(p.number + 1)
-            for line in t.splitlines():
+            for line in tt.splitlines():
                 s = line.strip()
                 if s in ("References", "Report on Use of AI Tools"):
                     landmarks.setdefault(s, []).append(p.number + 1)
         ev["pdf"].update({"pages": pages, "pages_with_qq": qq,
                           "pages_with_u037e": gr, "landmarks": landmarks,
                           "counted_pages": pages - 2})
-    # TOC entries
-    toc = read_file(os.path.join(PAPER, "main.toc"))
+    toc = read_file(os.path.join(PAPER, "main.toc")) if os.path.exists(os.path.join(PAPER, "main.toc")) else ""
     ev["pdf"]["toc_references"] = "References" in toc
     ev["pdf"]["toc_ai_report"] = "Report on Use of AI Tools" in toc
     ev["pdf"]["pdf_pass"] = (
         ev["pdf"]["overfull_count"] == 0
         and ev["pdf"]["undefined_warnings"] == 0
+        and ev["pdf"]["latex_warnings"] == 0
         and ev["pdf"].get("pages") == 27
         and ev["pdf"].get("pages_with_qq") == []
         and ev["pdf"].get("pages_with_u037e") == []
@@ -215,6 +289,9 @@ def main():
         json.dump(ev, f, ensure_ascii=False, indent=1)
     print(json.dumps({"all_pass": ev["all_pass"],
                       "token_gate_pass": ev["token_gate_pass"],
+                      "r1_checks_pass": all(r1.values()),
+                      "section6_pass": all(checks6.values()),
+                      "regression_pass": reg["pass"],
                       "forbidden_pass": ev["forbidden_strings_pass"],
                       "pdf_pass": ev["pdf"]["pdf_pass"]}, indent=1))
     return 0 if ev["all_pass"] else 1

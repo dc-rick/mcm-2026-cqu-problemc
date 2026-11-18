@@ -139,8 +139,9 @@ layer is unchanged by construction.
   scheduling uses 20 km/h, 0.5 CNY per bicycle loaded or unloaded, 600 CNY per
   truck-day and 6 CNY per truck-kilometre, with the fleet scanned over
   $\{0,20,40,60,80\}$ trucks. The tricycle layer uses 20 bicycles per trip, 15 km/h,
-  0.5 minutes per bicycle handled, trips of at most 5 km, 300 CNY per tricycle-day,
-  0.20 CNY per vehicle-kilometre and one 07:00--20:00 shift. The 150-slot fence cap
+  0.5 minutes per bicycle handled, trips of at most 5 km, the 12 nearest stocked donor
+  cells per deficit cell in the tricycle stage, 300 CNY per tricycle-day, 0.20 CNY per
+  vehicle-kilometre and one 07:00--20:00 shift. The 150-slot fence cap
   and the 450 m walking radius are typed; the 4,000-site knee is computed by the
   Kneedle rule on the capacity--coverage frontier, not typed. The incentive
   acceptance parameters $\kappa=2$, $\rho=0.35$ and $c_0=0.8$ are assumed (no reward

@@ -3,13 +3,13 @@
 
 \subsection{Three things competition can break}
 
-The five questions above were answered for a single operator holding the whole market.
+The five questions were answered for a single operator holding the whole market.
 Competition can affect availability, parking capacity and information, and the three are
-not the same kind of claim. Availability is a stochastic statement about stockouts;
-parking capacity is a deterministic statement about slots; information is a statement
-about what any single firm can estimate. We simulate the second at the resolution the
-Q4 plan actually has, and treat the first and third as arguments whose direction we can
-state and whose magnitude we cannot.
+not the same kind of claim: availability is a stochastic statement about stockouts,
+parking capacity a deterministic one about slots, information a statement about what
+any firm can estimate. We simulate the second at the Q4 plan's own resolution and treat
+the first and third as arguments whose direction we can state, not whose magnitude we
+can measure.
 
 \subsection{A cell-resolution mismatch experiment}
 
@@ -21,8 +21,8 @@ institutions are compared:
 \item \textbf{independent} --- each platform owns a 150-slot fence at each open site and
   only its own bicycles park there;
 \item \textbf{independent\_equal} --- the same, but 75 slots per platform, so the concrete
-  per site equals the shared regime's 150 and the comparison isolates pooling rather
-  than total capacity;
+  per site equals the shared regime's 150 and the comparison isolates pooling, not total
+  capacity;
 \item \textbf{shared} --- one 150-slot fence per site, both platforms park in it, riders
   still take only their own bicycles, and overflow is rationed in proportion to that
   step's arrivals. Sharing pools slots, not fleets.
@@ -79,10 +79,9 @@ leaves 11.66\% of within-fence departures unserved; at $m=0$, with both platform
 proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%,
 about half a percentage point worse. The mechanism is not spatial: each platform's
 Poisson fluctuations no longer pool with the other's, so the same total fleet produces
-more empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that finding
-does not survive the cell resolution: at zone scale the
-stocks are large enough that the split's noise is invisible, and at fence scale it is
-not.
+more empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that
+does not survive the cell resolution: at zone scale the stocks are large enough to hide
+the split's noise, at fence scale they are not.
 
 \textbf{The denominator is within-fence departures, not the city.} The 12.10\% is
 143,011.06 unserved departures over 1,181,754.7 within-fence departures. It is
@@ -101,9 +100,9 @@ and it grows monotonically with the intensity.
 than the independent one: at $m=0$ it is 12.12\% against 12.10\%, and at $m\ge1.0$ it is
 slightly worse than independent\_equal (16.11\% against 16.00\%, 19.55\% against
 19.03\%). Sharing pools parking slots, not bicycles; a platform's riders still cannot
-use the other platform's fleet, and proportional rationing of a shared fence's overflow
-is not better than owning a smaller fence. The shared regime \emph{does} save concrete:
-its required capacity is 562,331.65 slots against 608,326.14 for independent at $m=0$,
+use the other's fleet, and proportional rationing of a shared fence's overflow is no
+better than a smaller own fence. The shared regime \emph{does} save concrete:
+562,331.65 required slots against 608,326.14 for independent at $m=0$,
 which is 4.05\% above the single-platform 540,447.69 rather than 12.56\% above it.
 
 \textbf{Capacity duplication has a price.} The required capacity of the independent
@@ -132,38 +131,37 @@ CNY) --- is therefore incurred by every platform separately, and the same holds 
 the tricycle layer's fixed cost, 300 CNY per tricycle-day, which is 293,342.61 of the
 617,055.7515 two-tier total.
 
-\textbf{Data.} This is the most serious loss and the least visible. Every model here is
+\textbf{Data.} Every model here is
 estimated from the full origin--destination matrix, and a platform holding a third of
 the market observes a third of the rows, so the attraction $A_j$ of
 \eqnref{eq:gravity} and the cell deficit $\Delta_c$ of \eqnref{eq:q3lp} are estimated
 with a standard error that grows as $\sqrt{3}$. More decisively, \emph{no platform can
 compute the plans of Q2 and Q4 at all}: the Q2 truck plan is defined on a city-wide
 zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on a
-city-wide deficit list, each a public-good computation that only the city can run.
+city-wide deficit list: each is a public-good computation that only the city can run.
 
 \subsection{Multi-homing, and why it does not rescue the situation}\label{sec:multihome}
 
 If riders use several applications, availability may improve: a rider who finds no
 bicycle on one platform may find one on another, so effective density is closer to the
-sum of the platforms' densities. But multi-homing shifts the competition to a different
-margin: platforms compete for the same trips, so each must offer the same coverage to
-be usable, and the fleet that results is the sum of $n$ fleets each sized for much of
+sum of the platforms' densities. But multi-homing shifts competition to a different
+margin: platforms compete for the same trips, so each must offer near-complete coverage
+to be usable, and the fleet that results is the sum of $n$ fleets each sized for much of
 the market rather than $1/n$ of it. Multi-homing therefore trades a possible service
-benefit for a capital cost, and the capital cost is the larger of the two in a market
-that is already saturated.
+benefit for a capital cost, and the capital cost is the larger of the two in a
+saturated market.
 
-Neither regime escapes the underlying externality: a bicycle that a platform deploys
-occupies public space and adds to the stock that all platforms draw on, but the
-platform bears only its own cost of deploying it. This is the standard common-pool
+Neither regime escapes the underlying externality: a deployed bicycle
+occupies public space and adds to the stock all platforms draw on, but the
+platform bears only its own deployment cost. This is the standard common-pool
 argument \cite{katz1985,rochet2003}, and in a market where the marginal bicycle adds
-almost no service (\S\ref{sec:q2}) it predicts exactly what was observed in 2017:
+almost no service (\S\ref{sec:q2}) it predicts what was observed in 2017:
 fleets growing faster than ridership, and consolidation once the capital could no
 longer be financed.
 
 \subsection{What a regulator should do}
 
-Four measures follow, in descending order of value; the executive summary states them
-to the two readers. \textbf{Share the data, not the bicycles}: a city-wide OD matrix is
+\textbf{Share the data, not the bicycles}: a city-wide OD matrix is
 the binding public good, and requiring platforms to deposit trip records with a
 neutral trustee costs the firms nothing competitively. \textbf{Share the fences, and
 pool more than concrete}: the shared regime saves 7.6\%--11.7\% of the slot
@@ -178,10 +176,7 @@ shared data of the first measure.
 \subsection{What the external data say about the market}
 
 The OpenStreetMap check of \S\ref{sec:q4} is also evidence about competition. The
-attractors that the model identifies --- the busiest destination cells --- are public
-places: subway entrances, commercial streets, university gates. They are not
-platform-specific. A single platform's data recovers them, as ours does, but only
-because that platform is large; a market of five equal platforms would give each a
-fifth of the evidence about the same public geography. The city is the
-natural owner of the model, and the argument for data sharing is an argument about who
-can see the city whole.
+attractors the model identifies --- the busiest destination cells --- are public
+places: subway entrances, commercial streets, university gates, not platform-specific.
+The city is the natural owner of the model: data sharing is an argument about who can see the city
+whole.

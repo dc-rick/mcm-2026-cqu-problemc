@@ -1,9 +1,9 @@
 % ======================= 2. ASSUMPTIONS AND NOTATION =======================
 \section{Assumptions and Notation}\label{sec:assume}
 
-Every simplification below is stated with its rationale and with the direction in
-which it pushes the answer, so that a reader can discount the results accordingly.
-The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
+Each simplification below is stated with its rationale and the direction in
+which it pushes the answer. The AI workflow is documented in the Report on Use of AI
+Tools \cite{aiapp}.
 
 \subsection{Assumptions}
 
@@ -11,7 +11,7 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \item \emph{Stationary weekday regime.} The seven fully covered weekdays between 10
   and 19 May are exchangeable draws from one daily regime; weather, holidays and price
   promotions are not modelled. The observed daily volume varies with a coefficient of
-  variation of 8.25\% around its mean (\figref{fig:data}a), so any single-day quantity
+  variation of 8.25\% (\figref{fig:data}a), so any single-day quantity
   carries that order of sampling noise.
 
 \item \emph{Poisson trip generation.} Departures from cell $i$ in time interval
@@ -29,14 +29,13 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
 \item \emph{Endogenous attraction.} The attraction of a destination is measured by
   the arrivals it actually receives. The model is therefore a description of an
   equilibrium, not a structural model of land use: it may be used to predict how
-  flows respond to \emph{distance} and to \emph{time of day}, but not to predict the
+  flows respond to \emph{distance} and to \emph{time of day}, but not the
   consequence of changing what is built at a destination. We flag this again in
   Section~\ref{sec:eval}.
 
 \item \emph{Homogeneous, reliable bicycles.} All bicycles in service are usable; a
-  bicycle identifier persists until the bicycle is retired. The dataset reports a
-  bicycle type, which is constant per bicycle and therefore carries no information
-  for our purposes.
+  bicycle identifier persists until the bicycle is retired. The dataset's bicycle type
+  is constant per bicycle and carries no information for our purposes.
 
 \item \emph{Truck operations.} A truck carries at most $Q=40$ bicycles, travels one
   inter-zone leg per hour, and unloads entirely at its destination; loading and
@@ -70,23 +69,28 @@ The AI workflow is documented in the Report on Use of AI Tools \cite{aiapp}.
   Tricycles move bicycles between cells \emph{within one zone} only, carrying
   $Q_{\text{tri}}=20$ bicycles at 15 km/h with 0.5 minutes per bicycle handled, trips
   of at most 5 km, operating 07:00--20:00, at 300 CNY per tricycle-day and 0.2 CNY
-  per kilometre. Because reroutes do not cross a zone boundary, the truck layer is
-  unchanged. The allocation is integer, and the executable plan raises the fractional
-  LP fleet to the smallest fixed point at which every zone's schedule can be run.
+  per kilometre. The truck layer is held fixed when the tricycle layer is solved, and
+  the part of a reroute that crosses a zone boundary is priced in the truck-caliber
+  test of Section~\ref{sec:q3}. The allocation is integer, and the executable plan
+  raises the fractional LP fleet to the smallest fixed point at which every zone's
+  schedule can be run.
 
 \item \emph{Two ledgers, one budget.} A reward is settled on the \emph{increment}
   ledger, paying $r$ per completed reroute that fills a deficit (bill $r\,q$), or on
   the \emph{payment} ledger, paying $r$ per accepted invitation including riders who
   would have gone there anyway (bill $r\,P$). The 30,000 CNY daily budget is a
   promise the two ledgers price differently; the payment ledger is enforced by
-  reserving $r$ per invitation and stopping at the budget, which is conservative and
-  may truncate the program, while at the Q3 optimum the increment bill is checked
-  against the budget rather than truncated by it.
+  reserving $r$ per invitation and stopping at the budget, which is conservative, while
+  at the Q3 optimum the increment bill is checked against the budget rather than
+  truncated by it.
 
 \item \emph{Placement and payment.} A reroute is placed in the hour of the original
-  trip and in the same zone; no cross-hour rearrangement and no cross-zone reroute is
-  modelled. A reward is posted at $r$ per completed reroute and is uniform across
-  users; a personalised reward is not modelled.
+  trip at a cell drawn from that hour's deficit list; the target is not restricted to
+  the source zone, so a small share of accepted reroutes changes a zone-hour arrival
+  total, which is the channel through which the incentive can reach the truck layer
+  (Section~\ref{sec:q3}). No cross-hour rearrangement is modelled. A reward is posted
+  at $r$ per completed reroute and is uniform across users; a personalised reward is
+  not modelled.
 \end{enumerate}
 
 \subsection{Notation}

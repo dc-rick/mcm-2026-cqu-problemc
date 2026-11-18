@@ -33,18 +33,38 @@ slot totals below are therefore a \emph{required-capacity sizing convention} ---
 each fence so that it is adequate 95\% of the time on its own --- not a simultaneous
 city-wide guarantee and not existing berth counts. The inventory level is a scenario
 throughout: the initial-inventory proxy 343,638 and the closed fleet 495,540 are run
-separately and never mixed.
+separately and never mixed. The closed-fleet scenario spreads that total over cells in
+proportion to the smallest initial stock that keeps every cell non-negative under the
+demand model's cumulative net flow, so its spatial shape is the flow-implied one, not
+the proxy's.
 
 \subsection{Where to put the fences: the Kneedle rule}
 
-Siting is maximal coverage. A fence at cell $c$ with walking radius $R=450$ m serves
-every arrival whose destination lies within $R$ of $c$; the planner chooses a set of
-fences to cover as many arrivals as possible. The objective is monotone and submodular,
+Siting is maximal coverage: a fence at cell $c$ with walking radius $R=450$ m serves
+every arrival whose destination lies within $R$ of $c$. The objective is monotone and submodular,
 so the greedy algorithm --- repeatedly place the fence that covers the most
 still-uncovered arrivals --- attains at least $(1-1/e)=63.2\%$ of the optimum
-\cite{nemhauser1978}. With 5,263 cells as candidate sites the pass runs in seconds.
+\cite{nemhauser1978}. With 5,263 candidate sites the pass runs in seconds.
 The radius is a planning threshold, not a 2017 measured walking distance; the OSM
 check below is geographic, not behavioural.
+
+The capped plan is a binary program. With $f_{ij}$ arrivals at $i$
+assigned to a fence at $j$, $u_i$ arrivals left unassigned, $a_i$ the sizing demand,
+$s_j$ the open-site indicator, $\bar s$ the per-site cap set above and $n$ the number
+of fences, the planner solves
+\begin{equation}
+\begin{aligned}
+&\max\;\sum_{(i,j)\in A}f_{ij}\\
+&\text{s.t.}\;\;\sum_j f_{ij}+u_i=a_i,\qquad
+\sum_i f_{ij}\le\bar s\,s_j,\qquad
+\sum_j s_j=n ,
+\end{aligned}
+\label{eq:q4cap}
+\end{equation}
+with $f$ and $u$ non-negative and $s_j$ binary, over the cell pairs $A$ of the walking
+radius. The greedy rule and its approximation guarantee are the tool for the
+\emph{uncapped} reference only; the capped plan above is solved with
+Gurobi~\cite{gurobi}, its gap to the bound reported in \tabref{tab:q4plan}.
 
 The number of fences is chosen as a knee of the capacity--coverage frontier. Let $n$ be
 the number of open sites and $c(n)$ the occupancy coverage of the capped $n$-site plan;
@@ -63,15 +83,14 @@ On the capped frontier the knee is \textbf{4,000 sites}, with a normalised devia
 
 \subsection{The 150-slot capped plan is the answer}
 
-A street corner can plausibly hold 150 slots --- about 210 m$^2$, a plot ten by
-twenty-one metres, the largest a rider crosses in a minute. The cap is not a cosmetic
+A street corner can plausibly hold 150 slots --- about 210 m$^2$, the largest a rider
+crosses in a minute. The cap is not a cosmetic
 constraint: on the uncapped reference the median site needs 582.72 slots and the largest
 2,946.51, and \textbf{704 of the 705 sites exceed 150}. Capping the same 705 sites at
 150 slots leaves them covering only 10.85\% of peak occupancy and 14.66\% of arrivals
 at 343,638, and 9.41\% and 13.08\% at 495,540: the uncapped coverage does not survive
-the cap. The
-capped plan must therefore be sited and solved as its own problem, which is what the
-4,000-site solution does.
+the cap. The capped plan must therefore be sited and solved as its own problem, which
+the 4,000-site solution does.
 
 \begin{table}[htbp]
 \centering
@@ -125,7 +144,7 @@ constraint. The frontier is otherwise smooth:
 Under the joint parameter draws of \S\ref{sec:sens} the occupancy coverage is 0.387--0.824 (median
 0.625) and the arrival coverage 0.406--0.835 (median 0.663); the 95th percentile stays
 below 1, so the conclusion that the 150-slot cap binds is never reversed. The interval
-is wide because it is driven by the assumed cap and by the choice of day, which
+is wide because it is driven by the assumed cap and the choice of day, which
 \S\ref{sec:sens} ranks explicitly.
 
 The uncapped reference is retained only for comparison. It is the Kneedle knee at
@@ -134,8 +153,8 @@ percentile with no hard cap, requiring 491,692 slots at 343,638 and 621,004 at 4
 At $\lambda=0$ the same frontier's knee is 501 fences (64.51\% coverage) and at
 $\lambda=300$ it is the same 705 fences, so the knee is stable in $\lambda$; the
 per-site size is not. The 705-fence plan is therefore a \emph{capacity reference}, not
-a realisable layout, and it is never compared with the capped plan without first
-imposing the cap.
+a realisable layout, and it is never compared with the capped plan without imposing
+the cap.
 
 \subsection{Replay: which service failure occurs}
 
@@ -157,7 +176,7 @@ steps move coverage by $-0.25$ and $-0.41$ percentage points and raise the short
 22,736.57 and 35,096.42. Full sites therefore appear only on the higher-demand test
 days, while the design day fails by emptiness; a coarser step creates some overflow on
 the design day but never enough to change that reading. The finer step is the more
-favourable of the two, so the capacity conclusion does not depend on it.
+favourable, so the capacity conclusion does not depend on it.
 
 \subsection{Walking radius and the compliance caliber}
 
@@ -205,8 +224,8 @@ multiplied by compliance.}
 
 The layout is specific to this grid, this radius and this demand surface. The numbers
 4,000 sites and 150 slots are not a transferable prescription: a different cell size,
-a different walking threshold or a different standing inventory produces a different
-frontier and a different knee. The capacity is \emph{required} capacity --- a sizing
+walking threshold or standing inventory produces a different frontier and knee. The
+capacity is \emph{required} capacity --- a sizing
 standard of 150 slots per selected cell, adequate 95\% of the time on its own --- not a
 count of existing berths.
 

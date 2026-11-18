@@ -19,7 +19,7 @@ placed by 349,241 users on 484,754 distinct bicycles.
 
 \subsection{Coverage, and why the analysis uses seven days}
 
-\figref{fig:data}a shows the daily volume. Three features matter.
+\figref{fig:data}a shows the daily volume.
 
 The volume is stable at 225,000--322,000 orders per day from 10 to 19 May, with the
 expected weekend dip. \textbf{17 May is entirely absent} --- not sparse, absent ---
@@ -48,19 +48,18 @@ density of trip starts, logarithmic colour scale.}
 
 The file is a sample of the operator's orders, not a census. If each order is retained
 independently with probability $p$, then every count must be divided by $p$, and the
-number of distinct bicycle identifiers understates the fleet. We estimate $p$ from
-the bicycles themselves.
+number of distinct bicycle identifiers understates the fleet.
 
 Consider two consecutive orders of a bicycle present in the file. They are adjacent
 exactly when no order between them was dropped, which for independent retention
-happens with probability $p$. A true adjacency is usually visible, but not always: the
+happens with probability $p$. A true adjacency is not always visible: the
 bicycle is not moved, yet coordinate jitter and the 153 m geohash grid put about a
 third of true returns in a neighbouring cell, so the exact test undercounts; a mismatch
 proves an order is missing. Across 2,003,318 consecutive pairs, \textbf{12.83\% satisfy
 the exact end-equals-next-start test}, a lower bound; 17.72\% are within 160 m and
 19.97\% within 250 m, wide enough to count essentially every true return. Placebo pairs
 that skip one or two observed trips, known to be separated by a missed ride, match at
-only 2.30\% and 1.30\% within 250 m. The wide rate, less that false-match share, scales
+only 2.30\% and 1.30\% within 250 m. The wide rate, less the false-match share, scales
 to $p\approx0.18$--$0.19$; the exact rate only bounds $p$ from below. We use the bracket
 $p\in[0.128,0.200]$ and the central value 0.185.
 
@@ -76,9 +75,9 @@ every rate is the invariance of the estimator, not small finite-sample scatter.
 
 \subsection{Fleet size}
 
-The file contains no inventory, so the fleet must be inferred from the pattern of use.
-A single day's occupancy estimator is fragile because it is sensitive to the tail of
-the rides-per-bicycle distribution. We therefore estimate the \emph{closed} fleet by
+The file contains no inventory, so the fleet must be inferred from its use.
+A single day's occupancy estimator is fragile, being sensitive to the tail of
+the rides-per-bicycle distribution, so we estimate the \emph{closed} fleet by
 capture--recapture between the nine complete days and the truncated second window.
 Let $n_1=462{,}893$ bicycles be seen in the complete window, $n_2=331{,}822$ in the
 second window, and $m=309{,}961$ in both. The Chapman estimator is
@@ -100,18 +99,16 @@ exactly, so only $N\ge484{,}754$ is design-independent. As a model interval we t
 report that union as the lower end, 484,754, and the normalised nine-day unseen-share
 method as an upper reference, 506,635. The 5/16 00:00 drop-off snapshot gives 343,638
 bicycles. We call this the \emph{initial-inventory proxy}: the stock implied by each
-bicycle's last observed return position, not a fleet count; it is used only as $I_0$ in
-Q2, Q4 and Q5.
+bicycle's last observed return position, not a fleet count and a lower bound on the
+true stock, since a bicycle absent from the order file cannot appear in it; it is used
+only as $I_0$ in Q2, Q4 and Q5.
 
 At 495,540 bicycles and $2.14\times10^6$ rides per day, each bicycle is ridden
 \textbf{4.33 times per day}; because the fleet estimate is biased low, 4.33 is an upper
 estimate, 4.42 is the design-independent ceiling at $N\ge484{,}754$, and 4.01 holds only
-in the 534,039 scenario. Individual bicycles sit idle even when the fleet is
-abundant in the aggregate; that is the tension the rest of the paper quantifies.
+in the 534,039 scenario.
 
 \subsection{Spatial units}
-
-Two partitions are used, at different resolutions and for different purposes.
 
 \textbf{Cells.} A grid of $0.005^\circ$ (about $555\times426$ m) over the city,
 keeping only cells with at least 50 sampled trips, leaves \textbf{5,263 cells}

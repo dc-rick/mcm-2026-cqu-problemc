@@ -4,9 +4,9 @@
 \subsection{A city that rides, and the problem that follows}
 
 Between 2016 and 2018, dockless shared bicycles changed how Chinese cities moved.
-Unlike the earlier station-based systems, a dockless fleet imposes no docking
-constraint: a rider leaves the bicycle wherever the journey ends and the next rider
-finds it through a phone application. The convenience is real, and so is the
+Unlike station-based systems, a dockless fleet imposes no docking constraint: a rider
+leaves the bicycle wherever the journey ends and the next rider finds it by phone. The
+convenience is real, and so is the
 externality. Because no station absorbs the end of a trip, the spatial distribution of
 bicycles is the integral of every rider's private choice, and it drifts: bicycles pile
 up at subway exits and office towers while residential streets empty by nine in the
@@ -14,7 +14,7 @@ morning. Operators respond with trucks and cities with parking rules, both expen
 because neither is guided by a model of where the bicycles will go.
 
 This paper builds that model from the largest artefact the industry left behind: the
-2017 Mobike Algorithm Challenge order file --- 3,213,310 orders placed on 484,754
+2017 Mobike Algorithm Challenge order file --- 3,213,310 orders on 484,754
 bicycles by 349,241 users in Beijing between 10 and 24 May 2017; each order carries
 order, user and bicycle identifiers, a start time, a bicycle type and two geohash
 endpoints.
@@ -23,7 +23,7 @@ and found no bicycle.
 
 \subsection{The five questions}
 
-The problem poses five questions, which we restate in operational terms:
+The problem poses five questions, restated operationally:
 
 \begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=2.2em]
 \item \textbf{Behaviour.} Build a mathematical model of how users ride: when they
@@ -40,9 +40,8 @@ The problem poses five questions, which we restate in operational terms:
 
 \subsection{Three things the data do not tell us}
 
-Most of the analytical difficulty is not in the optimisation; it is in three
-quantities the dataset does not contain and that a careless model would silently
-assume.
+Three quantities the dataset does not contain and a careless model would silently
+assume:
 
 \textbf{No inventory.} The data record movements, not stocks: a cell that receives no
 arrivals may be empty or may hold fifty bicycles nobody rode. Any statement about a
@@ -74,10 +73,10 @@ service-level constraints \cite{schuijbroek2017}, and stationless static rebalan
 \cite{pfrommer2014} or by mechanism design \cite{singla2015}; the probabilistic
 analysis of station occupancy is given in \cite{omahony2015}.
 
-Our approach differs in one respect: the behavioural model is not a convenience for
-generating demand but the object of study in its own right, and the same estimated
-object is reused, without re-fitting, in the optimisation (Q2), the incentive design
-(Q3) and the parking forecast (Q4). Spatial interaction models of the gravity family
+Our approach differs in one respect: the behavioural model is the object of study,
+not a convenience for generating demand, and the same estimated object is reused,
+without re-fitting, in the optimisation (Q2), the incentive design (Q3) and the parking
+forecast (Q4). Spatial interaction models of the gravity family
 \cite{wilson1970,erlander1990,fotheringham1989} supply the destination choice; the
 discrete-choice foundation is due to \cite{mcfadden1974}, the radiation model offers
 an opportunity-based alternative \cite{simini2012}, and the latent-class segmentation
@@ -87,9 +86,9 @@ The competition discussion draws on the economics of spatial and platform compet
 
 \subsection{Executive summary: recommendations to the operator and the city}
 
-This subsection is written as a briefing to two readers: the operator who runs the
-fleet and the transport authority that regulates it. Each recommendation carries the
-condition under which it holds.
+This subsection is a briefing to two readers: the operator who runs the fleet and the
+transport authority that regulates it. Each recommendation carries the condition
+under which it holds.
 
 \begin{enumerate}[leftmargin=1.6em]
 \item \textbf{Do not buy trucks for shortage; buy balance.} At the modelled inventory
@@ -101,9 +100,9 @@ condition under which it holds.
   joint parameter draws move the recommendation in most draws --- treat the fleet as a
   bound and re-scan it on local data.
 \item \textbf{Buy within-zone balance from riders before tricycles.} A posted reward
-  of 0.60 CNY per completed reroute, aimed at the hourly list of deficient cells and
+  of 0.60 CNY per completed reroute, aimed at the hourly deficit list and
   settled on the increment ledger, saves 18,011.46 CNY/day (2.92\%) on the tricycle
-  layer, with a payment of 16,608.52 inside the 30,000 budget; the budget promise is
+  layer, with a payment of 16,608.52 inside the 30,000 budget; the promise is
   kept by reserving the reward per invitation and stopping when the reserve is
   reached. The condition: this is a pilot design, not a measured price --- the
   acceptance parameters are assumed, the saving is bracketed at 1.08\%--2.92\% by the
@@ -118,9 +117,9 @@ condition under which it holds.
   produces a different plan.
 \item \textbf{Regulate the market as a shared computation.} Independent platforms
   need 1.0818--1.1323 times the fenced capacity of a shared regime, yet sharing
-  fences alone does not reduce lost orders, because the fleets remain separate; the
+  fences alone does not reduce lost orders because the fleets remain separate; the
   binding public good is the city-wide origin--destination matrix, which no single
-  platform can observe. The condition: the recommendation presumes the regulator can
+  platform observes. The condition: the recommendation presumes the regulator can
   require data deposit and neutral rebalancing, the argument developed in
   Section~\ref{sec:q5}.
 \end{enumerate}
@@ -150,7 +149,6 @@ Q5 & Competition & Two-platform cell-resolution simulation & Unmet 12.10\% again
 \subsection{Roadmap}
 
 Section~\ref{sec:assume} states assumptions and notation, Section~\ref{sec:data}
-describes the data and the fleet estimate, Section~\ref{sec:q1} builds and validates
-the behavioural model, Sections~\ref{sec:q2}--\ref{sec:q5} answer Q2--Q5,
-Section~\ref{sec:sens} reports sensitivity and validity limits, and
-Section~\ref{sec:eval} evaluates the work.
+the data and the fleet estimate, Section~\ref{sec:q1} the behavioural model,
+Sections~\ref{sec:q2}--\ref{sec:q5} Q2--Q5, Section~\ref{sec:sens} sensitivity and
+validity limits, and Section~\ref{sec:eval} the evaluation.

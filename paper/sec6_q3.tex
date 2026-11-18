@@ -7,10 +7,10 @@ A truck can carry a bicycle ten kilometres between zones; a rider can be persuad
 end a trip a few hundred metres from where she intended, and no more. The two
 instruments operate at different scales, so the right question is not which one
 replaces the other but how much of each layer the incentive can absorb. The answer is
-asymmetric, and we report it as two paragraphs rather than one headline.
+asymmetric, and we report it as two paragraphs, not one headline.
 
-The first paragraph prices the incentive against the \emph{truck} layer: the layer the
-incentive cannot replace, because that layer's residual is already negligible. The
+The first paragraph prices the incentive against the \emph{truck} layer, which it
+cannot replace because that layer's residual is already negligible. The
 second prices it against the \emph{tricycle} layer, which exists precisely because the
 zone-level truck plan cannot see within-zone mismatch; the two calibers share the
 acceptance function, the hourly assignment program and the budget.
@@ -56,8 +56,8 @@ caps; the arrivals cap is the upper bound and the surplus cap the conservative b
 
 The truck layer of Q2 is a single-layer plan whose own residual is tiny: at $K=0$ the
 zone model leaves 432.23 departures unserved, and at $K=2$ it leaves 33.19. There is no
-large pool of truck-served unmet demand for an incentive to substitute for, so the only
-question is whether the incentive can pay for itself by reducing the truck objective.
+large pool of truck-served unmet demand to substitute for, so the only
+question is whether the incentive pays for itself by reducing the truck objective.
 It cannot. Solving the integer truck program of Section~\ref{sec:q2} with and without
 the incentive at $K=0,2,5,10,20$, re-solving both sides at a 0.1\% gap, gives a
 payment ceiling $\text{pure}_K-\text{hybrid}_K$ that is negative at \emph{every} $K$:
@@ -65,7 +65,7 @@ $-1{,}739.22$ at $K=0$, $-1{,}591.40$ at $K=2$, $-1{,}588.76$ at $K=5$, $-1{,}62
 at $K=10$ and $-1{,}528.82$ at $K=20$. A negative ceiling means no non-negative reward
 can break even.
 
-The zero-payment result is the cleanest statement. At $K=2$, even with the reward set
+At $K=2$, even with the reward set
 to zero, the best mixed policy costs at least \textbf{1,532 CNY per day more} than pure
 trucks: the returned difference is 1,591.40 and the mixed solve carries its own 59.06
 CNY gap, so 1,532 is the gap-robust lower bound, 11.1 times the 0.1\% solver tolerance
@@ -78,7 +78,7 @@ penalty value is 809 CNY and the budget is 37.1 times it. And forcing zero unmet
 returned solutions whose gaps are 66.13 and 59.06 CNY --- about 11 and 10 bicycles at
 6 CNY --- so the sign is not resolvable within solver tolerance; we do not use it.
 
-The reason is one of scale: a reroute moves a trip between cells, while the truck
+A reroute moves a trip between cells, while the truck
 objective prices zone-hour unmet; only the part of the reroute that changes a
 zone-hour arrival total can remove a zone-level unmet trip, and at $K=2$ that part is
 negligible. The conclusion is about the truck layer; it says nothing about the
@@ -161,7 +161,7 @@ Both ledgers are priced against a 30,000 CNY daily budget. At $r=0.81$, for exam
 deficit-filling placements are $q=28{,}884.65$, the increment bill is 23,396.57 and the
 payment-ledger obligation is $r\,P=30{,}000$ with $P=37{,}037.04$; the 6,603.43
 difference is the free riders. A budget expressed in the payment ledger therefore buys a
-lower reward than the same budget expressed in the increment ledger, and the two must
+lower reward than the same budget in the increment ledger, and the two must
 never be quoted interchangeably.
 
 \begin{center}
@@ -188,7 +188,7 @@ an eighth of its unconstrained size. A platform that can tolerate a small overru
 probability can issue against expected completions instead, which is the ladder above.
 
 At the Q3 optimum the increment-ledger bill is 16,608.52, inside the 30,000 budget with
-13,391.48 to spare, so under that ledger the budget does not bind at $r^*$. Under the
+13,391.48 to spare, so under that ledger the budget does not bind. Under the
 payment ledger the same reward would owe more, and the payment-ledger ladder's budget-feasible
 point at 30,000 is $r=0.81$. The two ledgers therefore bracket the policy: the
 increment ledger supports $r^*=0.60$, the payment ledger a lower reward for the same
@@ -207,8 +207,6 @@ a larger obligation is an accounting-only variant, not a feasible policy.
 
 \subsection{The scheme, and where its numbers stop}
 
-The scheme that follows is narrow and explicit.
-
 \begin{enumerate}[leftmargin=1.6em]
 \item \textbf{A reward of 0.60 CNY per accepted reroute}, posted on a 0.05-CNY grid,
   with the arrivals-cap plateau a single grid point and the surplus-cap plateau
@@ -224,8 +222,11 @@ The scheme that follows is narrow and explicit.
   does not bind.
 \end{enumerate}
 
-Five limits bound these numbers. First, reroutes are restricted to the \emph{same
-zone}, which keeps the truck layer unchanged. Second, payment is not truncated in the
+Five limits bound these numbers. First, reroutes are cell-level, not zone-level: the
+target cell may lie outside the source zone, so a small share of accepted reroutes
+changes a zone-hour arrival total. That is the only channel through which the incentive
+can reach the truck layer, and it is priced in the truck-caliber test above, where it
+does not overturn the negative ceiling. Second, payment is not truncated in the
 Q3 optimum: $r$ is a posted reward, the 30,000 budget is checked rather than enforced
 by stopping, and the reservation rule above is the hard rule. Third, a reroute is
 placed within the hour of the original trip; no cross-hour rearrangement is modelled.
