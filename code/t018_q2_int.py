@@ -274,7 +274,8 @@ def build_demand(force=False):
 # MILP / LP
 # --------------------------------------------------------------------------
 def solve(dep, arr, PZ, net, I0, K, integer, time_limit=600, mip_gap=0.01,
-          event_order=True, fixed_cost=FIXED_K, verbose=False):
+          event_order=True, fixed_cost=FIXED_K, verbose=False,
+          bike_integer=False, daily_cycle=False):
     dist, arcs, out_to, in_from = net
     m = gp.Model("t018")
     m.Params.OutputFlag = 1 if verbose else 0
@@ -284,9 +285,10 @@ def solve(dep, arr, PZ, net, I0, K, integer, time_limit=600, mip_gap=0.01,
     m.Params.Method = 2
 
     vt = GRB.INTEGER if integer else GRB.CONTINUOUS
+    vx = GRB.INTEGER if bike_integer else GRB.CONTINUOUS
     I = m.addVars(NZ, T, lb=0, name="I")
     u = m.addVars(NZ, T, lb=0, name="u")
-    x = m.addVars(arcs, T, lb=0, name="x")
+    x = m.addVars(arcs, T, lb=0, vtype=vx, name="x")
     mt = m.addVars(arcs, T, lb=0, vtype=vt, name="m")
     nn = m.addVars(NZ, T, lb=0, vtype=vt, name="n")
     dp = m.addVars(NZ, lb=0, name="dp")
@@ -350,6 +352,9 @@ def solve(dep, arr, PZ, net, I0, K, integer, time_limit=600, mip_gap=0.01,
         m.addConstr(gp.quicksum(nn[q, 0] for q in range(NZ)) == K, name="fleet0")
     m.addConstr(gp.quicksum(nn[q, T - 1] for q in range(NZ)) == K,
                 name="fleetT")
+    if daily_cycle:
+        for z in range(NZ):
+            m.addConstr(nn[z, T - 1] == nn[z, 0], name=f"cycle{z}")
     for (i, j) in arcs:
         for t in range(T):
             m.addConstr(x[i, j, t] <= Q_TRUCK * mt[i, j, t],
@@ -373,7 +378,10 @@ def solve(dep, arr, PZ, net, I0, K, integer, time_limit=600, mip_gap=0.01,
     peak_moved = float(XM.sum((1, 2)).max())
     peak_hour = int(XM.sum((1, 2)).argmax())
     peak_trips = float(MK.sum((1, 2)).max())
-    res = dict(K=K, integer=bool(integer), event_order=bool(event_order),
+    res = dict(K=K, event_order=bool(event_order),
+               truck_counts_integer=bool(integer),
+               bike_loads_integer=bool(bike_integer),
+               daily_cycle=bool(daily_cycle),
                obj=float(m.ObjVal),
                obj_variable=float(m.ObjVal - fixed_cost * K),
                status=int(m.Status),
@@ -428,7 +436,8 @@ def solve_schedule(dep, arr, PZ, cent, I0, K, time_limit=600, mip_gap=0.01):
     """
     net = load_network(cent)
     res = solve(dep, arr, PZ, net, I0, K, integer=True,
-                time_limit=time_limit, mip_gap=mip_gap, event_order=True)
+                time_limit=time_limit, mip_gap=mip_gap, event_order=True,
+                bike_integer=True)
     if res is None:
         return None
     df = decompose(res["MK"], res["XM"], res["NN"], net[0])
@@ -556,12 +565,23 @@ def decompose(MK, XM, NN, dist):
                     continue
                 if k + m_ > len(ids):
                     raise RuntimeError(f"dispatch exceeds trucks at {t},{z}")
-                load = XM[t, z, j] / m_
-                for tid_ in ids[k:k + m_]:
+                total = float(XM[t, z, j])
+                if abs(total - round(total)) <= 1e-6:
+                    # integer bike loads: split exactly into integers
+                    base = int(np.floor(round(total) / m_))
+                    rem = int(round(round(total) - base * m_))
+                    loads = [base] * (m_ - rem) + [base + 1] * rem
+                else:
+                    loads = [total / m_] * m_
+                for tid_, load in zip(ids[k:k + m_], loads):
                     rows.append(dict(truck_id=tid_, hour=t, from_zone=z,
                                      to_zone=j, km=float(dist[z, j]),
-                                     load_bikes=float(load),
-                                     unload_bikes=float(load),
+                                     load_bikes=int(load)
+                                     if isinstance(load, (int, np.integer))
+                                     else float(load),
+                                     unload_bikes=int(load)
+                                     if isinstance(load, (int, np.integer))
+                                     else float(load),
                                      load_after=0.0))
                     nxt[j].append(tid_)
                 k += m_
@@ -587,6 +607,10 @@ def check_schedule(df, res, K, tag):
         XM_csv[row.hour, row.from_zone, row.to_zone] += row.load_bikes
     max_elem = float(np.abs(XM_csv - XM).max())
     per_truck = df.groupby("truck_id").size()
+    li = df.load_bikes.to_numpy(dtype=float)
+    ui = df.unload_bikes.to_numpy(dtype=float)
+    int_dev = float(max(np.abs(li - np.round(li)).max(),
+                        np.abs(ui - np.round(ui)).max()))
     out = dict(
         tag=tag, K=K, rows=int(len(df)),
         expected_rows=int(K * 24),
@@ -597,6 +621,10 @@ def check_schedule(df, res, K, tag):
         moved_diff=abs(moved_csv - moved_milp),
         max_abs_rebuilt_plan=float(max_elem),
         moved_ok=bool(abs(moved_csv - moved_milp) <= 1e-6),
+        loads_integer=bool(int_dev <= 1e-9),
+        max_load_integrality_dev=int_dev,
+        max_load_bikes=float(li.max()),
+        max_load_ok=bool(float(li.max()) <= Q_TRUCK + 1e-9),
     )
     return out
 
@@ -795,7 +823,7 @@ def main():
     ap = argparse.ArgumentParser(description="T018 integer Q2 schedule")
     ap.add_argument("--stage", default="all",
                     choices=("demand", "oldviol", "lp", "int", "schedule",
-                             "check", "baselines", "holdout", "all"))
+                             "check", "baselines", "holdout", "cycle", "all"))
     ap.add_argument("--rebuild", action="store_true")
     ap.add_argument("--time-limit", type=int, default=600)
     ap.add_argument("--mip-gap", type=float, default=0.01)
@@ -834,9 +862,22 @@ def main():
                 continue
             r = solve(DEP, ARR, PZ, NET, I0, K, integer=True,
                       time_limit=args.time_limit, mip_gap=args.mip_gap,
-                      event_order=True)
+                      event_order=True, bike_integer=True)
             if r is not None:
                 save_solution(r, tag)
+
+    if stage == "cycle":
+        tag = "int_K60_cycle"
+        r = solve(DEP, ARR, PZ, NET, I0, 60, integer=True,
+                  time_limit=args.time_limit, mip_gap=args.mip_gap,
+                  event_order=True, bike_integer=True, daily_cycle=True)
+        if r is not None:
+            save_solution(r, tag)
+            df = decompose(r["MK"], r["XM"], r["NN"], NET[0])
+            df.to_csv(os.path.join(RUN, "schedule_K60_cycle.csv"), index=False,
+                      float_format="%.17g")
+            print("wrote", os.path.join(RUN, "schedule_K60_cycle.csv"),
+                  len(df), "rows")
 
     if stage in ("schedule", "all"):
         for K in K_LIST:
@@ -911,11 +952,22 @@ def run_baselines():
     rows["no_trucks"] = dict(
         K=0, unmet=r0["unmet"], dev=r0["dev"], truck_km=0.0, moved=0.0,
         peak_moved=0.0, peak_hour=None,
-        cost=PENALTY * r0["unmet"] + COST_DEV * r0["dev"])
+        fixed_cost=0.0,
+        variable_cost=PENALTY * r0["unmet"] + COST_DEV * r0["dev"],
+        deadhead_km=0.0, deadhead_cost=0.0,
+        cost=PENALTY * r0["unmet"] + COST_DEV * r0["dev"],
+        cost_with_deadhead=PENALTY * r0["unmet"] + COST_DEV * r0["dev"])
 
     # greedy on the same design demand
     plan, trucks_start = greedy_plan(DEP, ARR, K=60, Q=Q_TRUCK)
     g = greedy_metrics(plan, trucks_start, DEP, ARR, I0, K=60, Q=Q_TRUCK)
+    g.update(fixed_cost=FIXED_K * 60,
+             variable_cost=g["cost"] - FIXED_K * 60,
+             deadhead_km=0.0, deadhead_cost=0.0,
+             cost_with_deadhead=g["cost"],
+             deadhead_note="one-day greedy plan, no end-of-day return "
+                           "requirement; the fixed cost of 36,000 is paid "
+                           "whether or not the trucks help")
     rows["greedy"] = g
 
     # regression: greedy on the old 7-day demand should give 623.17
@@ -938,12 +990,27 @@ def run_baselines():
             int_rows[f"K{K}"] = load_json(f"result_int_K{K}.json")
 
     best = pick_recommended()
+    cc_path = os.path.join(RUN, "constraint_check.json")
+    dh_km = dh_cost = None
+    if os.path.exists(cc_path):
+        cc = load_json("constraint_check.json")
+        ep = cc.get("end_positions", {})
+        dh_km = ep.get("deadhead_km")
+        dh_cost = ep.get("deadhead_cost_yuan")
     rows["recommended_integer"] = dict(
         K=best["K"], unmet=best["unmet"], dev=best["dev"],
         truck_km=best["truck_km"], moved=best["moved"],
         peak_moved=best["peak_moved"], peak_hour=best["peak_hour"],
         peak_truck_trips=best["peak_truck_trips"],
-        trucks_used=best["trucks_used"], cost=best["obj"])
+        trucks_used=best["trucks_used"],
+        fixed_cost=FIXED_K * best["K"],
+        variable_cost=best["obj"] - FIXED_K * best["K"],
+        deadhead_km=dh_km, deadhead_cost=dh_cost,
+        cost=best["obj"],
+        cost_with_deadhead=(None if dh_cost is None else best["obj"] + dh_cost),
+        deadhead_note="end-of-day trucks matched to the 00:00 start "
+                      "positions; the deadhead km/cost is NOT in the MILP "
+                      "objective and is listed separately")
     gap_rows = {}
     for K in K_LIST:
         l = lp_rows.get(f"K{K}")
