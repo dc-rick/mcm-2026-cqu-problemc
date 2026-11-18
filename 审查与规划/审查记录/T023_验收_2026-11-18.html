@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T023 验收：通过（不确定性按来源分解）</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T023 验收：通过（不确定性按来源分解）</h1>
+<p class="meta">2026-11-18 · 交付 commit <code>88deb84</code>（<code>交付/T023_delivery.json</code>，R0）· 12 项自检逐项复核 · 判据修订按 2026-11-18 裁决执行</p>
+
+<div class="box ok">
+<p><strong>结论：通过。</strong>1,078 个 pick-freeze 评估的结构、配对和数值我独立核过；份额、基准锚定、bootstrap 等价性、区间端点、哈希、禁止数字六项均复算或复现。M6、M13 关闭。最重要的产出不是份额表本身，而是它暴露的三件事：Q2 的参考值 617,055.75 处在自身不确定性分布的高侧（P50 484,372、P5–P95 271,732–882,188），节省份额 P5 为 −0.461，推荐 K=60 只在 8.6% 的联合抽样中成立；这些必须原样进入论文，不能只写参考点。</p>
+</div>
+
+<h2>1. 我读了什么、复算了什么</h2>
+<ul>
+<li>读：<code>交付/T023_delivery.json</code>、<code>data/runs/T023/check.json</code>、<code>intervals.json</code>、<code>variance_shares.json</code>、<code>reference.json</code>、<code>prep.json</code>、<code>boot_equiv.json</code>、<code>proxy_deviation.json</code>、<code>flips.json</code>、<code>param_table.json</code>、<code>evals.jsonl</code>（1,078 行）、<code>code/t023_uncertainty.py</code> 的 <code>run_shares</code>/<code>eval_q2</code>/<code>run_prep</code> 段、<code>code/t023_figs.py</code>。</li>
+<li>复算（不经过执行方代码）：从 <code>evals.jsonl</code> 直接重算 <code>Cov(F,S_g)/Var(F)</code> 与 n64→n128 变化；从 <code>a_cache</code> 与 <code>bootstrap_samples.npz</code> 核对 256 个哈希与五个数组；从 <code>reference.json</code> 核对锚定恒等式；从 <code>intervals.json</code> 追每个端点到 <code>evals.jsonl</code> 的 id；从 <code>交付</code> 的 <code>outputs_sha256</code> 重算文件哈希。</li>
+<li>未做：没有重跑 1,078 个评估；没有独立重算 400 次 bootstrap 的 SE（只核对了份额点估计与 95% 区间字段存在）；没有目检 PDF（本机无 pdftoppm），改为检查生成脚本的字号（正文 8 pt、标注 7 pt）与轴范围设置。</li>
+</ul>
+
+<h2>2. 独立复算表</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>交付</th><th>指导方复算 / 核对</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>design 结构</td><td>1,078 行，无缺失/重复</td><td>1,078 唯一 id；F/SA/MA/FB/SB/SC/MB/MC 各 128、BE 54；q2/q3/q4 零 NaN/Inf；pick-freeze 配对 0 错；BE 全 a=None</td><td>✓</td></tr>
+<tr><td>份额（q2_total）</td><td>A 0.047±0.119 / B 0.248±0.129 / C 0.778±0.089</td><td>从 <code>evals.jsonl</code> 重算：0.04685004 / 0.24790845 / 0.77758971，差 ≤3.1e-15</td><td>✓</td></tr>
+<tr><td>份额（q4_coverage）</td><td>A 0.159±0.098 / B 0.370±0.097 / C 0.757±0.068</td><td>0.15931135 / 0.37007574 / 0.75729528，差 0</td><td>✓</td></tr>
+<tr><td>份额（q4_unassigned）</td><td>A 0.136±0.112 / B 0.738±0.081 / C 0.382±0.108</td><td>0.13553881 / 0.73786318 / 0.38214252，差 0</td><td>✓</td></tr>
+<tr><td>n64→n128 收敛</td><td>max |change| 0.1705，max/se 1.5746</td><td>逐项重算 0.0935 / 0.1153 / 0.1705；与 json 的 doubling 字段一致</td><td>✓（≤2.0）</td></tr>
+<tr><td>基准锚定</td><td>raw 607,247.3003 + anchor 9,808.4512 = 617,055.7515；raw unmet 38,489.4373 + 1,494.7959 = 39,984.2332</td><td>两条恒等式逐位成立；与 <code>T024/schedule_check.json</code> 的 617,055.7515 / 39,984.2332 一致</td><td>✓</td></tr>
+<tr><td>bootstrap 等价</td><td>draw 0/137/255 五项 array_equal；256 个 dep/arr 相对差 2.38e-16；a_cache 哈希不变</td><td><code>boot_equiv.json</code> 的 256 前/后哈希全等；<code>all_equal=true</code>；<code>worst_max_abs</code> 五项 0.0；<code>self_repeat</code> 通过</td><td>✓</td></tr>
+<tr><td>区间端点</td><td>10 个输出 × 4 切片，端点带 p5_at/p95_at</td><td>全部 id 能在 <code>evals.jsonl</code> 找到；0 个缺失</td><td>✓</td></tr>
+<tr><td>文件哈希</td><td>交付给出 17 个输出的 SHA-256</td><td>抽查 <code>intervals.json</code>/<code>variance_shares.json</code>/<code>check.json</code>/<code>t023_uncertainty.py</code> 四个全串一致</td><td>✓</td></tr>
+<tr><td>禁止数字</td><td>digit-bounded 扫描 7 个结果 JSON，hits=0</td><td>我的独立扫描：数值字段零命中；仅 <code>boot_equiv.json</code> 的 SHA-256 十六进制串里含 “885”“705” 子串（哈希，不是结果量），不构成命中</td><td>✓</td></tr>
+<tr><td>图</td><td>3 个矢量 PDF</td><td>均为 PDF 1.4、1 页；脚本 rcParams 8 pt、标注 7 pt；份额图 ylim 到 1.45、区间图按数据范围</td><td>✓（未目检）</td></tr>
+</tbody></table></div>
+
+<h2>3. 十二项自检的复核</h2>
+<ul>
+<li><strong>1_baseline_endpoint</strong>：重建端点 <code>abs_dev=0.0</code>（q2_total/q2_unmet/q3_pure_obj/q3_ceiling 等），tolerance 1e-6；基线锚定项单独用 0.01 元绝对容差，理由（strict0 的 1.2e-3 辆 × 6 元 = 0.0072，实测 0.0071）成立。</li>
+<li><strong>2_bootstrap</strong>：256 次、9 个日块、种子 SEED_A=20261118；<code>a_cache</code> 256 个文件。</li>
+<li><strong>3_doubling</strong>：原 0.05 门限未达（max|change|=0.1705）；1.5 修订也未达（1.52/1.57）；最终 2.0 通过。全过程写在 <code>criterion</code> 与交付 notes 第 10 条，未隐藏中间步骤。</li>
+<li><strong>4_proxy_deviation</strong>：11 点（≥10）；参照点偏差 9,808.5 正好等于 q2_total 锚定，其余点最大 38,986.30（F_056，极端 C 参数）。这是 LP 代理与整数链的口径差，不是求解噪声；论文必须写明份额是 LP 代理的份额，且代理误差约为 q2_total 标准差的 0.2 倍。</li>
+<li><strong>5_flips</strong>：q2_fleet 的参照 889 是 T024 的 LP 最优，不是可执行 975；<code>caliber</code> 字段写明，可比 889 不可比 975。真正回答“推荐 K 是否翻转”的是 q2_kstar：P5/P50/P95 = 0/40/60，128 个联合抽样中只有 11 个（8.6%）仍选 60。</li>
+<li><strong>6_forbidden_tokens</strong>：见上表。</li>
+<li><strong>7_figures / 8_samples_saved / 9_design_complete / 10_ref_provenance / 11_q3_mask_memo / 12_boot_equiv</strong>：逐项有证据；10_ref_provenance 的 max abs dev 2.93e-10，REF 常量可追到 T024/T018/T025/T019 的键。</li>
+</ul>
+
+<h2>4. 论文必须原样写出的发现（T021A 口径）</h2>
+<div class="box hi">
+<p>参考点是“规划中点”的值，不是不确定性分布的期望或中位数。以下每个数都要在 T021A 的 <code>numbers.json</code> 里，且正文必须同时给参考值与 P5–P95。</p>
+</div>
+<div class="tw"><table>
+<thead><tr><th>输出</th><th>参考值</th><th>联合抽样 P5 / P50 / P95</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>Q2 总成本（元/日）</td><td>617,055.75</td><td>271,732 / 484,372 / 882,188</td><td>参考值在高侧；P50 比参考低 21%</td></tr>
+<tr><td>Q2 未服务（辆/日）</td><td>39,984.23</td><td>2,789 / 11,392 / 73,744</td><td>P50 只有参考的 28%</td></tr>
+<tr><td>Q2 节省份额</td><td>0.5938</td><td>−0.461 / 0.260 / 0.692</td><td>P5 为负：两成左右的抽样里两级方案不如无三轮车基线</td></tr>
+<tr><td>Q2 推荐 K（卡车数）</td><td>60（网格点）</td><td>0 / 40 / 60</td><td>仅 11/128（8.6%）仍选 60</td></tr>
+<tr><td>Q3 付款上限（元/日）</td><td>−1,591.40</td><td>−1,149 / −218 / +540</td><td>C 切片 20/128、F 切片 18/128 为正；“激励不划算”在约 14%–16% 抽样中翻转</td></tr>
+<tr><td>Q4 占用覆盖率</td><td>0.5953</td><td>0.387 / 0.625 / 0.824</td><td>参考值接近中位数，Q4 结论最稳</td></tr>
+</tbody></table></div>
+<p>份额：Q2 总成本的方差 78% 来自 C 组（假设的规划/成本参数，A 仅 5%、B 25%）；Q4 未分配的方差 74% 来自 B 组（p/I0/日因子）；A 组（需求识别）在所有输出上为 5%–16%。<code>sum_shares</code> 均 &gt;1，但 |sum−1| 全在 2 个自身 bootstrap SE 内，按残差处理，不称“交互”。<code>q3_pure_unmet</code> 为退化输出（p25=p50=p75=33.194 的 LP 下界），只做定性。</p>
+
+<h2>5. 未解决项与后续</h2>
+<ol>
+<li><strong>H26（新开，高）</strong>：T023 notes 第 60 条观察到 T020 的 r=0.81 是按代理评分在付款上限处取的顶点，而 r=2.7 的 LP 混合解卡车目标更低；T020 的 <code>policy_table.json</code> 只存选中行，无法从存量文件核对。已在 T026 任务单把 r 扫描从 2.00 扩到 3.00，并要求报告 total(0.81) 与 total(2.7) 的对比及 payment 是否被 30,000 预算截断。若 2.7 更优，Q3 推荐政策与论文 §6 必须改写。</li>
+<li><strong>T021A 口径</strong>：已在上表列出必须进入 <code>numbers.json</code> 的数；另加两条硬规则：(a) 不得把参考值写成“期望成本/期望节省”；(b) 参考值落在 P5–P95 之外或与 P50 相差很大时，正文必须说明原因（规划中点 vs 分布中位数）。</li>
+<li><strong>代理误差</strong>：Q2 份额是 LP 代理的份额，整数链在 11 个点上的偏差最大 38,986 元/日（约 0.2 个标准差），T021A 的局限性段必须写。</li>
+<li><strong>图</strong>：未目检（无 pdftoppm）；T027 终审时在 PDF 里目检一次字号与裁切。</li>
+</ol>
+
+<h2>6. 范围与合规</h2>
+<ul>
+<li><code>git status --porcelain</code> 干净；<code>88deb84</code> 只含 <code>code/t023_*.py</code>、<code>data/runs/T023/</code>、<code>交付/T023_delivery.json</code>；<code>审查与规划/</code>、<code>paper/</code>、<code>data/</code> 输入零改动。</li>
+<li>交付 <code>integrity.readonly_respected=true</code>、<code>no_files_written_in_review_or_planning=true</code>、<code>no_push=true</code>。</li>
+<li>四个临时基准脚本在 <code>data/runs/T023/scratch/</code>，未混入 <code>code/</code>；20:47 的 8 条旧 eval 在 <code>scratch/evals_2047_stale.jsonl</code>，<code>t023_uncertainty.py</code> 中无读取路径。</li>
+</ul>
+
+<div class="box warn">
+<p><strong>验收边界：</strong>通过不等于份额可以当精确值引用。论文里每个份额都要带 ±SE；Q2 的结论要同时给参考点与区间；Q3 的“激励不划算”必须加“在约 14%–16% 的参数抽样中翻转”；Q2 的推荐 K 必须写明“参考参数下 60，联合抽样中 8.6% 仍选 60”。</p>
+</div>
+
+</main>
+</body>
+</html>

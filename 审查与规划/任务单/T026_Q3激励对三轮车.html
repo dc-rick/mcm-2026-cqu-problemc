@@ -57,7 +57,8 @@ li{margin:3px 0}
 <ol>
 <li><strong>统一短缺口径</strong>：用 T024 的（格, 小时）短缺作为 Δ_c，重建 T008 的 reroute LP（同一接受函数 π(r)，κ/ρ/c0 不变，两种来源上限），得到 q(r) 与实际填掉的短缺。Δ_c 只取“步行之后仍然缺”的那部分，必须与 T024 的 <code>cellunmet</code> 口径对齐，写清对齐方式。</li>
 <li><strong>外循环</strong>：给定 r，(a) 在剩余短缺上跑 reroute LP；(b) 把剩余短缺送回 T024 的逐区三轮车 LP 与逐区不动点，求 n_z(r)；(c) 迭代到不动点（最多 10 次，残差 &lt; 1 辆）。报告每行的迭代次数与末次残差。</li>
-<li><strong>r 扫描</strong>：r ∈ {0, 0.05, 0.10, …, 2.00}（41 档），两种来源上限各一遍。每档报告 total(r) = payment + 三轮车层 + 卡车层（卡车层应不变，若变要解释）。</li>
+<li><strong>r 扫描</strong>：r ∈ {0, 0.05, 0.10, …, 3.00}（61 档；2026-11-18 从 2.00 扩到 3.00，见 §5 H26），两种来源上限各一遍。每档报告 total(r) = payment + 三轮车层 + 卡车层（卡车层应不变，若变要解释），并报告 payment 是否被预算 30,000 截断。</li>
+<li><strong>复核 T020 的 r=0.81（H26）</strong>：单独报告 total(0.81) 与 total(2.7) 的对比（同预算、同来源上限），写清 r=2.7 的 payment 是否同样被 30,000 上限截断、卡车层是否更低、总支出哪边更低。若 2.7 更优，给出新的 r* 以及对论文 §6/摘要的影响。</li>
 <li><strong>回归门</strong>：r = 0 必须<strong>逐位复现</strong> T024-R3：975 辆、617,055.7515、未服务 39,984.2332、未分配 0、层成本 533,248.0077。</li>
 <li><strong>求根与最优</strong>：给交叉点 r_cross（total(r) = total(0) 的根，二分到 0.001 元）、最优 r*、净节省、以及 n_z 的逐区下降（总下降多少辆、哪些区下降）。</li>
 <li><strong>与上界对照</strong>：把精确结果与第 1 节的上界画在同一张表里，说明差距来自整数化还是来源上限。</li>
@@ -66,7 +67,7 @@ li{margin:3px 0}
 
 <h2>3. 验收（缺一不可）</h2>
 <ol>
-<li><code>cost_vs_r.json</code>：≥41 行 × 2 口径；每行含 r、q、payment、n_total、tricycle_layer、truck_layer、total、unmet、iter、resid。</li>
+<li><code>cost_vs_r.json</code>：≥61 行 × 2 口径；每行含 r、q、payment、payment_capped、n_total、tricycle_layer、truck_layer、total、unmet、iter、resid；必须包含 r=2.70 行。</li>
 <li><code>optimum.json</code>：r_cross、r*、净节省、n_total(r*)、逐区下降表、与上界对照。</li>
 <li><code>regression.json</code>：r=0 与 T024-R3 的逐项对比，全部相对误差 0 或列明来源。</li>
 <li><code>sensitivity_c0.json</code>：c0 × {0.8, 1.0, 1.2} 三行。</li>
@@ -82,6 +83,12 @@ li{margin:3px 0}
 <li>奖励支付是平台支出，三轮车成本也是平台支出，两者可比；用户的时间成本不计入（与 T008 一致），要在 assumptions 里写明。</li>
 <li>不得引用 T008 的 6.83%–20.83% 作系统节省，也不得引用 T025 的 10.40 / 2,883.3 / 480.6×。</li>
 </ul>
+
+<h2>5. 追加：H26（2026-11-18，T023 交付后）</h2>
+<div class="box hi">
+<p><strong>来源：</strong>T023 交付 notes 第 60 条观察到 T020 的 r=0.81 是按代理评分在付款上限 30,000 处取到的顶点，而 r=2.7 的 LP 混合解上卡车目标更低。T020 的 <code>policy_table.json</code> 只存每个 (level,budget) 的选中行，未存全 r 网格，存量文件无法核对。</p>
+<p><strong>要求：</strong>本任务的 r 扫描已相应从 2.00 扩到 3.00（61 档，两种来源上限）；必须单独给出 r=0.81 与 r=2.70 的总支出对比、payment 是否被预算截断、卡车层是否更低。若 2.70 更优，给出新的 r*、净节省，并明确论文 §6 与摘要需要改写；若 0.81 仍更优，写清 2.7 的“卡车目标更低”被付款抵消的数值证据。这条对应问题台账 H26。</p>
+</div>
 
 </main>
 </body>
