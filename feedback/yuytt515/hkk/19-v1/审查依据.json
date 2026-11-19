@@ -1,0 +1,196 @@
+{
+  "author": "hkk",
+  "iteration": "19-v1",
+  "review_date": "2026-11-19",
+  "timezone": "Asia/Shanghai",
+  "source_pdf": {
+    "repository": "dc-rick/mcm-2026-cqu-problemc",
+    "commit": "f143553a70333b16fd9e954989b7a18a1a44661b",
+    "path": "paper/main.pdf",
+    "sha256": "021d51e804d886fbedbe87e59e313b79a95db830c44ee30627c8595f65271fdf",
+    "bytes": 1026483,
+    "physical_pages": 27,
+    "counted_pages": 25,
+    "ai_report_pages": [
+      26,
+      27
+    ]
+  },
+  "previous_iteration": {
+    "iteration": "18-v1",
+    "commit": "d8002f935d880a1859b5ae7f6d142dbe2cf706bd",
+    "pdf_sha256": "3a767034d9e6a9d72ba93f0bec85ef2032c229f7bcdc9a8d03a9e75642c7e1db"
+  },
+  "applicable_problem": {
+    "name": "2026 CQU_MCM Problem C: The Problem of Random Parking of Shared Bicycles",
+    "sha256": "0c2cee16a8e8cb1fd34809098163d0d0c552047748b43111ee287a5303c5439f",
+    "provided_ai_policy_sha256": "d6272d6aabeff5cccfcda0554277ed569db4e8f4d855e0dd24b8b2ecd9b32331"
+  },
+  "review_basis_repository": {
+    "repository": "yuytt515/ICM2027",
+    "base_commit": "78403c8d0425c90a2d3f127244d89481adcb5a91",
+    "release": "2.1.0"
+  },
+  "official_sources": [
+    {
+      "kind": "2027_general_rules",
+      "url": "https://www.contest.comap.com/undergraduate/contests/mcm/instructions.html",
+      "verified_on": "2026-11-19"
+    },
+    {
+      "kind": "ai_policy",
+      "version": "v102025",
+      "url": "https://www.contest.comap.com/undergraduate/contests/mcm/flyer/Contest_AI_Policy.pdf",
+      "verified_on": "2026-11-19"
+    },
+    {
+      "kind": "submission_guide",
+      "version": "V20251232",
+      "url": "https://www.contest.comap.com/undergraduate/contests/mcm/flyer/MCM-ICM_SubProcess.pdf",
+      "verified_on": "2026-11-19"
+    },
+    {
+      "kind": "summary_template",
+      "url": "https://www.contest.comap.com/undergraduate/contests/mcm/flyer/MCM-ICM_Summary.tex",
+      "observation": "comment says 2027; printed heading still says 2026"
+    },
+    {
+      "kind": "2026_official_problem_comparison_only",
+      "url": "https://www.contest.comap.com/undergraduate/contests/mcm/contests/2026/problems/2026_MCM_Problem_C.pdf",
+      "observation": "Data With The Stars; not CQU bicycle problem"
+    }
+  ],
+  "user_requirement_images": [
+    {
+      "file_name": "微信图片_20261119102050_524_55.jpg",
+      "sha256": "4770379dc097de58a0a0e9f177bb2cb4765808b72e340e28f330a83e2343bf54"
+    },
+    {
+      "file_name": "微信图片_20261119102050_525_55.jpg",
+      "sha256": "dcf7a91927b6c4af515a011902233d902f2b8f62bc337d1b064fe3d5e4b6b710"
+    },
+    {
+      "file_name": "微信图片_20261119102050_526_55.jpg",
+      "sha256": "df40beb1a3503b56ba03dc83d984a1cffde4030fafe4e30870a0c1a7566ab660"
+    }
+  ],
+  "static_evidence": [
+    {
+      "path": "paper/main.tex",
+      "sha256_git_blob": "d9bfb26eff5b819e00ec724acb4aaf8fa00b2276534b3994b1d7e7c2664bd8d8"
+    },
+    {
+      "path": "paper/ai_report.tex",
+      "sha256_git_blob": "f967674455564f81138e56730cd1d59317efcaa101afdcf609e0eadee8dbad32"
+    },
+    {
+      "path": "paper/summary.tex",
+      "sha256_git_blob": "a3a9e9adfaa71bf199e471d537ba4c4747518e73a00cd29b75da32147d7910b2"
+    },
+    {
+      "path": "paper/sec4_q1.tex",
+      "sha256_git_blob": "45d8b741d48b5dd6f487f2641d5620a5415398c0eac380a52625a0f2fbe940fe"
+    },
+    {
+      "path": "paper/sec5_q2.tex",
+      "sha256_git_blob": "ab1236b814a63fdb6bb075642c1f6093a3cdfc50608c302fabc6ebc470ff656e"
+    },
+    {
+      "path": "paper/sec6_q3.tex",
+      "sha256_git_blob": "341f580c2963c51f72719f40a4a231e9d14ccaa049468e48986dccdd9088a34f"
+    },
+    {
+      "path": "paper/sec7_q4.tex",
+      "sha256_git_blob": "d6c67cee682decfab2a157e0a940d58f06afad233dd5416903a18de7a88f558b"
+    },
+    {
+      "path": "paper/sec8_q5.tex",
+      "sha256_git_blob": "9996a5bde12d3beb14dec8f9b97f8b8254dd7e7c833dd038d084c6fd39098f68"
+    },
+    {
+      "path": "code/run_all.py",
+      "sha256_git_blob": "390775afcb284911a9e3c53f604f5ed79da337e5a61ba6d59d47cc4f3d0afcbf"
+    },
+    {
+      "path": "code/t018_q2_int.py",
+      "sha256_git_blob": "bedd94c1b3dce5284143c447183e61bcf5a01ecd401d84837e1ff09940a0b781"
+    },
+    {
+      "path": "code/t019_q4_cap.py",
+      "sha256_git_blob": "1f5200a291c40a48d8998025a4e899545ebafc4d2d1faa397584ce270319f05f"
+    },
+    {
+      "path": "code/t022_m15_q5_mismatch.py",
+      "sha256_git_blob": "6693dfef764801b0d266c46d806d77c53cd7b6502551e0f47a748d3620227e1b"
+    },
+    {
+      "path": "code/t024_q2_tier2.py",
+      "sha256_git_blob": "525fc00fb4b26ae89aec8b21cd45df1d9d8df369f176b7c042ca1be486b4b538"
+    },
+    {
+      "path": "code/t025_q3_scarcity.py",
+      "sha256_git_blob": "454d0df8645e465065bc2abd0380201e3a4eab3a55f60618799657e0ead028ad"
+    },
+    {
+      "path": "code/t026_incentive_tricycle.py",
+      "sha256_git_blob": "efd87932c798f8c8a5a980d4093103ecbfa11ed80d3cc2ef39250960e907537a"
+    },
+    {
+      "path": "交付/T027/file_list.json",
+      "sha256_git_blob": "bdb92823f8942c7fada9b77a91ba80e771422be446eea9526e7c6a22e1439a01"
+    },
+    {
+      "path": "审查与规划/审查记录/T027_验收_2026-11-19.html",
+      "sha256_git_blob": "7613198b3bbcf5357992c6b594ded4de9c6a71eaf46b76b1d26ce35cd6d03916"
+    }
+  ],
+  "old_issue_states": {
+    "H01": "已解决",
+    "H02": "已解决（模型层）",
+    "H03": "仍存在",
+    "H04": "仍存在",
+    "H05": "仍存在",
+    "H06": "仍存在",
+    "H07": "仍存在",
+    "H08": "仍存在",
+    "H09": "仍存在",
+    "H10": "仍存在",
+    "H11": "仍存在"
+  },
+  "new_issue_ids": [
+    "H12",
+    "H13",
+    "H14"
+  ],
+  "verification": {
+    "model_rerun": false,
+    "manuscript_modified": false,
+    "data_modified": false,
+    "source_compiled_in_clean_temporary_copy": true,
+    "xelatex_passes": 3,
+    "compiled_physical_pages": 27,
+    "published_and_recompiled_layout_text_equal": true,
+    "layout_text_sha256": "b556a5c3ae21251cdcf3e1f735c62d1d88ab1d090c345310662ed53f263f75ea",
+    "t027_manifest_entries": 757,
+    "result_entries_absent_from_git": 633,
+    "tracked_entries": 124,
+    "byte_identical_entries": 104,
+    "lf_crlf_only_entries": 20,
+    "substantive_manifest_mismatches": 0,
+    "q2_saving_with_common_deadhead_percent": 59.145828366536826,
+    "q3_saving_with_common_deadhead_percent": 2.890164990757842,
+    "q4_4000_to_4500_total_percentage_points": 1.3
+  },
+  "limits": [
+    "No Gurobi, Monte Carlo, platform simulation or end-to-end numerical reproduction was run.",
+    "633 result files were not obtained from Git.",
+    "Official 2027 format preflight is separate from CQU original requirements.",
+    "Exact query and complete-output coverage remain for author verification."
+  ],
+  "external_delivery": {
+    "branch": "feedback/yuytt515-review",
+    "previous_feedback_commit": "5429ec0c4c1c14f5b3d5142dd065e8a71148c1d2",
+    "allowed_prefix": "feedback/yuytt515/hkk/19-v1/",
+    "native_files_modified": false
+  }
+}
