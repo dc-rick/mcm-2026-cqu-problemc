@@ -3,7 +3,7 @@
 {\Large\bfseries The Geometry of a Bicycle City: Behaviour, Rebalancing,\\ Incentives and Fences in Beijing's Dockless Bike-Share System}\\[6pt]
 {\large 2026 CQU Mathematical Contest in Modeling, Problem C}\\[10pt]
 \begin{tabular}{ll}
-\textbf{Team Control Number:} & \rule{3.2cm}{0.4pt} \\
+\textbf{Team Control Number:} & 13648 \\
 \textbf{Problem Chosen:} & C \\
 \end{tabular}
 \end{center}
@@ -19,57 +19,66 @@ short of bicycles \emph{in the right place at the right time}. Using 3.21 millio
 from 484,754 bicycles and 349,241 users over fourteen days, this paper builds one
 behavioural model and prices four operational answers on it.
 
-\textbf{The central finding is a diagnosis of oversupply.} Capture--recapture between the
-nine complete days and the truncated second window places the closed fleet at
+\textbf{The central finding is a diagnosis of misallocation.} Capture--recapture between
+the nine complete days and the truncated second window places the closed fleet at
 \textbf{495,540 bicycles} (model interval 484,754--506,635), serving \textbf{an upper
-estimate of 4.33 rides each per day}. At the initial-inventory proxy of 343,638 bicycles the 50-zone program
-leaves only 432.23 departures unserved \emph{with no dispatch at all} ($K=0$), so the
-binding problem is \emph{cost and placement}, not shortage; at cell resolution the
-simulated unserved share is 5.84\% at 343,638 and 3.51\% at 495,540. These statements
-are conditional on the modelled inventory.
+estimate of 4.33 rides each per day}. At the 50-zone scale the program with no dispatch
+leaves only 432.23 departures unserved, which hides the failure: replayed at cell
+resolution as a conserving process, the same demand leaves \textbf{17.40\%}
+(371,129.50 of 2,132,542.19) unserved with no repositioning and 17.31\% with the full
+truck plan. Opposite imbalances cancel inside a zone: the binding problem is
+placement, not the number of bicycles.
 
 \textbf{Behaviour (Q1).} Destination choice is a singly-constrained gravity model with a
-distance decay re-estimated by time of day, from 2.01 (morning) to 2.52 (midday). On
-two held-out days it beats both nested benchmarks: log-loss is 3.24--3.52 against
-3.28--3.64 for distance-only and 7.9--8.2 for attraction-only. The condition: the
-model is calibrated on five training days of the 10--19 May window and describes that
-window's demand at the estimated attraction, not a forecast under changed land use.
+distance decay re-estimated by time of day, 2.01 (morning) to 2.52 (midday); on two
+held-out days log-loss is 3.24--3.52 against 3.28--3.64 for distance-only and 7.9--8.2
+for attraction-only. The condition: the model is calibrated on five training days of
+the 10--19 May window and describes that window's demand, not a forecast under changed
+land use.
 
 \textbf{Rebalancing (Q2).} An integer time--space network program moves bicycles between
-50 zones, and a same-zone tricycle layer, solved after it, moves them between cells.
-\textbf{60 trucks} move \textbf{24,949 bicycles per day} over \textbf{5,659.17
-truck-kilometres}; adding \textbf{975 tricycles} brings the two-tier cost to
-\textbf{617,055.7515 CNY/day}, a saving of \textbf{902,223.20 (59.385\%)} against the
-no-tricycle cell-level baseline, leaving \textbf{39,984.2332 departures unserved}, with
-no constraint violated and an LP gap of 1.01\%. The condition: the two-tier total
-excludes the end-of-day repeat-positioning deadhead, reported separately; this is a typical-day
-planning midpoint, and 60 is the minimum of the compared grid, not a global optimum.
+50 zones, and a same-zone tricycle layer, optimised inside a conserving cell-level
+replay, moves them between cells. \textbf{60 trucks} move \textbf{24,949 bicycles per
+day} over \textbf{5,659.17 truck-kilometres}; \textbf{1,233 tricycles} then bring the
+two-tier cost to \textbf{795,870.99 CNY/day}, a saving of \textbf{1,503,023.20
+(65.38\%)} against the 2,298,894.20 no-tricycle cell-level baseline, leaving
+\textbf{56,731.74 departures unserved}. The truck plan alone removes 1,948 departures
+for 83,807.74 CNY/day --- 43.01 CNY per departure against a 6 CNY penalty --- so trucks
+buy balance and tricycles buy service. The condition: 60 is the minimum of the compared
+grid and 1,233 the executable fixed point of the joint replay, not global optima, and
+the result is a typical-day planning midpoint.
 
-\textbf{Incentives (Q3).} A posted reward of 0.60 CNY per completed reroute, aimed at
-the hourly list of deficient cells and settled on the increment ledger, saves
-\textbf{18,011.46 CNY/day (2.92\%)} inside the tricycle layer, pays 16,608.52 inside the
-30,000 budget, cuts the fleet from 975 to 959 and unmet from 39,984.2332 to 35,019.77.
-The condition: in this replay reroutes stay within a zone, so the saving replaces part of the tricycle
-layer and nothing else; the acceptance parameters are assumed, not estimated (a pilot
-design), and the two source caps bracket the saving at \textbf{1.08\%--2.92\%}.
+\textbf{Incentives (Q3).} A posted reward aimed at the hourly deficit list pays for
+itself on the static placement plan: at \textbf{0.80 CNY per accepted reroute}, a
+payment of 29,152.05 buys 28,277.44 filled deficits, each removing a 3.359162 CNY truck
+placement, and the total falls to \textbf{660,897.34 CNY/day}, a saving of
+\textbf{65,836.46 (9.06\%)} against all-truck placement; the conservative surplus cap
+gives 5.17\%. The 30,000 CNY budget binds at 0.85 CNY and sets the reward: without it
+the optimum would be 1.75 CNY and 19.05\%. Inside the tricycle replay the optimum is
+0.50 CNY, filling 32,446 deficits and saving 12,861.52 (1.62\%, 1.16\% under the surplus
+cap), so the incentive substitutes for the expensive instrument, not the cheap one. The
+condition: acceptance parameters are assumed, not estimated (a pilot design); the
+calibers price a plan and a replay, not a system; excluding fleet cost from the
+placement unit leaves 6.04\%.
 
 \textbf{E-fences (Q4).} Parking demand is the arrival process on top of the standing
 inventory. A greedy maximal-coverage layout on the capacity--coverage frontier has its
-Kneedle knee at \textbf{4,000 sites of 150 slots} (600,000 slots), covering
-\textbf{59.53\% of peak occupancy and 55.80\% of arrivals} at 343,638, and 52.18\% and
-49.59\% at 495,540; \textbf{394,553.13 bike-slots} are unassigned at the measured
-inventory. The condition: these are required capacities under mandatory parking,
-driven by the assumed 150-slot cap, and specific to this grid, radius and inventory.
+Kneedle knee at \textbf{3,500 sites of 150 slots} (525,000 slots), covering
+\textbf{70.89\% of peak occupancy and 69.58\% of arrivals} at 343,638, and at 495,540
+\textbf{4,000 sites} (600,000 slots) cover 53.21\% and 50.71\%; \textbf{212,258.42
+bike-slots} are unassigned under per-site 95th-percentile sizing. A 15-minute replay shows the
+capped plan failing by emptiness, not congestion: 16.53\% of covered departures short,
+79.80 bicycles of overflow. The condition: these are required capacities under
+mandatory parking, specific to this grid, radius and inventory.
 
 \textbf{Competition (Q5).} At cell resolution, splitting the market equally raises unmet
-from 11.66\% to \textbf{12.10\%} even with no spatial mismatch, and mismatch raises it to
-18.99\%; the 12.10\% is a share of within-fence departures, not of the whole city.
-Independent fences need 1.0818--1.1323 times the capacity of a shared regime, but
-sharing fences does not reduce lost orders, because the fleets remain separate. The
-condition: the comparison is made at cell resolution on the 4,000-site plan against a
-within-fence denominator, and its transfer to other layouts is untested. The
-durable damage of competition is duplicated capital, trucks, land and, most damagingly,
-the data needed to run any model above.
+from 17.15\% to \textbf{17.80\%} even with no spatial mismatch, and mismatch raises it
+to 29.50\%; independent fences need \textbf{1.0728--1.1472 times} the capacity of a
+shared regime, but sharing fences does not reduce lost orders, because the fleets
+remain separate. The condition: the comparison is made at cell resolution on the
+3,500-site plan, and its transfer to other layouts is untested. The durable damage of
+competition is duplicated capital, trucks, land and, above all, the data any model
+above needs.
 
 \vfill
 \noindent\textbf{Keywords:} dockless bike sharing; gravity model; time-space network;

@@ -21,10 +21,13 @@ Tools \cite{aiapp}.
   rather than a failure of the conditional model.
 
 \item \emph{Supply-independent destination choice.} A rider chooses a destination
-  without regard to whether a bicycle will be available there. The 50-zone LP finds no
-  zone stockout at the measured inventory, but the cell-level simulation finds 5.84\%
-  unserved at the initial-inventory proxy 343,638 and 3.51\% at 495,540, so the
-  censoring is small but not zero and is reported rather than assumed away.
+  without regard to whether a bicycle will be available there. The 50-zone model with
+  no dispatch leaves 432.23 departures unserved, but at cell resolution the conserving
+  replay leaves \textbf{17.31\%} unserved with the truck plan in place (369,181.08 of
+  2,132,542.19 scaled departures) and 17.40\% with no dispatch at all. The censoring is
+  therefore large at cell resolution: the observed trip file is a censored sample of
+  demand, and every rate we estimate is a lower bound on the rate that generated the
+  intended trips. We report the uncensored replay rather than assume the problem away.
 
 \item \emph{Endogenous attraction.} The attraction of a destination is measured by
   the arrivals it actually receives. The model is therefore a description of an
@@ -71,29 +74,29 @@ Tools \cite{aiapp}.
   Tricycles move bicycles between cells \emph{within one zone} only, carrying
   $Q_{\text{tri}}=20$ bicycles at 15 km/h with 0.5 minutes per bicycle handled, trips
   of at most 5 km, operating 07:00--20:00, at 300 CNY per tricycle-day and 0.2 CNY
-  per kilometre. The truck layer is held fixed when the tricycle layer is solved, and
-  the part of a reroute that crosses a zone boundary is priced in the truck-caliber
-  test of Section~\ref{sec:q3}. The allocation is integer, and the executable plan
+  per kilometre. The truck layer is held fixed when the tricycle layer is solved. In the
+  tricycle-caliber replay of Section~\ref{sec:q3} every reroute stays inside its source
+  zone, so the truck layer is fixed there by construction; the truck caliber prices a
+  filled deficit instead as one placement removed from the static fence plan, on edges
+  that may cross zones. The allocation is integer, and the executable plan
   raises the fractional LP fleet to the smallest fixed point at which every zone's
   schedule can be run.
 
-\item \emph{Two ledgers, one budget.} A reward is settled on the \emph{increment}
-  ledger, paying $r$ per completed reroute that fills a deficit (bill $r\,q$), or on
-  the \emph{payment} ledger, paying $r$ per accepted invitation including riders who
-  would have gone there anyway (bill $r\,P$). The 30,000 CNY daily budget is a
-  promise the two ledgers price differently; the payment ledger is enforced by
-  reserving $r$ per invitation and stopping at the budget, which is conservative, while
-  at the Q3 optimum the increment bill is checked against the budget rather than
-  truncated by it.
+\item \emph{Two ledgers, one budget.} A reward is settled on the \emph{payment}
+  ledger, paying $r$ per accepted invitation including riders who would have gone there
+  anyway (bill $r\,P$), or on the \emph{increment} ledger, paying $r$ per completed
+  reroute that fills a deficit (bill $r\,q$). The 30,000 CNY daily budget is a promise
+  the two ledgers price differently. We take the payment ledger as the primary bill: it
+  is the amount the platform actually promises, and it is what the rider can audit. The
+  increment ledger is reported alongside as the narrower accounting of what the payment
+  bought.
 
 \item \emph{Placement and payment.} A reroute is placed in the hour of the original
-  trip at a cell drawn from that hour's deficit list; the target is not restricted to
-  the source zone, so a small share of accepted reroutes changes a zone-hour arrival
-  total, which is the channel through which the incentive can reach the truck layer
-  (Section~\ref{sec:q3}). No cross-hour rearrangement is modelled. A reward is posted
-  at $r$ per completed reroute and is uniform across users; a personalised reward is
-  not modelled. The tricycle-caliber replay of Section~\ref{sec:q3} keeps the target
-  inside the source zone, so the truck layer stays fixed there by construction.
+  trip at a cell drawn from that hour's deficit list. In the truck caliber the target is
+  not restricted to the source zone; in the tricycle-caliber replay it is, so the
+  zone-hour truck plan stays fixed there by construction. No cross-hour rearrangement is
+  modelled. A reward is posted at $r$ per completed reroute and is uniform across users;
+  a personalised reward is not modelled.
 \end{enumerate}
 
 \subsection{Notation}

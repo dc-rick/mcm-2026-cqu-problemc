@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T028 验收：守恒化重建与换数</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:28px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+h3{font-size:15.5px;margin:18px 0 6px}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T028 验收：守恒化重建与换数（通过）</h1>
+<p class="meta">2026-11-20 · 决策 B13（BBAAAA，2026-11-19）· 基线 T027 通过版 <code>508a66f</code> · 交付 <code>交付/T028_delivery.json</code> · 独立编译、干净目录复核、数字锁、22 项回归、822 文件哈希、DeepSeek 第 8 轮逐条裁决</p>
+
+<div class="box ok">
+<p><strong>结论：通过，可提交。</strong>守恒链把 Q2–Q5 与敏感性全部换到同一套守恒重放上，论文 28 页 / 计页 <strong>25</strong>；干净临时目录 xelatex ×3 无 error、无 overfull、无 undefined、无 LaTeX Warning；数字锁 <strong>1,164/1,164</strong> 个 token 全部落到 58,498 条结果记录、0 未匹配；22 个关键数从结果文件独立复算后逐字出现在论文中；822 个文件 SHA-256 复算全对。DeepSeek 冷读第 8 轮 <strong>0 blocking</strong>；其 3 条 minor 中的实数错误（deadhead 百分比）与措辞混淆（“same reward”）已修，2 条 major 的表述缺口（摘要缺 sizing 口径、Q5 无种子噪声）已补；第 9 轮复核上述修正。</p>
+<p><strong>保留的结构性限制</strong>（不修，全部已在论文中如实披露）：两层非联合优化（60 为五点网格最小值、1,233 为可执行不动点，§1/§5/§10 三次写明）；κ、ρ 未做二维扫描（§6 明说为假设，c0 三点扫描给出 8.72–9.36%）；时长模型为规划假设（AI 报告写入型常数清单）；Q2 的 65.38% 是规划中点（36/128 组抽样为负，P5 −0.5757），论文按中点+区间报告而非单点结论。</p>
+</div>
+
+<h2>1. 我读了什么、独立跑了什么</h2>
+<ul>
+<li><strong>范围</strong>：<code>git status --porcelain</code> 共 45 项：修改 <code>README.md</code>、<code>code/t019_q4_cap.py</code>（仅加 <code>m.dispose()</code>）、3 张 figs、11 个 paper 源文件与 <code>main.pdf</code>、三本台账；新增 14 个链脚本、<code>交付/T028/</code>（file_list / build_file_list / verify_final + json）、<code>交付/T028_delivery.json</code>、任务单、<code>review/problem_c.txt</code>、<code>review/review_r8.json</code>。执行与验收同会话（用户指示单会话），越界豁免已在交付 JSON 的 <code>integrity</code> 如实记录。</li>
+<li><strong>干净目录编译</strong>：把 <code>paper/*.tex</code> 与 <code>figs/*.pdf</code> 按 <code>paper/</code> + <code>figs/</code> 的相对布局复制到 <code>%TEMP%/t028_clean2_*</code>，xelatex ×3，退出码 0/0/0；<code>Output written on main.pdf (28 pages)</code>；log 中 Overfull 0、undefined 0、LaTeX Warning 0；PDF 无 <code>??</code>、无 U+037E；TOC 中 References 止于 p25、AI 报告起于 p26，计页 = 26 − 1 = <strong>25</strong>。</li>
+<li><strong>数字锁</strong>：<code>python -I code/t038_numbers.py</code> → <code>records 58498, tokens 1164, matched 1164, unique 123, unmatched 0</code>；<code>data/runs/T038/coverage_report.txt</code> 首部写日期、计数与 <code>PASS</code> 行。锁的实现（<code>t038</code>）与被锁的论文在同一提交内，自指计数不进论文（AI 报告只写“全部匹配、0 未匹配”，具体计数由脚本输出）。</li>
+<li><strong>回归</strong>：<code>python -I 交付/T028/verify_final.py</code> 全绿：<code>lock_pass / regression_pass / forbidden_pass / figures_pass / pdf_pass</code> 全 true，<code>missing_in_tex = {}</code>。回归的 22 个数各自从结果文件重算后按印刷精度在论文中查找，例如 Q2 <code>795,870.99</code>（T028 <code>exec_cost=795870.9938875533</code>）、<code>1,503,023.20</code>（2,298,894.1979 − 795,870.9939）、<code>65.38</code>；Q3 <code>660,897.34</code>（T031 truck <code>best.total_spend</code>）、<code>65,836.46</code>（726,733.80 − 660,897.34）；Q4 <code>0.7089/0.6958/212,258.42</code>（T030 <code>selected</code>）；Q5 <code>17.80</code>、<code>1.0728/1.1472</code>（T029 rows/ratios）。</li>
+<li><strong>文件清单</strong>：<code>交付/T028/file_list.json</code> 822 条（paper_tex 14、paper_pdf 1、figures_pdf 8、code 113、results 684、documents 2），逐条复算 SHA-256 与字节数 <strong>0 差异</strong>（重建后的清单）；非复现路径单列 29 个预览/scratch 文件。</li>
+<li><strong>§9 两表</strong>：<code>python -I code/t042_sec9_tables.py</code> 输出的 8 行区间与 10 行方差逐值与 <code>sec9_sensitivity.tex</code> 相同；被移出表的三行（K*、Q3 payment、Q4 unassigned）仍可复现并已在题注/正文交代。</li>
+<li><strong>引用</strong>：<code>python -I code/t040_citecheck.py</code> → <code>cited 32 bibitems 32, missing [], uncited []</code>。</li>
+<li><strong>目检</strong>：渲染 p22、p23、p25、p26、p28 逐页看：§9 新表未越版心、参考文献 [1]–[32] 收于 p25 底部、AI 报告五组 Query/Output 完整、末页无溢出。</li>
+<li><strong>外部冷读</strong>：<code>review/review_r8.json</code>（评级 F，<strong>0 blocking</strong> / 6 major / 3 minor）；修正后 <code>review/review_r9.json</code> 复核（见 §6）。</li>
+</ul>
+
+<h2>2. 七标准逐条</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>标准</th><th>结论</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>显式假设</td><td><b>通过</b></td><td>A1–A12 齐备；写入型常数在 AI 报告中逐条列出（20 km/h、0.5 CNY/辆、600 CNY/车·日、6 CNY/km、20 辆/趟、15 km/h、300 CNY/三轮车·日、0.20 CNY/km、150 位、450 m、κ=2、ρ=0.35、c₀=0.8、30,000 预算、0.05 网格）；时长模型（绕行 1.35、速度 N(11.5,2.5)、锁车 +1 min）明说为规划假设（review M6 成立，属已披露）。</td></tr>
+<tr><td>2</td><td>物理严谨</td><td><b>通过</b></td><td>守恒重放：T028 残差 ≤0.000135、end_total 343,637.9999；T030 demand 残差 0.0 / 1.16e-10；T031 三轮车重放 0.000131；T029 双状态 ≤5.9e-11。事件顺序与装载上限在 §5 给出（最大装载 40、单趟 46.92 min &lt; 60 min、每区-小时 ≥0.81 辆松弛）。</td></tr>
+<tr><td>3</td><td>边界条件</td><td><b>通过</b></td><td>两个存量情景（343,638 / 495,540）、54 组精确枚举、07:00–20:00、K∈{0,20,40,60,80}、p∈[0.128,0.185,0.20]、150 位上限、450 m 半径、5 km 单趟、30,000 预算与 0.05 网格都写明；Q5 明确 occ/out 双状态与“不重插”规则。</td></tr>
+<tr><td>4</td><td>数据范围 = 有效范围</td><td><b>通过</b></td><td>p 与库存口径全部进入敏感性 B 组；20–24 May 截断窗只用于扩张估计；495,540 给 [484,754, 506,635] 与偏差方向；4.33 标为上限；§9.5 列明不可外推情形（有桩、低密度、其他布局、极端天气、长期）；fig_q3 的两 panel 画出超预算区的点线，fig4 面板 (d) 覆盖全扫描区间。</td></tr>
+<tr><td>5</td><td>数字来自结果</td><td><b>通过</b></td><td>1,164 个 token 全部锁到结果记录，0 未匹配；22 项独立回归（见 §1）全中；本轮新修的文字（deadhead、Q5 种子 SD、sizing 口径、0.50 CNY）所涉数字（0.000728–0.000829、0.000206–0.000255）同样由 T029 文件锁定。</td></tr>
+<tr><td>6</td><td>不确定性分源</td><td><b>通过</b></td><td>T032 A/B/C/F 四组（128/128/128/128+54）在守恒链上重跑；§9 给每组 P5–P95 区间、分源方差份额及其残差（1−Σ 为 −0.438/−0.440 的两项已注明一阶高估）；Q3 payment 的分解注明不可用（0.195）；锚移与 C 组退化都写明。Q2 节省的符号不稳（36/128 负）按事实报告。</td></tr>
+<tr><td>7</td><td>图填满坐标轴</td><td><b>通过</b></td><td>四张图均为矢量 PDF；fig1 两天全时段、fig3 验证散点填满、fig4 四面板 xlim 到扫描范围、fig_q3 两 panel 全网格+放大；目检 p7/p10/p14/p22 无裁切、无空白轴。</td></tr>
+</tbody></table></div>
+
+<h2>3. COMAP 合规</h2>
+<div class="tw"><table>
+<thead><tr><th>项</th><th>要求</th><th>实际</th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>页数</td><td>≤25 页（AI 报告不计）</td><td>28 总页；摘要 1 + 目录 1 + 正文 22 + 参考文献 1（止于 p25） = 25；AI 报告 pp26–28</td><td>通过</td></tr>
+<tr><td>摘要</td><td>单独一页</td><td>page 1 独立分页，含五问结论与四条件</td><td>通过</td></tr>
+<tr><td>目录</td><td>与正文一致</td><td>TOC + 图表目录在 p2，页码一致</td><td>通过</td></tr>
+<tr><td>参考文献</td><td>完整、正文有引</td><td>p25，32 条，32/32 有 \cite（t040）</td><td>通过</td></tr>
+<tr><td>AI 报告</td><td>合规披露</td><td>\cite{aiapp}、工具与版本、11–20 Nov、五组 Query/Output、写入型常数、复现顺序、数字锁</td><td>通过</td></tr>
+<tr><td>身份信息</td><td>不得出现</td><td>无队号、无姓名、无机构</td><td>通过</td></tr>
+<tr><td>内部流程</td><td>不得出现</td><td>大写任务号 0 命中（含 §9 一处已改为“Q4 fence capacities / Q3 pool”）；earlier version 等 0 命中</td><td>通过</td></tr>
+</tbody></table></div>
+
+<h2>4. 验收标准 A1–A10</h2>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>标准</th><th>结果</th><th>证据</th></tr></thead>
+<tbody>
+<tr><td>A1</td><td>守恒</td><td>pass</td><td>T028 0.000120–0.000135、T030 0 / 1.16e-10、T031 0.000131、T029 ≤5.9e-11；end_total 一律 343,637.9999</td></tr>
+<tr><td>A2</td><td>数字锁 0 未匹配</td><td>pass</td><td>1,164/1,164，coverage_report.txt 首行 PASS</td></tr>
+<tr><td>A3</td><td>计页 ≤25</td><td>pass</td><td>28 总页，参考文献止于 p25，AI 报告 p26–28</td></tr>
+<tr><td>A4</td><td>编译干净</td><td>pass</td><td>工作树与干净目录各 3 遍；0 error / 0 undefined / 0 overfull / 0 LaTeX Warning；无 ?? 与 U+037E</td></tr>
+<tr><td>A5</td><td>§9 两表与 T032 一致</td><td>pass</td><td>t042 输出与 tex 逐值相同（8 区间行 + 10 方差行）</td></tr>
+<tr><td>A6</td><td>结论回归</td><td>pass</td><td>verify_final 的 22 项全中（Q2 65.38%、Q3 9.06/5.17/1.62/1.16%、Q4 70.89/69.58、Q5 17.15/17.80/29.50 见摘要与正文）</td></tr>
+<tr><td>A7</td><td>四图与引用一一对应</td><td>pass</td><td>tex 只引 4 图；file_list 标 used_in_paper=true 的恰为同一 4 个</td></tr>
+<tr><td>A8</td><td>外部评审 0 blocking</td><td>pass</td><td>review_r8.json blocking = []；minor 实数错误已修，第 9 轮复核见 §6</td></tr>
+<tr><td>A9</td><td>提交包 SHA-256</td><td>pass</td><td>822 文件复算 0 差异；reproduction 节含基准管线 + 守恒链顺序/依赖/计时</td></tr>
+<tr><td>A10</td><td>台账</td><td>pass</td><td>任务台账 T028 通过行、问题台账 M25–M28 关闭、决策台账 B13 已决定；T027 包未动</td></tr>
+</tbody></table></div>
+
+<h2>5. 数字抽查（独立复算 → 论文印刷值）</h2>
+<div class="tw"><table>
+<thead><tr><th>量</th><th>结果文件键</th><th>文件值</th><th>论文值</th></tr></thead>
+<tbody>
+<tr><td>Q2 可执行层</td><td>T028/local_search.json <code>exec_cost</code></td><td>795,870.9938875533</td><td>795,870.99</td></tr>
+<tr><td>Q2 未服务</td><td><code>exec_unmet</code></td><td>56,731.73848934448</td><td>56,731.74</td></tr>
+<tr><td>Q2 基线</td><td><code>baseline_total</code></td><td>2,298,894.197920567</td><td>2,298,894.20</td></tr>
+<tr><td>Q2 节省/份额</td><td>派生</td><td>1,503,023.2040 / 65.3803%</td><td>1,503,023.20 (65.38%)</td></tr>
+<tr><td>Q3 全卡车池</td><td>T031/truck_payment.json <code>all_truck_cost</code></td><td>726,733.8001659015</td><td>726,733.80</td></tr>
+<tr><td>Q3 支付台账最优</td><td><code>levels.arrivals.best</code></td><td>r=0.8, q=28,277.4399, P=36,440.0679, payment=29,152.0543, total=660,897.3403</td><td>0.80 / 28,277.44 / 36,440.07 / 29,152.05 / 660,897.34</td></tr>
+<tr><td>Q3 节省</td><td>派生</td><td>65,836.46 / 9.06%</td><td>65,836.46 (9.06%)</td></tr>
+<tr><td>Q3 三轮车刻度</td><td>T031/tricycle_payment.json <code>best_exec</code></td><td>n=1,234, q=32,445.85, P=52,790.71, payment=26,395.36, total=783,009.4706</td><td>1,234 / 32,445.85 / 52,790.71 / 26,395.36 / 783,009.47</td></tr>
+<tr><td>Q4 拐点</td><td>T030/frontier_cons.json <code>selected</code></td><td>3,500 站；0.70890073 / 0.69575691 / 212,258.4212</td><td>3,500×150；70.89% / 69.58% / 212,258.42</td></tr>
+<tr><td>Q5 容量比</td><td>T029/m15_outside.json <code>ratios</code></td><td>1.0727634 / 1.1472467</td><td>1.0728 / 1.1472</td></tr>
+<tr><td>Q5 种子 SD（本轮新增）</td><td><code>rows[].unmet_rate_sd / full_rate_sd</code></td><td>0.000728–0.000829 / 0.000206–0.000255</td><td>同左（sec8）</td></tr>
+</tbody></table></div>
+
+<h2>6. DeepSeek 冷读裁决</h2>
+<p class="meta">review_r8.json：模型 deepseek-v4-pro，评级 F，blocking = []，major 6 / minor 3；与第 7 轮（M 奖级）相比评级下降，但 blocking 从 0 保持为 0，major 全部落在论文已披露的结构性限制上，不是新发现的错误。</p>
+<div class="tw"><table>
+<thead><tr><th>编号</th><th>主张</th><th>裁决</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td>Q2/Q5 用下限库存 343,638 配上限流量</td><td>不修（已披露）：§9 B 组把 343,638 与 495,540 全部枚举（54 组），Q4 另给 495,540 情景；§10 写明结论随库存口径移动。作为限制保留。</td></tr>
+<tr><td>M2</td><td>两层非联合优化</td><td>不修（已披露）：§1 rec1、§5、§10 三处写明“网格最小值 / 可执行不动点，不是全局最优”，按上下界报告。</td></tr>
+<tr><td>M3</td><td>κ、ρ 未扫</td><td>不修（已披露）：§6 明说为假设、c₀ 三点扫描给 8.72–9.36%；二维扫描列为遗留限制（交付 notes）。</td></tr>
+<tr><td>M4</td><td>摘要 70.89% 缺 sizing 口径</td><td><b>已修</b>：摘要与执行摘要改为“under per-site 95th-percentile sizing”。</td></tr>
+<tr><td>M5</td><td>Q5 无种子噪声量化</td><td><b>已修</b>：§8 新增种子标准差与“约八个种子展布”的比较，并注明共享/独立相等是原始输出的精确相等而非统计打平。</td></tr>
+<tr><td>M6</td><td>时长模型全为假设</td><td>不修（已披露）：AI 报告写入型常数清单列出 1.35 / N(11.5,2.5) / +1 min。</td></tr>
+<tr><td>m1</td><td>“共同 deadhead 不改变百分比”算术错误</td><td><b>已修</b>：改为“两边都不含；加到两边会降低百分比”。</td></tr>
+<tr><td>m2</td><td>摘要 “the same reward … at 0.50 CNY” 混淆</td><td><b>已修</b>：改为“三轮车重放的最优是 0.50 CNY”。</td></tr>
+<tr><td>m3</td><td>聚类的稳定性表述</td><td>不修（已披露）：§4 已写 ARI 0.994 复现旧标签但随机初始化下最小 0.305，按可解释分区论述。</td></tr>
+<tr><td>M8</td><td>（第 9 轮新增）卡车刻度对着静态全卡车反事实而非实际 Q2 运营</td><td>不修（已披露）：§6.4 与 §10 明确“刻度不是系统节省”，并给出排除车队项后的 6.04%；三轮车刻度作为对照在 §6.5。</td></tr>
+<tr><td>M9</td><td>（第 9 轮新增）495,540 情景的初始分配未做敏感性</td><td>不修（已披露）：§7 写明该情景的分配是“最小非负初始存量”，作为情景而非主结论；论文给出区间 [484,754, 506,635] 与偏差方向。</td></tr>
+<tr><td>m1（第 9 轮）</td><td>2,298,894.20 − 795,870.99 按印刷值相减得 1,503,023.21</td><td>保留并记录：节省由未舍入值计算（1,503,023.2040），两个被减数各自按 2 位印刷；0.01 为展示舍入，不是结果错误。锁与回归均按未舍入值。</td></tr>
+<tr><td>m2（第 9 轮）</td><td>“1,772.82 kilometre” 被读作距离</td><td><b>已修</b>：改为 “1,772.82 kilometre cost”（= 8,864.10 km × 0.20 CNY/km）。</td></tr>
+<tr><td>m3（第 9 轮）</td><td>Q5 仍无正式置信区间/配对检验</td><td>保留：种子标准差与精确相等已量化（§8），正式检验需改动实验设计，列入遗留限制。</td></tr>
+<tr><td>m4（第 9 轮）</td><td>摘要仍可能被读作同步全市保证</td><td>部分接受：sizing 口径已进摘要；“非同步保证”的限定在 §7 与 §10 明写，摘要以 per-site 表述承载。</td></tr>
+<tr><td>m5（第 9 轮）</td><td>[32] 的工具名与运行时模型标识不一致</td><td><b>已修</b>：[32] 补 “(runtime model identifier deepseek-flash[1m])”。</td></tr>
+</tbody></table></div>
+<div class="box ok">
+<p><strong>第 9 轮（对第 8 轮修正批次的复核）</strong>：<code>review/review_r9.json</code> — 评级 F，<strong>blocking = []</strong>，major 5 / minor 5。上一轮被判 fixed 的 M4（sizing 口径）确认；M1/M2/M3/M6 维持 partial/not_fixed（结构性、已披露）。本轮新提的 m2（1,772.82 措辞）与 m5（[32] 标识）已在本记录写就前修正，m1（0.01 舍入展示）与 m3/m4（正式检验、同步保证措辞）按上表保留并说明；修正后重新编译、重跑数字锁（1,164/1,164）与 verify_final（全绿），页数不变。</p>
+</div>
+
+<h2>7. 未解决项与边界</h2>
+<ul>
+<li>Q2 的 65.38% 是规划中点：36/128 组联合抽样节省为负（P5 −0.5757），论文 §5.6、§9.2、§10 都按中点+区间写，不再作为单点保证。</li>
+<li>Q3 两种刻度不可直接比较（9.06% 对昂贵仪器、1.62% 对廉价仪器）；排除车队项后卡车刻度 6.04%。</li>
+<li>Q3 payment 的方差分解不可用（0.195）；Q3 all-truck pool 的 C 组退化（726,734–726,734），原因（摆放单位固定）写在 §9.1。</li>
+<li>锚移：Q2 +839.67、Q3 −20,088.72、Q4 −0.0006/−0.0042；Q3 锚移原因（在 Q4 围栏容量上重解静态池）写在 §9.1。</li>
+<li>DeepSeek 评级从第 7 轮的 M 降到 F：无 blocking，major 均为已披露限制；若评委按“联合最优 + 实测 κ/ρ”的严格标准打分，这些是扣分点，但当前数据条件下无法补齐。</li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -13,7 +13,7 @@ can measure.
 
 \subsection{A cell-resolution mismatch experiment}
 
-The Q4 plan is fixed: 4,000 sites, 150 slots each, $R=450$ m, initial-inventory proxy
+The Q4 plan is fixed: 3,500 sites, 150 slots each, $R=450$ m, initial-inventory proxy
 343,638. Two platforms share the market equally (share $s=0.5$), each drawing Poisson
 arrivals and departures at half rate and holding half of every cell's inventory. Three
 institutions are compared:
@@ -33,17 +33,29 @@ $\sigma$ is the logistic function, $\tilde x_i$ is the cell's east--west coordin
 so that A still carries half of all trips. At $m=0$ the split is proportional and is the
 model-consistent control; at $m=1.5$ A's riders are concentrated in the east while its
 fleet remains at half of every cell's inventory. Twenty seeds, 15-minute steps,
-$1{,}181{,}755$ within-fence departures per run.
+about 1.48 million within-fence departures per run.
+
+Every platform and site carries two states: bicycles parked \emph{inside} the fence,
+$o_{jt}$, and bicycles parked just \emph{outside} it after an overflow, $u_{jt}$. A
+departure draws from inside first and from outside second; only the remaining residual
+is unmet. An arrival fills the inside room and the overflow enters $u_{jt}$, so
+$o_{jt}+u_{jt}$ equals the platform's fleet at every step (the largest conservation
+residual over all runs is $9\times10^{-11}$). Outside bicycles consume no slot and are
+not reinserted into the
+inside occupancy; the state exists so that no bicycle disappears from the accounting,
+not to relax the parking constraint.
 
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption[Q5 spatial mismatch]{Two platforms at share 0.5 on the 4,000-site, 150-slot Q4
-plan, by mismatch intensity $m$ and parking institution (20 seeds).
-``Unmet'' is unserved departures as a share of within-fence departures; ``full'' is the
-share of site-steps at capacity; ``required slots'' is the sum over sites of the 95th
-percentile over seeds of peak occupancy, an unbounded-peak sizing convention, not
-existing berths. The single-platform row is the same plan under one operator.}
+\caption[Q5 spatial mismatch]{Two platforms at share 0.5 on the 3,500-site, 150-slot Q4
+plan, by mismatch intensity $m$ and parking institution (20 seeds). ``Unmet'' is
+unserved departures as a share of within-fence departures; ``full'' is the share of
+arriving bicycles that overflowed a fence already at 150 slots; ``required slots'' is
+the sum over sites of the 95th percentile over seeds of peak occupancy, an
+unbounded-peak sizing convention, not existing berths.
+The single-platform row is the same plan under one operator. Every row conserves
+inside + outside = fleet.}
 \label{tab:q5mismatch}
 \scriptsize
 \begin{tabular}{@{}llrrr@{}}
@@ -51,23 +63,23 @@ existing berths. The single-platform row is the same plan under one operator.}
 $m$ & \textbf{Institution} & \textbf{Unmet rate} & \textbf{Full-site rate} &
 \textbf{Required slots} \\
 \midrule
---- & single platform & 11.66\% & 0.33\% & 540,447.69 \\
+--- & single platform & 17.15\% & 0.50\% & 479,675.68 \\
 \midrule
-0.0 & independent        & 12.10\% & 0.00007\% & 608,326.14 \\
-0.0 & independent\_equal & 12.16\% & 0.90\%    & 608,326.14 \\
-0.0 & shared             & 12.12\% & 0.35\%    & 562,331.65 \\
+0.0 & independent        & 17.80\% & 0.00002\% & 539,678.92 \\
+0.0 & independent\_equal & 17.80\% & 0.93\%    & 539,678.92 \\
+0.0 & shared             & 17.80\% & 0.44\%    & 503,073.56 \\
 \midrule
-0.5 & independent        & 13.27\% & 0.0067\%  & 619,001.76 \\
-0.5 & independent\_equal & 13.32\% & 1.54\%    & 619,001.76 \\
-0.5 & shared             & 13.29\% & 0.37\%    & 564,716.90 \\
+0.5 & independent        & 19.65\% & 0.0052\%  & 535,780.02 \\
+0.5 & independent\_equal & 19.65\% & 1.20\%    & 535,780.02 \\
+0.5 & shared             & 19.65\% & 0.29\%    & 492,289.68 \\
 \midrule
-1.0 & independent        & 15.96\% & 0.15\%    & 643,485.96 \\
-1.0 & independent\_equal & 16.00\% & 3.53\%    & 643,485.96 \\
-1.0 & shared             & 16.11\% & 0.69\%    & 577,094.59 \\
+1.0 & independent        & 24.03\% & 0.0953\%  & 526,691.46 \\
+1.0 & independent\_equal & 24.03\% & 2.04\%    & 526,691.46 \\
+1.0 & shared             & 24.03\% & 0.29\%    & 470,548.04 \\
 \midrule
-1.5 & independent        & 18.99\% & 0.57\%    & 673,517.52 \\
-1.5 & independent\_equal & 19.03\% & 6.23\%    & 673,517.52 \\
-1.5 & shared             & 19.55\% & 1.57\%    & 594,809.49 \\
+1.5 & independent        & 29.50\% & 0.3123\%  & 515,894.53 \\
+1.5 & independent\_equal & 29.50\% & 3.22\%    & 515,894.53 \\
+1.5 & shared             & 29.50\% & 0.67\%    & 449,680.54 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -75,67 +87,76 @@ $m$ & \textbf{Institution} & \textbf{Unmet rate} & \textbf{Full-site rate} &
 \subsection{What the simulation says}
 
 \textbf{Splitting the market costs service even with no mismatch.} The single platform
-leaves 11.66\% of within-fence departures unserved; at $m=0$, with both platforms
-proportional, the independent regime leaves 12.10\% and the shared regime 12.12\%,
-about half a percentage point worse. The mechanism is not spatial: each platform's
-Poisson fluctuations no longer pool with the other's, so the same total fleet produces
-more empty-fence steps. A zone-level control finds zero unmet under a proportional split, but that
-does not survive the cell resolution: at zone scale the stocks are large enough to hide
-the split's noise, at fence scale they are not.
+leaves 17.15\% of within-fence departures unserved; at $m=0$, with both platforms
+proportional, every two-platform institution leaves 17.80\%, about two thirds of a
+percentage point worse. The mechanism is not spatial: each platform's Poisson
+fluctuations no longer pool with the other's, so the same total fleet produces more
+empty-fence steps. The size of the effect is specific to this plan and demand surface;
+it is not a universal constant and does not carry across layouts. Twenty seeds bound
+the noise: the seed-to-seed standard deviation of the unmet rate is
+0.000728--0.000829 and of the full-site rate 0.000206--0.000255, so the 17.15\% against
+17.80\% gap is about eight of those spreads, and the shared and independent unmet rates
+are equal in the raw output, not a statistical tie.
 
-\textbf{The denominator is within-fence departures, not the city.} The 12.10\% is
-143,011.06 unserved departures over 1,181,754.7 within-fence departures. It is
-\emph{not} comparable with the 6.20\% city-wide figure of the Q4 replay (132,250.84
-unserved out of 2,132,542 scaled departures), because the fence network covers a subset
-of the city and the two denominators differ by nearly a factor of two. Whenever the two
-appear together, they must be labelled separately.
+\textbf{The denominator is within-fence departures, not the city.} The 17.80\% is
+263,307.06 unserved departures over 1,479,658.15 within-fence departures. It is
+\emph{not} comparable with the 16.53\% departure-shortfall rate of the Q4 replay
+(244,498.53 over 1,479,013.66 covered departures), because that figure is a single
+operator on the 15-minute conserving replay while this one is two operators sharing
+the same plan; whenever the two appear together they must be labelled separately.
 
-\textbf{Mismatch is the larger effect.} Moving from $m=0$ to $m=1.5$ raises the
-independent unmet rate from 12.10\% to 18.99\% and the shared rate from 12.12\% to
-19.55\%, roughly seven percentage points. The spatial concentration of one platform's
-riders away from its own bicycles is a stronger force than the loss of noise pooling,
-and it grows monotonically with the intensity.
+\textbf{Mismatch is the larger effect.} Moving from $m=0$ to $m=1.5$ raises every
+institution's unmet rate from 17.80\% to 29.50\%, nearly twelve percentage points. The
+spatial concentration of one platform's riders away from its own bicycles is a stronger
+force than the loss of noise pooling, and it grows monotonically with the intensity.
 
-\textbf{Sharing fences does not reduce lost orders.} The shared regime is not better
-than the independent one: at $m=0$ the difference (12.12\% against 12.10\%) is within seed
-noise, and at $m\ge1.0$ it is no better than independent\_equal (16.11\% against 16.00\%,
-19.55\% against 19.03\%), the deficit clearing seed noise only at the largest mismatch. Sharing pools parking slots, not bicycles; a platform's riders still cannot
-use the other's fleet, and proportional rationing of a shared fence's overflow is no
-better than a smaller own fence. The shared regime \emph{does} save concrete:
-562,331.65 required slots against 608,326.14 for independent at $m=0$,
-which is 4.05\% above the single-platform 540,447.69 rather than 12.56\% above it.
+\textbf{Sharing fences does not reduce lost orders --- exactly.} The shared regime's
+unmet rate equals the independent regime's at every $m$ to the last digit (the
+difference is 0.0 in the raw simulation output), and it does so because the outside
+state makes the availability constraint depend on the fleet, not on the fence: once
+inside is empty, a rider draws from the outside pool; if both are empty the order is
+lost regardless of who owns the concrete. Sharing pools parking slots, not bicycles.
+What sharing does change is \emph{overflow}: the shared regime records 5,330 more
+overflowing arrivals than independent at $m=0$ and 3,695 more at $m=1.5$, because a
+shared fence has one wall while two independent fences have two, and the shared wall is
+hit by both fleets. The extra overflow is absorbed by the outside state, which is why it
+does not become an extra lost order.
 
-\textbf{Capacity duplication has a price.} The required capacity of the independent
-regime exceeds the shared one by a factor of \textbf{1.0818} at $m=0$, 1.0961 at $m=0.5$,
-1.1150 at $m=1.0$ and 1.1323 at $m=1.5$ --- 7.6\% to 11.7\% duplicated concrete, rising
-with mismatch. Even the shared regime needs 4.05\% more slots than a single platform at
-$m=0$, and 10.06\% more at $m=1.5$. These are required capacities --- a 95th-percentile
-per-site sizing standard --- not existing berth counts, and they are specific to this
-4,000-site, 150-slot, 450 m layout and this inventory; they do not transfer to another
-city or another grid.
+\textbf{Sharing saves concrete.} The required capacity of the independent regime exceeds
+the shared one by a factor of \textbf{1.0728} at $m=0$, 1.0883 at $m=0.5$, 1.1193 at
+$m=1.0$ and 1.1472 at $m=1.5$ --- \textbf{6.8\% to 12.8\%} of duplicated concrete, rising
+with mismatch. The shared regime needs 4.88\% more slots than a single platform at
+$m=0$ and 6.25\% \emph{fewer} at $m=1.5$; the fall is a consequence of the service
+failure, not a benefit, because fewer served departures mean fewer arrivals and lower
+per-site peaks. These are required capacities --- a 95th-percentile per-site sizing
+standard --- not existing berth counts, and they are specific to this 3,500-site,
+150-slot, 450 m layout and this inventory; they do not transfer to another city or
+another grid.
 
 \textbf{The full-site rates separate the institutions cleanly.} The independent regime
-almost never fills a fence (0.00007\% to 0.57\% of site-steps), because each platform's
-own fence sits half-empty while the other's riders walk past it; the
-independent\_equal regime fills up to 6.23\% of site-steps, and the shared regime sits
-between them at 0.35\% to 1.57\%. A low full-site rate is therefore not evidence of
-adequate capacity but evidence that the capacity is in the wrong hands.
+almost never overflows (0.00002\% to 0.31\% of arriving bicycles): each platform's fence
+sits half-empty while the other's riders walk past it. The independent\_equal regime
+overflows up to 3.22\%, the shared regime sits between them at 0.29\% to 0.67\%, and the
+single platform's 0.50\% exceeds independent's because its fences hold the whole fleet.
+A low full-site rate is therefore evidence that capacity is in the wrong hands, not that
+it is adequate.
 
 \subsection{Cost and data duplication}
 
 \textbf{Cost.} The rebalancing plan of Q2 is computed over the whole city; a platform
-with a third of the trips still faces the same 290 arcs and nightly window but fills
-each truck with a third as many bicycles. The truck fleet's fixed component --- 600 CNY
+with half the trips still faces the same 290 arcs and the same hourly dispatch
+window but fills each truck with half as many bicycles. The truck fleet's fixed
+component --- 600 CNY
 per truck per day, \textbf{42.96\%} of the daily cost at $K=60$ (36,000 of 83,807.74
 CNY) --- is therefore incurred by every platform separately, and the same holds for
-the tricycle layer's fixed cost, 300 CNY per tricycle-day, which is 293,342.61 of the
-617,055.7515 two-tier total.
+the tricycle layer's fixed cost, 300 CNY per tricycle-day, which is charged on each
+platform's own fleet.
 
 \textbf{Data.} Every model here is
-estimated from the full origin--destination matrix, and a platform holding a third of
-the market observes a third of the rows, so the attraction $A_j$ of
+estimated from the full origin--destination matrix, and a platform holding half of
+the market observes half of the rows, so the attraction $A_j$ of
 \eqnref{eq:gravity} and the cell deficit $\Delta_c$ of \eqnref{eq:q3lp} are estimated
-with a standard error that grows as $\sqrt{3}$. More decisively, \emph{no platform can
+with a standard error that grows as $\sqrt{2}$. More decisively, \emph{no platform can
 compute the plans of Q2 and Q4 at all}: the Q2 truck plan is defined on a city-wide
 zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on a
 city-wide deficit list: each is a public-good computation that only the city can run.
@@ -164,11 +185,11 @@ longer be financed.
 \textbf{Share the data, not the bicycles}: a city-wide OD matrix is
 the binding public good, and requiring platforms to deposit trip records with a
 neutral trustee costs the firms nothing competitively. \textbf{Share the fences, and
-pool more than concrete}: the shared regime saves 7.6\%--11.7\% of the slot
+pool more than concrete}: the shared regime saves 6.8\%--12.8\% of the slot
 requirement, but shared fences alone do not reduce lost orders (\S\ref{sec:q5}),
 because the fleets remain separate. \textbf{Coordinate rebalancing}: a neutral
 rebalancing operator, or a requirement that platforms' trucks serve shared depots,
-recovers the fixed cost currently paid three times. \textbf{Tie fleet caps to measured
+recovers a fixed cost currently paid twice. \textbf{Tie fleet caps to measured
 service}: a cap expressed as bicycles per thousand trips, rather than as a fixed
 number, stays anchored to the measured service requirement and is auditable from the
 shared data of the first measure.

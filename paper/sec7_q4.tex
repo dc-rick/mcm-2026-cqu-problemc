@@ -1,42 +1,48 @@
 % =============================== 7. Q4 ===============================
 \section{Question 4: Siting and Sizing Electronic Fences}\label{sec:q4}
 
-\subsection{Parking demand is the arrival process, on top of a standing stock}
+\subsection{Parking demand is a conserving process}
 
 A dockless bicycle occupies space where its trip ends and stays until someone rides it
-away. Parking demand is therefore the arrival process of Section~\ref{sec:q1}, but the
-occupancy it produces is the \emph{integral} of that process on top of the standing
-stock; the simulation starts each fence at the initial-inventory proxy and sizes the peak of
-the path, because the initial-inventory proxy contains 343,638 bicycles and Q2 shows
-that the plan is a reset, not an evacuation.
+away. Parking demand is therefore the arrival process of Section~\ref{sec:q1} acting on
+a \emph{fixed} fleet: a bicycle that leaves one cell arrives in another, and the city
+total cannot change. The earlier draft sized fences from independent Poisson arrivals and
+departures, and its system total drifted to 630,002.78 although only 343,638 bicycles
+exist. We therefore rebuild the demand stage as a conserving process and repeat the whole
+of Q4 on it.
 
 For a candidate fence serving a set $S$ of cells, the 15-minute occupancy path is
 \begin{equation}
-o_{t+1} \;=\; \max\left\{0,\ o_t + A_t - D_t\right\},
+\begin{aligned}
+d_t &\sim \text{Poisson}\!\left(\textstyle\sum_{c\in S}D_{ct}\right),
+&\text{take}_t &= \min(d_t,\, o_t),\\
+A_t &\sim \text{Multinomial}\!\left(\textstyle\sum_{c\in S}\text{take}_{t,c},\ \pi_t\right),
 \qquad
-A_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}a_{ct}\right),
-\quad
-D_t\sim\text{Poisson}\!\left(\textstyle\sum_{c\in S}d_{ct}\right),
+o_{t+1} &= o_t - \text{take}_t + A_t,
+\end{aligned}
 \label{eq:occupancy}
 \end{equation}
-with $o_0=\sum_{c\in S}I_{c0}$ the standing inventory and 96 intervals in the day. We
-draw 300 replicates and take the capacity of the fence to be the 95th percentile of
-$\max_t o_t$, the peak \emph{including} $t=0$. Arrivals and departures are the scaled
-$1/p$ flows, so the capacities describe the real system, not the sample.
+where $\pi_t$ is the Q1 arrival surface normalised over the cells of the city, $o_0=\sum_{c\in S}I_{c0}$
+is the standing inventory and there are 96 intervals in the day. A departure that finds
+the fence empty is \emph{unmet} and generates no arrival; every served departure places
+one bicycle somewhere in the city, so the city total equals $I_0$ exactly at every step
+(the replay's conservation residual is 0.0). We draw 300 replicates and take the capacity
+of a fence to be the 95th percentile of $\max_t o_t$, the peak \emph{including} $t=0$.
+Arrivals and departures are the scaled $1/p$ flows, so the capacities describe the real
+system, not the sample.
 
-Two conventions bound the interpretation. Per-fence percentiles are not additive: the
-sum of 95th percentiles is not the city-wide 95th percentile of the sum. At the
-initial-inventory proxy 343,638 the sum of per-cell 95th percentiles is 974,923.16
-while the 95th percentile of the simultaneous system total is 630,002.78, a ratio of
-0.646; at 495,540 the figures are 1,123,702.61 and 525,987.17, a ratio of 0.468. The
-slot totals below are therefore a \emph{required-capacity sizing convention} --- size
-each fence so that it is adequate 95\% of the time on its own --- not a simultaneous
-city-wide guarantee and not existing berth counts. The inventory level is a scenario
-throughout: the initial-inventory proxy 343,638 and the closed fleet 495,540 are run
-separately and never mixed. The closed-fleet scenario spreads that total over cells in
-proportion to the smallest initial stock that keeps every cell non-negative under the
-demand model's cumulative net flow, so its spatial shape is the flow-implied one, not
-the proxy's.
+Per-fence percentiles are not additive, and on a fixed fleet the gap is the whole story:
+at the initial-inventory proxy 343,638 the sum of per-cell 95th percentiles is
+\textbf{729,161.65}, 2.122 times the fleet, because each cell peaks at a different hour
+while the total is constant. At the closed fleet 495,540 the sum is 1,097,172.20, a ratio
+of 2.214. The slot totals below are therefore a \emph{required-capacity sizing convention}
+--- size each fence so that it is adequate 95\% of the time on its own --- not a
+simultaneous city-wide guarantee and not existing berth counts. The inventory level is a
+scenario throughout: the initial-inventory proxy 343,638 and the closed fleet 495,540 are
+run separately and never mixed. The closed-fleet scenario spreads that total over cells
+in proportion to the smallest initial stock that keeps every cell non-negative under the
+demand model's cumulative net flow, so its spatial shape is the flow-implied one, not the
+proxy's.
 
 \subsection{Where to put the fences: the Kneedle rule}
 
@@ -50,7 +56,7 @@ check below is geographic, not behavioural.
 
 The capped plan is a binary program. With $f_{ij}$ the sizing demand at $i$
 assigned to a fence at $j$, $u_i$ the sizing demand left unassigned, $a_i$ the
-sizing demand at $i$, $s_j$ the open-site indicator, $\bar s$ the per-site cap set above and $n$ the number
+sizing demand at $i$, $s_j$ the open-site indicator, $\bar s$ the per-site cap and $n$ the number
 of fences, the planner solves
 \begin{equation}
 \begin{aligned}
@@ -62,9 +68,8 @@ of fences, the planner solves
 \label{eq:q4cap}
 \end{equation}
 with $f$ and $u$ non-negative and $s_j$ binary, over the cell pairs $A$ of the walking
-radius. The greedy rule and its approximation guarantee are the tool for the
-\emph{uncapped} reference only; the capped plan above is solved with
-Gurobi~\cite{gurobi}, its gap to the bound reported in \tabref{tab:q4plan}.
+radius. The capped plan above is solved with Gurobi~\cite{gurobi}, its gap to the bound
+reported in \tabref{tab:q4plan}.
 
 The number of fences is chosen as a knee of the capacity--coverage frontier. Let $n$ be
 the number of open sites and $c(n)$ the occupancy coverage of the capped $n$-site plan;
@@ -72,59 +77,57 @@ both are normalised to $[0,1]$, and the plan is the point whose normalised $(n,c
 lies farthest from the chord joining the first and last frontier points (the Kneedle
 rule): additional fences stop buying coverage at the frontier's average rate. It is not
 a cost minimiser --- with every site capped at 150 slots, slots$(n)=150n$ and
-$\text{cost}(n)=\text{slots}(n)+\lambda n$ is monotone increasing --- so the exchange
-rate $\lambda$ is used only for the \emph{uncapped} reference below.
+$\text{cost}(n)=\text{slots}(n)+\lambda n$ is monotone increasing --- so the rule is used
+as a frontier criterion, not as an exchange rate.
 
-On the capped frontier the knee is \textbf{4,000 sites}, with a normalised deviation of
-0.21829 from the chord; at the 495,540 inventory the knee is also 4,000 (deviation
-0.20982). Coverage rises by about 1.5 percentage points per 100 sites up to 3,500, by
-1.19 points between 3,500 and 4,000, then by 0.26 points to 4,500 and 0.05 points to
-5,000: beyond 4,000, sites are expensive and buy little.
+On the conserved frontier at 343,638 the knee is \textbf{3,500 sites}, with a normalised
+deviation of 0.28736 from the chord; at the 495,540 inventory the knee is \textbf{4,000}
+(deviation 0.21319). Coverage rises by about 2.03 percentage points per 100 sites up to
+3,500, by 0.66 points between 3,500 and 4,000, then by 0.07 points to 4,500 and 0.06
+points to 5,000: beyond the knee, sites are expensive and buy little. At 495,540 the
+average rate is 1.33 points per 100 sites up to 4,000 and 0.29 points from 4,000 to
+4,500.
 
 \subsection{The 150-slot capped plan is the answer}
 
 A street corner can plausibly hold 150 slots --- about 210 m$^2$, the largest a rider
-crosses in a minute. The cap is not a cosmetic
-constraint: on the uncapped reference the median site needs 582.72 slots and the largest
-2,946.51, and \textbf{704 of the 705 sites exceed 150}. Capping the same 705 sites at
-150 slots leaves them covering only 10.85\% of peak occupancy and 14.66\% of arrivals
-at 343,638, and 9.41\% and 13.08\% at 495,540: the uncapped coverage does not survive
-the cap. The capped plan must therefore be sited and solved as its own problem, which
-the 4,000-site solution does.
+crosses in a minute. The cap is not a cosmetic constraint: it is the difference between
+a plan that covers three quarters of the peak and one that covers half. Even opening all
+5,263 sites at 150 slots covers only 74.83\% of peak occupancy and 72.06\% of arrivals
+at 343,638, and 54.90\% and 52.42\% at 495,540, so the cap, not the site count, is the
+binding constraint. The capped plan must therefore be sited and solved as its own
+problem, which the knee solution does.
 
 \begin{table}[htbp]
 \centering
 \footnotesize
 \caption[The capped Q4 plan]{The 150-slot capped plan at $R=450$ m. Total slots are
-$4{,}000\times150=600{,}000$; coverage is the assigned share of the cell-level 95th
-percentile peak occupancy, with the arrival-weighted share in the row labelled Arrival
-coverage. The two
-inventory scenarios are run separately.}
+$3{,}500\times150=525{,}000$ at 343,638 and $4{,}000\times150=600{,}000$ at 495,540;
+coverage is the assigned share of the cell-level 95th percentile peak occupancy, with
+the arrival-weighted share in the row labelled Arrival coverage. The two inventory
+scenarios are run separately.}
 \label{tab:q4plan}
 \scriptsize
 \begin{tabular}{@{}lrr@{}}
 \toprule
  & \textbf{343,638 inventory} & \textbf{495,540 inventory} \\
 \midrule
-Sites & 4,000 & 4,000 \\
-Total slots & 600,000 & 600,000 \\
-Occupancy coverage & \textbf{59.53\%} & \textbf{52.18\%} \\
-Arrival coverage & \textbf{55.80\%} & \textbf{49.59\%} \\
-Assigned sizing demand & 580,370.03 & 586,368.97 \\
-Unassigned sizing demand & \textbf{394,553.13} & \textbf{537,333.64} \\
-MILP gap & 0.0049 & 0.0050 \\
+Sites & 3,500 & 4,000 \\
+Total slots & 525,000 & 600,000 \\
+Occupancy coverage & \textbf{70.89\%} & \textbf{53.21\%} \\
+Arrival coverage & \textbf{69.58\%} & \textbf{50.71\%} \\
+Assigned sizing demand & 516,903.23 & 583,842.54 \\
+Unassigned sizing demand & \textbf{212,258.42} & \textbf{513,329.66} \\
+MILP gap & 0.0050 & 0.0050 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \tabref{tab:q4plan} is the main result. At the initial-inventory proxy the plan covers
-\textbf{59.53\% of peak occupancy} and \textbf{55.80\% of arrivals}, leaving 394,553.13
-bike-slots of demand unassigned; at the closed fleet the same layout covers 52.18\% and
-49.59\%, leaving 537,333.64. The site-integer MILP gap is below 0.005, so the layout is
-optimal to the solver tolerance. The target of the uncapped reference is not reachable
-under the cap: even opening all 5,263 sites at 150 slots covers only 61.10\% of
-occupancy and 56.75\% of arrivals, so the cap, not the site count, is the binding
-constraint. The frontier is otherwise smooth:
+\textbf{70.89\% of peak occupancy} and \textbf{69.58\% of arrivals}, leaving 212,258.42
+bike-slots of demand unassigned; at the closed fleet the same layout covers 53.21\% and
+50.71\%, leaving 513,329.66. The site-integer MILP gap is 0.005, the solver tolerance,
+so the layout is optimal to the tolerance. The frontier is otherwise smooth:
 
 \begin{center}
 \scriptsize
@@ -133,76 +136,74 @@ constraint. The frontier is otherwise smooth:
 \textbf{Sites} & \textbf{Slots} & \textbf{Occupancy coverage} &
 \textbf{Arrival coverage} \\
 \midrule
-2,000 & 300,000 & 30.71\% & 26.17\% \\
-3,000 & 450,000 & 46.08\% & 42.67\% \\
-\textbf{4,000} & \textbf{600,000} & \textbf{59.53\%} & \textbf{55.80\%} \\
-4,500 & 675,000 & 60.83\% & 56.24\% \\
-5,263 (all open) & 789,450 & 61.10\% & 56.75\% \\
+2,000 & 300,000 & 41.02\% & 39.97\% \\
+3,000 & 450,000 & 61.47\% & 60.34\% \\
+\textbf{3,500} & \textbf{525,000} & \textbf{70.89\%} & \textbf{69.58\%} \\
+4,000 & 600,000 & 74.19\% & 71.51\% \\
+5,263 (all open) & 789,450 & 74.83\% & 72.06\% \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Under the joint parameter draws of \S\ref{sec:sens} the occupancy coverage is 0.387--0.824 (median
-0.625) and the arrival coverage 0.406--0.835 (median 0.663); the 95th percentile stays
-below 1, so the conclusion that the 150-slot cap binds is never reversed. The interval
-is wide because it is driven by the assumed cap and the choice of day, which
-\S\ref{sec:sens} ranks explicitly.
+The initial inventory matters: at 495,540 the same 150-slot cap covers only 53.21\% of
+the larger peak demand, because more bicycles mean more simultaneous occupancy demand
+although the flow that has to be placed is fixed. The 495,540 frontier needs 600,000
+slots at 4,000 sites and still covers less than the 343,638 frontier does with 525,000
+at 3,500.
 
-The uncapped reference is retained only for comparison. It is the Kneedle knee at
-$\lambda=150$ on the uncapped frontier: 705 fences, sized at the per-site 95th
-percentile with no hard cap, requiring 491,692 slots at 343,638 and 621,004 at 495,540.
-At $\lambda=0$ the same frontier's knee is 501 fences (64.51\% coverage) and at
-$\lambda=300$ it is the same 705 fences, so the knee is stable in $\lambda$; the
-per-site size is not. The 705-fence plan is therefore a \emph{capacity reference}, not
-a realisable layout, and it is never compared with the capped plan without imposing
-the cap.
+Under the joint parameter draws of \S\ref{sec:sens} the coverage of this plan falls in
+the interval reported there; the conclusion that the 150-slot cap binds rests on the
+all-open ceiling (74.83\%) and is checked against the draws in that section.
 
 \subsection{Replay: which service failure occurs}
 
-A static coverage share does not say what happens during a day. We replay the 4,000-site
-plan in 15-minute steps with the simulated arrivals and departures, counting two
+A static coverage share does not say what happens during a day. We replay the 3,500-site
+plan in 15-minute steps with the conserving arrivals and departures, counting two
 distinct failures: a \emph{full} site turns away an arriving bicycle (overflow), and an
 \emph{empty} site cannot lend one (departure shortfall). On the design day at 343,638
-the plan realizes 55.80\% arrival coverage, with zero full sites, zero overflow and a
-departure shortfall of 132,250.84: the failure is emptiness, not congestion. With
-one-hour steps the realized coverage falls by 0.08 percentage points to 55.73\%, overflow
-appears at 1,617.94 bicycles, and the shortfall rises to 158,257.23. At 495,540 the
-design day realizes 49.59\%, with zero overflow and a shortfall of 4,277.25; one-hour
-steps give 49.46\%, overflow 2,709.12 and shortfall 38,829.33.
+the plan realizes \textbf{57.89\%} arrival coverage, with \textbf{79.80} bicycles of
+overflow, \textbf{63} sites ever full (265 site-steps), and a departure shortfall of
+\textbf{244,498.53}, which is \textbf{16.53\%} of the 1,479,013.66 departures the plan
+covers: the failure is emptiness, not congestion. The 99,681.05 bicycles outside the
+fences at the end of the day are almost all cells with no fence at all (99,601.26
+unassigned at $t=0$); only 79.80 are overflow. With one-hour steps the realized coverage
+falls to 55.17\%, overflow rises to 674.98, and the shortfall to 301,832.06. At 495,540
+the design day realizes 49.61\%, with overflow 0.42 and a shortfall of 7,190.77
+(0.68\% of covered departures); one-hour steps give 46.87\% and 65,494.31. The fleet
+scenario therefore fails by emptiness only at 343,638; at 495,540 the fences are nearly
+adequate.
 
-The two held-out days are the stress test. At 343,638 the 12 May replay realizes 50.33\%
-with overflow 104,551.04, shortfall 123,832.54 and 1,007 full sites; 19 May realizes
-50.35\% with overflow 126,920.81, shortfall 152,736.70 and 1,110 full sites. One-hour
-steps move coverage by $-0.25$ and $-0.41$ percentage points and raise the shortfall by
-22,736.57 and 35,096.42. Full sites therefore appear only on the higher-demand test
-days, while the design day fails by emptiness; a coarser step creates some overflow on
-the design day but never enough to change that reading. The finer step is the more
-favourable, so the capacity conclusion does not depend on it.
+The failure is concentrated in the commute peaks: 65.6\% of the shortfall occurs in the
+seven hours 7--9 and 16--19, which hold 29\% of the day, and 51.4\% in the evening peak
+16--19 alone. The cause is spatial, not a shortage of bicycles: at 343,638 16.53\% of
+covered departures fail, at 495,540 only 0.68\%. A coarser step makes the failure worse,
+not better, so the finer step is the more favourable and the capacity conclusion does not
+depend on it.
 
 \subsection{Walking radius and the compliance caliber}
 
 The radius is a policy choice, and it interacts with the compliance model of
-Eq.~\eqref{eq:logit}. \tabref{tab:q4radius} reports the 4,000-site plan at three
-radii. Two features are exact, not approximate: R=150 m and R=300 m give the \emph{same}
-plan, because on the 0.005$^\circ$ grid no neighbouring cell centre lies within 300 m of
-another, so the radius only admits neighbour cells at 450 m; and the nominal ranking
-reverses under voluntary compliance, since 450 m has the highest coverage (59.53\%
-against 52.42\%) but the lowest zero-incentive compliance (0.0238 against 0.1454), so
-effective coverage falls from 7.62\% at 150 m to 1.42\% at 450 m (arrival-weighted
-8.29\% to 1.33\%). On the arrival ruler the reversal is sharper still: 150 m and 300 m
-cover 57.00\% of arrivals against 55.80\% at 450 m, because the 450 m plans leave the
-peak-heavy cells' excess unassigned. A capacitated fence network is a
-mandatory-parking instrument; on voluntary compliance it is weakest exactly where its
-nominal coverage is highest.
+Eq.~\eqref{eq:logit}. \tabref{tab:q4radius} reports the knee plan at three radii. Two
+features are exact, not approximate: R=150 m and R=300 m give the \emph{same} plan,
+because on the 0.005$^\circ$ grid no neighbouring cell centre lies within 300 m of
+another, so the radius only admits neighbour cells at 450 m; and the nominal ranking is
+the reverse of the effective one, since 450 m has the highest nominal coverage (70.89\%
+against 60.48\%) but the lowest zero-incentive compliance (0.0238 against 0.1454), so
+effective coverage falls from 8.79\% at 150 m to 1.69\% at 450 m (arrival-weighted
+9.42\% to 1.66\%). At 495,540 the arrival ruler does reverse as well: 150 m covers
+54.90\% of arrivals against 50.71\% at 450 m, because the 450 m plan leaves the
+peak-heavy cells' excess unassigned. A capacitated fence network is a mandatory-parking
+instrument; on voluntary compliance it is weakest exactly where its nominal coverage is
+highest.
 
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption[Q4 radius and compliance]{The 4,000-site 150-slot plan by walking radius. The
-first two coverage columns are the two rulers; ``compliance'' is the zero-incentive
-compliance rate of the walking model; ``effective'' multiplies coverage by compliance
-under voluntary detour. Under regulated parking inside fences, coverage is not
-multiplied by compliance.}
+\caption[Q4 radius and compliance]{The knee plan by walking radius (3,500 sites at
+343,638; 4,000 sites at 495,540). The first two coverage columns are the two rulers;
+``compliance'' is the zero-incentive compliance rate of the walking model;
+``effective'' multiplies coverage by compliance under voluntary detour. Under regulated
+parking inside fences, coverage is not multiplied by compliance.}
 \label{tab:q4radius}
 \scriptsize
 \begin{tabular}{@{}lrrrrrr@{}}
@@ -211,46 +212,32 @@ multiplied by compliance.}
 \textbf{Effective} & \textbf{Effective arrival} \\
 \midrule
 \multicolumn{6}{@{}l}{\emph{343,638 inventory}}\\
-150 m & 52.42\% & 57.00\% & 0.1454 & 7.62\% & 8.29\% \\
-300 m & 52.42\% & 57.00\% & 0.0605 & 3.17\% & 3.45\% \\
-450 m & 59.53\% & 55.80\% & 0.0238 & 1.42\% & 1.33\% \\
+150 m & 60.48\% & 64.82\% & 0.1454 & 8.79\% & 9.42\% \\
+300 m & 60.48\% & 64.82\% & 0.0605 & 3.66\% & 3.92\% \\
+450 m & 70.89\% & 69.58\% & 0.0238 & 1.69\% & 1.66\% \\
 \midrule
 \multicolumn{6}{@{}l}{\emph{495,540 inventory}}\\
-150 m & 46.02\% & 53.86\% & 0.1454 & 6.69\% & 7.83\% \\
-300 m & 46.02\% & 53.86\% & 0.0605 & 2.78\% & 3.26\% \\
-450 m & 52.18\% & 49.59\% & 0.0238 & 1.24\% & 1.18\% \\
+150 m & 46.68\% & 54.90\% & 0.1454 & 6.79\% & 7.98\% \\
+300 m & 46.68\% & 54.90\% & 0.0605 & 2.82\% & 3.32\% \\
+450 m & 53.21\% & 50.71\% & 0.0238 & 1.27\% & 1.21\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The layout is specific to this grid, this radius and this demand surface. The numbers
-4,000 sites and 150 slots are not a transferable prescription: a different cell size,
-walking threshold or standing inventory produces a different frontier and knee. The
-capacity is \emph{required} capacity --- a sizing
-standard of 150 slots per selected cell applied to the assigned demand, while the 95\%
-per-fence adequacy is a property of the uncapped sizing --- not a
-count of existing berths and not a per-site adequacy guarantee under the cap.
-
-\subsection{Overlap, and what the layout does not double-count}
-
-Maximal coverage can place several fences close enough that their 450 m catchments
-overlap, and if each were sized as if it served the same cells the slots would be
-counted twice. On the 705-site uncapped reference, \textbf{2,020 cells lie within
-exactly one} selected catchment, \textbf{44 within two}, and \textbf{none within three
-or more}; 2,064 cells are covered and 3,199 are not. The coverage multiplicity is
-\textbf{1.0213}, and the capacity that would be double-counted under a naive
-sum-of-catchments rule is 12,280 slots, \textbf{2.80\%} of the total. On the
-observed-demand surface the counts are 1,965/45/0, multiplicity 1.0224 and 3.09\%.
-Overlap is a second-order correction, and the slot totals of \tabref{tab:q4plan} are
-computed per assigned cell, not per catchment, so they do not contain it.
+3,500 or 4,000 sites and 150 slots are not a transferable prescription: a different cell
+size, walking threshold or standing inventory produces a different frontier and knee. The
+capacity is \emph{required} capacity --- a sizing standard of 150 slots per selected cell
+applied to the assigned demand --- not a count of existing berths and not a per-site
+adequacy guarantee under the cap.
 
 \subsection{Validation}
 
 \textbf{Held-out days.} Rebuilding the demand surface on the two held-out test days
-(12 and 19 May), excluded from Q1 estimation, and repeating the layout gives a cell
-correlation of \textbf{0.804}, an L1 distance of \textbf{0.423}, and a top-100 overlap
-of \textbf{32}. The geography is stable; the ranking is not exact, which is expected
-for a demand surface estimated on a different week.
+(12 and 19 May), excluded from Q1 estimation, gives a cell correlation of \textbf{0.804},
+an L1 distance of \textbf{0.423}, and a top-100 overlap of \textbf{32} with the
+estimation-day surface. The geography is stable; the ranking is not exact, which is
+expected for a demand surface estimated on a different week.
 
 \textbf{Standing inventory.} The initial-inventory proxy's 5/16 snapshot and the minimum-feasible Q1
 inventory shape correlate at 0.687 with an L1 distance of 0.922. The level is imposed in

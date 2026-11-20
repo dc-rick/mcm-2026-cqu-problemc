@@ -1,0 +1,56 @@
+                                         2026 CQU_MCM
+             Problem C The Problem of Random Parking of Shared Bicycles
+
+      Since their launch, shared bicycles have gained great popularity among users. In
+many cities, they have become residents' preferred travel option besides public
+transport, substantially easing the pressure on urban road networks and reducing
+traffic congestion. As the concepts of green travel and environmental protection take
+deeper root among the public, more users will choose shared bicycles, further
+fulfilling the goal of bringing bicycles back to cities. Nevertheless, lagging
+management has led to prominent problems such as chaotic parking, severe vandalism
+and disordered spatial distribution.
+
+      The appendix records the usage data of more than 400,000 Mobike bicycles by
+over 300,000 Mobike users in a city over two weeks in May 2017. This open-source
+dataset comes from the 2017 Mobike Algorithm Challenge. It contains more than 3
+million travel records. Each record consists of the order ID (`orderid`), user ID
+(`userid`), bicycle ID (`bikeid`), bicycle type (`biketype`), start time of use
+(`starttime`), starting coordinate (`startloc`) and ending coordinate (`endloc`). The
+starting and ending coordinates are encrypted with geohash; team members can
+retrieve latitude and longitude through open-source methods. Please make full use of
+this dataset together with supplementary necessary data, and adopt mathematical
+modeling to solve the following problems:
+
+      (1) Establish a mathematical model for users' bicycle travel behavior based on
+the data.
+
+      (2) Spatial-temporal imbalance of bicycle distribution is a major challenge for
+shared-bicycle systems. Shared-bicycle platforms deploy trucks, tricycles and other
+vehicles to reposition bicycles to mitigate this issue. Based on the travel behavior
+model built above, propose an optimal bicycle rebalancing and scheduling plan for a
+typical day in this city.
+
+      (3) Some researchers propose incentivizing users to ride bicycles to locations
+desired by the platform, so as to partially or fully alleviate the above problem. Explore
+and present your user incentive scheme.
+
+      (4) Another major issue is unrestricted parking, which causes traffic jams and
+undermines urban appearance. Electronic fencing has become the primary technical
+solution, and many cities in China have partially rolled it out. Using the travel
+behaviour model from Question (1) to predict parking demand at different locations,
+provide suggestions on the layout and size planning of electronic fences in this city.
+
+      (5) Discuss how factors such as the coexistence of multiple competing
+shared-bicycle platforms affect the resolution of the above problems.
+
+Your PDF solution of no more than 25 total pages should include:
+
+1. One-page Summary Sheet
+2. Table of Contents
+3. Your complete solution
+4. Executive Summary (may be integrated into the complete solution)
+5. In-text Citations and Reference List
+6. AI Use Report (if used, does not count toward the 25-page limit)
+
+Data File: 2026_CQU_MCM_Problem_C_DATA
+

@@ -351,21 +351,24 @@ def solve_cap(a, ii, jj, n=None, integer=True, cap=CAP, time_limit=300,
     elif n is not None:
         m.addConstr(gp.quicksum(s[j] for j in range(C)) == n, name="nsites")
     m.optimize()
-    if m.Status not in (GRB.OPTIMAL, GRB.TIME_LIMIT):
-        print("  solve failed, status", m.Status)
-        return None
-    fv = np.array([f[k].X for k in range(K)])
-    sv = np.array([s[j].X for j in range(C)])
-    uv = np.array([u[i].X for i in range(C)])
-    assigned = float(fv.sum())
-    return dict(coverage=assigned / float(a.sum()), assigned=assigned,
-                unassigned=float(a.sum()) - assigned,
-                n_open=int(round(float(sv.sum()))),
-                obj=float(m.ObjVal),
-                bound=float(getattr(m, "ObjBound", np.nan)),
-                gap=float(getattr(m, "MIPGap", 0.0)) if integer else 0.0,
-                runtime=float(m.Runtime), status=int(m.Status),
-                s=sv, f=fv, u=uv, ii=ii, jj=jj)
+    try:
+        if m.Status not in (GRB.OPTIMAL, GRB.TIME_LIMIT):
+            print("  solve failed, status", m.Status)
+            return None
+        fv = np.array([f[k].X for k in range(K)])
+        sv = np.array([s[j].X for j in range(C)])
+        uv = np.array([u[i].X for i in range(C)])
+        assigned = float(fv.sum())
+        return dict(coverage=assigned / float(a.sum()), assigned=assigned,
+                    unassigned=float(a.sum()) - assigned,
+                    n_open=int(round(float(sv.sum()))),
+                    obj=float(m.ObjVal),
+                    bound=float(getattr(m, "ObjBound", np.nan)),
+                    gap=float(getattr(m, "MIPGap", 0.0)) if integer else 0.0,
+                    runtime=float(m.Runtime), status=int(m.Status),
+                    s=sv, f=fv, u=uv, ii=ii, jj=jj)
+    finally:
+        m.dispose()
 
 
 def load_level(level, R=R_MAIN):

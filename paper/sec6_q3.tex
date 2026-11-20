@@ -6,14 +6,37 @@
 A truck can carry a bicycle ten kilometres between zones; a rider can be persuaded to
 end a trip a few hundred metres from where she intended, and no more. The two
 instruments operate at different scales, so the right question is not which one
-replaces the other but how much of each layer the incentive can absorb. The answer is
-asymmetric, and we report it as two paragraphs, not one headline.
+replaces the other but how much of each layer the incentive can absorb. We price the
+same reward on two calibers, and they disagree in an instructive way.
 
-The first paragraph prices the incentive against the \emph{truck} layer, which it
-cannot replace because that layer's residual is already negligible. The
-second prices it against the \emph{tricycle} layer, which exists precisely because the
-zone-level truck plan cannot see within-zone mismatch; the two calibers share the
-acceptance function, the hourly assignment program and the budget.
+The \emph{truck} caliber prices the reward against the static placement cost of the
+fenced plan: every deficit the incentive fills is one bicycle the platform does not
+have to place by truck, at 3.3592 CNY per placement (the $K=60$ cost of 83,807.74
+divided by the 24,949 bicycles it moves). The \emph{tricycle} caliber prices it inside
+the hourly conserving replay, where a reroute removes an arrival from its source cell
+and can create a deficit there. Both use the same acceptance function and the same
+budget; the first answers ``what is a filled deficit worth'', the second ``what does
+the filled deficit actually buy''.
+
+\subsection{The bill: the payment ledger is the promise}
+
+A reward is an invitation, not a transaction. A rider is offered $r$ to end her trip at
+a target cell and accepts with probability $\pi(d,r)$; the platform owes $r$ for every
+accepted invitation, whether or not the target cell needed the bicycle. With $x_e$ the
+number of trips moved along edge $e$ and $\pi_e(r)=\pi(d_e,r)$,
+\begin{equation}
+P(r)=\sum_e \pi_e(r)\,x_e(r),\qquad
+q(r)=\sum_e \bigl[\pi_e(r)-\pi_e(0)\bigr]\,x_e(r),
+\label{eq:ledgers}
+\end{equation}
+where $P$ is the number of accepted reroutes and $q$ the number that fill a deficit
+(the riders who would have ended there anyway, with probability $\pi_e(0)$, change
+nothing). The \emph{payment ledger} bills $rP$; the \emph{increment ledger} bills $rq$.
+The 30,000 CNY daily budget is enforced on $rP$, because that is the amount the
+platform promises and the rider can audit; $rq$ is reported alongside as the narrower
+accounting of what the payment bought. The two are never interchangeable:
+at the truck-caliber optimum below, $P=36{,}440.07$ and $q=28{,}277.44$, so 8,162.63
+invitations are paid for nothing.
 
 \subsection{The acceptance model}
 
@@ -52,201 +75,186 @@ $S_{jh}=\max(0,A_{jh}-D_{jh})$ (the surplus cap, only hourly surplus is a candid
 because a reroute removes the trip it moves). Every result below is reported under both
 caps; the arrivals cap is the upper bound and the surplus cap the conservative bound.
 
-\subsection{Incentives cannot replace trucks}
+\subsection{The truck caliber: what a filled deficit is worth}
 
-The truck layer of Q2 is a single-layer plan whose own residual is tiny: at $K=0$ the
-zone model leaves 432.23 departures unserved, and at $K=2$ it leaves 33.19. There is no
-large pool of truck-served unmet demand to substitute for, so the only
-question is whether the incentive pays for itself by reducing the truck objective.
-It cannot. Solving the integer truck program of Section~\ref{sec:q2} with and without
-the incentive at $K=0,2,5,10,20$, re-solving both sides at a 0.1\% gap, gives a
-payment ceiling $\text{pure}_K-\text{hybrid}_K$ that is negative at \emph{every} $K$:
-$-1{,}739.22$ at $K=0$, $-1{,}591.40$ at $K=2$, $-1{,}588.76$ at $K=5$, $-1{,}623.33$
-at $K=10$ and $-1{,}528.82$ at $K=20$. A negative ceiling means no non-negative reward
-can break even.
-
-At $K=2$, even with the reward set
-to zero, the best mixed policy costs at least \textbf{1,532 CNY per day more} than pure
-trucks: the returned difference is 1,591.40 and the mixed solve carries its own 59.06
-CNY gap, so 1,532 is the gap-robust lower bound, 11.1 times the 0.1\% solver tolerance
-of 138.32. Equivalently, the 30,000 CNY budget is \textbf{150.6 times} the total
-penalty value of all 33.19 remaining unmet departures (6 CNY per departure, 199.16 CNY
-in total); even taking the 1\% upper bound of 134.81 bicycles rather than the 33.19 bicycles, the
-penalty value is 809 CNY and the budget is 37.1 times it. And forcing zero unmet requires the policy of
-312,289.21 CNY/day, 2.2578 times the pure-truck cost. The incentive removes an estimated
-10.4 zone-level unmet trips at $K=2$, but that difference is the difference of two
-returned solutions whose gaps are 66.13 and 59.06 CNY --- about 11 and 10 bicycles at
-6 CNY --- so the sign is not resolvable within solver tolerance; we do not use it.
-
-A reroute moves a trip between cells, while the truck
-objective prices zone-hour unmet; only the part of the reroute that changes a
-zone-hour arrival total can remove a zone-level unmet trip, and at $K=2$ that part is
-negligible. The conclusion is about the truck layer; it says nothing about the
-tricycle layer.
-
-\subsection{Incentives can replace tricycles}
-
-The tricycle layer is different because its residual is large: 239,245.20 cell-level
-departures unserved before tricycles and 39,984.2332 after the executable
-975-tricycle plan. A reroute raises the arrival count at its target cell, reducing the
-deficit the tricycle layer must fill, so the incentive enters exactly where the
-tricycle layer is paying. The replay keeps every reroute inside the source zone, which
-holds the truck layer of Section~\ref{sec:q2} fixed by construction; the unrestricted
-placement rule of Section~\ref{sec:assume} --- a target cell outside the source zone
---- is the one priced in the truck-caliber test above.
-
-Payments are settled on the \emph{increment} ledger in this calculation: the platform
-pays $r$ per reroute that fills a deficit, so the bill is $r\,q(r)$. On the 0.05-CNY
-grid from 0 to 3.00, the optimum under the arrivals cap is
+The fenced plan of Section~\ref{sec:q4} fills its placement slots by truck, and the
+$K=60$ plan of Section~\ref{sec:q2} moves 24,949 bicycles for 83,807.74 CNY, an average
+of 3.359162 CNY per bicycle moved. Our static pool program, rebuilt on
+the conserved fence plan, requires \textbf{216,343.75 placements}; at that unit the
+all-truck counterfactual is \textbf{726,733.80 CNY/day}. A reroute that fills a deficit
+removes exactly one placement, so on this caliber the incentive is worth
+$3.359162\,q$ and the total is
 \begin{equation}
-\boxed{\ r^*=0.60\ \text{CNY},\quad
-q^*=27{,}680.86\ \text{reroutes},\quad
-\text{payment}=16{,}608.52\ \text{CNY/day}\ }
-\label{eq:q3opt}
+C_{\text{truck}}(r)=rP(r)+3.359162\,\bigl(N-q(r)\bigr),\qquad N=216{,}343.75 .
+\label{eq:q3truckcal}
 \end{equation}
-with 13,391.48 CNY of the 30,000 budget unused. The total platform cost falls from
-617,055.7515 to \textbf{599,044.29 CNY/day}, a net saving of \textbf{18,011.46 CNY/day
-(2.92\%)} \emph{relative to the same-caliber two-tier plan}, not relative to the
-no-tricycle baseline of 1,519,278.95. The layer itself falls from 533,248.01 to
-498,628.03, a saving of 34,619.98, of which 4,833.20 is fixed, kilometre and handling
-cost (the fleet falls from 975 to \textbf{959}, 16 fewer tricycles) and 29,786.77 is the
-6 CNY penalty on the net reduction in unserved departures. Unmet falls from 39,984.2332
-to \textbf{35,019.77}, a net reduction of 4,964.46.
+The question is whether $rP(r)<3.359162\,q(r)$ at a budget-feasible $r$ --- whether the
+payment buys more placement than it costs.
 
-The reduction is not one-for-one with $q$. Each reroute removes an arrival from its
-source cell and creates a deficit there, so only 0.179 of a departure is removed per
-reroute (4,964.46/27,680.86), and the fixed-plus-kilometre saving is 0.175 per reroute
-and 0.974 per net removed departure. A linear bound that prices every reroute at the
-average tricycle unit cost predicts 24,141.94 of saving; the exact replay gives
-18,011.46, a gap of 6,130.48, dominated by the source-cell loss. This is why
-18,011.46 is a saving inside the tricycle layer, not a system saving.
+It does, with room. On the 0.05-CNY grid, the payment-ledger budget $rP\le30{,}000$ is
+satisfied up to $r=0.80$ and binds there: the reward fills
+$q=28{,}277.44$ deficits through $P=36{,}440.07$ accepted invitations, the promise is
+29,152.05, the remaining 188,066.31 placements cost 631,745.29, and the total is
+\textbf{660,897.34 CNY/day} --- a saving of \textbf{65,836.46 (9.06\%)} against
+all-truck placement. At $r=0.85$ the promise is 33,473.02 and the budget is broken. The
+economics are not marginal: the payment per filled deficit is 1.031 CNY against 3.359
+of placement it removes, a return of 3.26 per yuan. Because the platform also pays
+22.40\% of the bill for invitations that fill nothing ($P-q=8{,}162.63$), the return on
+the payment ledger is 2.26 per yuan; the 3.26 is what the marginal invitation is worth.
 
-Under the conservative surplus cap the same procedure gives $r^*=0.60$ on the grid
-(the optimal plateau is 0.55--1.15), $q^*=4{,}503.02$, a fleet of 969, unmet 38,726.29,
-payment 2,701.81 and a net saving of \textbf{6,651.22 CNY/day (1.08\%)}. The two source
-caps therefore bracket the Q3 tricycle-caliber answer at \textbf{1.08\%--2.92\%}. The
-break-even reward, where the total returns to the no-incentive level, is approximately
-\textbf{1.04} under the arrivals cap and \textbf{1.63} under the surplus cap. The
-bisection locates each crossing to a bracket of 0.0008 CNY, but the reward grid is 0.05
-CNY and the cost curve is flat, so two decimals are the honest precision; the curve is
-slightly non-monotone at very small $r$ (at $r=0.05$ the total is 98.05 CNY above the
-no-incentive level) because the source-cell loss can precede the filled deficit, which
-is why the crossing is defined as the return root after the productive region.
+The surplus cap is the conservative bound. Only hourly surplus trips are candidates, so
+the feasible optimum moves to $r=1.30$: $q=19{,}639.55$, $P=21{,}819.62$, a promise of
+28,365.50 and a total of 689,126.87, a saving of \textbf{37,606.93 (5.17\%)}. The two
+caps bracket the truck-caliber saving at \textbf{5.17--9.06\%}.
+
+The budget, not the economics, sets the reward. Ignoring the budget, the cost curve
+reaches its minimum at $r=1.75$: $q=92{,}085.41$, $P=97{,}657.53$, a promise of
+170,900.68 (5.70 times the budget) and a total of 588,304.65, a saving of
+\textbf{138,429.15 (19.05\%)}; the surplus cap comes to 680,873.40 (6.31\%) at
+$r=1.80$. The curve is flat enough that even a 3.00 CNY reward, owing 388,510.45
+(12.95 times the budget), still beats all-truck placement by 4.60\%. A headline of
+19.05\% would therefore be a statement about an unpayable reward; the budget-feasible
+9.06\% is the honest one, and the budget enters the recommendation as a constraint, not
+as a footnote.
 
 \begin{table}[htbp]
 \centering
 \footnotesize
-\caption[Q3 tricycle-caliber sensitivity]{Q3 tricycle-caliber optimum under the arrivals
-cap, re-optimised at three values of the acceptance constant $c_0$ (0.8 times, once,
-1.2 times). ``Fleet'' is the executable tricycle fleet; ``payment'' is $r\,q$ on the
-increment ledger; 18,011.46 is the reference row.}
+\caption[Q3 truck-caliber sensitivity]{Q3 truck-caliber optimum under the payment-ledger
+budget, re-optimised at three values of the acceptance constant $c_0$ (0.8 times, once,
+1.2 times). ``Payment'' is $rP$; ``free riders'' is $P-q$; the reference row is
+$c_0=0.80$.}
 \label{tab:q3c0}
 \scriptsize
 \begin{tabular}{@{}rrrrrrr@{}}
 \toprule
-$c_0$ & $r^*$ & $q^*$ & \textbf{Payment} & \textbf{Fleet} & \textbf{Unmet} &
-\textbf{Net saving} \\
+$c_0$ & $r^*$ & $q^*$ & $P^*$ & \textbf{Payment} & \textbf{Free riders} &
+\textbf{Saving} \\
 \midrule
-0.64 & 0.55 & 27,778.22 & 15,278.02 & 958 & 35,002.21 & 19,747.42 \\
-0.80 & 0.60 & 27,680.86 & 16,608.52 & 959 & 35,019.77 & \textbf{18,011.46} \\
-0.96 & 0.70 & 31,039.47 & 21,727.63 & 958 & 34,491.76 & 16,365.88 \\
+0.64 & 0.75 & 28,819.01 & 38,336.39 & 28,752.29 & 9,517.38 & 68,055.45 (9.36\%) \\
+0.80 & 0.80 & 28,277.44 & 36,440.07 & 29,152.05 & 8,162.63 & \textbf{65,836.46 (9.06\%)} \\
+0.96 & 0.85 & 27,635.08 & 34,632.72 & 29,437.81 & 6,997.64 & 63,392.91 (8.72\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Two ledgers, one budget, and the hard rule}
+The $c_0$ sweep moves the reward and the saving together but not the conclusion: across
+the three acceptance strengths the budget-feasible reward is 0.75--0.85 CNY and the
+saving 8.72--9.36\%. The payment ledger is what makes the reward robust: a weaker
+incentive needs a higher reward to fill the same deficit, and the budget stops it one
+step earlier.
 
-The bill $r\,q$ is the \emph{increment} ledger: the platform pays only for reroutes that
-change a deficit. The alternative is the \emph{payment} ledger, which pays $r$ for every
-accepted invitation, including riders who were already going to the target cell and
-change nothing; those free riders make the payment ledger larger for the same reward.
-Both ledgers are priced against a 30,000 CNY daily budget. At $r=0.81$, for example, the
-deficit-filling placements are $q=28{,}884.65$, the increment bill is 23,396.57 and the
-payment-ledger obligation is $r\,P=30{,}000$ with $P=37{,}037.04$; the 6,603.43
-difference is the free riders. A budget expressed in the payment ledger therefore buys a
-lower reward than the same budget in the increment ledger, and the two must
-never be quoted interchangeably.
+\subsection{The tricycle caliber: what the filled deficit buys}
 
-\begin{center}
-\scriptsize
-\begin{tabular}{@{}rrrrr@{}}
-\toprule
-\textbf{Budget $B$} & \textbf{Best $r$} & \textbf{$q$} & \textbf{$P$} &
-\textbf{Payment} \\
-\midrule
-30,000 & 0.81 & 28,884.65 & 37,037.04 & 30,000 \\
-100,000 & 1.35 & 66,596.28 & 73,428.10 & 99,127.94 \\
-none & 1.74 & 93,328.82 & 99,038.48 & 172,326.96 \\
-\bottomrule
-\end{tabular}
-\end{center}
+The truck caliber prices a placement; the tricycle caliber prices a served departure.
+The layer of Section~\ref{sec:q2} pays 6 CNY for every cell-level departure left
+unserved and 300 CNY per tricycle-day, so a reroute raises the arrival count at its
+target cell and lowers the deficit the layer must fill. It also removes the arrival
+from its source cell, where it can create a deficit. The net is not $q$ times a unit
+cost, and only the replay can measure it. We therefore rerun the conserving joint
+simulation of Section~\ref{sec:q2} with the reroute layer inside it: the executable
+fleet is held at the allocation of Section~\ref{sec:q2}, every reroute stays inside the
+source zone --- which holds the truck plan fixed by construction --- and the served
+departures regenerate the hour's arrivals as in Q2.
+
+Payments are settled on the payment ledger, as on the truck caliber. The budget is
+satisfied up to $r=0.50$ and binds there: at $r=0.55$ the promise is 31,604.29. At the
+optimum the reward fills $q=32{,}445.85$ deficits through $P=52{,}790.71$ accepted
+invitations, and re-solving the executable fleet at the rerouted served profile gives
+\textbf{1,234 tricycles} --- one more than the no-incentive fixed point, for schedule
+feasibility --- with unmet falling from 56,731.74 to \textbf{50,152.99} and
+tricycle-kilometres from 8,864.10 to \textbf{8,442.20}. The layer falls from 712,063.25
+to 672,806.37, the promise is \textbf{26,395.36}, and the total is
+\textbf{783,009.47 CNY/day}, a saving of \textbf{12,861.52 (1.62\%)} against the
+795,870.99 no-incentive two-tier plan.
+
+The reduction is thin but not accidental. The reward removes 0.203 departures per
+reroute (6,578.75 of 32,445.85) and saves $6,578.75\times6=39{,}472.50$ in penalty plus
+84.38 in kilometres, 39,556.88 in all, for a payment of 26,395.36: the payment per net
+removed departure is 4.012 CNY against the 6 CNY penalty it avoids. The 38.54\% of
+invitations that fill nothing ($P-q=20{,}344.86$) are why the return is thin. At the
+fixed fleet the same reward saves 13,161.52; the executable fixed point adds one
+tricycle and 300 of fixed cost, and the reported saving is 12,861.52.
+
+The surplus cap is the conservative bound and it is tighter still: the budget is
+satisfied up to $r=1.00$, where $q=17{,}095.28$, $P=20{,}334.18$, the promise is
+20,334.18 and the total is \textbf{786,618.64}, a saving of \textbf{9,252.35 (1.16\%)}
+against 795,870.99. Only 0.291 of a departure is removed per reroute here, because a
+surplus trip is a candidate only when the cell would otherwise end the hour with
+bicycles to spare, and the payment per net removed departure is 4.089. The two caps
+bracket the tricycle-caliber saving at \textbf{1.16--1.62\%}.
+
+The two calibers are consistent, and their difference is the answer to Q3. A filled
+deficit is worth 3.359 of placement but only $6\times0.203=1.22$ of tricycle service at
+the margin, so the budget-feasible reward earns 9.06\% against the expensive instrument
+and 1.62\% against the cheap one. The incentive substitutes where the alternative is
+expensive; it does not make tricycles redundant.
+
+\subsection{Two ledgers, one budget}
+
+The payment ledger and the increment ledger differ by exactly the free riders, and the
+difference decides which reward a budget can buy. At $c_0=0.80$ the increment ledger's
+budget $rq\le30{,}000$ is satisfied at $r=0.85$: $q=31{,}294.50$, $rq=26{,}600.32$, a
+total of 655,083.53 and a saving of 71,650.27 (9.86\%). The same reward owes
+$rP=33{,}473.02$ on the payment ledger --- 3,473.02 over the budget --- because 8,085.53
+of its 39,380.03 accepted invitations fill nothing. An increment-ledger budget therefore
+recommends a reward the platform cannot promise; it is a budget that is always overrun
+by the free riders. We enforce $rP\le30{,}000$ and report $rq$ as information. At the
+payment-feasible optimum the gap is smaller but present: 22,621.95 against 29,152.05, a
+difference of 6,530.10.
 
 The budget is enforceable without overrun by a reservation rule: reserve $r$ for every
-invitation issued, issue hour by hour, and stop when the cumulative reserve reaches
-$B$. In 1,000 simulated days this rule produced zero overruns at every budget tested.
-It is conservative: at $B=30{,}000$ and $r=0.81$ it stops in hour 7, issues 30.9\% of
-the invitation volume, truncates placements to 3,634.53 and realizes 3,774.88 of
-payment (simulated maximum 3,932.55) --- the ceiling holds, but the program is cut to
-an eighth of its unconstrained size. A platform that can tolerate a small overrun
-probability can issue against expected completions instead, which is the ladder above.
+invitation issued, issue hour by hour, and stop issuing when the cumulative reserve
+reaches $B$. On the reference day the deterministic bill is 29,152.05, so the rule never
+fires and leaves 847.95 of headroom; on a heavier day it truncates the invitation
+volume rather than the payment, which is the direction the promise must fail in. The
+reward is posted, so a truncated invitation is an unissued offer, not a reneged payment.
 
-At the Q3 optimum the increment-ledger bill is 16,608.52, inside the 30,000 budget with
-13,391.48 to spare, so under that ledger the budget does not bind. Under the
-payment ledger the same reward would owe more, and the payment-ledger ladder's budget-feasible
-point at 30,000 is $r=0.81$. The two ledgers therefore bracket the policy: the
-increment ledger supports $r^*=0.60$, the payment ledger a lower reward for the same
-money, and the hard rule is what makes either promise keepable.
-
-A high reward is not attractive once its full payment obligation is priced. On the same
-total formula as the Q3 optimum, $r=0.81$ gives 603,232.87 CNY/day and $r=2.70$ gives
-1,272,910.24, a difference of 669,677.37. The truck layer is identical at 83,807.74 by
-construction, so no lower truck objective exists to offset the high reward: $r=2.70$
-pays 784,302.68 more in rewards and saves only 114,625.31 in the tricycle layer. Its
-payment obligation is 821,422.84, 27.4 times the budget, so it is budget-infeasible,
-not merely expensive; capping the payment at 30,000 while promising $r=2.70$ would
-renege on the promise. Even $r=0.81$ owes 37,120.16, 1.24 times the budget; the
-budget-feasible optimum is $r^*=0.60$, and a ``capped total'' that pays 30,000 against
-a larger obligation is an accounting-only variant, not a feasible policy.
+The two ledgers therefore answer different questions. The increment ledger is the
+accounting of what the payment bought; the payment ledger is the accounting of what the
+platform owes. Only the second can carry a budget, and at $c_0=0.80$ it supports
+$r=0.80$, not 0.85.
 
 \subsection{The scheme, and where its numbers stop}
 
 \begin{enumerate}[leftmargin=1.6em]
-\item \textbf{A reward of 0.60 CNY per accepted reroute}, posted on a 0.05-CNY grid,
-  with the arrivals-cap plateau a single grid point and the surplus-cap plateau
-  0.55--1.15. The reward is uniform across users; a personalised reward is not modelled.
+\item \textbf{A reward of 0.80 CNY per accepted reroute}, posted on a 0.05-CNY grid,
+  paid on the payment ledger, with the surplus cap's 1.30 CNY as the conservative
+  alternative.
 \item \textbf{A target list, not a target point.} The reward is offered for ending in a
   cell on the hourly deficit list, recomputed from the demand model of
   Section~\ref{sec:q1}. The reroute is placed in the hour of the original trip.
-\item \textbf{Payment on completion}, settled on the increment ledger, with the payment
-  ledger and its reservation rule reported alongside so that the budget promise can be
-  audited.
-\item \textbf{A 30,000 CNY daily budget} and the reservation rule above for the
-  payment ledger; at the increment-ledger optimum the bill is 16,608.52 and the budget
-  does not bind.
+\item \textbf{A 30,000 CNY daily budget} enforced on $rP$ by the reservation rule; at the
+  optimum the promise is 29,152.05 and the budget does not bind the reference day.
+\item \textbf{The truck-caliber saving is 9.06\%} of the 726,733.80 all-truck placement
+  cost (5.17\% under the surplus cap), with the 19.05\% unconstrained optimum reported
+  only as a bound because its 170,900.68 promise is 5.70 times the budget.
 \end{enumerate}
 
-Five limits bound these numbers. First, in the truck-caliber test reroutes are cell-level, not zone-level: the
-target cell may lie outside the source zone, so a small share of accepted reroutes
-changes a zone-hour arrival total. That is the only channel through which the incentive
-can reach the truck layer, and it is priced in the truck-caliber test above, where it
-does not overturn the negative ceiling. Second, payment is not truncated in the
-Q3 optimum: $r$ is a posted reward, the 30,000 budget is checked rather than enforced
-by stopping, and the reservation rule above is the hard rule. Third, a reroute is
-placed within the hour of the original trip; no cross-hour rearrangement is modelled.
-Fourth, $\pi(r)$ is fixed at $\kappa=2$, $\rho=0.35$, $c_0=0.8$; only $c_0$ is
-re-optimised. Fifth, 18,011.46 is a deterministic single-day result on the planning
-midpoint; its uncertainty is the two source caps (1.08\%--2.92\%) and the $c_0$ table
-of Table~\ref{tab:q3c0}, and the intervals of Section~\ref{sec:sens} describe the
-truck-caliber payment ceiling, not this saving. The saving replaces part of the
-tricycle layer; it is not a system saving.
+Five limits bound these numbers. First, 3.359162 is the average cost per bicycle moved
+of the $K=60$ objective --- fleet, kilometre, handling and deviation --- not a marginal
+cost, and $N=216{,}343.75$ is the static pool's placement count, 8.67 times the $K=60$
+volume, not a truck schedule: the caliber prices a plan, not an hour. Excluding the
+36,000 CNY fleet cost (1.916219 per placement) the counterfactual falls to 414,561.97
+and the saving at $r=0.80$ to 25,033.71 (6.04\%): the sign survives, the size does not.
+Second, $\pi$ is fixed at $\kappa=2$, $\rho=0.35$; only $c_0$ is re-optimised, and the
+three-point sweep moves the saving within 8.72--9.36\%.
+Third, the two source caps bracket the truck-caliber answer at 5.17--9.06\%.
+Fourth, the result is a single typical day on the planning midpoint; the conserving
+replay carries no day-to-day stochastic demand, and Section~\ref{sec:sens} propagates
+the cost parameters, not the reward response.
+Fifth, neither caliber is a system saving: the truck caliber prices placements removed
+from a static plan, the tricycle caliber (above) prices served departures inside the Q2
+replay, and the 30,000 CNY budget is assumption A11, not data.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{../figs/fig_q3_cost_vs_r.pdf}
-\caption[Q3: cost against reward]{Q3 tricycle-caliber total platform cost against the
-reward, under the arrivals cap (upper) and the surplus cap (conservative). Circles mark
-$r^*=0.60$; dashed lines mark the return crossings ($\approx$1.04 and $\approx$1.63).
-Panel (a) is the full 0--3.00 grid; panel (b) zooms on the productive region. The
-horizontal dotted line is the no-incentive two-tier cost of 617,055.7515.}
+\caption[Q3: cost against reward]{Q3 truck caliber. (a) Total spend
+$rP+3.359162(N-q)$ against the reward, under the arrivals cap (solid while
+$rP\le30{,}000$, dotted beyond) and the surplus cap (dashed); the horizontal dotted line
+is all-truck placement, 726,733.80. Circles mark the budget-feasible optima, 0.80 and
+1.30 CNY. (b) The payment ledger $rP$ against the 30,000 budget; the budget-feasible
+reward stops at 0.80 under the arrivals cap and 1.30 under the surplus cap.}
 \label{fig:q3}
 \end{figure}

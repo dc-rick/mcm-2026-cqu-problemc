@@ -1,0 +1,73 @@
+{
+ "task": "T028",
+ "title": "守恒化重建与换数（Q2/Q3/Q4/Q5 全链 + 灵敏度）",
+ "date": "2026-11-20",
+ "status": "delivered",
+ "revision": "R0",
+ "summary": "按决策 B13（BBAAAA）把 Q2–Q5 与敏感性全部换到守恒重放链上：Q2 60 卡车 + 1,233 三轮车可执行不动点，795,870.99 CNY/day、未服务 56,731.74、节省 1,503,023.20（65.38%）；Q3 支付台账预算下卡车刻度 9.06%、三轮车刻度 1.62%；Q4 守恒需求 + Kneedle 3,500×150，占用/到达覆盖 70.89%/69.58%；Q5 围栏外库存后 17.15%/17.80%/29.50%；敏感性 128+128+128+54 组守恒链重跑，§9 全部改为守恒链区间与分源方差，并如实报告 Q2 节省在 36/128 组抽样中为负。论文 28 页 / 计页 25；1,164 个数字 token 全部锁到 58,498 条结果记录，0 未匹配；DeepSeek 冷读第 8 轮 0 blocking。",
+ "checks": {
+  "A1_conservation": "pass; t028 diag.json 三档重放 max_total_resid 0.000120/0.000133/0.000135、iterate.json 末次 0.000135、end_total 一律 343,637.9999（论文写 ≤0.0004 成立）；t030 cell_demand_cons.json total_resid = 0.0（meas343）/ 1.16e-10（fleet495）；t031 tricycle_payment.json best_exec max_total_resid = 0.000131、end_total = 343,637.9999；t029 m15_outside.json max_conservation_resid ≤ 5.9e-11（论文写 9e-11，上界成立）",
+  "A2_number_lock": "pass; python -I code/t038_numbers.py → records 58498, tokens 1164, matched 1164, unique 123, unmatched 0；data/runs/T038/coverage_report.txt 首行 PASS",
+  "A3_page_budget": "pass; main.pdf 28 页，参考文献止于 p25，AI 报告 p26–28，计页 25；交付/T028/verify_final.json pdf.counted_pages = 25",
+  "A4_compile": "pass; 工作树与干净临时目录各 xelatex ×3，exit 0/0/0；clean-room main.log：Overfull 0、undefined 0、LaTeX Warning 0；PDF 无 '??'、无 U+037E",
+  "A5_sec9_tables": "pass; python -I code/t042_sec9_tables.py 的 8 行区间与 10 行方差逐值等于 sec9_sensitivity.tex 两表（t042 仍打印被移入正文/题注的三行：K*、Q3 payment、Q4 unassigned，数值与 T032 文件一致）",
+  "A6_conclusion_regression": "pass; 交付/T028/verify_final.py regression：22 个关键数从 result file 复算后全部在论文中以印刷精度出现（Q2 1,233/795,870.99/56,731.74/8,864.10/1,503,023.20/65.38%；Q3 726,733.80/660,897.34/65,836.46/9.06%/28,277.44/36,440.07/29,152.05/783,009.47/26,395.36；Q4 0.7089/0.6958/212,258.42；Q5 17.80/1.0728/1.1472）",
+  "A7_figures": "pass; 论文仅引用 fig1_data.pdf、fig3_q1_validation.pdf、fig4_q2.pdf、fig_q3_cost_vs_r.pdf 四张（verify_final figures_pass），file_list.json 标注 used_in_paper=true 的恰为这四张；fig6_q4.pdf 由 t036 重绘但未入论文，列入被取代图",
+  "A8_external_review": "pass; review/review_r8.json：blocking 0、major 6、minor 3；修正后 review/review_r9.json：blocking 0、major 5、minor 5。第 8 轮 minor 的实数错误已修（见 affected），第 9 轮新提的 1,772.82 措辞与 [32] 条目已修；其余 major 均为论文已披露的结构性限制，第 9 轮的 m1（印刷舍入差 0.01）与 m3（Q5 正式区间检验）按记录保留",
+  "A9_package": "pass; 交付/T028/file_list.json：822 个文件，逐个 SHA-256 与字节数复算 0 差异；non_reproduction 单列 29 个预览/scratch 文件；reproduction 节记录基准管线与守恒链顺序、依赖、计时",
+  "A10_ledgers": "pass; 任务台账 T028 追加验收行；问题台账 M25–M28 关闭并附证据；决策台账 B13 已决定（BBAAAA）；T027 的 757 文件包未改动",
+  "forbidden_strings": "pass; 论文 14 个 tex 中内部任务号（T0xx）0 命中，'earlier/previous version' 等 0 命中"
+ },
+ "affected": [
+  {"location": "paper/sec5_q2.tex:108-110", "old": "this deadhead shifts the two sides equally and leaves the percentage saving unchanged", "new": "the deadhead enters neither: adding it to both sides would leave the absolute saving unchanged but lower the percentage below the 65.38% quoted", "basis": "review_r8.json minor m1：共同项不改变绝对节省但降低百分比，原文陈述算术错误"},
+  {"location": "paper/summary.tex:57-58", "old": "Inside the tricycle replay the same reward fills 32,446 deficits at 0.50 CNY", "new": "Inside the tricycle replay the optimum is 0.50 CNY, filling 32,446 deficits", "basis": "review_r8.json minor m2：'same reward' 与卡车刻度 0.80 CNY 混淆；T031 tricycle_payment.json 的 r* = 0.50"},
+  {"location": "paper/summary.tex:69 / paper/sec1_intro.tex:116-117", "old": "unassigned at the measured inventory", "new": "unassigned under per-site 95th-percentile sizing", "basis": "review_r8.json major M4：摘要在 70.89% 处未带 sizing 口径；T030 frontier_cons.json 的 selected 块即 per-site p95 口径"},
+  {"location": "paper/sec8_q5.tex:94-97", "old": "（无种子噪声量化）", "new": "Twenty seeds bound the noise: ... standard deviation of the unmet rate 0.000728--0.000829 and of the full-site rate 0.000206--0.000255 ... the 17.15% against 17.80% gap is about eight of those spreads", "basis": "review_r8.json major M5：Q5 只有点估计；种子标准差取自 data/runs/T029/m15_outside.json 的 unmet_rate_sd / full_rate_sd"},
+  {"location": "paper/sec1_intro.tex:107-109 / paper/sec6_q3.tex:187-189", "old": "inside the tricycle replay the same reward saves … / the same reward earns 9.06% … and 1.62%", "new": "budget-feasible optimum is 0.50 CNY … / the budget-feasible reward earns 9.06% … and 1.62%", "basis": "两刻度最优 r 不同（0.80 与 0.50），'same reward' 在摘要与 §6 均会被读成同一奖励；review_r8 m2 的同族问题，全稿清理"},
+  {"location": "paper/sec5_q2.tex:204", "old": "1,772.82 kilometre", "new": "1,772.82 kilometre cost", "basis": "review_r9 minor m2：1,772.82 = 8,864.10 km × 0.20 CNY/km 是费用不是距离，补 'cost' 一词"},
+  {"location": "paper/references.tex:164-165", "old": "tool Claude Code 2.1.322, used 11--20 November 2026", "new": "tool Claude Code 2.1.322 (runtime model identifier deepseek-flash[1m]), used 11--20 November 2026", "basis": "review_r9 minor m5：[32] 与 AI 报告正文的模型标识不一致之歧义，补全标识"},
+  {"location": "paper/sec9_sensitivity.tex:38-40", "old": "re-solves the pool on the T030 fence capacities rather than the T031 pool", "new": "re-solves the static pool on the Q4 fence capacities rather than reusing the Q3 pool of Section 6", "basis": "内部任务号不得出现在论文（COMAP 合规）；语义不变（T030 = Q4 守恒重建，T031 = Q3 台账）"},
+  {"location": "paper/ai_report.tex:8,34,128-129,181-186", "old": "11 to 21 November 2026；data/runs/T038/...；T028 → T030 → ... 的任务号顺序", "new": "11 to 20 November 2026；coverage report written beside numbers.json；按模型描述的执行顺序", "basis": "日期修正为实际使用期（2026-11-20 定稿）；内部任务号替换为可读描述，路径语义不变"},
+  {"location": "paper/references.tex:165", "old": "used 11--19 November 2026", "new": "used 11--20 November 2026", "basis": "AI 使用期截至定稿日"},
+  {"location": "paper/main.tex:45", "old": "\\linespread{0.98}", "new": "\\linespread{0.97}", "basis": "版面回到计页 25：0.97×13.6pt ≈ 1.20× 行距（标准单倍行距），参考文献由 p26 收回 p25"},
+  {"location": "paper/main.tex:99", "old": "\\newpage 在 \\input{references} 之前", "new": "删除该 \\newpage", "basis": "参考文献紧随 §10，省一页"},
+  {"location": "paper/sec9_sensitivity.tex:44-79", "old": "11 行区间表（含 K*、Q3 payment、Q4 unassigned 三行）", "new": "8 行区间表，K* 分布移入题注，payment 区间在 §9.2 正文", "basis": "版面；被移三行的数值仍由 t042 可复现"},
+  {"location": "code/t038_numbers.py:145-170", "old": "（无覆盖率报告摘要行）", "new": "coverage_report.txt 首部写日期、records/tokens/matched/unmatched 与 PASS 行", "basis": "让空报告也能自证 0 未匹配；锁本身不产生新数字进论文"},
+  {"location": "code/t019_q4_cap.py:351-374", "old": "solve_cap 无 dispose", "new": "结果提取包在 try/finally 中并调用 m.dispose()", "basis": "T030 循环多次调用 solve_cap，避免 Gurobi 模型句柄累积；数值路径不变（T030 复算与旧值一致）"},
+  {"location": "paper/sec8_q5.tex:44-46 等若干处", "old": "（§9 重写前的 LP 代理措辞与旧区间）", "new": "守恒链区间、分源方差与诚实读数", "basis": "T032 结果文件（intervals.json / variance_shares.json）；见 sec9 全节重写"}
+ ],
+ "outputs": [
+  "paper/main.pdf",
+  "paper/sec5_q2.tex", "paper/sec6_q3.tex", "paper/sec7_q4.tex", "paper/sec8_q5.tex",
+  "paper/sec9_sensitivity.tex", "paper/sec10_evaluation.tex", "paper/summary.tex",
+  "paper/sec1_intro.tex", "paper/sec2_assumptions.tex", "paper/ai_report.tex",
+  "figs/fig4_q2.pdf", "figs/fig_q3_cost_vs_r.pdf", "figs/fig6_q4.pdf",
+  "data/runs/T028/", "data/runs/T029/", "data/runs/T030/", "data/runs/T031/",
+  "data/runs/T032/", "data/runs/T033/", "data/runs/T035/", "data/runs/T036/",
+  "data/runs/T038/numbers.json", "data/runs/T038/coverage_report.txt",
+  "data/runs/T039/", "data/runs/T041/",
+  "code/t028_q2_conserve.py", "code/t029_q5_outside.py", "code/t030_q4_fleet.py",
+  "code/t031_q3_payment.py", "code/t032_sensitivity_conserve.py", "code/t033_q4_radius.py",
+  "code/t035_q2_curve.py", "code/t036_figs.py", "code/t037_digest.py",
+  "code/t038_numbers.py", "code/t039_q3_c0.py", "code/t040_citecheck.py",
+  "code/t041_km_oat.py", "code/t042_sec9_tables.py", "code/t019_q4_cap.py",
+  "交付/T028/file_list.json", "交付/T028/verify_final.json",
+  "review/review_r8.json", "review/review_r9.json",
+  "README.md"
+ ],
+ "notes": [
+  "65.38% 是规划中点而非下界：128 组联合抽样中 36 组节省为负（P5 −0.5757），原因是三轮车层在抽样中变贵时被推到比所填赤字更贵的水平；论文 §5.6、§9.2、§10 已如实写。",
+  "Q3 三轮车刻度的 1.62% 与卡车刻度 9.06% 不可直接比较：前者对着廉价仪器（6 CNY/未服务出发）计价，后者对着昂贵的静态摆放（3.359162 CNY/位）计价；排除车队项后卡车刻度降到 6.04%。",
+  "Q3 的方差分解在 payment 输出上不可用（首阶份额合计 0.195）：该输出被预算钉在 30,000 附近，方差小且非线性；论文 §9.3 已写明。",
+  "Q3 敏感性 C 组对 all-truck pool 退化（726,734--726,734），因摆放单位 3.359162 在所有抽样中固定；卡车成本的响应由 Q2 输出承载（§9.1 第二点注意）。",
+  "T032 每个输出的参考抽样锚定到已验收值，锚移：Q2 +839.67、Q3 −20,088.72、Q4 覆盖 −0.0006/到达 −0.0042；Q3 锚移原因（在 Q4 围栏容量上重解静态池）已在 §9.1 说明。",
+  "DeepSeek 第 8 轮评级 F（第 7 轮为 M）与第 9 轮同为 F、0 blocking：major 集中在论文已披露的结构性限制（联合两层优化缺失、κ/ρ 未扫、时长模型为假设、卡车刻度为静态反事实、495,540 情景的初始分配未做敏感性），不是新发现的错误；两轮的 minor 实数/措辞问题已修或按记录保留（舍入展示 0.01、Q5 正式区间检验）。",
+  "fig6_q4.pdf 由 t036 重绘但未入论文（论文只引四图）；file_list.json 标 used_in_paper=false。",
+  "干净目录编译在 %TEMP%/t028_clean2_* 完成，未写仓库。"
+ ],
+ "integrity": {
+  "readonly_respected": true,
+  "no_files_written_in_review_or_planning": false,
+  "note": "本任务由同一会话兼任执行与验收（用户指示单会话运行），审查与规划/ 的台账与验收记录由该会话以指导方身份追加，属流程内的越界豁免，已如实记录。"
+ }
+}

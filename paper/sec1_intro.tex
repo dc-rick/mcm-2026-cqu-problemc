@@ -93,30 +93,35 @@ under which it holds.
 \begin{enumerate}[leftmargin=1.6em]
 \item \textbf{Do not buy trucks for shortage; buy balance.} At the modelled inventory
   the 50-zone program leaves 432.23 departures unserved with no dispatch at all
-  ($K=0$), so the truck plan is a reset, not a rescue: 60 trucks dispatched through
+  ($K=0$), and at cell resolution the conserving replay leaves 17.31\% of departures
+  unserved even with the $K=60$ plan, because the zone average hides the cell-level
+  shortfall. The truck plan is a reset, not a rescue: 60 trucks dispatched through
   the day, not in a single overnight shift, move 24,949 bicycles over 5,659.17
-  truck-kilometres and carry the two-tier total to 617,055.7515 CNY/day. The
-  condition: 60 is the minimum of the compared grid, not a global optimum, and the
-  joint parameter draws move the recommendation in most draws --- treat the fleet as a
-  bound and re-scan it on local data.
+  truck-kilometres and remove 1,948 cell-level departures, 43.01 CNY per departure
+  against a 6 CNY penalty. The service work falls to the tricycle layer: 1,233
+  tricycles bring the two-tier total to 795,870.99 CNY/day, a saving of 65.38\%.
+  The condition: 60 is a grid minimum and 1,233 an executable fixed point, not global
+  optima --- treat the fleets as bounds and re-scan them locally.
 \item \textbf{Buy within-zone balance from riders before tricycles.} A posted reward
-  of 0.60 CNY per completed reroute, aimed at the hourly deficit list and
-  settled on the increment ledger, saves 18,011.46 CNY/day (2.92\%) on the tricycle
-  layer, with a payment of 16,608.52 inside the 30,000 budget; the promise is
-  kept by reserving the reward per invitation and stopping when the reserve is
-  reached. The condition: this is a pilot design, not a measured price --- the
-  acceptance parameters are assumed, the saving is bracketed at 1.08\%--2.92\% by the
-  two source caps, and the instrument cannot replace trucks: against the truck layer
-  it is at least 1,532 CNY/day worse even at zero reward.
+  of 0.80 CNY per accepted reroute, aimed at the hourly deficit list and budgeted on
+  the payment ledger, saves 65,836.46 CNY/day (9.06\%) against all-truck placement
+  (5.17\% under the conservative surplus cap); inside the tricycle replay the
+  budget-feasible optimum is 0.50 CNY and saves 12,861.52 (1.62\%, 1.16\% under the
+  surplus cap). The budget of 30,000
+  CNY is the binding constraint:
+  without it the reward would be 1.75 CNY and the saving 19.05\%. The condition: this
+  is a pilot design, not a measured price --- the acceptance parameters are assumed,
+  and the calibers price a plan and a replay, not a system.
 \item \textbf{Fence the parking, not the fleet.} Siting fences greedily by coverage
-  and capping each at 150 slots gives 4,000 sites at a 450 m walking radius, covering
-  59.53\% of peak occupancy and 55.80\% of arrivals at the measured inventory and
-  leaving 394,553.13 bike-slots unassigned. The condition: these are required-capacity
-  figures under mandatory parking, not existing berths and not voluntary compliance,
-  and they are specific to this grid, radius and inventory; a different cap or radius
-  produces a different plan.
+  and capping each at 150 slots gives 3,500 sites at a 450 m walking radius (525,000
+  slots), covering 70.89\% of peak occupancy and 69.58\% of arrivals at the measured
+  inventory under per-site 95th-percentile sizing and leaving 212,258.42 bike-slots
+  unassigned. The condition: these are
+  required-capacity figures under mandatory parking, not existing berths and not
+  voluntary compliance, and they are specific to this grid, radius and inventory; a
+  different cap or radius produces a different plan.
 \item \textbf{Regulate the market as a shared computation.} Independent platforms
-  need 1.0818--1.1323 times the fenced capacity of a shared regime, yet sharing
+  need 1.0728--1.1472 times the fenced capacity of a shared regime, yet sharing
   fences alone does not reduce lost orders because the fleets remain separate; the
   binding public good is the city-wide origin--destination matrix, which no single
   platform observes. The condition: the recommendation presumes the regulator can
@@ -138,10 +143,10 @@ Section~\ref{sec:data}; costs are in 2017 CNY.}
  & \textbf{Question} & \textbf{Model} & \textbf{Answer} \\
 \midrule
 Q1 & Behaviour & NHPP arrivals + singly-constrained gravity + speed-based duration & Median trip 0.70 km; distance dominates (log-loss 3.24--3.52 against 8.57 uniform); one shared $\beta$ is an acceptable simplification \\
-Q2 & Rebalancing & Integer time-space network MILP (trucks) + same-zone tricycle routing & Two-tier: 60 trucks + 975 tricycles, 617{,}055.7515 CNY/day, saving 902{,}223.20 (59.385\%), unmet 39{,}984.2332 \\
-Q3 & Incentives & Logit acceptance + hourly assignment program & Cannot replace trucks (at least 1{,}532 CNY/day worse at zero payment); can replace tricycles: $r^*=0.60$, saving 18{,}011.46 (2.92\%) \\
-Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 4{,}000 sites $\times$ 150 slots: 59.53\% occupancy / 55.80\% arrival coverage at 343{,}638; 394{,}553.13 unassigned \\
-Q5 & Competition & Two-platform cell-resolution simulation & Unmet 12.10\% against 11.66\% single; capacity 1.08--1.13$\times$; sharing does not reduce lost orders \\
+Q2 & Rebalancing & Integer time-space network MILP (trucks) + same-zone tricycle layer in a conserving replay & Two-tier: 60 trucks + 1{,}233 tricycles, 795{,}870.99 CNY/day, saving 1{,}503{,}023.20 (65.38\%), unmet 56{,}731.74 \\
+Q3 & Incentives & Logit acceptance + hourly pool LP, payment ledger as the budget & Worth 9.06\% against all-truck placement at $r^*=0.80$ (5.17\% surplus cap); 1.62\% inside the tricycle replay at $r^*=0.50$ (1.16\% surplus) \\
+Q4 & E-fences & Greedy maximal coverage + Monte-Carlo peak occupancy & 3{,}500 sites $\times$ 150 slots: 70.89\% occupancy / 69.58\% arrival coverage at 343{,}638; 212{,}258.42 unassigned \\
+Q5 & Competition & Two-platform cell-resolution simulation & Unmet 17.80\% against 17.15\% single; capacity 1.07--1.15$\times$; sharing does not reduce lost orders \\
 \bottomrule
 \end{tabular}
 \end{table}

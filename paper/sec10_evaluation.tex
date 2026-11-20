@@ -8,11 +8,10 @@ rebalancing program, the incentive supply curve and the parking forecast, so the
 share one demand surface and one service penalty.
 
 \textbf{Identification and validation are part of the modelling.} The sampling rate,
-the fleet, the initial inventory and the incentive parameters are either estimated
-with a stated direction or carried as explicit scenarios. The behavioural model is
-tested on two held-out days against two nested benchmarks and a shared-$\beta$
-simplification, and the geography of the demand surface is checked against an
-independent map of subway entrances.
+fleet, initial inventory and incentive parameters are estimated with a stated direction
+or carried as explicit scenarios. The behavioural model is tested on two held-out days
+against nested benchmarks and a shared-$\beta$ simplification, and its geography against
+an independent subway-entrance map.
 
 \subsection{Weaknesses}
 
@@ -22,48 +21,54 @@ distance and time of day, not what a new development would do.
 
 \textbf{The incentive parameters are assumed.} No reward was offered in May 2017, so
 $\kappa,\rho,c_0$ cannot be estimated; the recommended reward is the design of a
-pilot, not a settled price. The truck-caliber conclusion (incentives cannot replace
-trucks) also flips sign in a minority of the grouped parameter draws of
-Section~\ref{sec:sens}.
+pilot, not a settled price. The payment-ledger optimum sits at the budget boundary, so
+the reported reward is set by the 30,000 CNY promise rather than by the unconstrained
+marginal economics, which would pay 5.70 times as much for 19.05\% instead of 9.06\%.
 
-\textbf{The tricycle saving is not a system saving.} The saving is measured with the
-truck plan held fixed: it neither credits nor charges the induced truck-layer change of
-the reroutes, which the truck-caliber test prices separately, so the saving replaces
-part of the tricycle layer and nothing else; it is a deterministic single-day result
-whose uncertainty is the two source caps and the $c_0$ table.
+\textbf{The incentive saving is a caliber, not a system saving.} On the truck caliber
+the saving is measured against a static all-truck placement cost, whose unit is the
+average $K=60$ cost per bicycle moved; excluding the fleet term from that unit leaves
+6.04\% instead of 9.06\%, so the size is an accounting choice inside a stated caliber.
+The tricycle-caliber saving is measured with the truck plan held fixed: it neither
+credits nor charges the induced truck-layer change of the reroutes, so it replaces part
+of the tricycle layer and nothing else; it is a deterministic single-day result whose
+uncertainty is the two source caps and the $c_0$ table.
 
 \textbf{The numbers are approximations in two directions.} The truck layer is an
 integer MILP and the tricycle allocation integer, so the executable plan carries a
-known rounding loss, and the intervals of Section~\ref{sec:sens} are LP-proxy
-intervals; the executable fleet is an upper bound on the executable minimum and the
-quoted saving a lower bound on the ideal LP saving. Values are printed at the precision
-of the archived result files so that each printed value can be checked against its
-source.
+known rounding loss; the intervals of Section~\ref{sec:sens} are the response of
+the reported architecture under the parameter design, not sampling intervals; the
+executable fleet is an upper bound on the executable minimum. Values are printed at the
+precision of the archived result files, so each can be checked against its source.
 
-\textbf{One ledger, one reward, one day.} The Q3 optimum is priced on the increment
-ledger and checked against the daily budget; the payment ledger is enforced by a
-conservative reservation rule. The reward is uniform, and the answer is a single
-planning day, not a distribution over days. The modelled days are mild spring
-weekdays, and rain would change both rates and decay.
+\textbf{One ledger, one reward, one day.} The Q3 optimum is priced on the payment
+ledger --- what the platform promises --- and the increment ledger is reported as what
+the payment bought; the reservation rule enforces the budget. The reward is uniform, the
+answer is one planning day, and rain would change both rates and decay.
 
 \subsection{What would change the conclusions}
 
 The Q3 answer is sized by the source cap and the acceptance constant: the conservative
-cap keeps about a third of the arrivals-cap saving, and re-optimising $c_0$ moves the
-optimum and the saving by the amounts tabulated in Section~\ref{sec:q3}. The direction
-survives, the magnitude does not.
+surplus cap keeps 57\% of the arrivals-cap saving (5.17\% against 9.06\%), and
+re-optimising $c_0$ moves the optimum and the saving by the amounts tabulated in
+Section~\ref{sec:q3}. The direction survives, the magnitude does not.
 
 The Q2 fleet conclusion is narrower than it looks. The integer scan covers five grid
-points (0, 20, 40, 60, 80), and its minimum is not a proof of a global optimum; the
-joint parameter draws move the recommendation away from it in most draws, so the
-two-tier fleet and its saving should be read as bounds, not as a point design. The Q4
-conclusion is the most robust, but it is driven by the assumed cap: changing the cap
-moves coverage by tens of percentage points.
+points (0, 20, 40, 60, 80), and its minimum is not a proof of a global optimum: across
+the 128 joint parameter draws the LP-optimal fleet is 60 in only 9 draws (7.0\%) and
+40 or fewer in 117 (91.4\%), so the two-tier fleet and its saving should be read as
+bounds --- an upper bound on the service a given fleet can buy --- not as a point
+design. The Q4 conclusion moves with the assumed cap more than with anything else: the
+cap carries 0.94 of its variance, and at the fixed 3,500-site plan occupancy coverage
+ranges 0.37--0.80 as the cap runs from 75 to 225 slots, so 70.89\% is the 150-slot member
+of that family, not a property of the city.
 
-The oversupply diagnosis would be overturned if the initial-inventory proxy
-were very different. Our defence is conditional: at the proxy
-and at the closed fleet the pre-plan cell-level unserved shares are small. That supports only the claim
-that, at the modelled inventory, cost and placement are the binding problem.
+The misallocation diagnosis would be overturned if the initial-inventory proxy
+were very different: our defence is conditional. At the observed end-of-day stock the
+conserving replay leaves 17.31\% of departures unserved even with the truck plan
+running; a different starting stock would change the level. At that stock, placement
+and within-zone rebalancing are the binding problems --- not the number of bicycles,
+which is why the closed-fleet scenario in Q4 serves 99.3\% of its covered departures.
 
 \subsection{Conclusions}
 

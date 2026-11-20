@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T028 守恒化重建与换数</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1f;--muted:#5f6368;--line:#dcdcd6;--card:#fff;--accent:#1f4e79;--hi:#b3261e;--ok:#1e6b3a;--warn:#8a5a00;--code:#f1f0ea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}}
+:root[data-theme="dark"]{--bg:#16171a;--fg:#e6e6e3;--muted:#a3a7ad;--line:#36383d;--card:#1d1f23;--accent:#8db7e5;--hi:#ff8a80;--ok:#7ed3a1;--warn:#e0b45c;--code:#26282d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:1020px;margin:0 auto;padding:24px 16px 72px}
+h1{font-size:23px;margin:6px 0 4px;color:var(--accent)}
+h2{font-size:18px;margin:30px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}
+.box.hi{border-left-color:var(--hi)}
+.box.ok{border-left-color:var(--ok)}
+.box.warn{border-left-color:var(--warn)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600}
+code{background:var(--code);border-radius:4px;font-size:12.5px;font-family:Consolas,Menlo,monospace;padding:1px 4px;word-break:break-all}
+ul,ol{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+<main>
+
+<h1>T028 · 守恒化重建与全文换数</h1>
+<p class="meta">状态：<strong>2026-11-19 下达（用户决策 BBAAAA；团队编号 13648；AI 报告不计入 25 计页）；执行中</strong>　·　可写：<code>code/</code>、<code>paper/</code>、<code>data/runs/T028…T042/</code>、<code>figs/</code>、<code>交付/T028_delivery.json</code>、<code>交付/T028/</code>　·　只读：<code>data/</code> 既有输入、T027 提交包</p>
+
+<div class="box hi">
+<p><strong>为什么重建：</strong>T027 提交版的自洽性在冷读中暴露：Q2 的三轮车基线、Q3 的放置口径与 Q4 的需求面取自三套不一致的聚合（50 区模型与格级模拟混用，区级未服务仅 432.23，而格级守恒回放的真实未服务是 17.40%）。用户选择 <strong>BBAAAA</strong>：（1）Q2 全量守恒化重建；（2）Q5 显式统计围栏外存量并重跑全部制度；（3）Q3 以支付台账 <code>rP</code> 为第一预算口径；（4）接受旧 59.385% 的 Q2 节省被替换；（5）完整重跑 + 新提交包 + DeepSeek 复审；（6）含 T023 的 128 联合抽样。</p>
+</div>
+
+<h2>1. 范围（已执行，按实现文件编号）</h2>
+<div class="tw"><table>
+<tr><th>文件</th><th>内容</th><th>结果文件</th></tr>
+<tr><td><code>code/t028_q2_conserve.py</code></td><td>格级守恒回放（泊松出发、被服务出发生成到达、城市总量恒为 343,638）+ 三轮车整数坐标下降</td><td><code>data/runs/T028/local_search.json</code></td></tr>
+<tr><td><code>code/t029_q5_outside.py</code></td><td>Q5 围栏外存量显式化，单平台/双平台 m∈{0,0.5,1.0,1.5} 全部重跑</td><td><code>data/runs/T029/</code></td></tr>
+<tr><td><code>code/t030_q4_fleet.py</code></td><td>Q4 在守恒需求上重建 Kneedle 前沿（3,500 站膝点；495,540 车队 4,000 站）</td><td><code>data/runs/T030/frontier_cons.json</code></td></tr>
+<tr><td><code>code/t031_q3_payment.py</code></td><td>Q3 支付台账口径：卡车口径 216,343.75 放置格 + 三轮车口径守恒重放</td><td><code>data/runs/T031/truck_payment.json</code>、<code>tricycle_payment.json</code></td></tr>
+<tr><td><code>code/t032_sensitivity_conserve.py</code></td><td>灵敏度在守恒链上重跑（T023 设计不变：A/C 边际 n=128、B 全 54、联合 128）</td><td><code>data/runs/T032/intervals.json</code>、<code>variance_shares.json</code></td></tr>
+<tr><td><code>code/t033_q4_radius.py</code></td><td>Q4 半径扫描（450 m 主口径）</td><td><code>data/runs/T033/</code></td></tr>
+<tr><td><code>code/t035_q2_curve.py</code></td><td>Q2 联合曲线（0.70–1.30 缩放，13 点）</td><td><code>data/runs/T035/joint_curve.json</code></td></tr>
+<tr><td><code>code/t036_figs.py</code></td><td>四张论文图重绘（矢量 PDF）</td><td><code>figs/fig1_data.pdf</code> 等 4 个</td></tr>
+<tr><td><code>code/t038_numbers.py</code></td><td>数字锁：结果扁平化 + 派生量算术 + 论文 token 逐一枚举</td><td><code>data/runs/T038/numbers.json</code>、<code>coverage_report.txt</code></td></tr>
+<tr><td><code>code/t039_q3_c0.py</code></td><td>Q3 卡车口径 c₀ 重优化（0.64/0.80/0.96）</td><td><code>data/runs/T039/q3_c0.json</code></td></tr>
+<tr><td><code>code/t040_citecheck.py</code></td><td>引用/条目双向核对（只读）</td><td>终端输出，32/32</td></tr>
+<tr><td><code>code/t041_km_oat.py</code></td><td>卡车公里价 3–9 CNY/km 单因素重解（复核 sec2 的 33,534.39）</td><td><code>data/runs/T041/km_oat.json</code></td></tr>
+<tr><td><code>code/t042_sec9_tables.py</code></td><td>由 T032 结果直接生成 §9 表行</td><td>终端输出</td></tr>
+</table></div>
+
+<h2>2. 论文改动范围</h2>
+<ul>
+<li>摘要、§1 建议与 <code>tab:answers</code>、§2 A7 与放置/支付条、§5 全部数字与 §5.6、§6 全节重写（卡车口径与三轮车口径并列）、§7 Q4 数字、§9 全部重写（T032 区间 + 分源表）、§10 弱点句、AI 报告全节。</li>
+<li>删除 §9 龙卷风小节与 <code>fig9_tornado.pdf</code> 引用；论文实际引用图 = 4 张。</li>
+<li>数字一律来自 <code>data/runs/</code>；派生量在 <code>t038</code> 的 <code>add_derived*</code> 中写出算术。</li>
+</ul>
+
+<h2>3. 验收标准（编号，验收时逐项给证据）</h2>
+<ol>
+<li><strong>A1 守恒</strong>：<code>t028</code> 每次回放的城市总量残差 ≤1e-3、<code>end_total</code> = 343,638；<code>t030</code> 的 <code>total_resid</code> = 0.0；<code>t031</code> 三轮车口径同样检查。</li>
+<li><strong>A2 数字锁</strong>：<code>python -I code/t038_numbers.py</code> 的 UNMATCHED 为 0；若非 0，每条都在交付 <code>notes</code> 里写明来源与理由，且不得是正文结论数字。</li>
+<li><strong>A3 页数</strong>：xelatex 编译后计页 ≤25（AI 报告独立分页、不计入）；摘要 1 页、目录 1 页、参考文献 1 页。</li>
+<li><strong>A4 编译</strong>：0 error、0 undefined reference、0 “??”。</li>
+<li><strong>A5 灵敏度</strong>：<code>data/runs/T032/intervals.json</code> 与 <code>variance_shares.json</code> 存在且与 §9 表逐值一致（由 <code>t042</code> 生成，不手抄）。</li>
+<li><strong>A6 结论回归</strong>：Q2 节省 65.38%（1,503,023.20）、Q3 卡车口径 9.06%（5.17% surplus）、三轮车口径 1.62%（1.16%）、Q4 3,500 站 70.89%/69.58%、Q5 17.15/17.80/29.50% 在摘要、§1 表、正文三处一致。</li>
+<li><strong>A7 图</strong>：四张 PDF 由 <code>t036</code> 生成且坐标轴填满数据范围；被引用的图号与文件一一对应。</li>
+<li><strong>A8 外部冷读</strong>：DeepSeek 至少一轮，0 阻塞；中/低项逐条裁决写入验收记录。</li>
+<li><strong>A9 提交包</strong>：<code>交付/T028/file_list.json</code> 逐文件 SHA-256；不含临时/基准文件；<code>run_all.py</code> 阶段清单与依赖写明。</li>
+<li><strong>A10 台账</strong>：问题台账新增/关闭行、决策台账 B13、任务台账 T028 行齐全；本任务不覆盖 T027 的 757 文件包。</li>
+</ol>
+
+<h2>4. 已知边界（交付 notes 必写）</h2>
+<ul>
+<li>1,233 三轮车是坐标下降的可行不动点，不是全局最优；60 卡车是五点格点最小值。</li>
+<li>Q3 卡车口径的放置单位 3.359162 含车队与偏差成本，是“计划”价格不是边际价；排除车队项后节省 6.04%。</li>
+<li>T032 的 Q3 评估中放置单位固定为参考值，Q3 区间只响应接受参数、需求与容量，不响应卡车成本；卡车成本响应由 Q2 输出承载。</li>
+<li>1.62% 的三轮车口径节省是边际替代率（每 reroute 移除 0.203 个出发），不是系统节省。</li>
+</ul>
+
+</main>
+</body>
+</html>
