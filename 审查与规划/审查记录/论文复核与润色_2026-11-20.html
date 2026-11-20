@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>论文复核与润色记录 2026-11-20</title>
+<style>
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;max-width:1080px;margin:32px auto;padding:0 20px;color:#222;line-height:1.6;background:#fff}
+h1{font-size:24px;border-bottom:3px solid #1F3864;padding-bottom:6px;color:#1F3864}
+h2{font-size:18px;margin-top:28px;color:#1F3864;border-left:4px solid #1F3864;padding-left:8px}
+h3{font-size:15px;margin-top:18px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}
+th{background:#eaeef5}
+code{font-family:Consolas,monospace;background:#f4f4f4;padding:0 3px}
+.box{border:2px solid #1F3864;background:#f6f8fc;padding:12px 16px;margin:14px 0;border-radius:4px}
+.pass{color:#0a6b2e;font-weight:600}
+.warn{color:#8a5a00}
+.small{font-size:12px;color:#555}
+ul{margin:6px 0 6px 20px}
+li{margin:3px 0}
+</style>
+</head>
+<body>
+
+<h1>论文复核与润色记录</h1>
+<p><b>日期：</b>2026-11-20　<b>对象：</b><code>paper/*.tex</code> 与 <code>paper/main.pdf</code>（T028 通过版，提交 <code>ca6dbe6</code>）　<b>方法：</b><code>claude-scholar:paper-self-review</code> 七步检查，随后按 <code>claude-scholar:nature-polishing</code> 润色　<b>执行：</b>单会话（用户指示「就你跑」；T028 验收结论不受影响）</p>
+
+<div class="box">
+<p><b>结论：修复后仍为「可提交」。</b>复核发现并修复 1 处实数错误（AI 报告例 3：<code>43.03</code> → <code>43.01</code>）、1 处比例表述错误（§9.2「more than twice」实为 1.715 倍）、1 处因果与口径表述错误（§6.4 的 2.26/3.26 归因）、1 处推荐标题与本文结论方向相反（§1 建议 2）、以及数字锁的 <code>\%</code> 注释剥离盲区（使 186 个 token 从未被扫描，锁的覆盖声明因此不成立）；另有 12 处句法与措辞润色。修后复验全绿：xelatex ×3 均为 exit 0；28 页 / 计页 25；Overfull 0、undefined 0、LaTeX Warning 0；数字锁 <b>1,350/1,350</b>、0 未匹配；22 项关键数回归全中；四张图与论文引用一一对应。DeepSeek 第 10 轮冷读 <b>0 blocking</b>（6 major 均为已披露结构限制，3 minor 为建议），评级 F，与前两轮一致。</p>
+</div>
+
+<h2>1. 复核过程（七步摘要）</h2>
+<ol>
+<li><b>结构：</b>摘要 / 目录 / 引言 / 假设与记号 / 数据 / Q1–Q5 / 灵敏度 / 评价 / 参考文献 / AI 报告齐全；MCM 一页摘要、25 计页上限满足（p25 为参考文献末页，AI 报告 p26–28 不计入）。</li>
+<li><b>内容与逻辑：</b>逐节通读 14 个 <code>.tex</code>，并对关键数字链做独立恒等式核对，例如
+  <ul>
+  <li>Q2：83,807.74 + 712,063.25 = 795,870.99；712,063.25 = 369,900 + 1,772.82 + 340,390.43（369,900 = 1,233×300）；</li>
+  <li>Q3：29,152.05 + 631,745.29 = 660,897.34；726,733.80 − 660,897.34 = 65,836.46；795,870.99 − 786,618.64 = 9,252.35；</li>
+  <li>Q4：244,498.53 / 1,479,013.66 = 16.53%；70.89%×0.0238 = 1.69%；</li>
+  <li>Q5：263,307.06 / 1,479,658.15 = 17.80%；539,678.92 / 503,073.56 = 1.0728；515,894.53 / 449,680.54 = 1.1472；</li>
+  <li>守恒链：369,181.08 / 2,132,542.19 = 17.31%；371,129.50 / 2,132,542.19 = 17.40%。</li>
+  </ul>
+  结果均与印刷值在显示精度内一致。</li>
+<li><b>主张审计（Claim Audit）：</b>摘要与结论中的每条主张都能追到结果文件或已标注的假设；未发现强于证据的新表述。保留的已披露口径见 §4。</li>
+<li><b>引用：</b>32 条；<code>t040_citecheck.py</code> 双向核对 32/32；引用键无缺失；DOI/URL 与格式一致。</li>
+<li><b>图表：</b>4 图 12 表；图题自洽、坐标轴按数据范围截断；两张内联表（§7 前沿表、§9.3 方差表）无编号题注，按页预算保留，由引导句与列头命名（见 §4）。</li>
+<li><b>写作：</b>拆分 10 处过长句（§2 A9、§3、§5、§8、§9、§10），修正主题句 2 处，消除双冒号 1 处，替换「earlier draft」等内部措辞 1 处；不改变任何结论或数字。</li>
+<li><b>最终清单：</b>摘要含问题/方法/结果/条件；方法与边界可复现；结论受结果支持；图表有说明；引用完整——全部通过（证据见 §3）。</li>
+</ol>
+
+<h2>2. 发现与修复</h2>
+<table>
+<tr><th>编号</th><th>位置</th><th>问题（证据）</th><th>修复</th></tr>
+<tr><td>F1</td><td><code>code/t038_numbers.py</code></td><td>注释剥离正则 <code>%.*$</code> 把 <code>\%</code>（如 <code>17.31\%</code>）当作注释起点，截断整行：186 个数字 token 从未进入扫描（1,164 → 1,350），锁「全部 token 已匹配」的声明不成立。AI 报告例 3 的 <code>43.03</code> 正是因此未被发现。</td><td>改为 <code>(?&lt;!\\)%.*$</code>；新增两条 derived 记录（T028 去掉的出发数 1,948.4231 与单位成本 83,807.7438/1,948.4231 = 43.0131；surplus r=1.80 总费 680,873.40）。</td></tr>
+<tr><td>F2</td><td><code>paper/ai_report.tex:95</code></td><td>例 3 写「43.03 CNY per departure removed」；正文 §5、§1 一直是 43.01，且 83,807.7438/1,948.4231 = 43.0131，应印 43.01。同一量在论文内出现两个值。</td><td><code>43.03</code> → <code>43.01</code>，与正文及复算一致。</td></tr>
+<tr><td>F3</td><td><code>paper/sec9_sensitivity.tex:82</code></td><td>「C interval ... more than twice the joint width」：C 的 P5–P95 宽度 1,589,181.64，联合 P5–P95 宽度 926,656.40，比值 1.715，不是 2 倍。</td><td>改为「more than one and a half times the joint width」。</td></tr>
+<tr><td>F4</td><td><code>paper/sec6_q3.tex:100–103</code></td><td>「Because ... 22.40% ... the return on the payment ledger is 2.26 per yuan; the 3.26 is what the marginal invitation is worth」把因果放错：3.26 是毛回报（3.359162×28,277.44/29,152.05 = 3.258），2.26 是净回报（(94,988.50−29,152.05)/29,152.05 = 2.258），差额 1.00 来自支付本身而非自由骑手；22.40% 已含在 1.031 的单均支付里。</td><td>改写为毛/净两个回报并列，并说明自由骑手已计入 1.031；token 不变（1.031、3.359、3.26、2.26、22.40、8,162.63）。</td></tr>
+<tr><td>F5</td><td><code>paper/sec1_intro.tex:105</code></td><td>建议 2 标题「Buy within-zone balance from riders before tricycles」与 §6.5 结论「it does not make tricycles redundant」及 1.62% 的三轮车口径相反：奖励替代的是昂贵仪器（卡车摆放），不是三轮车。</td><td>改为「Buy within-zone balance from riders rather than from truck placement」。</td></tr>
+<tr><td>F6</td><td><code>paper/sec8_q5.tex:125–128</code></td><td>「The required capacity ... exceeds the shared one by a factor of 1.0728 ... --- 6.8% to 12.8% of duplicated concrete」按「超出倍数」读会算出 +7.3% 与 +14.7%；6.8%/12.8% 实为相对独立方案的节约（1−1/1.0728 = 6.79%，1−1/1.1472 = 12.83%）。</td><td>改为「requires 1.0728 times the shared capacity ...: sharing the same fences would cut the slot requirement by 6.8% to 12.8%」。</td></tr>
+<tr><td>P1–P12</td><td>§1、§2、§3、§5、§6、§7、§8、§9、§10</td><td>过长句拆分（§2 A9、§3 初始库存代理、§5 三轮车取整、§8 种子噪声与共享机制、§9 抽样描述与 C 组、§10 结论段与网格句）；主题句「approximations in two directions」与实际三条不符；§8.4 双冒号；§7「The earlier draft」改为「An earlier construction」；§6.5「satisfied up to r=0.80 and binds there」中 binds there 与下一句重复。</td><td>逐句改写；不新增或删改任何数字 token（锁计数 1,350 不变）。</td></tr>
+</table>
+
+<h2>3. 复验证据（修复后）</h2>
+<ul>
+<li><b>编译：</b><code>xelatex -interaction=nonstopmode -halt-on-error main.tex</code> ×3 → exit 0/0/0；<code>main.log</code>：Overfull 0、undefined 0、<code>LaTeX Warning</code> 0（Underfull 仅出现在 <code>tab:answers</code> 的窄 p 列，与 T028 相同，不在门槛内）。</li>
+<li><b>页数：</b><code>Output written on main.pdf (28 pages)</code>；references_last_page = 25；ai_report_first_page = 26；counted_pages = 25。</li>
+<li><b>数字锁：</b><code>python -I code/t038_numbers.py</code> → records 58,501, tokens <b>1,350</b>, matched <b>1,350</b>, unique 132, unmatched <b>0</b>；<code>coverage_report.txt</code> 首行 PASS。43.01 命中 derived「T018 K60 obj / T028 departures removed」；680,873.40 命中 derived「r=1.80 (surplus) payment + unit*(N-q)」。</li>
+<li><b>回归：</b><code>python -I 交付/T028/verify_final.py</code> → all_pass true；22 个关键数从结果文件复算后逐字出现在论文中（Q2 1,233/795,870.99/56,731.74/8,864.10/1,503,023.20/65.38%；Q3 726,733.80/660,897.34/65,836.46/9.06%/28,277.44/36,440.07/29,152.05；Q4 0.7089/0.6958/212,258.42；Q5 17.80/1.0728/1.1472 等）。</li>
+<li><b>禁用串与图：</b>内部任务号 0 命中；四图与 <code>\includegraphics</code> 一一对应。</li>
+<li><b>外审：</b>DeepSeek 第 10 轮（<code>review/review_r10.json</code>）blocking 0、major 6、minor 3、评级 F。6 条 major 与第 8/9 轮为同一组已披露结构限制（M1 库存下界/需求上界、M2 无联合最优间隙、M3 κ/ρ 未估计、M6 时长为假设、M8 静态反事实刻度、M9 495,540 空间分配无优化）；3 条 minor 为建议（5,263 格外 4.19% 订单的敏感性、用户分层未接入后续模型、围栏选址未给地图或坐标）。</li>
+</ul>
+
+<h2>4. 保留项（本轮不改，理由）</h2>
+<table>
+<tr><th>项目</th><th>处理</th><th>理由</th></tr>
+<tr><td>M1 库存下界 + 需求上界</td><td>保留，§10「我们的辩护是条件性的」与 495,540 对照均在文中</td><td>属情景选择与已披露限制；换到 495,540 需重做 Q2/Q5 并重写主线，超出复核—润色范围；论文已把 343,638 仅作初始库存代理并让 B 组枚举两种库存。</td></tr>
+<tr><td>M2/M3/M6/M8/M9</td><td>保留</td><td>均已在 §2、§5.6、§6.4、§7、§9、§10 披露并给出方向；新增联合优化、κ/ρ 扫描、时长验证或 495k 分配优化属新计算任务。</td></tr>
+<tr><td>m1 外围 4.19% 订单</td><td>保留</td><td>格网门槛（≥50 次抽样出行）是建模范围；补充敏感性需重跑 Q1–Q4。</td></tr>
+<tr><td>m2 用户分层</td><td>保留</td><td>论文主动报告其不稳定（ARI 0.665、最小 0.305）并仅作描述；Q1 题目要求刻画用户行为。</td></tr>
+<tr><td>m3 选址地图</td><td>保留</td><td>4 图预算与 25 计页上限（p25 余量约 68pt）不容新增整页图；选址可由 <code>data/runs/T030</code> 复现。</td></tr>
+<tr><td>两张内联表无编号题注</td><td>保留</td><td>由引导句与列头命名；加编号会进 LoT 并影响 p2 版面。</td></tr>
+<tr><td>65.38% 中点与负尾、Q3 刻度不可比、Q5 模型恒等</td><td>保留</td><td>T028 已按第 8/9 轮裁定披露，摘要与正文均有条件句。</td></tr>
+</table>
+
+<h2>5. 影响与文件</h2>
+<p>本轮不改变任何结论性数字；唯一的数字改动是 AI 报告例 3 的 43.03 → 43.01（正文一直为 43.01，复算 43.0131）。数字锁的扫描范围修正使锁的覆盖声明重新成立：1,350 个 token（含 <code>\%</code> 转义行上的数字）全部落到 58,501 条结果记录。</p>
+<p>改动文件：<code>paper/ai_report.tex</code>、<code>paper/sec1_intro.tex</code>、<code>paper/sec2_assumptions.tex</code>、<code>paper/sec3_data.tex</code>、<code>paper/sec5_q2.tex</code>、<code>paper/sec6_q3.tex</code>、<code>paper/sec7_q4.tex</code>、<code>paper/sec8_q5.tex</code>、<code>paper/sec9_sensitivity.tex</code>、<code>paper/sec10_evaluation.tex</code>、<code>paper/main.pdf</code>、<code>code/t038_numbers.py</code>、<code>README.md</code>、<code>交付/T028/verify_final.json</code>、<code>交付/T028/file_list.json</code>、<code>review/review_r10.json</code>、<code>审查与规划/台账/问题台账.csv</code>（M29）。</p>
+
+</body>
+</html>

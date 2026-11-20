@@ -186,10 +186,9 @@ ends. For each zone-hour,
 \label{eq:q2tri}
 \end{equation}
 with flows and unmet non-negative. The LP solution is rounded to whole bicycles under
-each donor's integer stock and split into trips of at most $Q_{\text{tri}}$; the fixed
-list is assigned to the zone's tricycles by earliest finish inside the shift
-stated above, and the smallest integer fleet that places every trip replaces the
-fractional count zone by zone.
+each donor's integer stock and split into trips of at most $Q_{\text{tri}}$. The fixed
+list is assigned to the zone's tricycles by earliest finish inside the shift, and the
+smallest integer fleet that places every trip replaces the fractional count zone by zone.
 
 The joint conserving replay is optimised by coordinate descent over integer per-zone
 fleets: each candidate changes one zone by $\pm1$ or $\pm2$ tricycles and is evaluated

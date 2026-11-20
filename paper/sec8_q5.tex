@@ -95,8 +95,8 @@ empty-fence steps. The size of the effect is specific to this plan and demand su
 it is not a universal constant and does not carry across layouts. Twenty seeds bound
 the noise: the seed-to-seed standard deviation of the unmet rate is
 0.000728--0.000829 and of the full-site rate 0.000206--0.000255, so the 17.15\% against
-17.80\% gap is about eight of those spreads, and the shared and independent unmet rates
-are equal in the raw output, not a statistical tie.
+17.80\% gap is about eight of those spreads. The shared and independent unmet rates, by
+contrast, are equal in the raw output, not a statistical tie.
 
 \textbf{The denominator is within-fence departures, not the city.} The 17.80\% is
 263,307.06 unserved departures over 1,479,658.15 within-fence departures. It is
@@ -110,11 +110,11 @@ institution's unmet rate from 17.80\% to 29.50\%, nearly twelve percentage point
 spatial concentration of one platform's riders away from its own bicycles is a stronger
 force than the loss of noise pooling, and it grows monotonically with the intensity.
 
-\textbf{Sharing fences does not reduce lost orders --- exactly.} The shared regime's
+\textbf{Sharing fences does not reduce lost orders.} The shared regime's
 unmet rate equals the independent regime's at every $m$ to the last digit (the
-difference is 0.0 in the raw simulation output), and it does so because the outside
-state makes the availability constraint depend on the fleet, not on the fence: once
-inside is empty, a rider draws from the outside pool; if both are empty the order is
+difference is 0.0 in the raw simulation output). The equality follows from the outside
+state: availability depends on the fleet, not on the fence. Once inside is empty, a
+rider draws from the outside pool; if both are empty the order is
 lost regardless of who owns the concrete. Sharing pools parking slots, not bicycles.
 What sharing does change is \emph{overflow}: the shared regime records 5,330 more
 overflowing arrivals than independent at $m=0$ and 3,695 more at $m=1.5$, because a
@@ -122,10 +122,10 @@ shared fence has one wall while two independent fences have two, and the shared 
 hit by both fleets. The extra overflow is absorbed by the outside state, which is why it
 does not become an extra lost order.
 
-\textbf{Sharing saves concrete.} The required capacity of the independent regime exceeds
-the shared one by a factor of \textbf{1.0728} at $m=0$, 1.0883 at $m=0.5$, 1.1193 at
-$m=1.0$ and 1.1472 at $m=1.5$ --- \textbf{6.8\% to 12.8\%} of duplicated concrete, rising
-with mismatch. The shared regime needs 4.88\% more slots than a single platform at
+\textbf{Sharing saves concrete.} The independent regime requires \textbf{1.0728} times
+the shared capacity at $m=0$, 1.0883 at $m=0.5$, 1.1193 at $m=1.0$ and 1.1472 at
+$m=1.5$: sharing the same fences would cut the slot requirement by \textbf{6.8\% to
+12.8\%}, and the saving rises with mismatch. The shared regime needs 4.88\% more slots than a single platform at
 $m=0$ and 6.25\% \emph{fewer} at $m=1.5$; the fall is a consequence of the service
 failure, not a benefit, because fewer served departures mean fewer arrivals and lower
 per-site peaks. These are required capacities --- a 95th-percentile per-site sizing
@@ -159,7 +159,7 @@ the market observes half of the rows, so the attraction $A_j$ of
 with a standard error that grows as $\sqrt{2}$. More decisively, \emph{no platform can
 compute the plans of Q2 and Q4 at all}: the Q2 truck plan is defined on a city-wide
 zone network, the Q4 layout on a city-wide demand surface, and the Q3 reward on a
-city-wide deficit list: each is a public-good computation that only the city can run.
+city-wide deficit list. Each is a public-good computation that only the city can run.
 
 \subsection{Multi-homing, and why it does not rescue the situation}\label{sec:multihome}
 

@@ -12,15 +12,15 @@ enumerated exactly over 54 combinations. Group \textbf{C} is \emph{assumed}:
 twenty-five parameters --- the truck and tricycle cost constants, the fence cap and
 walking radius, the acceptance constants $\kappa,\rho,c_0$ and the Q1 speed parameters
 --- each drawn uniformly over its documented range, mostly $\pm50\%$ around the
-reference (the walking radius from $\{0.15,0.30,0.45\}$ km); the two Q1 speed parameters
+reference (the walking radius from $\{0.15,0.30,0.45\}$ km). The two Q1 speed parameters
 do not enter the Q2--Q4 evaluations. The joint sample \textbf{F} draws all three groups
 together ($n=128$; the A and C marginals have $n=128$, B is the exact 54).
 
 Every draw is evaluated on the conserving chain. A Q2 draw
 re-solves the 50-zone truck program at the draw's demand, inventory and costs, then runs
 the full 24-hour cell-level replay with the tricycle fleet held at the 1,233 of
-Section~\ref{sec:q2}; a Q3 draw re-optimises the payment-ledger reward over the
-0.10-CNY grid at the draw's acceptance parameters and fence capacities; a Q4 draw
+Section~\ref{sec:q2}. A Q3 draw re-optimises the payment-ledger reward over the
+0.10-CNY grid at the draw's acceptance parameters and fence capacities. A Q4 draw
 rebuilds the conserved sizing demand and re-solves the 3,500-site integer program. The
 intervals are therefore the response of the reported architecture --- fleets and plans
 fixed at their reference values --- not the response of an LP proxy.
@@ -79,8 +79,8 @@ Q4 arrival coverage & 0.6958 & 0.3606 / 0.6150 / 0.7993 &
 \end{table}
 
 Three readings follow from \tabref{tab:q9intervals}. The Q2 total is dominated by the
-assumed group: the C interval alone spans 489,457--2,078,639, more than twice the joint
-width. The Q2 saving share turns negative in the joint tail (P5 $-0.5757$): in 36 of the
+assumed group: the C interval alone spans 489,457--2,078,639, more than one and a half
+times the joint width. The Q2 saving share turns negative in the joint tail (P5 $-0.5757$): in 36 of the
 128 draws the two-tier plan costs more than no tricycles, because the draws that make
 tricycles expensive relative to the 6 CNY penalty push the layer above the deficit it
 removes. The 65.38\% of Section~\ref{sec:q2} is a planning midpoint, not a floor: buy the

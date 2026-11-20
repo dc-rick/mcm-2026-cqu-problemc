@@ -2,9 +2,9 @@
  "task": "T028",
  "date": "2026-11-20",
  "lock": {
-  "n_tokens": 1164,
-  "n_matched": 1164,
-  "n_records": 58498,
+  "n_tokens": 1350,
+  "n_matched": 1350,
+  "n_records": 58501,
   "unmatched_lines": 0,
   "pass_line": true
  },

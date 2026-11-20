@@ -34,7 +34,7 @@ credits nor charges the induced truck-layer change of the reroutes, so it replac
 of the tricycle layer and nothing else; it is a deterministic single-day result whose
 uncertainty is the two source caps and the $c_0$ table.
 
-\textbf{The numbers are approximations in two directions.} The truck layer is an
+\textbf{The numbers are approximations with stated bounds.} The truck layer is an
 integer MILP and the tricycle allocation integer, so the executable plan carries a
 known rounding loss; the intervals of Section~\ref{sec:sens} are the response of
 the reported architecture under the parameter design, not sampling intervals; the
@@ -54,7 +54,7 @@ re-optimising $c_0$ moves the optimum and the saving by the amounts tabulated in
 Section~\ref{sec:q3}. The direction survives, the magnitude does not.
 
 The Q2 fleet conclusion is narrower than it looks. The integer scan covers five grid
-points (0, 20, 40, 60, 80), and its minimum is not a proof of a global optimum: across
+points (0, 20, 40, 60, 80), and its minimum is not a proof of a global optimum. Across
 the 128 joint parameter draws the LP-optimal fleet is 60 in only 9 draws (7.0\%) and
 40 or fewer in 117 (91.4\%), so the two-tier fleet and its saving should be read as
 bounds --- an upper bound on the service a given fleet can buy --- not as a point
@@ -83,6 +83,6 @@ must be bounded, and data --- shared, city-wide data --- because none can be aim
 without it.
 
 \emph{Most numbers in this paper are printed from archived result files by the
-number scripts described in the Report on Use of AI Tools; the constants that are
+number scripts described in the Report on Use of AI Tools. The constants that are
 typed rather than computed are listed there, and the pipeline is run in order as
 documented.}

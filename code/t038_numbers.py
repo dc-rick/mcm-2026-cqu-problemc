@@ -329,6 +329,17 @@ def add_derived_cons(recs, ls):
                      path="300*exec_n + 0.2*exec_tri_vkm (operating only)"))
     recs.append(dict(value=float(ls["baseline_total"]) - k60, file="derived",
                      path="baseline_total - K60 obj (cell penalty of the truck plan)"))
+    # --- T028 zero-dispatch and truck-only replays: departures removed by the
+    # --- K=60 plan and the CNY cost per departure removed (quoted in Sec. 5/AI report)
+    zp = os.path.join(lib.DATA, "runs", "T028", "zero_baselines.json")
+    if os.path.exists(zp):
+        z = json.load(open(zp, encoding="utf-8"))
+        delta = (float(z["no_truck_no_tri"]["unmet"])
+                 - float(z["truck_only"]["unmet"]))
+        recs.append(dict(value=delta, file="derived",
+                         path="T028 unmet(no truck) - unmet(truck only)"))
+        recs.append(dict(value=k60 / delta, file="derived",
+                         path="T018 K60 obj / T028 departures removed"))
     # --- T030 fence demand: sums and per-fleet ratios
     fp = os.path.join(lib.DATA, "runs", "T030", "frontier_cons.json")
     if os.path.exists(fp):
@@ -380,6 +391,12 @@ def add_derived_cons(recs, ls):
                              path="payment - r*q at the optimum"))
             recs.append(dict(value=30000.0 - b["payment"], file="derived",
                              path="budget - payment at the optimum"))
+        rows_s = d["levels"]["surplus"]["rows"]
+        for x in rows_s:
+            if abs(x["r"] - 1.80) < 1e-9:
+                recs.append(dict(value=x["payment"] + u * (N - x["q"]),
+                                 file="derived",
+                                 path="r=1.80 (surplus) payment + unit*(N-q)"))
     # --- T031 tricycle-caliber levels
     ty = os.path.join(lib.DATA, "runs", "T031", "tricycle_payment.json")
     if os.path.exists(ty):
@@ -541,7 +558,8 @@ def main():
             report.append(f"MISSING TEX {rel}")
             continue
         text = io.open(p, encoding="utf-8").read()
-        text = re.sub(r"(?m)%.*$", "", text)
+        # strip LaTeX comments, but not the '%' of an escaped '\%'
+        text = re.sub(r"(?m)(?<!\\)%.*$", "", text)
         text = text.replace("{,}", ",")
         for m in TOKEN.finditer(text):
             tok = m.group(1)
